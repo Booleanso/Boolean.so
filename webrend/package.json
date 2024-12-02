@@ -13,10 +13,13 @@
     "@aws-sdk/client-s3": "latest",
     "@aws-sdk/s3-request-presigner": "latest",
     "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
+    "@octokit/rest": "^21.0.2",
     "@radix-ui/react-dialog": "latest",
+    "@radix-ui/react-slot": "^1.1.0",
     "@stripe/stripe-js": "latest",
     "aws-sdk": "latest",
-    "clsx": "latest",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "firebase": "latest",
     "firebase-admin": "latest",
     "genkit": "latest",
@@ -25,7 +28,7 @@
     "react": "latest",
     "react-dom": "latest",
     "stripe": "latest",
-    "tailwind-merge": "latest",
+    "tailwind-merge": "^2.5.5",
     "webrend": "file:"
   },
   "devDependencies": {
