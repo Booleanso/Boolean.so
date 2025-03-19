@@ -1,0 +1,286 @@
+.profileContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.profileTitle {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.errorMessage, .successMessage {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+  }
+}
+
+.errorMessage {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  
+  button {
+    color: #dc3545;
+  }
+}
+
+.successMessage {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  
+  button {
+    color: #28a745;
+  }
+}
+
+.settingsSection {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+  
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+}
+
+.accountConnection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #eee;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.serviceInfo {
+  h3 {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    
+    svg {
+      margin-right: 0.75rem;
+    }
+  }
+  
+  p {
+    color: #666;
+    max-width: 400px;
+  }
+}
+
+.loading {
+  font-style: italic;
+  color: #666;
+}
+
+.connectButton, .disconnectButton {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.connectButton {
+  background-color: #0366d6;
+  color: white;
+  border: none;
+  
+  &:hover:not(:disabled) {
+    background-color: darken(#0366d6, 10%);
+  }
+}
+
+.disconnectButton {
+  background-color: transparent;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  
+  &:hover:not(:disabled) {
+    background-color: rgba(220, 53, 69, 0.1);
+  }
+}
+
+.connectedAccount {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.githubProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-right: 1rem;
+  
+  .avatarImage {
+    border-radius: 50%;
+  }
+  
+  .githubUsername {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  
+  .githubLink {
+    font-size: 0.875rem;
+    color: #0366d6;
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.reposList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.repoCard {
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: #0366d6;
+    box-shadow: 0 0 5px rgba(3, 102, 214, 0.2);
+  }
+}
+
+.repoHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+.repoName {
+  font-size: 1.1rem;
+  margin: 0;
+  
+  a {
+    color: #0366d6;
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.privateLabel {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 2rem;
+  color: #586069;
+}
+
+.repoStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #586069;
+}
+
+.language {
+  display: flex;
+  align-items: center;
+}
+
+.languageColor {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 0.25rem;
+}
+
+.stars, .forks {
+  display: flex;
+  align-items: center;
+  
+  svg {
+    margin-right: 0.25rem;
+  }
+}
+
+.updatedAt {
+  color: #6a737d;
+}
+
+.repoDescription {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: #586069;
+  line-height: 1.5;
+}
+
+.noRepos {
+  color: #6a737d;
+  font-style: italic;
+}
+
+.refreshButton {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover:not(:disabled) {
+    background-color: #e1e4e8;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

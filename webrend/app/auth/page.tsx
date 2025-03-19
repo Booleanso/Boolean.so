@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, FormEvent, Suspense } from 'react';
+import React, { useState, FormEvent, Suspense, useEffect } from 'react';
 import { auth } from '../lib/firebase-client';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, AuthError } from 'firebase/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
+import './auth.scss';
 
 interface FormData {
   email: string;
@@ -23,6 +24,7 @@ interface AuthFormProps {
 function AuthForm({ 
   onSubmit, 
   isSignUp,
+  setIsSignUp,
   isLoading, 
   error, 
   formData, 
@@ -36,10 +38,10 @@ function AuthForm({
   };
 
   return (
-    <form className="w-full max-w-sm space-y-4" onSubmit={handleSubmit}>
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm text-white mb-2">
+    <form className="auth-form" onSubmit={handleSubmit}>
+      <div className="form-groups">
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">
             Email
           </label>
           <input
@@ -48,14 +50,14 @@ function AuthForm({
             type="email"
             autoComplete="email"
             required
-            className="w-full px-3 py-2 bg-black border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-white"
+            className="form-input"
             placeholder="m@example.com"
             value={formData.email}
             onChange={handleInputChange}
           />
         </div>
-        <div>
-          <label htmlFor="password" className="block text-sm text-white mb-2">
+        <div className="form-group">
+          <label htmlFor="password" className="form-label">
             Password
           </label>
           <input
@@ -64,7 +66,7 @@ function AuthForm({
             type="password"
             autoComplete={isSignUp ? "new-password" : "current-password"}
             required
-            className="w-full px-3 py-2 bg-black border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-white"
+            className="form-input"
             placeholder="••••••••"
             value={formData.password}
             onChange={handleInputChange}
@@ -73,33 +75,50 @@ function AuthForm({
       </div>
 
       {error && (
-        <div className="text-sm text-red-400" role="alert">
+        <div className="error-message" role="alert">
           {error}
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="w-full py-2 px-4 bg-white text-black rounded-md font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white disabled:opacity-50"
-      >
-        {isLoading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Login')}
-      </button>
+      <div>
+        <button
+          type="submit"
+          className="submit-button"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <span className="loading-spinner">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="spinner-circle" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="spinner-path" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Processing...
+            </span>
+          ) : isSignUp ? 'Sign Up' : 'Sign In'}
+        </button>
+      </div>
+
+      <div className="toggle-auth-mode">
+        <button
+          type="button"
+          className="toggle-button"
+          onClick={() => setIsSignUp(!isSignUp)}
+        >
+          {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
+        </button>
+      </div>
 
       {/* Commenting out social login buttons for now
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-700"></div>
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-black text-gray-500">Or</span>
+      <div className="divider">
+        <div className="divider-text">
+          <span>Or</span>
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="social-buttons">
         <button
           type="button"
-          className="w-full py-2 px-4 border border-gray-700 rounded-md flex items-center justify-center space-x-2 text-white hover:bg-gray-900"
+          className="social-button"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="white">
             <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
@@ -109,7 +128,7 @@ function AuthForm({
 
         <button
           type="button"
-          className="w-full py-2 px-4 border border-gray-700 rounded-md flex items-center justify-center space-x-2 text-white hover:bg-gray-900"
+          className="social-button"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="white">
             <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
@@ -119,10 +138,10 @@ function AuthForm({
       </div>
       */}
 
-      <p className="text-xs text-center text-gray-500">
+      <p className="terms-text">
         By clicking continue, you agree to our{' '}
-        <a href="#" className="underline">Terms of Service</a> and{' '}
-        <a href="#" className="underline">Privacy Policy</a>
+        <a href="#">Terms of Service</a> and{' '}
+        <a href="#">Privacy Policy</a>
       </p>
     </form>
   );
@@ -130,13 +149,20 @@ function AuthForm({
 
 export default function AuthPage(): React.ReactElement {
   const router = useRouter();
-  const [isSignUp, setIsSignUp] = useState<boolean>(false);
+  const searchParams = useSearchParams();
+  const mode = searchParams.get('mode');
+  
+  const [isSignUp, setIsSignUp] = useState<boolean>(mode === 'signup');
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
   });
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsSignUp(mode === 'signup');
+  }, [mode]);
 
   const handleFormSubmit = async (redirectTo: string): Promise<void> => {
     setError('');
@@ -190,22 +216,17 @@ export default function AuthPage(): React.ReactElement {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-4">
-      <div className="w-full max-w-sm space-y-8">
-        <div className="text-center">
-          {/* <div className="mb-6">
-            <svg className="mx-auto h-12 w-12" viewBox="0 0 24 24" fill="white">
-              <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-            </svg>
-          </div> */}
-          <h2 className="text-2xl font-bold">Welcome to BlenderBin.</h2>
-          <p className="mt-2 text-sm text-gray-500">
+    <div className="auth-container">
+      <div className="auth-content">
+        <div className="auth-header">
+          <h2 className="auth-title">Welcome to WebRend.</h2>
+          <p className="auth-subtitle">
             {isSignUp ? (
               <>
                 Already have an account?{' '}
                 <button
                   onClick={() => setIsSignUp(false)}
-                  className="text-white underline"
+                  className="auth-toggle-button"
                 >
                   Login
                 </button>
@@ -215,7 +236,7 @@ export default function AuthPage(): React.ReactElement {
                 Do not have an account?{' '}
                 <button
                   onClick={() => setIsSignUp(true)}
-                  className="text-white underline"
+                  className="auth-toggle-button"
                 >
                   Sign up
                 </button>

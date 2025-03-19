@@ -1,0 +1,130 @@
+.navbar-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 0;
+  
+  .navbar {
+    background-color: rgba(40, 40, 40, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    width: 50%;
+    max-width: 750px;
+    max-height: 45px;
+    border-radius: 999px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 16px;
+      color: white;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+      
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+    
+    .navbar-menu {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        
+        .user-email {
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.8);
+          max-width: 150px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      
+      .nav-button {
+        border: none;
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &.login-button {
+          background-color: transparent;
+          color: white;
+          
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+        }
+        
+        &.signup-button {
+          background-color: #0071e3;
+          color: white;
+          
+          &:hover {
+            background-color: #0077ed;
+            transform: scale(1.02);
+          }
+        }
+        
+        &.signout-button {
+          background-color: rgba(255, 59, 48, 0.8);
+          color: white;
+          
+          &:hover {
+            background-color: rgba(255, 59, 48, 1);
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    .navbar {
+      width: 90%;
+      
+      .user-info {
+        .user-email {
+          max-width: 100px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    .navbar {
+      width: 95%;
+      padding: 0 15px;
+      
+      .navbar-menu {
+        gap: 8px;
+        
+        .nav-button {
+          padding: 5px 10px;
+          font-size: 12px;
+        }
+        
+        .user-info {
+          .user-email {
+            max-width: 80px;
+          }
+        }
+      }
+    }
+  }
+} 
