@@ -1,0 +1,542 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+  text-align: center;
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #2d3748;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #718096;
+  }
+}
+
+.formContainer {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.stepIndicator {
+  display: flex;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 1.5rem;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 1rem;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background-color: #e2e8f0;
+    z-index: 1;
+  }
+  
+  &.active .stepNumber {
+    background-color: #4299e1;
+    color: white;
+  }
+  
+  &.completed .stepNumber {
+    background-color: #48bb78;
+    color: white;
+  }
+  
+  &.completed:not(:last-child)::after {
+    background-color: #48bb78;
+  }
+  
+  &.active:not(:last-child)::after {
+    background-color: #4299e1;
+  }
+}
+
+.stepNumber {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+  position: relative;
+  z-index: 2;
+  font-weight: bold;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  font-size: 1rem;
+  text-decoration: none;
+  
+  &.primary {
+    background-color: #4299e1;
+    color: white;
+    
+    &:hover {
+      background-color: #3182ce;
+    }
+    
+    &:disabled {
+      background-color: #a0aec0;
+      cursor: not-allowed;
+    }
+  }
+  
+  &.secondary {
+    background-color: #edf2f7;
+    color: #4a5568;
+    
+    &:hover {
+      background-color: #e2e8f0;
+    }
+  }
+}
+
+.navigationButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  
+  button, a {
+    min-width: 120px;
+  }
+}
+
+.repoList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.repoCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: #4299e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  &.selected {
+    border-color: #4299e1;
+    background-color: rgba(66, 153, 225, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #2d3748;
+  }
+  
+  p {
+    color: #718096;
+    margin-bottom: 1rem;
+  }
+}
+
+.repoStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.repoStat {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #718096;
+  font-size: 0.9rem;
+  
+  svg {
+    color: #a0aec0;
+  }
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #4a5568;
+  }
+  
+  input, textarea, select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 1rem;
+    
+    &:focus {
+      outline: none;
+      border-color: #4299e1;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+    }
+  }
+  
+  textarea {
+    min-height: 150px;
+    resize: vertical;
+  }
+}
+
+.helpText {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-top: 0.25rem;
+}
+
+.imageUploadContainer {
+  margin-bottom: 1.5rem;
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #4a5568;
+  }
+}
+
+.imageUploadArea {
+  border: 2px dashed #e2e8f0;
+  border-radius: 4px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: #4299e1;
+  }
+}
+
+.uploadIcon {
+  margin-bottom: 1rem;
+  
+  svg {
+    width: 48px;
+    height: 48px;
+    color: #a0aec0;
+  }
+}
+
+.uploadText {
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 0.25rem;
+}
+
+.uploadHint {
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.imagePreviewGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.imagePreview {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 150px;
+  height: 150px;
+  
+  img {
+    object-fit: cover;
+  }
+}
+
+.removeImageButton {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+.radioGroup {
+  margin-bottom: 1.5rem;
+}
+
+.radioOption {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: #4299e1;
+  }
+  
+  &.selected {
+    border-color: #4299e1;
+    background-color: rgba(66, 153, 225, 0.05);
+  }
+  
+  input {
+    margin-top: 0.3rem;
+    margin-right: 1rem;
+  }
+}
+
+.radioLabel {
+  flex: 1;
+}
+
+.radioTitle {
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+}
+
+.radioDescription {
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.previewContainer {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.previewHeader {
+  background-color: #f7fafc;
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  
+  h3 {
+    margin: 0;
+    color: #2d3748;
+  }
+}
+
+.previewContent {
+  padding: 1.5rem;
+}
+
+.previewField {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.previewLabel {
+  width: 120px;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.previewValue {
+  flex: 1;
+  color: #2d3748;
+}
+
+.previewDescription {
+  margin-bottom: 1.5rem;
+  
+  h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #4a5568;
+  }
+  
+  p {
+    margin: 0;
+    color: #2d3748;
+  }
+}
+
+.previewImages {
+  h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #4a5568;
+  }
+}
+
+.previewImageGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.previewImageItem {
+  width: 150px;
+  height: 150px;
+  border-radius: 4px;
+  overflow: hidden;
+  
+  img {
+    object-fit: cover;
+  }
+}
+
+.iframePreview {
+  width: 100%;
+  height: 300px;
+  border: none;
+}
+
+.error {
+  color: #e53e3e;
+  padding: 0.75rem;
+  background-color: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.feeInfo {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f7fafc;
+  border-radius: 4px;
+  
+  h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #4a5568;
+  }
+  
+  p {
+    margin-bottom: 0.5rem;
+  }
+  
+  ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
+}
+
+// Stripe Connect specific styles
+.stripeConnect {
+  margin-bottom: 1.5rem;
+  
+  p {
+    margin-bottom: 1rem;
+  }
+}
+
+.stripeInfo {
+  background-color: #f7fafc;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #2d3748;
+  }
+  
+  ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
+}
+
+.stripeSuccess {
+  background-color: #f0fff4;
+  border: 1px solid #c6f6d5;
+  border-radius: 4px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #2f855a;
+  }
+  
+  p {
+    margin-bottom: 1.5rem;
+    color: #38a169;
+  }
+}
+
+.successIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  
+  svg {
+    width: 100%;
+    height: 100%;
+    color: #48bb78;
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #718096;
+}

@@ -1,286 +1,410 @@
-.profileContainer {
-  max-width: 1000px;
+.container {
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
 }
 
-.profileTitle {
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  color: #333;
-}
-
-.errorMessage, .successMessage {
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  
-  button {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-  }
-}
-
-.errorMessage {
-  background-color: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
-  border: 1px solid rgba(220, 53, 69, 0.3);
-  
-  button {
-    color: #dc3545;
-  }
-}
-
-.successMessage {
-  background-color: rgba(40, 167, 69, 0.1);
-  color: #28a745;
-  border: 1px solid rgba(40, 167, 69, 0.3);
-  
-  button {
-    color: #28a745;
-  }
-}
-
-.settingsSection {
-  background-color: #fff;
+.profile {
+  background: white;
   border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  margin-bottom: 2rem;
-  
-  h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    color: #333;
-  }
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
 }
 
-.accountConnection {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 0;
-  border-bottom: 1px solid #eee;
+.title {
+  font-size: 2rem;
+  margin: 0 0 2rem;
+  color: #2d3748;
+}
+
+.section {
+  margin-bottom: 3rem;
   
   &:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
   }
 }
 
-.serviceInfo {
-  h3 {
-    display: flex;
-    align-items: center;
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-    
-    svg {
-      margin-right: 0.75rem;
-    }
-  }
-  
-  p {
-    color: #666;
-    max-width: 400px;
-  }
+.sectionTitle {
+  font-size: 1.5rem;
+  color: #2d3748;
+  margin: 0 0 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .loading {
-  font-style: italic;
-  color: #666;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: #718096;
 }
 
-.connectButton, .disconnectButton {
-  padding: 0.5rem 1rem;
+.error {
+  background-color: #fff5f5;
+  border: 1px solid #feb2b2;
   border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  color: #c53030;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.accountInfo {
+  padding: 1.5rem;
+  background-color: #f7fafc;
+  border-radius: 8px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
   
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
 
-.connectButton {
-  background-color: #0366d6;
+.placeholderAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #4299e1;
   color: white;
-  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.userDetails {
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    color: #2d3748;
+  }
   
-  &:hover:not(:disabled) {
-    background-color: darken(#0366d6, 10%);
+  p {
+    margin: 0;
+    color: #718096;
   }
 }
 
-.disconnectButton {
-  background-color: transparent;
-  color: #dc3545;
-  border: 1px solid #dc3545;
+.notLoggedIn {
+  text-align: center;
+  padding: 1rem;
+  color: #718096;
+}
+
+.connectionCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background-color: #f7fafc;
+  border-radius: 8px;
+  margin-bottom: 1rem;
   
-  &:hover:not(:disabled) {
-    background-color: rgba(220, 53, 69, 0.1);
+  &:last-child {
+    margin-bottom: 0;
   }
 }
 
-.connectedAccount {
+.connectionInfo {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.githubProfile {
+.connectionIcon {
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-right: 1rem;
-  
-  .avatarImage {
-    border-radius: 50%;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #4a5568;
+}
+
+.connectionDetails {
+  h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1.1rem;
+    color: #2d3748;
   }
   
-  .githubUsername {
-    font-weight: 500;
-    margin-bottom: 0.25rem;
+  p {
+    margin: 0;
+    color: #718096;
   }
+}
+
+.connectionActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.connectionButton {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  font-size: 0.9rem;
+  text-decoration: none;
   
-  .githubLink {
-    font-size: 0.875rem;
-    color: #0366d6;
-    text-decoration: none;
+  &.connect {
+    background-color: #4299e1;
+    color: white;
     
     &:hover {
-      text-decoration: underline;
+      background-color: #3182ce;
+    }
+    
+    &:disabled {
+      background-color: #a0aec0;
+      cursor: not-allowed;
+    }
+  }
+  
+  &.disconnect {
+    background-color: transparent;
+    color: #e53e3e;
+    border: 1px solid #e53e3e;
+    
+    &:hover {
+      background-color: #fff5f5;
     }
   }
 }
 
-.reposList {
-  display: flex;
-  flex-direction: column;
+.repoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1rem;
-  margin-bottom: 1.5rem;
 }
 
 .repoCard {
-  border: 1px solid #e1e4e8;
-  border-radius: 6px;
-  padding: 1rem;
-  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
   
   &:hover {
-    border-color: #0366d6;
-    box-shadow: 0 0 5px rgba(3, 102, 214, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-}
-
-.repoHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
   
-  @media (min-width: 768px) {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-}
-
-.repoName {
-  font-size: 1.1rem;
-  margin: 0;
-  
-  a {
-    color: #0366d6;
-    text-decoration: none;
+  .repoName {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
     
-    &:hover {
-      text-decoration: underline;
+    a {
+      color: #3182ce;
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
-}
-
-.privateLabel {
-  display: inline-block;
-  margin-left: 0.5rem;
-  padding: 0.1rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background-color: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  border-radius: 2rem;
-  color: #586069;
-}
-
-.repoStats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  font-size: 0.875rem;
-  color: #586069;
-}
-
-.language {
-  display: flex;
-  align-items: center;
-}
-
-.languageColor {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-right: 0.25rem;
-}
-
-.stars, .forks {
-  display: flex;
-  align-items: center;
   
-  svg {
-    margin-right: 0.25rem;
+  .repoDescription {
+    color: #718096;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .repoStats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #718096;
+  }
+  
+  .repoLanguage {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #3182ce;
+    }
+  }
+  
+  .repoStat {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 }
 
-.updatedAt {
-  color: #6a737d;
+.repoActions {
+  display: flex;
+  justify-content: flex-end;
 }
 
-.repoDescription {
-  margin: 0.5rem 0 0;
-  font-size: 0.9rem;
-  color: #586069;
-  line-height: 1.5;
-}
-
-.noRepos {
-  color: #6a737d;
-  font-style: italic;
-}
-
-.refreshButton {
-  margin-top: 1rem;
+.sellButton {
   padding: 0.5rem 1rem;
-  background-color: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s;
+  text-decoration: none;
   
-  &:hover:not(:disabled) {
-    background-color: #e1e4e8;
+  &:hover {
+    background-color: #3182ce;
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: #f7fafc;
+  border-radius: 8px;
+  color: #718096;
+  
+  p {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.browseButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+  
+  &:hover {
+    background-color: #3182ce;
+  }
+}
+
+.purchasedRepos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.purchasedRepoCard {
+  display: flex;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.purchasedRepoImage {
+  position: relative;
+  width: 300px;
+  height: 200px;
+  
+  @media (max-width: 768px) {
+    width: 100%;
   }
   
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .purchaseType {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+}
+
+.purchasedRepoInfo {
+  flex: 1;
+  padding: 1.5rem;
+  
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    color: #2d3748;
+  }
+}
+
+.purchasedRepoDescription {
+  color: #718096;
+  margin-bottom: 1rem;
+}
+
+.purchasedRepoMeta {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.subscriptionInfo {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  background-color: #ebf8ff;
+  border-radius: 4px;
+  color: #2c5282;
+}
+
+.purchasedRepoActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.viewRepoButton {
+  padding: 0.5rem 1rem;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+  
+  &:hover {
+    background-color: #3182ce;
   }
 }
