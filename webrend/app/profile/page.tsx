@@ -42,9 +42,7 @@ type PurchasedRepo = {
 
 type StripeConnectionStatus = {
   connected: boolean;
-  accountId: string | null;
-  onboardingComplete: boolean;
-  onboardingUrl?: string;
+  bankDetailsAdded: boolean;
 };
 
 export default function ProfilePage() {
@@ -54,14 +52,17 @@ export default function ProfilePage() {
   const [purchasedRepos, setPurchasedRepos] = useState<PurchasedRepo[]>([]);
   const [stripeStatus, setStripeStatus] = useState<StripeConnectionStatus>({
     connected: false,
-    accountId: null,
-    onboardingComplete: false
+    bankDetailsAdded: false
   });
   const [reposLoading, setReposLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [githubConnectStatus, setGithubConnectStatus] = useState<string | null>(null);
   const [purchasesLoading, setPurchasesLoading] = useState(false);
   const [stripeLoading, setStripeLoading] = useState(false);
+  const [bankAccountNumber, setBankAccountNumber] = useState('');
+  const [routingNumber, setRoutingNumber] = useState('');
+  const [accountHolderName, setAccountHolderName] = useState('');
+  const [showBankForm, setShowBankForm] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -171,11 +172,12 @@ export default function ProfilePage() {
       // For demo purposes, we'll use mock data
       await new Promise(resolve => setTimeout(resolve, 300));
       
+      // Check if we have saved bank details in local storage for demo
+      const bankDetailsAdded = localStorage.getItem('stripeBankDetailsAdded') === 'true';
+      
       const mockStripeStatus: StripeConnectionStatus = {
-        connected: Math.random() > 0.5, // Randomly show connected or not for demo
-        accountId: Math.random() > 0.5 ? 'acct_123456789' : null,
-        onboardingComplete: Math.random() > 0.7,
-        onboardingUrl: 'https://connect.stripe.com/setup/c/dummy-url'
+        connected: true, // Always connected since we're using the .env API key
+        bankDetailsAdded: bankDetailsAdded
       };
       
       setStripeStatus(mockStripeStatus);
@@ -184,6 +186,27 @@ export default function ProfilePage() {
     } finally {
       setStripeLoading(false);
     }
+  };
+
+  const handleBankDetailsSave = () => {
+    // In a real app, we would send these details to our Stripe Connect backend
+    // For demo, we're just saving a flag in localStorage
+    localStorage.setItem('stripeBankDetailsAdded', 'true');
+    setStripeStatus({
+      ...stripeStatus,
+      bankDetailsAdded: true
+    });
+    setShowBankForm(false);
+  };
+
+  const handleRemoveBankDetails = () => {
+    // In a real app, we would call an API to remove bank details
+    // For demo, we're just removing the flag from localStorage
+    localStorage.removeItem('stripeBankDetailsAdded');
+    setStripeStatus({
+      ...stripeStatus,
+      bankDetailsAdded: false
+    });
   };
 
   const handleConnectGithub = async () => {
@@ -223,12 +246,6 @@ export default function ProfilePage() {
     } catch (err) {
       console.error('Error disconnecting GitHub:', err);
       setGithubConnectStatus('Error disconnecting from GitHub');
-    }
-  };
-
-  const handleConnectStripe = () => {
-    if (stripeStatus.onboardingUrl) {
-      window.location.href = stripeStatus.onboardingUrl;
     }
   };
 
@@ -342,16 +359,15 @@ export default function ProfilePage() {
                 </svg>
               </div>
               <div className={styles.connectionDetails}>
-                <h3>Stripe Connect</h3>
+                <h3>Stripe Setup</h3>
                 <p>{stripeLoading 
                   ? 'Checking status...' 
-                  : stripeStatus.onboardingComplete
+                  : stripeStatus.bankDetailsAdded
                     ? 'Connected - Ready to receive payments'
-                    : stripeStatus.accountId
-                      ? 'Connected - Onboarding incomplete'
-                      : 'Not connected'}</p>
+                    : 'API Key Ready - Bank details needed'}</p>
               </div>
             </div>
+            
             <div className={styles.connectionActions}>
               {stripeLoading ? (
                 <button 
@@ -360,23 +376,100 @@ export default function ProfilePage() {
                 >
                   Loading...
                 </button>
-              ) : stripeStatus.onboardingComplete ? (
-                <Link 
-                  href="/marketplace/sell" 
-                  className={`${styles.connectionButton} ${styles.connect}`}
-                >
-                  Sell Repositories
-                </Link>
+              ) : stripeStatus.bankDetailsAdded ? (
+                <div className={styles.bankDetailsButtons}>
+                  <button
+                    className={`${styles.connectionButton} ${styles.edit}`}
+                    onClick={() => setShowBankForm(true)}
+                  >
+                    Change Bank Details
+                  </button>
+                  <button
+                    className={`${styles.connectionButton} ${styles.disconnect}`}
+                    onClick={handleRemoveBankDetails}
+                  >
+                    Remove Bank Details
+                  </button>
+                </div>
               ) : (
                 <button 
                   className={`${styles.connectionButton} ${styles.connect}`}
-                  onClick={handleConnectStripe}
+                  onClick={() => setShowBankForm(true)}
                 >
-                  {stripeStatus.accountId ? 'Complete Setup' : 'Connect Stripe'}
+                  Add Bank Details
                 </button>
               )}
             </div>
           </div>
+          
+          {/* Add a "Sell Repositories" button below the Stripe section when bank details are added */}
+          {stripeStatus.bankDetailsAdded && (
+            <div className={styles.sellReposButton}>
+              <Link href="/marketplace/sell" className={styles.sellButton}>
+                Sell Repositories
+              </Link>
+            </div>
+          )}
+          
+          {/* Bank Details Form */}
+          {showBankForm && (
+            <div className={styles.formContainer}>
+              <div className={styles.formSection}>
+                <h3>Add Your Bank Details</h3>
+                <p className={styles.formHelper}>
+                  These details will be used to send you payouts for your sold repositories.
+                </p>
+                <div className={styles.formGroup}>
+                  <label htmlFor="accountHolderName">Account Holder Name</label>
+                  <input 
+                    type="text" 
+                    id="accountHolderName"
+                    placeholder="John Doe"
+                    value={accountHolderName}
+                    onChange={(e) => setAccountHolderName(e.target.value)}
+                    className={styles.formInput}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="accountNumber">Account Number</label>
+                  <input 
+                    type="text" 
+                    id="accountNumber"
+                    placeholder="000123456789"
+                    value={bankAccountNumber}
+                    onChange={(e) => setBankAccountNumber(e.target.value)}
+                    className={styles.formInput}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="routingNumber">Routing Number</label>
+                  <input 
+                    type="text" 
+                    id="routingNumber"
+                    placeholder="110000000"
+                    value={routingNumber}
+                    onChange={(e) => setRoutingNumber(e.target.value)}
+                    className={styles.formInput}
+                  />
+                </div>
+                <div className={styles.formActions}>
+                  <button 
+                    className={styles.cancelButton}
+                    onClick={() => setShowBankForm(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    className={styles.saveButton}
+                    onClick={handleBankDetailsSave}
+                    disabled={!accountHolderName || !bankAccountNumber || !routingNumber}
+                  >
+                    Save Bank Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {user && (
