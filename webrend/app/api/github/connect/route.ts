@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
     githubAuthUrl.searchParams.append('scope', 'read:user repo'); // Adjust scopes as needed
     githubAuthUrl.searchParams.append('state', state);
     
+    console.log(`Redirecting user ${userId} to GitHub OAuth: ${githubAuthUrl.toString()}`);
     return NextResponse.redirect(githubAuthUrl);
   } catch (error) {
     console.error('GitHub connect error:', error);

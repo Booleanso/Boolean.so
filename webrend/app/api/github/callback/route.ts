@@ -5,6 +5,7 @@ import { db } from '../../../lib/firebase-admin';
 // GitHub OAuth configuration
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+const REDIRECT_URI = `${process.env.NEXT_PUBLIC_URL}/api/github/callback`;
 
 export async function GET(request: NextRequest) {
   try {
@@ -42,15 +43,22 @@ export async function GET(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'User-Agent': 'WebRend-App'
       },
       body: JSON.stringify({
         client_id: GITHUB_CLIENT_ID,
         client_secret: GITHUB_CLIENT_SECRET,
         code,
-        redirect_uri: `${process.env.NEXT_PUBLIC_URL}/api/github/callback`
+        redirect_uri: REDIRECT_URI
       })
     });
+    
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text().catch(() => '');
+      console.error(`GitHub callback: Token exchange error: ${tokenResponse.status}`, errorText);
+      return NextResponse.redirect(new URL(`/profile?error=github_token_failed&message=${encodeURIComponent(`HTTP ${tokenResponse.status}`)}`, request.url));
+    }
     
     const tokenData = await tokenResponse.json();
     
@@ -61,12 +69,41 @@ export async function GET(request: NextRequest) {
     
     // Fetch the user's GitHub profile
     console.log('GitHub callback: Fetching user profile from GitHub API');
-    const userResponse = await fetch('https://api.github.com/user', {
+    let userResponse;
+
+    // First try Bearer token authentication (preferred)
+    userResponse = await fetch('https://api.github.com/user', {
       headers: {
-        'Authorization': `token ${tokenData.access_token}`,
-        'Accept': 'application/vnd.github.v3+json'
+        'Authorization': `Bearer ${tokenData.access_token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'WebRend-App'
       }
     });
+
+    // Track which auth method actually worked
+    let authMethod = 'bearer';
+
+    // If Bearer token fails, try with token authentication as fallback
+    if (userResponse.status === 401) {
+      console.log('GitHub callback: Bearer token failed, trying with token auth');
+      userResponse = await fetch('https://api.github.com/user', {
+        headers: {
+          'Authorization': `token ${tokenData.access_token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'WebRend-App'
+        }
+      });
+      
+      if (userResponse.ok) {
+        authMethod = 'token';
+      }
+    }
+
+    if (!userResponse.ok) {
+      const errorText = await userResponse.text().catch(() => '');
+      console.error(`GitHub callback: User profile fetch error: ${userResponse.status}`, errorText);
+      return NextResponse.redirect(new URL(`/profile?error=github_user_fetch_failed&message=${encodeURIComponent(`HTTP ${userResponse.status}`)}`, request.url));
+    }
     
     const githubUser = await userResponse.json();
     
@@ -81,10 +118,11 @@ export async function GET(request: NextRequest) {
       githubId: githubUser.id,
       githubUsername: githubUser.login,
       githubAccessToken: tokenData.access_token,
-      githubTokenType: tokenData.token_type,
+      githubTokenType: authMethod,
       githubConnectedAt: new Date().toISOString(),
       githubAvatarUrl: githubUser.avatar_url,
-      githubProfileUrl: githubUser.html_url
+      githubProfileUrl: githubUser.html_url,
+      githubDisconnectedAt: null
     };
     
     try {

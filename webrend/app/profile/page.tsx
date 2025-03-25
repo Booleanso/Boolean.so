@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { signIn, signOut, useSession } from 'next-auth/react';
 import { FaGithub } from 'react-icons/fa';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './profile.module.scss';
+import { auth } from '../lib/firebase-client';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
 type GithubRepo = {
   id: number;
@@ -47,7 +48,8 @@ type StripeConnectionStatus = {
 };
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
   const [repos, setRepos] = useState<GithubRepo[]>([]);
   const [purchasedRepos, setPurchasedRepos] = useState<PurchasedRepo[]>([]);
   const [stripeStatus, setStripeStatus] = useState<StripeConnectionStatus>({
@@ -55,33 +57,67 @@ export default function ProfilePage() {
     accountId: null,
     onboardingComplete: false
   });
-  const [loading, setLoading] = useState(false);
+  const [reposLoading, setReposLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [githubConnectStatus, setGithubConnectStatus] = useState<string | null>(null);
   const [purchasesLoading, setPurchasesLoading] = useState(false);
   const [stripeLoading, setStripeLoading] = useState(false);
 
   useEffect(() => {
-    if (session) {
-      fetchGithubRepos();
-      fetchPurchasedRepos();
-      checkStripeStatus();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+      
+      if (currentUser) {
+        fetchGithubRepos();
+        fetchPurchasedRepos();
+        checkStripeStatus();
+      }
+    });
+
+    // Check URL params for GitHub connection status
+    const params = new URLSearchParams(window.location.search);
+    const githubStatus = params.get('github');
+    const githubError = params.get('error');
+    const errorMessage = params.get('message');
+    
+    if (githubStatus === 'connected') {
+      setGithubConnectStatus('Successfully connected your GitHub account');
+    } else if (githubError) {
+      setGithubConnectStatus(`Error connecting GitHub: ${githubError}${errorMessage ? ` - ${errorMessage}` : ''}`);
     }
-  }, [session]);
+
+    return () => unsubscribe();
+  }, []);
 
   const fetchGithubRepos = async () => {
     try {
-      setLoading(true);
+      setReposLoading(true);
+      setError(null);
       const response = await fetch('/api/github/repos');
+      
+      if (response.status === 401 || response.status === 400) {
+        // User not authenticated or GitHub not connected
+        setRepos([]);
+        const data = await response.json();
+        if (data.error === 'GitHub token expired or invalid' || 
+            data.error === 'GitHub token expired or revoked') {
+          setGithubConnectStatus('Your GitHub connection has expired. Please reconnect.');
+        }
+        return;
+      }
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
       const data = await response.json();
       setRepos(data.repos || []);
     } catch (err) {
       setError('Failed to fetch repositories');
       console.error('Error fetching repositories:', err);
     } finally {
-      setLoading(false);
+      setReposLoading(false);
     }
   };
 
@@ -152,19 +188,41 @@ export default function ProfilePage() {
 
   const handleConnectGithub = async () => {
     try {
-      await signIn('github', { callbackUrl: '/profile' });
+      setError(null);
+      setGithubConnectStatus('Redirecting to GitHub...');
+      // Redirect to the GitHub connect API route
+      window.location.href = '/api/github/connect';
     } catch (err) {
       console.error('Error connecting to GitHub:', err);
+      setGithubConnectStatus('Failed to connect to GitHub');
     }
   };
 
   const handleDisconnectGithub = async () => {
     try {
-      // In a real app, we would call an API to revoke the GitHub token
-      // For demo purposes, we'll just sign out
-      await signOut({ callbackUrl: '/profile' });
+      setError(null);
+      setGithubConnectStatus('Disconnecting from GitHub...');
+      const response = await fetch('/api/github/disconnect', {
+        method: 'POST',
+      });
+      
+      if (response.ok) {
+        setGithubConnectStatus('Successfully disconnected your GitHub account');
+        // Clear repos immediately to update UI
+        setRepos([]);
+      } else {
+        const data = await response.json();
+        setGithubConnectStatus(`Failed to disconnect GitHub: ${data.error || 'Unknown error'}`);
+        console.error('Failed to disconnect GitHub', data);
+        
+        // If token was invalid anyway, clear repos
+        if (data.error === 'GitHub not connected for this user') {
+          setRepos([]);
+        }
+      }
     } catch (err) {
       console.error('Error disconnecting GitHub:', err);
+      setGithubConnectStatus('Error disconnecting from GitHub');
     }
   };
 
@@ -174,7 +232,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (status === 'loading') {
+  if (loading) {
     return (
       <div className={styles.container}>
         <div className={styles.loading}>Loading profile...</div>
@@ -190,25 +248,25 @@ export default function ProfilePage() {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Account</h2>
           <div className={styles.accountInfo}>
-            {session ? (
+            {user ? (
               <div className={styles.userInfo}>
                 <div className={styles.avatar}>
-                  {session.user?.image ? (
+                  {user.photoURL ? (
                     <Image 
-                      src={session.user.image} 
+                      src={user.photoURL} 
                       alt="User avatar" 
                       width={80} 
                       height={80} 
                     />
                   ) : (
                     <div className={styles.placeholderAvatar}>
-                      {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || '?'}
+                      {user.displayName?.charAt(0) || user.email?.charAt(0) || '?'}
                     </div>
                   )}
                 </div>
                 <div className={styles.userDetails}>
-                  <h3>{session.user?.name}</h3>
-                  <p>{session.user?.email}</p>
+                  <h3>{user.displayName || 'User'}</h3>
+                  <p>{user.email}</p>
                 </div>
               </div>
             ) : (
@@ -222,6 +280,18 @@ export default function ProfilePage() {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Connections</h2>
           
+          {githubConnectStatus && (
+            <div className={`${styles.statusMessage} ${githubConnectStatus.includes('Error') || githubConnectStatus.includes('Failed') ? styles.errorStatus : styles.successStatus}`}>
+              {githubConnectStatus}
+            </div>
+          )}
+          
+          {error && (
+            <div className={styles.error}>
+              {error}
+            </div>
+          )}
+          
           <div className={styles.connectionCard}>
             <div className={styles.connectionInfo}>
               <div className={styles.connectionIcon}>
@@ -229,11 +299,18 @@ export default function ProfilePage() {
               </div>
               <div className={styles.connectionDetails}>
                 <h3>GitHub</h3>
-                <p>{session ? 'Connected to GitHub' : 'Not connected'}</p>
+                <p>{repos.length > 0 ? 'Connected to GitHub' : 'Not connected'}</p>
               </div>
             </div>
             <div className={styles.connectionActions}>
-              {session ? (
+              {reposLoading ? (
+                <button 
+                  className={`${styles.connectionButton} ${styles.loading}`}
+                  disabled
+                >
+                  Loading...
+                </button>
+              ) : repos.length > 0 ? (
                 <button 
                   className={`${styles.connectionButton} ${styles.disconnect}`}
                   onClick={handleDisconnectGithub}
@@ -302,7 +379,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {session && (
+        {user && (
           <>
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>Your Purchased Repositories</h2>
@@ -366,7 +443,7 @@ export default function ProfilePage() {
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>Your GitHub Repositories</h2>
               
-              {loading ? (
+              {reposLoading ? (
                 <div className={styles.loading}>Loading repositories...</div>
               ) : error ? (
                 <div className={styles.error}>{error}</div>

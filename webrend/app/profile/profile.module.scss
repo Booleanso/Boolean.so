@@ -50,6 +50,25 @@
   margin-bottom: 1rem;
 }
 
+.statusMessage {
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  
+  &.successStatus {
+    background-color: #f0fff4;
+    border: 1px solid #9ae6b4;
+    color: #276749;
+  }
+  
+  &.errorStatus {
+    background-color: #fff5f5;
+    border: 1px solid #feb2b2;
+    color: #c53030;
+  }
+}
+
 .accountInfo {
   padding: 1.5rem;
   background-color: #f7fafc;
@@ -190,6 +209,12 @@
     &:hover {
       background-color: #fff5f5;
     }
+  }
+  
+  &.loading {
+    background-color: #a0aec0;
+    color: white;
+    cursor: not-allowed;
   }
 }
 
