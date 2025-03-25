@@ -43,17 +43,26 @@ export default function NavBar() {
         </Link>
         
         <div className="navbar-menu">
+          <Link href="/marketplace" className="nav-button marketplace-button">
+            Marketplace
+          </Link>
+          
           {!loading && (
             <>
               {user ? (
-                <div className="user-info">
-                  <span className="user-email">{user.email}</span>
-                  <button
-                    onClick={handleSignOut}
-                    className="nav-button signout-button"
-                  >
-                    Sign Out
-                  </button>
+                <div className="user-section">
+                  <Link href="/profile" className="nav-button profile-button">
+                    Profile
+                  </Link>
+                  <div className="user-info">
+                    <span className="user-email">{user.email}</span>
+                    <button
+                      onClick={handleSignOut}
+                      className="nav-button signout-button"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <>
