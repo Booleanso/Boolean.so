@@ -135,7 +135,7 @@ export default function Marketplace() {
                           height={24}
                         />
                       </div>
-                      {repo.seller.username}
+                      @{repo.seller.username}
                     </div>
                     <div className={styles.stats}>
                       <div className={styles.stat}>

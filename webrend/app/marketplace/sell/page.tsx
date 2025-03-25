@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './sell.module.scss';
+import { auth, db } from '../../lib/firebase-client';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 type RepositoryInfo = {
   id: number;
@@ -15,6 +18,20 @@ type RepositoryInfo = {
   stargazers_count: number;
   forks_count: number;
 };
+
+// Define the shape of the repository data returned from our API
+interface GitHubApiRepo {
+  id: number;
+  name: string;
+  fullName: string;
+  description: string | null;
+  url: string;
+  isPrivate: boolean;
+  stars: number;
+  forks: number;
+  language: string | null;
+  updatedAt: string;
+}
 
 export default function SellPage() {
   const router = useRouter();
@@ -42,44 +59,112 @@ export default function SellPage() {
       return;
     }
     
+    // Listen for auth state changes to get the current user
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Get username from Firestore first (most reliable source)
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+          
+          if (userSnap.exists() && userSnap.data().username) {
+            const firestoreUsername = userSnap.data().username;
+            setSellerUsername(firestoreUsername);
+            
+            // Also update localStorage to keep everything in sync
+            localStorage.setItem('sellerUsername', firestoreUsername);
+            
+            // If the user's displayName doesn't match the Firestore username,
+            // we'll use the API to update displayName in auth and ensure consistency
+            if (user.displayName !== firestoreUsername) {
+              try {
+                await fetch('/api/user/update-username', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ username: firestoreUsername }),
+                });
+                // No need to handle the response, this is just to ensure consistency
+              } catch (syncError) {
+                console.warn('Could not sync username with Auth:', syncError);
+              }
+            }
+          } else if (user.displayName) {
+            // Fallback to displayName
+            setSellerUsername(user.displayName);
+          } else if (user.email) {
+            // Last resort: use email username
+            setSellerUsername(user.email.split('@')[0]);
+          }
+        } catch (err) {
+          console.error('Error fetching username from Firestore:', err);
+          
+          // Fallback to localStorage in case of error
+          const storedUsername = localStorage.getItem('sellerUsername');
+          if (storedUsername) {
+            setSellerUsername(storedUsername);
+          } else if (user.displayName) {
+            setSellerUsername(user.displayName);
+          } else if (user.email) {
+            setSellerUsername(user.email.split('@')[0]);
+          }
+        }
+      } else {
+        // User not logged in, redirect to auth
+        router.push('/auth?from=/marketplace/sell');
+      }
+    });
+    
     // If repo ID was provided, fetch repo info
     if (repoId) {
       fetchRepoInfo(repoId);
     }
-  }, [repoId]);
+    
+    return () => unsubscribe();
+  }, [repoId, router]);
   
   const fetchRepoInfo = async (id: string) => {
     try {
       setLoading(true);
       setError(null);
       
-      // Normally, we would make an API call to fetch repo details
-      // For demo purposes, we'll use mock data
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Make an API call to fetch the specific repository from our GitHub repos API
+      const response = await fetch(`/api/github/repos`);
       
-      // Generate a sample repo based on the ID
-      const mockRepo: RepositoryInfo = {
-        id: parseInt(id),
-        name: `Repository ${id}`,
-        description: `This is a sample repository with ID ${id}. In a real application, this would be fetched from GitHub's API.`,
+      if (!response.ok) {
+        throw new Error(`Failed to fetch repositories: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Find the specific repository by ID
+      const selectedRepo = data.repos.find((repo: GitHubApiRepo) => repo.id === parseInt(id));
+      
+      if (!selectedRepo) {
+        throw new Error('Repository not found');
+      }
+      
+      // Set the repository information
+      const repoInfo: RepositoryInfo = {
+        id: selectedRepo.id,
+        name: selectedRepo.name,
+        description: selectedRepo.description || 'No description provided',
         owner: {
-          login: 'yourusername',
-          avatar_url: 'https://placehold.co/100/24292e/FFFFFF/png?text=YU'
+          login: selectedRepo.fullName.split('/')[0], // Extract owner from full_name
+          avatar_url: 'https://placehold.co/100/24292e/FFFFFF/png?text=GH' // Placeholder since we may not have the avatar URL
         },
-        stargazers_count: Math.floor(Math.random() * 100),
-        forks_count: Math.floor(Math.random() * 30)
+        stargazers_count: selectedRepo.stars,
+        forks_count: selectedRepo.forks
       };
       
-      setRepoInfo(mockRepo);
-      setSellerUsername(mockRepo.owner.login);
-      setSellerAvatarUrl(mockRepo.owner.avatar_url);
+      setRepoInfo(repoInfo);
+      setSellerAvatarUrl(repoInfo.owner.avatar_url);
       
       // Generate a placeholder image URL
-      setImageUrl(`https://placehold.co/600x400/0366d6/FFFFFF/png?text=${encodeURIComponent(mockRepo.name)}`);
+      setImageUrl(`https://placehold.co/600x400/0366d6/FFFFFF/png?text=${encodeURIComponent(repoInfo.name)}`);
       
     } catch (err) {
       console.error('Error fetching repository info:', err);
-      setError('Failed to load repository information');
+      setError('Failed to load repository information. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -314,21 +399,6 @@ export default function SellPage() {
                 </p>
               </div>
             )}
-          </div>
-          
-          <div className={styles.formSection}>
-            <h2>Seller Information</h2>
-            <div className={styles.formGroup}>
-              <label htmlFor="sellerUsername">Your Username</label>
-              <input 
-                type="text" 
-                id="sellerUsername"
-                value={sellerUsername}
-                onChange={(e) => setSellerUsername(e.target.value)}
-                className={styles.formInput}
-                required
-              />
-            </div>
           </div>
           
           <div className={styles.formActions}>

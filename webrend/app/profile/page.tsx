@@ -7,6 +7,7 @@ import Link from 'next/link';
 import styles from './profile.module.scss';
 import { auth } from '../lib/firebase-client';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { MarketplaceListing } from '../api/marketplace/list-repo/route';
 
 type GithubRepo = {
   id: number;
@@ -63,6 +64,13 @@ export default function ProfilePage() {
   const [routingNumber, setRoutingNumber] = useState('');
   const [accountHolderName, setAccountHolderName] = useState('');
   const [showBankForm, setShowBankForm] = useState(false);
+  const [listedRepos, setListedRepos] = useState<MarketplaceListing[]>([]);
+  const [listedReposLoading, setListedReposLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState<number | null>(null);
+  const [username, setUsername] = useState('');
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [usernameLoading, setUsernameLoading] = useState(false);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -72,6 +80,8 @@ export default function ProfilePage() {
       if (currentUser) {
         fetchGithubRepos();
         fetchPurchasedRepos();
+        fetchUserDetails();
+        fetchListedRepos();
         checkStripeStatus();
       }
     });
@@ -90,6 +100,36 @@ export default function ProfilePage() {
 
     return () => unsubscribe();
   }, []);
+
+  // Fetch user details using the Admin API endpoint
+  const fetchUserDetails = async () => {
+    try {
+      const response = await fetch('/api/user/get-current');
+      
+      if (!response.ok) {
+        console.error('Failed to fetch user details:', response.status);
+        return;
+      }
+      
+      const userData = await response.json();
+      
+      // Set username from Firestore data (our source of truth)
+      if (userData.firestore && userData.firestore.username) {
+        setUsername(userData.firestore.username);
+      } else if (userData.auth.displayName) {
+        setUsername(userData.auth.displayName);
+      } else if (userData.auth.email) {
+        setUsername(userData.auth.email.split('@')[0]);
+      }
+      
+      // Also update localStorage for other components
+      if (userData.firestore && userData.firestore.username) {
+        localStorage.setItem('sellerUsername', userData.firestore.username);
+      }
+    } catch (err) {
+      console.error('Error fetching user details:', err);
+    }
+  };
 
   const fetchGithubRepos = async () => {
     try {
@@ -164,49 +204,181 @@ export default function ProfilePage() {
     }
   };
 
+  const fetchListedRepos = async () => {
+    try {
+      setListedReposLoading(true);
+      
+      // Fetch all listings
+      const response = await fetch('/api/marketplace/listings');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('All marketplace listings:', data.listings);
+      
+      if (!user) {
+        setListedRepos([]);
+        return;
+      }
+      
+      // Get the current user's data from our API
+      const userResponse = await fetch('/api/user/get-current');
+      if (!userResponse.ok) {
+        throw new Error('Failed to fetch user identity data');
+      }
+      
+      const userData = await userResponse.json();
+      
+      // Debug info
+      console.log('Current user identifiers:', {
+        uid: userData.auth.uid,
+        displayName: userData.auth.displayName,
+        email: userData.auth.email,
+        firestoreUsername: userData.firestore.username,
+        stateUsername: username
+      });
+      
+      // Gather all possible identifiers for the current user
+      const userIdentifiers = [
+        userData.auth.displayName,
+        userData.auth.email,
+        userData.auth.email ? userData.auth.email.split('@')[0] : null,
+        userData.firestore.username,
+        username,
+        localStorage.getItem('sellerUsername')
+      ].filter(Boolean) as string[];
+      
+      // Remove duplicates
+      const uniqueIdentifiers = [...new Set(userIdentifiers)];
+      console.log('Unique user identifiers to match against:', uniqueIdentifiers);
+      
+      // Filter only the listings created by this user with flexible matching
+      const userListings = data.listings.filter((listing: MarketplaceListing) => {
+        const sellerUsername = listing.seller.username;
+        console.log(`Checking listing: ${listing.name} by ${sellerUsername}`);
+        return uniqueIdentifiers.some(identifier => 
+          identifier.toLowerCase() === sellerUsername.toLowerCase()
+        );
+      });
+      
+      console.log('Filtered user listings:', userListings);
+      setListedRepos(userListings);
+    } catch (err) {
+      console.error('Error fetching listed repositories:', err);
+    } finally {
+      setListedReposLoading(false);
+    }
+  };
+
   const checkStripeStatus = async () => {
     try {
       setStripeLoading(true);
       
-      // In a real app, we would fetch from an API
-      // For demo purposes, we'll use mock data
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Fetch bank details from server using our API
+      const response = await fetch('/api/user/get-current');
+      let bankDetailsAdded = false;
       
-      // Check if we have saved bank details in local storage for demo
-      const bankDetailsAdded = localStorage.getItem('stripeBankDetailsAdded') === 'true';
+      if (response.ok) {
+        const userData = await response.json();
+        
+        // Check if the user has bank details in Firestore
+        if (userData.firestore && userData.firestore.bankDetailsAdded === true) {
+          bankDetailsAdded = true;
+        }
+      }
       
-      const mockStripeStatus: StripeConnectionStatus = {
+      // Fallback to localStorage for demo purposes
+      if (!bankDetailsAdded) {
+        bankDetailsAdded = localStorage.getItem('stripeBankDetailsAdded') === 'true';
+      }
+      
+      const stripeStatus: StripeConnectionStatus = {
         connected: true, // Always connected since we're using the .env API key
         bankDetailsAdded: bankDetailsAdded
       };
       
-      setStripeStatus(mockStripeStatus);
+      setStripeStatus(stripeStatus);
     } catch (err) {
       console.error('Error checking Stripe status:', err);
+      
+      // Fallback to localStorage in case of error
+      const bankDetailsAdded = localStorage.getItem('stripeBankDetailsAdded') === 'true';
+      setStripeStatus({
+        connected: true,
+        bankDetailsAdded: bankDetailsAdded
+      });
     } finally {
       setStripeLoading(false);
     }
   };
 
-  const handleBankDetailsSave = () => {
-    // In a real app, we would send these details to our Stripe Connect backend
-    // For demo, we're just saving a flag in localStorage
-    localStorage.setItem('stripeBankDetailsAdded', 'true');
-    setStripeStatus({
-      ...stripeStatus,
-      bankDetailsAdded: true
-    });
-    setShowBankForm(false);
+  const handleBankDetailsSave = async () => {
+    // Save the bank details to Firestore via API
+    try {
+      // Maintain localStorage for demo purposes
+      localStorage.setItem('stripeBankDetailsAdded', 'true');
+      
+      // Also save to Firebase Admin via API for better security and persistence
+      const response = await fetch('/api/user/update-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accountHolderName,
+          bankAccountNumber,
+          routingNumber,
+          bankDetailsAdded: true
+        }),
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to save bank details to server:', response.status);
+      }
+      
+      // Update UI state
+      setStripeStatus({
+        ...stripeStatus,
+        bankDetailsAdded: true
+      });
+      setShowBankForm(false);
+    } catch (err) {
+      console.error('Error saving bank details:', err);
+      alert('Failed to save bank details. Please try again.');
+    }
   };
 
-  const handleRemoveBankDetails = () => {
-    // In a real app, we would call an API to remove bank details
-    // For demo, we're just removing the flag from localStorage
-    localStorage.removeItem('stripeBankDetailsAdded');
-    setStripeStatus({
-      ...stripeStatus,
-      bankDetailsAdded: false
-    });
+  const handleRemoveBankDetails = async () => {
+    try {
+      // Remove from localStorage for demo purposes
+      localStorage.removeItem('stripeBankDetailsAdded');
+      
+      // Also update in Firestore via API
+      const response = await fetch('/api/user/update-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bankDetailsAdded: false
+        }),
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to remove bank details from server:', response.status);
+      }
+      
+      // Update UI state
+      setStripeStatus({
+        ...stripeStatus,
+        bankDetailsAdded: false
+      });
+    } catch (err) {
+      console.error('Error removing bank details:', err);
+      alert('Failed to remove bank details. Please try again.');
+    }
   };
 
   const handleConnectGithub = async () => {
@@ -249,6 +421,142 @@ export default function ProfilePage() {
     }
   };
 
+  const handleRemoveListing = async (listingId: number, stripeProductId: string) => {
+    if (!user) return;
+    
+    try {
+      setDeleteLoading(listingId);
+      
+      // Call API to remove the listing from the marketplace
+      const deleteResponse = await fetch(`/api/marketplace/listings/${listingId}`, {
+        method: 'DELETE',
+      });
+      
+      if (!deleteResponse.ok) {
+        throw new Error('Failed to remove marketplace listing');
+      }
+      
+      // Call API to archive the Stripe product
+      const stripeResponse = await fetch('/api/stripe/archive-product', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: stripeProductId,
+        }),
+      });
+      
+      if (!stripeResponse.ok) {
+        console.warn('Listing removed from marketplace but Stripe product could not be archived');
+      }
+      
+      // Update the UI by removing the deleted listing
+      setListedRepos(prev => prev.filter(repo => repo.id !== listingId));
+      
+    } catch (err) {
+      console.error('Error removing listing:', err);
+      alert('Failed to remove listing. Please try again.');
+    } finally {
+      setDeleteLoading(null);
+    }
+  };
+
+  // Validate username format client-side
+  const validateUsername = (input: string): string | null => {
+    if (input.length < 3 || input.length > 30) {
+      return 'Username must be between 3 and 30 characters';
+    }
+    
+    if (!/^[a-zA-Z0-9_.]+$/.test(input)) {
+      return 'Username can only contain letters, numbers, underscores, and periods';
+    }
+    
+    if (input.startsWith('.') || input.endsWith('.')) {
+      return 'Username cannot start or end with a period';
+    }
+    
+    if (input.includes('..')) {
+      return 'Username cannot contain consecutive periods';
+    }
+    
+    return null; // Valid username
+  };
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Get value and remove any @ symbol the user might type
+    // Then convert to lowercase
+    const inputValue = e.target.value.replace('@', '').toLowerCase();
+    setUsername(inputValue);
+    
+    // Only validate if there's some input
+    if (inputValue.trim()) {
+      setValidationMessage(validateUsername(inputValue));
+    } else {
+      setValidationMessage(null);
+    }
+  };
+
+  const handleUpdateUsername = async () => {
+    if (!user) return;
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername) return;
+    
+    // Validate username format before submitting
+    const validationError = validateUsername(trimmedUsername);
+    if (validationError) {
+      setValidationMessage(validationError);
+      return;
+    }
+    
+    try {
+      setUsernameLoading(true);
+      
+      // Make API call to update the username server-side using Firebase Admin
+      const response = await fetch('/api/user/update-username', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: trimmedUsername }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        
+        // Show specific error for already taken usernames
+        if (response.status === 409) {
+          setError(errorData.error || 'This username is already taken');
+          return;
+        }
+        
+        throw new Error(errorData.error || 'Failed to update username');
+      }
+      
+      // Clear any previous errors
+      setError(null);
+      setValidationMessage(null);
+      
+      // Update succeeded
+      const result = await response.json();
+      
+      // Update localStorage for other pages that might need it
+      localStorage.setItem('sellerUsername', result.username);
+      
+      // Update display
+      setIsEditingUsername(false);
+      
+      // Refetch listings to reflect the new username
+      fetchListedRepos();
+      
+    } catch (err) {
+      console.error('Error updating username:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update username. Please try again.');
+    } finally {
+      setUsernameLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -282,7 +590,69 @@ export default function ProfilePage() {
                   )}
                 </div>
                 <div className={styles.userDetails}>
-                  <h3>{user.displayName || 'User'}</h3>
+                  {isEditingUsername ? (
+                    <div className={styles.usernameEdit}>
+                      <div className={styles.usernameInputContainer}>
+                        <span className={styles.atSymbol}>@</span>
+                        <input
+                          type="text"
+                          value={username}
+                          onChange={handleUsernameChange}
+                          className={styles.usernameInput}
+                          placeholder="username"
+                          autoComplete="off"
+                        />
+                      </div>
+                      <div className={styles.usernameRequirements}>
+                        Username must:
+                        <ul>
+                          <li>Be 3-30 characters long</li>
+                          <li>Only contain letters, numbers, underscores (_) and periods (.)</li>
+                          <li>Not start or end with a period</li>
+                          <li>Not contain consecutive periods</li>
+                        </ul>
+                      </div>
+                      {validationMessage && (
+                        <div className={styles.usernameValidation}>
+                          {validationMessage}
+                        </div>
+                      )}
+                      {error && (
+                        <div className={styles.usernameError}>
+                          {error}
+                        </div>
+                      )}
+                      <div className={styles.usernameButtons}>
+                        <button 
+                          onClick={() => {
+                            setIsEditingUsername(false);
+                            setError(null); // Clear error when canceling
+                          }} 
+                          className={styles.cancelButton}
+                          disabled={usernameLoading}
+                        >
+                          Cancel
+                        </button>
+                        <button 
+                          onClick={handleUpdateUsername} 
+                          className={styles.saveButton}
+                          disabled={usernameLoading || !username.trim() || validationMessage !== null}
+                        >
+                          {usernameLoading ? 'Saving...' : 'Save'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={styles.usernameDisplay}>
+                      <h3>@{username || user.displayName || 'user'}</h3>
+                      <button 
+                        onClick={() => setIsEditingUsername(true)}
+                        className={styles.editUsernameButton}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  )}
                   <p>{user.email}</p>
                 </div>
               </div>
@@ -528,6 +898,85 @@ export default function ProfilePage() {
                   <p>You haven&apos;t purchased any repositories yet.</p>
                   <Link href="/marketplace" className={styles.browseButton}>
                     Browse Marketplace
+                  </Link>
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.section}>
+              <h2 className={styles.sectionTitle}>Your Listed Repositories</h2>
+              
+              {listedReposLoading ? (
+                <div className={styles.loading}>Loading listed repositories...</div>
+              ) : listedRepos.length > 0 ? (
+                <div className={styles.listedRepos}>
+                  {listedRepos.map(repo => (
+                    <div key={repo.id} className={styles.listedRepoCard}>
+                      <div className={styles.listedRepoImage}>
+                        <Image 
+                          src={repo.imageUrl} 
+                          alt={repo.name} 
+                          width={400} 
+                          height={250}
+                        />
+                        <div className={styles.listingType}>
+                          {repo.isSubscription ? 'Subscription' : 'One-time Purchase'}
+                        </div>
+                      </div>
+                      <div className={styles.listedRepoInfo}>
+                        <h3>{repo.name}</h3>
+                        <p className={styles.listedRepoDescription}>
+                          {repo.description}
+                        </p>
+                        <div className={styles.listedRepoMeta}>
+                          <div className={styles.listedRepoPrice}>
+                            {repo.isSubscription 
+                              ? `$${repo.subscriptionPrice}/month` 
+                              : `$${repo.price}`
+                            }
+                          </div>
+                          <div className={styles.listedRepoStats}>
+                            <span>
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.statIcon}>
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                              </svg>
+                              {repo.stars}
+                            </span>
+                            <span>
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.statIcon}>
+                                <line x1="6" y1="3" x2="6" y2="15"></line>
+                                <circle cx="18" cy="6" r="3"></circle>
+                                <circle cx="6" cy="18" r="3"></circle>
+                                <path d="M18 9a9 9 0 0 1-9 9"></path>
+                              </svg>
+                              {repo.forks}
+                            </span>
+                          </div>
+                        </div>
+                        <div className={styles.listedRepoControls}>
+                          <Link 
+                            href={`/marketplace/buy/${repo.id}`} 
+                            className={styles.viewListingButton}
+                          >
+                            View Listing
+                          </Link>
+                          <button
+                            className={styles.removeListingButton}
+                            onClick={() => handleRemoveListing(repo.id, repo.stripeProductId || '')}
+                            disabled={deleteLoading === repo.id}
+                          >
+                            {deleteLoading === repo.id ? 'Removing...' : 'Remove Listing'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={styles.emptyState}>
+                  <p>You haven&apos;t listed any repositories for sale yet.</p>
+                  <Link href="/marketplace/sell" className={styles.sellButton}>
+                    List a Repository
                   </Link>
                 </div>
               )}

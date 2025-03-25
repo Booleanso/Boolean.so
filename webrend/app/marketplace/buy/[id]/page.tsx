@@ -8,12 +8,13 @@ import styles from './buy.module.scss';
 import { auth } from '../../../lib/firebase-client';
 import { onAuthStateChanged } from 'firebase/auth';
 import { MarketplaceListing } from '../../../api/marketplace/list-repo/route';
+import { use } from 'react';
 
 // Define the proper params interface
 interface BuyPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function BuyPage({ params }: BuyPageProps) {
@@ -27,8 +28,9 @@ export default function BuyPage({ params }: BuyPageProps) {
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [showGithubTransferInfo, setShowGithubTransferInfo] = useState(false);
   
-  // Safely access the id from params
-  const repoId = params?.id;
+  // Properly unwrap the params Promise with React.use()
+  const unwrappedParams = use(params);
+  const repoId = unwrappedParams.id;
 
   // Check if user is authenticated
   useEffect(() => {

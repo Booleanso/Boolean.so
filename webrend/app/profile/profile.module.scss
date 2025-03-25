@@ -120,6 +120,150 @@
   }
 }
 
+.usernameDisplay {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  h3 {
+    margin: 0;
+  }
+}
+
+.editUsernameButton {
+  background: transparent;
+  border: none;
+  color: #4299e1;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 2px 5px;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.usernameEdit {
+  margin-bottom: 0.5rem;
+}
+
+.usernameInputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.atSymbol {
+  position: absolute;
+  left: 10px;
+  color: #4a5568;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.usernameInput {
+  width: 100%;
+  padding: 0.5rem;
+  padding-left: 25px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 1rem;
+  
+  &:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+  }
+}
+
+.usernameRequirements {
+  font-size: 0.8rem;
+  color: #718096;
+  background-color: #f7fafc;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #e2e8f0;
+  
+  ul {
+    margin: 0.25rem 0 0 0;
+    padding-left: 1.25rem;
+    
+    li {
+      margin-bottom: 0.25rem;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.usernameValidation {
+  color: #dd6b20;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background-color: #fffaf0;
+  border-radius: 4px;
+  border: 1px solid #fbd38d;
+}
+
+.usernameError {
+  color: #e53e3e;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0;
+  background-color: #fff5f5;
+  border-radius: 4px;
+  padding: 0.5rem;
+  border: 1px solid #feb2b2;
+}
+
+.usernameButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cancelButton, .saveButton {
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton {
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  color: #4a5568;
+  
+  &:hover {
+    background-color: #edf2f7;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.saveButton {
+  background-color: #4299e1;
+  border: 1px solid #3182ce;
+  color: white;
+  
+  &:hover {
+    background-color: #3182ce;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 .notLoggedIn {
   text-align: center;
   padding: 1rem;
@@ -522,6 +666,153 @@
   
   &:hover {
     background-color: #2c974b;
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+// Listed Repositories Styles
+.listedRepos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.listedRepoCard {
+  display: flex;
+  background-color: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.listedRepoImage {
+  flex: 0 0 300px;
+  position: relative;
+  
+  @media (max-width: 768px) {
+    flex: 0 0 auto;
+    height: 200px;
+  }
+  
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.listingType {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.listedRepoInfo {
+  flex: 1;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  
+  h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+    color: #24292e;
+  }
+}
+
+.listedRepoDescription {
+  color: #57606a;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+.listedRepoMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.listedRepoPrice {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #24292e;
+}
+
+.listedRepoStats {
+  display: flex;
+  gap: 1rem;
+  
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #57606a;
+    font-size: 0.875rem;
+  }
+  
+  .statIcon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.listedRepoControls {
+  display: flex;
+  gap: 0.75rem;
+  
+  @media (max-width: 576px) {
+    flex-direction: column;
+  }
+}
+
+.viewListingButton, .removeListingButton {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.viewListingButton {
+  background-color: #0969da;
+  color: white;
+  
+  &:hover {
+    background-color: #0860c0;
+  }
+}
+
+.removeListingButton {
+  background-color: #f6f8fa;
+  color: #cf222e;
+  border: 1px solid #d0d7de;
+  
+  &:hover {
+    background-color: #ffebe9;
+    border-color: #cf222e;
   }
   
   &:disabled {

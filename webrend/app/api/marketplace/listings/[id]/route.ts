@@ -36,16 +36,17 @@ const getMarketplaceListings = (): MarketplaceListing[] => {
 
 // Define the dynamic segment type in the route interface
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function GET(request: Request, { params }: RouteParams) {
-  // Skip any async operations before using params
-  const idStr = params.id;
-  
-  try {    
+  try {
+    // Need to properly await the params Promise before accessing its properties
+    const unwrappedParams = await params;
+    const idStr = unwrappedParams.id;
+    
     if (!idStr) {
       return NextResponse.json(
         { error: 'ID parameter is required' },
@@ -107,6 +108,68 @@ export async function GET(request: Request, { params }: RouteParams) {
   } catch (error) {
     console.error('Error fetching marketplace listing:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch listing';
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request, { params }: RouteParams) {
+  try {
+    // Need to properly await the params Promise before accessing its properties
+    const unwrappedParams = await params;
+    const idStr = unwrappedParams.id;
+    
+    if (!idStr) {
+      return NextResponse.json(
+        { error: 'ID parameter is required' },
+        { status: 400 }
+      );
+    }
+    
+    // Try to convert to number if possible
+    const id = parseInt(idStr);
+    
+    if (isNaN(id)) {
+      return NextResponse.json(
+        { error: 'Invalid ID format' },
+        { status: 400 }
+      );
+    }
+    
+    // Get all current listings
+    const listings = getMarketplaceListings();
+    
+    // Check if the listing exists
+    const listingIndex = listings.findIndex(item => item.id === id);
+    
+    if (listingIndex === -1) {
+      return NextResponse.json(
+        { error: 'Listing not found' },
+        { status: 404 }
+      );
+    }
+    
+    // In a real app, you would verify the user has permission to delete this listing
+    // For this demo, we'll skip authentication checks
+    
+    // Remove the listing from the array
+    const removedListing = listings.splice(listingIndex, 1)[0];
+    
+    // Save the updated listings
+    const filePath = getMarketplaceDataPath();
+    fs.writeFileSync(filePath, JSON.stringify(listings, null, 2), 'utf8');
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Listing successfully removed',
+      removedListing
+    });
+    
+  } catch (error) {
+    console.error('Error deleting marketplace listing:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to delete listing';
     return NextResponse.json(
       { error: errorMessage },
       { status: 500 }
