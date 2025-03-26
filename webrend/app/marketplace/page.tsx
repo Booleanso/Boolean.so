@@ -13,6 +13,7 @@ export default function Marketplace() {
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [includeSold, setIncludeSold] = useState(false);
 
   // Fetch listings when component mounts
   useEffect(() => {
@@ -81,6 +82,15 @@ export default function Marketplace() {
         >
           Subscription
         </button>
+        <label className={styles.toggleLabel}>
+          <input 
+            type="checkbox" 
+            checked={includeSold}
+            onChange={() => setIncludeSold(!includeSold)}
+            className={styles.toggleInput}
+          />
+          Include Sold
+        </label>
       </div>
 
       {loading ? (
@@ -89,9 +99,13 @@ export default function Marketplace() {
         <div className={styles.grid}>
           {listings
             .filter(repo => {
-              if (activeFilter === 'all') return true;
-              if (activeFilter === 'onetime') return !repo.isSubscription;
-              if (activeFilter === 'subscription') return repo.isSubscription;
+              // First filter by type (all, onetime, subscription)
+              if (activeFilter === 'onetime' && repo.isSubscription) return false;
+              if (activeFilter === 'subscription' && !repo.isSubscription) return false;
+              
+              // Then filter sold status
+              if (!includeSold && repo.isSold) return false;
+              
               return true;
             })
             .map(repo => (
@@ -104,6 +118,11 @@ export default function Marketplace() {
                     height={400}
                     layout="responsive"
                   />
+                  {repo.isSold && (
+                    <div className={styles.soldBadge}>
+                      Sold
+                    </div>
+                  )}
                 </div>
                 <div className={styles.cardContent}>
                   <div className={styles.cardHeader}>
@@ -156,8 +175,13 @@ export default function Marketplace() {
                     </div>
                   </div>
                   <Link href={`/marketplace/buy/${repo.id}`}>
-                    <button className={styles.buyButton}>
-                      {repo.isSubscription ? 'Subscribe' : 'Buy Now'}
+                    <button className={styles.buyButton} disabled={repo.isSold}>
+                      {repo.isSold 
+                        ? 'Sold Out' 
+                        : repo.isSubscription 
+                          ? 'Subscribe' 
+                          : 'Buy Now'
+                      }
                     </button>
                   </Link>
                 </div>

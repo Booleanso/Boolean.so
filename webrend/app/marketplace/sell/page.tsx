@@ -6,6 +6,7 @@ import styles from './sell.module.scss';
 import { auth, db } from '../../lib/firebase-client';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
+import { MarketplaceListing } from '../../api/marketplace/list-repo/route';
 
 type RepositoryInfo = {
   id: number;
@@ -37,6 +38,8 @@ export default function SellPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const repoId = searchParams.get('repo');
+  const isEditing = searchParams.get('edit') === 'true';
+  const listingId = searchParams.get('listing');
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +53,7 @@ export default function SellPage() {
   const [imageUrl, setImageUrl] = useState('');
   const [sellerUsername, setSellerUsername] = useState('');
   const [sellerAvatarUrl, setSellerAvatarUrl] = useState('');
+  const [existingListing, setExistingListing] = useState<MarketplaceListing | null>(null);
   
   useEffect(() => {
     // Check if bank details are added
@@ -114,13 +118,65 @@ export default function SellPage() {
       }
     });
     
-    // If repo ID was provided, fetch repo info
-    if (repoId) {
+    // If editing an existing listing, fetch it
+    if (isEditing && listingId) {
+      fetchExistingListing(listingId);
+    }
+    // If creating a new listing and repo ID was provided, fetch repo info
+    else if (repoId) {
       fetchRepoInfo(repoId);
     }
     
     return () => unsubscribe();
-  }, [repoId, router]);
+  }, [repoId, listingId, isEditing, router]);
+  
+  const fetchExistingListing = async (id: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Fetch the listing from the API
+      const response = await fetch(`/api/marketplace/listings/${id}`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch listing: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const listing = data.listing as MarketplaceListing;
+      setExistingListing(listing);
+      
+      // Set form values from the listing
+      setRepoInfo({
+        id: listing.id,
+        name: listing.name,
+        description: listing.description,
+        owner: {
+          login: listing.seller.username,
+          avatar_url: listing.seller.avatarUrl
+        },
+        stargazers_count: listing.stars,
+        forks_count: listing.forks
+      });
+      
+      setSellerUsername(listing.seller.username);
+      setSellerAvatarUrl(listing.seller.avatarUrl);
+      setImageUrl(listing.imageUrl);
+      setIsSubscription(listing.isSubscription);
+      
+      if (listing.isSubscription && listing.subscriptionPrice) {
+        setSubscriptionPrice(listing.subscriptionPrice.toString());
+      } else if (listing.price) {
+        setPrice(listing.price.toString());
+      }
+      
+    } catch (err) {
+      console.error('Error fetching listing:', err);
+      setError('Failed to load listing information. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const fetchRepoInfo = async (id: string) => {
     try {
@@ -178,7 +234,7 @@ export default function SellPage() {
       return;
     }
     
-    if (!price && !isSubscription) {
+    if (!isSubscription && !price) {
       setError('Price is required for one-time purchases');
       return;
     }
@@ -192,7 +248,51 @@ export default function SellPage() {
       setLoading(true);
       setError(null);
       
-      // First, create the product in Stripe
+      // Different flow for editing vs creating new listing
+      if (isEditing && existingListing) {
+        // Update existing listing
+        const updateResponse = await fetch(`/api/marketplace/listings/${existingListing.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: repoInfo.name,
+            description: repoInfo.description,
+            price: parseFloat(price),
+            isSubscription,
+            subscriptionPrice: isSubscription ? parseFloat(subscriptionPrice) : undefined,
+            imageUrl,
+            seller: {
+              username: sellerUsername,
+              avatarUrl: sellerAvatarUrl
+            },
+            stars: repoInfo.stargazers_count,
+            forks: repoInfo.forks_count,
+            lastUpdated: new Date().toISOString().split('T')[0],
+            stripeProductId: existingListing.stripeProductId,
+            stripePriceId: existingListing.stripePriceId,
+            isSold: existingListing.isSold
+          })
+        });
+        
+        if (!updateResponse.ok) {
+          const errorData = await updateResponse.json();
+          throw new Error(errorData.error || 'Failed to update listing');
+        }
+        
+        // Show success message
+        setSuccess(true);
+        
+        // Redirect to marketplace after 2 seconds
+        setTimeout(() => {
+          router.push('/marketplace');
+        }, 2000);
+        
+        return;
+      }
+      
+      // Creating a new listing - first, create the product in Stripe
       const stripeResponse = await fetch('/api/stripe/create-product', {
         method: 'POST',
         headers: {
@@ -270,8 +370,8 @@ export default function SellPage() {
     return (
       <div className={styles.container}>
         <div className={styles.successMessage}>
-          <h1>Repository Listed Successfully!</h1>
-          <p>Your repository has been listed on the marketplace. Redirecting to marketplace...</p>
+          <h1>{isEditing ? 'Listing Updated Successfully!' : 'Repository Listed Successfully!'}</h1>
+          <p>Your repository has been {isEditing ? 'updated' : 'listed'} on the marketplace. Redirecting to marketplace...</p>
         </div>
       </div>
     );
@@ -279,7 +379,7 @@ export default function SellPage() {
   
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Sell Your Repository</h1>
+      <h1 className={styles.title}>{isEditing ? 'Edit Repository Listing' : 'Sell Your Repository'}</h1>
       
       {error && (
         <div className={styles.errorMessage}>
@@ -289,7 +389,7 @@ export default function SellPage() {
       
       {loading && !repoInfo ? (
         <div className={styles.loading}>
-          Loading repository information...
+          Loading {isEditing ? 'listing' : 'repository'} information...
         </div>
       ) : !repoInfo ? (
         <div className={styles.selectRepo}>
@@ -414,7 +514,12 @@ export default function SellPage() {
               className={styles.submitButton}
               disabled={loading}
             >
-              {loading ? 'Processing...' : 'List Repository for Sale'}
+              {loading 
+                ? 'Processing...' 
+                : isEditing 
+                  ? 'Update Listing' 
+                  : 'List Repository for Sale'
+              }
             </button>
           </div>
         </form>

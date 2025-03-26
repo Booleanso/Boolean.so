@@ -24,6 +24,7 @@ export type MarketplaceListing = {
   lastUpdated: string;
   stripeProductId?: string;
   stripePriceId?: string;
+  isSold?: boolean;
 };
 
 // This would be a database in production

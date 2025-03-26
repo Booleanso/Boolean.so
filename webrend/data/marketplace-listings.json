@@ -1,36 +1,19 @@
 [
   {
-    "name": "Repository 869219152",
-    "description": "This is a sample repository with ID 869219152. In a real application, this would be fetched from GitHub's API.",
-    "price": 10,
-    "isSubscription": false,
-    "imageUrl": "https://placehold.co/600x400/0366d6/FFFFFF/png?text=Repository%20869219152",
-    "seller": {
-      "username": "yourusername",
-      "avatarUrl": "https://placehold.co/100/24292e/FFFFFF/png?text=YU"
-    },
-    "stars": 83,
-    "forks": 13,
-    "lastUpdated": "2025-03-25",
-    "stripeProductId": "prod_S0dxzF7ht45DSu",
-    "stripePriceId": "price_1R6cfgBpV7OXHoK2WihpP5Ub",
-    "id": 1
-  },
-  {
     "name": "Bash",
     "description": "New social media platform to combat toxic user-bility and doom scrolling, while also promoting extreme virality with a simple alg. like threads v1.",
-    "price": 20,
+    "price": 10,
     "isSubscription": false,
     "imageUrl": "https://placehold.co/600x400/0366d6/FFFFFF/png?text=Bash",
     "seller": {
-      "username": "Kevin",
+      "username": "kevinvera",
       "avatarUrl": "https://placehold.co/100/24292e/FFFFFF/png?text=GH"
     },
     "stars": 0,
     "forks": 0,
-    "lastUpdated": "2025-03-25",
-    "stripeProductId": "prod_S0i6PFUIXX8uv4",
-    "stripePriceId": "price_1R6ggGBpV7OXHoK2UEOECkFD",
-    "id": 2
+    "lastUpdated": "2025-03-26",
+    "stripeProductId": "prod_S0j5UYv3mhxckl",
+    "stripePriceId": "price_1R6hd4BpV7OXHoK2OSd4o8iU",
+    "id": 1
   }
 ]

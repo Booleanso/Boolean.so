@@ -208,4 +208,37 @@
   &:hover {
     background-color: darken(#0366d6, 10%);
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #8b949e;
+  }
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  margin-left: auto;
+  cursor: pointer;
+  color: #57606a;
+}
+
+.toggleInput {
+  margin-right: 0.5rem;
+}
+
+.soldBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(207, 34, 46, 0.9);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  z-index: 2;
 }

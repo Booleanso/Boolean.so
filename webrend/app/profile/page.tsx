@@ -8,6 +8,7 @@ import styles from './profile.module.scss';
 import { auth } from '../lib/firebase-client';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { MarketplaceListing } from '../api/marketplace/list-repo/route';
+import { FiRefreshCw } from 'react-icons/fi';
 
 type GithubRepo = {
   id: number;
@@ -44,6 +45,8 @@ type PurchasedRepo = {
 type StripeConnectionStatus = {
   connected: boolean;
   bankDetailsAdded: boolean;
+  stripeAccountId?: string;
+  accountStatus?: 'pending' | 'verified' | 'restricted';
 };
 
 export default function ProfilePage() {
@@ -71,6 +74,11 @@ export default function ProfilePage() {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [usernameLoading, setUsernameLoading] = useState(false);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const [refreshingListings, setRefreshingListings] = useState(false);
+  const [taxId, setTaxId] = useState('');
+  const [country, setCountry] = useState('US');
+  const [stripeAccountId, setStripeAccountId] = useState<string | null>(null);
+  const [accountStatus, setAccountStatus] = useState<'pending' | 'verified' | 'restricted' | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -100,6 +108,15 @@ export default function ProfilePage() {
 
     return () => unsubscribe();
   }, []);
+
+  // Add a new effect to refresh listings when mounting
+  // This catches any new listings created since the last visit
+  useEffect(() => {
+    // If user is already set (not first render), refresh listings
+    if (user && !loading) {
+      fetchListedRepos();
+    }
+  }, [user, loading]);
 
   // Fetch user details using the Admin API endpoint
   const fetchUserDetails = async () => {
@@ -231,40 +248,39 @@ export default function ProfilePage() {
       
       const userData = await userResponse.json();
       
-      // Debug info
-      console.log('Current user identifiers:', {
-        uid: userData.auth.uid,
-        displayName: userData.auth.displayName,
-        email: userData.auth.email,
-        firestoreUsername: userData.firestore.username,
-        stateUsername: username
-      });
+      // Get the current username (prioritize Firestore username as it's the most reliable)
+      const currentUsername = (
+        userData.firestore?.username || 
+        username || 
+        userData.auth.displayName || 
+        (userData.auth.email ? userData.auth.email.split('@')[0] : null)
+      )?.toLowerCase();
       
-      // Gather all possible identifiers for the current user
-      const userIdentifiers = [
-        userData.auth.displayName,
-        userData.auth.email,
-        userData.auth.email ? userData.auth.email.split('@')[0] : null,
-        userData.firestore.username,
-        username,
-        localStorage.getItem('sellerUsername')
-      ].filter(Boolean) as string[];
+      console.log('Current authenticated username:', currentUsername);
       
-      // Remove duplicates
-      const uniqueIdentifiers = [...new Set(userIdentifiers)];
-      console.log('Unique user identifiers to match against:', uniqueIdentifiers);
+      if (!currentUsername) {
+        console.log('No username found for current user, cannot match listings');
+        setListedRepos([]);
+        return;
+      }
       
-      // Filter only the listings created by this user with flexible matching
+      // Filter only the listings created by this user with EXACT username matching
       const userListings = data.listings.filter((listing: MarketplaceListing) => {
-        const sellerUsername = listing.seller.username;
-        console.log(`Checking listing: ${listing.name} by ${sellerUsername}`);
-        return uniqueIdentifiers.some(identifier => 
-          identifier.toLowerCase() === sellerUsername.toLowerCase()
-        );
+        if (!listing.seller || !listing.seller.username) {
+          return false;
+        }
+        
+        const sellerUsername = listing.seller.username.toLowerCase();
+        const isMatch = sellerUsername === currentUsername;
+        
+        console.log(`Checking listing: "${listing.name}" by "${sellerUsername}" against current user "${currentUsername}" - Match: ${isMatch}`);
+        
+        return isMatch;
       });
       
-      console.log('Filtered user listings:', userListings);
+      console.log(`Found ${userListings.length} listings belonging to current user ${currentUsername}`);
       setListedRepos(userListings);
+      
     } catch (err) {
       console.error('Error fetching listed repositories:', err);
     } finally {
@@ -279,24 +295,50 @@ export default function ProfilePage() {
       // Fetch bank details from server using our API
       const response = await fetch('/api/user/get-current');
       let bankDetailsAdded = false;
+      let stripeAccount = null;
+      let status = null;
       
       if (response.ok) {
         const userData = await response.json();
         
         // Check if the user has bank details in Firestore
-        if (userData.firestore && userData.firestore.bankDetailsAdded === true) {
-          bankDetailsAdded = true;
+        if (userData.firestore) {
+          if (userData.firestore.bankDetailsAdded === true) {
+            bankDetailsAdded = true;
+          }
+          
+          // Get user-specific Stripe Connect account ID
+          if (userData.firestore.stripeAccountId) {
+            stripeAccount = userData.firestore.stripeAccountId;
+            setStripeAccountId(stripeAccount);
+          }
+          
+          // Get account verification status
+          if (userData.firestore.stripeAccountStatus) {
+            status = userData.firestore.stripeAccountStatus;
+            setAccountStatus(status);
+          }
+          
+          // Set form values if they exist
+          if (userData.firestore.accountHolderName) {
+            setAccountHolderName(userData.firestore.accountHolderName);
+          }
+          if (userData.firestore.country) {
+            setCountry(userData.firestore.country);
+          }
         }
       }
       
       // Fallback to localStorage for demo purposes
       if (!bankDetailsAdded) {
-        bankDetailsAdded = localStorage.getItem('stripeBankDetailsAdded') === 'true';
+        bankDetailsAdded = localStorage.getItem(`${username || user?.uid}_stripeBankDetailsAdded`) === 'true';
       }
       
       const stripeStatus: StripeConnectionStatus = {
-        connected: true, // Always connected since we're using the .env API key
-        bankDetailsAdded: bankDetailsAdded
+        connected: !!stripeAccount, 
+        bankDetailsAdded: bankDetailsAdded,
+        stripeAccountId: stripeAccount || undefined,
+        accountStatus: status || undefined
       };
       
       setStripeStatus(stripeStatus);
@@ -304,9 +346,9 @@ export default function ProfilePage() {
       console.error('Error checking Stripe status:', err);
       
       // Fallback to localStorage in case of error
-      const bankDetailsAdded = localStorage.getItem('stripeBankDetailsAdded') === 'true';
+      const bankDetailsAdded = localStorage.getItem(`${username || user?.uid}_stripeBankDetailsAdded`) === 'true';
       setStripeStatus({
-        connected: true,
+        connected: false,
         bankDetailsAdded: bankDetailsAdded
       });
     } finally {
@@ -317,11 +359,11 @@ export default function ProfilePage() {
   const handleBankDetailsSave = async () => {
     // Save the bank details to Firestore via API
     try {
-      // Maintain localStorage for demo purposes
-      localStorage.setItem('stripeBankDetailsAdded', 'true');
+      // Maintain localStorage for demo purposes, but make it user-specific
+      localStorage.setItem(`${username || user?.uid}_stripeBankDetailsAdded`, 'true');
       
-      // Also save to Firebase Admin via API for better security and persistence
-      const response = await fetch('/api/user/update-profile', {
+      // Create or update Stripe Connect account for this specific user
+      const response = await fetch('/api/user/create-stripe-account', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -330,54 +372,77 @@ export default function ProfilePage() {
           accountHolderName,
           bankAccountNumber,
           routingNumber,
+          taxId,
+          country,
+          email: user?.email,
           bankDetailsAdded: true
         }),
       });
       
       if (!response.ok) {
         console.error('Failed to save bank details to server:', response.status);
+        throw new Error('Failed to create Stripe Connect account');
       }
       
-      // Update UI state
+      const data = await response.json();
+      
+      // Update UI state with new Stripe account ID
       setStripeStatus({
         ...stripeStatus,
-        bankDetailsAdded: true
+        connected: true,
+        bankDetailsAdded: true,
+        stripeAccountId: data.stripeAccountId,
+        accountStatus: data.accountStatus || 'pending'
       });
+      
+      setStripeAccountId(data.stripeAccountId);
+      setAccountStatus(data.accountStatus || 'pending');
       setShowBankForm(false);
+      
+      // Show success message
+      setError(null);
     } catch (err) {
       console.error('Error saving bank details:', err);
-      alert('Failed to save bank details. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to save bank details. Please try again.');
     }
   };
 
   const handleRemoveBankDetails = async () => {
     try {
       // Remove from localStorage for demo purposes
-      localStorage.removeItem('stripeBankDetailsAdded');
+      localStorage.removeItem(`${username || user?.uid}_stripeBankDetailsAdded`);
       
       // Also update in Firestore via API
-      const response = await fetch('/api/user/update-profile', {
+      const response = await fetch('/api/user/disconnect-stripe-account', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          bankDetailsAdded: false
+          bankDetailsAdded: false,
+          stripeAccountId // Pass the current account ID to be disconnected
         }),
       });
       
       if (!response.ok) {
-        console.error('Failed to remove bank details from server:', response.status);
+        console.error('Failed to disconnect Stripe account:', response.status);
+        throw new Error('Failed to disconnect Stripe account');
       }
       
       // Update UI state
       setStripeStatus({
-        ...stripeStatus,
+        connected: false,
         bankDetailsAdded: false
       });
+      
+      setStripeAccountId(null);
+      setAccountStatus(null);
+      
+      // Show success message
+      setError(null);
     } catch (err) {
       console.error('Error removing bank details:', err);
-      alert('Failed to remove bank details. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to disconnect Stripe account. Please try again.');
     }
   };
 
@@ -457,6 +522,32 @@ export default function ProfilePage() {
     } catch (err) {
       console.error('Error removing listing:', err);
       alert('Failed to remove listing. Please try again.');
+    } finally {
+      setDeleteLoading(null);
+    }
+  };
+
+  const handleMarkAsSold = async (listingId: number) => {
+    if (!user) return;
+    
+    try {
+      setDeleteLoading(listingId); // Reuse the loading state for now
+      
+      // Call API to mark the listing as sold
+      const response = await fetch(`/api/marketplace/listings/${listingId}/mark-sold`, {
+        method: 'POST',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to mark listing as sold');
+      }
+      
+      // Update the UI by refreshing the listings
+      fetchListedRepos();
+      
+    } catch (err) {
+      console.error('Error marking listing as sold:', err);
+      alert('Failed to mark listing as sold. Please try again.');
     } finally {
       setDeleteLoading(null);
     }
@@ -557,6 +648,18 @@ export default function ProfilePage() {
     }
   };
 
+  // Add a manual refresh function
+  const handleRefreshListings = async () => {
+    if (refreshingListings) return; // Prevent multiple simultaneous refreshes
+    
+    try {
+      setRefreshingListings(true);
+      await fetchListedRepos();
+    } finally {
+      setRefreshingListings(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -571,7 +674,9 @@ export default function ProfilePage() {
         <h1 className={styles.title}>Your Profile</h1>
 
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Account</h2>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Account</h2>
+          </div>
           <div className={styles.accountInfo}>
             {user ? (
               <div className={styles.userInfo}>
@@ -645,12 +750,14 @@ export default function ProfilePage() {
                   ) : (
                     <div className={styles.usernameDisplay}>
                       <h3>@{username || user.displayName || 'user'}</h3>
-                      <button 
-                        onClick={() => setIsEditingUsername(true)}
-                        className={styles.editUsernameButton}
-                      >
-                        Edit
-                      </button>
+                      <div className={styles.usernameActions}>
+                        <button 
+                          onClick={() => setIsEditingUsername(true)}
+                          className={styles.editUsernameButton}
+                        >
+                          Edit
+                        </button>
+                      </div>
                     </div>
                   )}
                   <p>{user.email}</p>
@@ -665,7 +772,9 @@ export default function ProfilePage() {
         </div>
 
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Connections</h2>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Connections</h2>
+          </div>
           
           {githubConnectStatus && (
             <div className={`${styles.statusMessage} ${githubConnectStatus.includes('Error') || githubConnectStatus.includes('Failed') ? styles.errorStatus : styles.successStatus}`}>
@@ -729,12 +838,17 @@ export default function ProfilePage() {
                 </svg>
               </div>
               <div className={styles.connectionDetails}>
-                <h3>Stripe Setup</h3>
-                <p>{stripeLoading 
-                  ? 'Checking status...' 
-                  : stripeStatus.bankDetailsAdded
-                    ? 'Connected - Ready to receive payments'
-                    : 'API Key Ready - Bank details needed'}</p>
+                <h3>Stripe Connect</h3>
+                <p>
+                  {stripeLoading 
+                    ? 'Checking status...' 
+                    : stripeStatus.connected 
+                      ? `Connected${stripeAccountId ? ` - Account ${stripeAccountId.slice(-4)}` : ''} ${accountStatus ? `(${accountStatus})` : ''}`
+                      : 'Not connected - Set up to receive payments'}
+                </p>
+                {stripeStatus.connected && accountStatus === 'pending' && (
+                  <small className={styles.verificationNote}>Your account is pending verification</small>
+                )}
               </div>
             </div>
             
@@ -746,19 +860,19 @@ export default function ProfilePage() {
                 >
                   Loading...
                 </button>
-              ) : stripeStatus.bankDetailsAdded ? (
+              ) : stripeStatus.connected ? (
                 <div className={styles.bankDetailsButtons}>
                   <button
                     className={`${styles.connectionButton} ${styles.edit}`}
                     onClick={() => setShowBankForm(true)}
                   >
-                    Change Bank Details
+                    Update Details
                   </button>
                   <button
                     className={`${styles.connectionButton} ${styles.disconnect}`}
                     onClick={handleRemoveBankDetails}
                   >
-                    Remove Bank Details
+                    Disconnect
                   </button>
                 </div>
               ) : (
@@ -766,7 +880,7 @@ export default function ProfilePage() {
                   className={`${styles.connectionButton} ${styles.connect}`}
                   onClick={() => setShowBankForm(true)}
                 >
-                  Add Bank Details
+                  Connect Stripe
                 </button>
               )}
             </div>
@@ -785,9 +899,9 @@ export default function ProfilePage() {
           {showBankForm && (
             <div className={styles.formContainer}>
               <div className={styles.formSection}>
-                <h3>Add Your Bank Details</h3>
+                <h3>Set Up Stripe Connect Account</h3>
                 <p className={styles.formHelper}>
-                  These details will be used to send you payouts for your sold repositories.
+                  These details will be used to create a Stripe Connect account for your marketplace sales. Each seller has their own unique account.
                 </p>
                 <div className={styles.formGroup}>
                   <label htmlFor="accountHolderName">Account Holder Name</label>
@@ -799,6 +913,35 @@ export default function ProfilePage() {
                     onChange={(e) => setAccountHolderName(e.target.value)}
                     className={styles.formInput}
                   />
+                </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="country">Country</label>
+                  <select 
+                    id="country"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className={styles.formInput}
+                  >
+                    <option value="US">United States</option>
+                    <option value="CA">Canada</option>
+                    <option value="GB">United Kingdom</option>
+                    <option value="AU">Australia</option>
+                    <option value="DE">Germany</option>
+                    <option value="FR">France</option>
+                    {/* Add more countries as needed */}
+                  </select>
+                </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="taxId">Tax ID (SSN, EIN, etc.)</label>
+                  <input 
+                    type="text" 
+                    id="taxId"
+                    placeholder="123-45-6789"
+                    value={taxId}
+                    onChange={(e) => setTaxId(e.target.value)}
+                    className={styles.formInput}
+                  />
+                  <small className={styles.formHint}>Required for tax reporting. Will be securely stored by Stripe.</small>
                 </div>
                 <div className={styles.formGroup}>
                   <label htmlFor="accountNumber">Account Number</label>
@@ -832,7 +975,7 @@ export default function ProfilePage() {
                   <button 
                     className={styles.saveButton}
                     onClick={handleBankDetailsSave}
-                    disabled={!accountHolderName || !bankAccountNumber || !routingNumber}
+                    disabled={!accountHolderName || !bankAccountNumber || !routingNumber || !taxId}
                   >
                     Save Bank Details
                   </button>
@@ -845,7 +988,9 @@ export default function ProfilePage() {
         {user && (
           <>
             <div className={styles.section}>
-              <h2 className={styles.sectionTitle}>Your Purchased Repositories</h2>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Your Purchased Repositories</h2>
+              </div>
               
               {purchasesLoading ? (
                 <div className={styles.loading}>Loading purchases...</div>
@@ -904,7 +1049,17 @@ export default function ProfilePage() {
             </div>
             
             <div className={styles.section}>
-              <h2 className={styles.sectionTitle}>Your Listed Repositories</h2>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Your Listed Repositories</h2>
+                <button 
+                  onClick={handleRefreshListings}
+                  className={styles.refreshButton}
+                  disabled={refreshingListings || listedReposLoading}
+                  title="Refresh listings"
+                >
+                  <FiRefreshCw className={refreshingListings || listedReposLoading ? styles.spinning : ''} />
+                </button>
+              </div>
               
               {listedReposLoading ? (
                 <div className={styles.loading}>Loading listed repositories...</div>
@@ -960,12 +1115,25 @@ export default function ProfilePage() {
                           >
                             View Listing
                           </Link>
+                          <Link 
+                            href={`/marketplace/sell?edit=true&listing=${repo.id}`} 
+                            className={styles.editListingButton}
+                          >
+                            Edit Listing
+                          </Link>
                           <button
                             className={styles.removeListingButton}
                             onClick={() => handleRemoveListing(repo.id, repo.stripeProductId || '')}
                             disabled={deleteLoading === repo.id}
                           >
                             {deleteLoading === repo.id ? 'Removing...' : 'Remove Listing'}
+                          </button>
+                          <button
+                            className={styles.soldButton}
+                            onClick={() => handleMarkAsSold(repo.id)}
+                            disabled={deleteLoading === repo.id}
+                          >
+                            Mark as Sold
                           </button>
                         </div>
                       </div>
@@ -983,7 +1151,9 @@ export default function ProfilePage() {
             </div>
             
             <div className={styles.section}>
-              <h2 className={styles.sectionTitle}>Your GitHub Repositories</h2>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Your GitHub Repositories</h2>
+              </div>
               
               {reposLoading ? (
                 <div className={styles.loading}>Loading repositories...</div>
