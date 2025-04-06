@@ -422,14 +422,6 @@ export default function HeroSection() {
 
           {error && <div className={styles.errorMessage}>{error}</div>}
 
-          <div className={styles.scanStats}>
-            {!loading && (
-              <p className={styles.scanInfo}>
-                Scanned {reposScanned} repositories, found {locationsFound} location.json files
-              </p>
-            )}
-          </div>
-
           <div className={styles.ctas}>
             <a href="#contact" className={styles.primaryBtn}>Get Started</a>
             <a href="#services" className={styles.secondaryBtn}>Explore Services</a>
