@@ -283,55 +283,72 @@ export default function HeroSection() {
     async function fetchLocations() {
       try {
         // First, get all repos from the organization
+        console.log('Fetching repositories from WebRendHQ organization...');
         const reposResponse = await axios.get('https://api.github.com/orgs/WebRendHQ/repos?per_page=100');
         const repos = reposResponse.data;
         setReposScanned(repos.length);
         
         console.log(`Found ${repos.length} repositories to scan`);
         
+        // Try to find location.json in each repo, trying different branch names
         const locationPromises = repos.map(async (repo: any) => {
-          try {
-            // Try to fetch location.json from each repo
-            const locationResponse = await axios.get(
-              `https://raw.githubusercontent.com/WebRendHQ/${repo.name}/main/location.json`,
-              { timeout: 5000 } // Add timeout to prevent hanging too long
-            );
-            
-            if (locationResponse.status === 200 && locationResponse.data) {
-              const locationData = locationResponse.data;
+          console.log(`Scanning repository: ${repo.name}, default branch: ${repo.default_branch || 'unknown'}`);
+          
+          // Get the default branch name or fallback to common ones
+          const branchesToTry = [
+            repo.default_branch, // Try the default branch first if available
+            'main',
+            'master',
+            'development',
+            'dev'
+          ].filter(Boolean); // Remove any undefined values
+          
+          // Try each branch name until we find a location.json
+          for (const branch of branchesToTry) {
+            try {
+              const url = `https://raw.githubusercontent.com/WebRendHQ/${repo.name}/${branch}/location.json`;
+              console.log(`Trying to fetch: ${url}`);
               
-              // Verify that we have valid location data with coordinates
-              if (
-                locationData.location && 
-                typeof locationData.latitude === 'number' && 
-                typeof locationData.longitude === 'number'
-              ) {
-                console.log(`Found valid location data in ${repo.name}:`, locationData);
+              const locationResponse = await axios.get(url, { timeout: 5000 });
+              
+              if (locationResponse.status === 200 && locationResponse.data) {
+                const locationData = locationResponse.data;
                 
-                // Create enhanced location object
-                const enhancedLocation: EnhancedLocation = {
-                  lat: locationData.latitude,
-                  lng: locationData.longitude,
-                  name: locationData.location,
-                  repoName: repo.name,
-                  iconUrl: locationData.iconUrl || undefined
-                };
-                
-                return enhancedLocation;
-              } else {
-                console.log(`Invalid location data in ${repo.name}:`, locationData);
+                // Verify that we have valid location data with coordinates
+                if (
+                  locationData.location && 
+                  typeof locationData.latitude === 'number' && 
+                  typeof locationData.longitude === 'number'
+                ) {
+                  console.log(`✅ Found valid location.json in ${repo.name} (${branch}):`, locationData);
+                  
+                  // Create enhanced location object
+                  const enhancedLocation: EnhancedLocation = {
+                    lat: locationData.latitude,
+                    lng: locationData.longitude,
+                    name: locationData.location,
+                    repoName: repo.name,
+                    iconUrl: locationData.iconUrl || undefined
+                  };
+                  
+                  return enhancedLocation;
+                } else {
+                  console.log(`❌ Invalid location data in ${repo.name} (${branch}):`, locationData);
+                  console.log(`Required format: { "location": "City Name", "latitude": number, "longitude": number, "iconUrl": "optional-url" }`);
+                }
               }
+              // If we get here without returning, this branch didn't have a valid location.json
+            } catch (error) {
+              // Only log 404s if in the last branch attempt
+              if (branch === branchesToTry[branchesToTry.length - 1]) {
+                console.log(`❌ No location.json found in ${repo.name} on any branch`);
+              }
+              // Don't return here, we'll try the next branch
             }
-            return null;
-          } catch (error) {
-            // Check for 404 status which means file doesn't exist
-            if (axios.isAxiosError(error) && error.response?.status === 404) {
-              console.log(`No location.json found in ${repo.name}`);
-            } else {
-              console.error(`Error fetching location from ${repo.name}:`, error);
-            }
-            return null;
           }
+          
+          // If we get here, we didn't find a valid location.json in any branch
+          return null;
         });
         
         const locationResults = await Promise.allSettled(locationPromises);
@@ -345,12 +362,20 @@ export default function HeroSection() {
           .map(result => result.value);
         
         setLocationsFound(validLocations.length);
-        console.log(`Found ${validLocations.length} valid locations`);
+        console.log(`Found ${validLocations.length} valid locations from ${repos.length} repositories`);
         
         if (validLocations.length > 0) {
           setLocations(validLocations);
         } else {
-          console.log('No valid locations found in repos. Creating example location.json in a repo would display it.');
+          console.log('No valid locations found in repos. Sample location.json format:');
+          console.log(`
+{
+  "location": "New York",
+  "latitude": 40.7128,
+  "longitude": -74.0060,
+  "iconUrl": "https://example.com/icon.png" (optional)
+}
+          `);
           setError('No location.json files found. Add a location.json to any repo with latitude, longitude and location fields.');
           
           // Just set some placeholder locations as a fallback
