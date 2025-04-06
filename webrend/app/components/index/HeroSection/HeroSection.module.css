@@ -1,0 +1,483 @@
+.heroSection {
+  background-color: #ffffff;
+  color: #333;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.container {
+  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: calc(10vh + 80px);
+}
+
+.content {
+  text-align: center;
+  max-width: 800px;
+  margin: 0;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 10;
+}
+
+.heading {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.heading h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  color: #333;
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+.globeContainer {
+  width: 130vw;
+  height: 130vh;
+  position: absolute;
+  bottom: -60vh;
+  left: -15vw;
+  right: -15vw;
+  overflow: visible;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.locationsLegend {
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 500px;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.locationsLegend h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.locationsLegend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.locationsLegend li {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #666;
+  background-color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.locationDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ff4500;
+  margin-right: 8px;
+}
+
+.ctas {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.primaryBtn, .secondaryBtn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.primaryBtn {
+  background-color: #0066ff;
+  color: white;
+  border: none;
+}
+
+.primaryBtn:hover {
+  background-color: #0055cc;
+  transform: translateY(-2px);
+}
+
+.secondaryBtn {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.secondaryBtn:hover {
+  background-color: #eaeaea;
+  transform: translateY(-2px);
+}
+
+/* Apple Watch app grid styles */
+.appGrid {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto;
+  perspective: 1000px;
+}
+
+.centerBox {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 24px;
+  background-color: rgba(150, 150, 150, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.centerBox:hover {
+  background-color: rgba(150, 150, 150, 0.25);
+}
+
+.appIcon {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background-size: cover;
+  background-position: center;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.appIcon:hover {
+  transform: scale(1.1);
+}
+
+.appIcon1 {
+  top: 40%;
+  left: 10%;
+  background-color: #0066ff;
+  background-image: linear-gradient(135deg, #0066ff 0%, #2989d8 100%);
+  animation: floatApp 8s infinite;
+  animation-delay: 0.2s;
+}
+
+.appIcon2 {
+  top: 15%;
+  left: 40%;
+  background-color: #8e2de2;
+  background-image: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
+  animation: floatApp 7s infinite;
+  animation-delay: 1.1s;
+}
+
+.appIcon3 {
+  top: 40%;
+  right: 10%;
+  background-color: #e91e63;
+  background-image: linear-gradient(135deg, #e91e63 0%, #fc466b 100%);
+  animation: floatApp 9s infinite;
+  animation-delay: 0.5s;
+}
+
+.appIcon4 {
+  bottom: 15%;
+  right: 40%;
+  background-color: #009688;
+  background-image: linear-gradient(135deg, #009688 0%, #11998e 100%);
+  animation: floatApp 6s infinite;
+  animation-delay: 1.7s;
+}
+
+.appIcon5 {
+  bottom: 25%;
+  left: 25%;
+  background-color: #ff9800;
+  background-image: linear-gradient(135deg, #ff9800 0%, #ff6a00 100%);
+  animation: floatApp 8.5s infinite;
+  animation-delay: 0.8s;
+}
+
+.appName {
+  position: absolute;
+  bottom: -24px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.appIcon:hover .appName {
+  opacity: 1;
+}
+
+@keyframes floatApp {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(10px, -10px);
+  }
+  50% {
+    transform: translate(0, 15px) scale(0.95);
+  }
+  75% {
+    transform: translate(-10px, -5px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.magnetized .appIcon {
+  animation: none;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.magnetized .appIcon1 {
+  transform: translate(55px, 20px);
+}
+
+.magnetized .appIcon2 {
+  transform: translate(15px, 35px);
+}
+
+.magnetized .appIcon3 {
+  transform: translate(-55px, 20px);
+}
+
+.magnetized .appIcon4 {
+  transform: translate(-15px, -35px);
+}
+
+.magnetized .appIcon5 {
+  transform: translate(25px, -25px);
+}
+
+.watchBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+  z-index: 1;
+}
+
+.watchFace {
+  position: relative;
+  width: 320px;
+  height: 380px;
+  margin: 0 auto;
+  border-radius: 42px;
+  background-color: #000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+              inset 0 0 10px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  z-index: 2;
+  padding: 50px 20px;
+  border: 2px solid #333;
+}
+
+.digitalTime {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-weight: 600;
+  color: #fff;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
+/* Small button on side of watch */
+.watchFace:before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 30px;
+  background: #333;
+  right: -4px;
+  top: 70px;
+  border-radius: 3px;
+  box-shadow: -1px 0 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Make the grid responsive */
+@media (max-width: 1024px) {
+  .watchFace {
+    width: 300px;
+    height: 360px;
+  }
+  
+  .globeContainer {
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-top: calc(8vh + 80px);
+  }
+
+  .heading h1 {
+    font-size: 2.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .watchFace {
+    width: 260px;
+    height: 320px;
+  }
+  
+  .appGrid {
+    width: 240px;
+    height: 240px;
+  }
+  
+  .appIcon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  
+  .centerBox {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .ctas {
+    flex-direction: column;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .primaryBtn, .secondaryBtn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .locationsLegend ul {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .globeContainer {
+    height: 60vh;
+    bottom: -35vh;
+  }
+}
+
+@media (max-height: 700px) {
+  .container {
+    padding-top: calc(5vh + 80px);
+  }
+  
+  .heading h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    margin-bottom: 1rem;
+  }
+}
+
+.errorMessage {
+  padding: 0.75rem 1rem;
+  background-color: #fff3f3;
+  border-left: 4px solid #f44336;
+  color: #d32f2f;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  z-index: 2;
+}
+
+.scanStats {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.scanInfo {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 1rem;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  display: inline-block;
+} 
