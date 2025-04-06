@@ -6,6 +6,8 @@ import { OrbitControls, useTexture, Billboard, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import axios from 'axios';
 import styles from './HeroSection.module.css';
+import path from 'path';
+import fs from 'fs/promises';
 
 // Type for location data from repositories
 interface LocationData {
@@ -15,6 +17,15 @@ interface LocationData {
   iconUrl?: string;  // URL to an S3 icon image
 }
 
+// Type for private repository location data
+interface PrivateRepoLocationData {
+  repoName: string;  // Name of the private repo
+  location: string;
+  latitude: number;
+  longitude: number;
+  iconUrl?: string;
+}
+
 // Enhanced location type with repo information
 interface EnhancedLocation {
   lat: number;
@@ -22,6 +33,7 @@ interface EnhancedLocation {
   name: string;
   repoName: string;
   iconUrl?: string;
+  isPrivate?: boolean;  // Flag to identify private repos
 }
 
 // Component for the Globe
@@ -30,6 +42,50 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
   const [textureLoaded, setTextureLoaded] = useState(false);
   const [textureFailed, setTextureFailed] = useState(false);
   const [loadedIcons, setLoadedIcons] = useState<Record<string, THREE.Texture | null>>({});
+  const [alarmColor, setAlarmColor] = useState<THREE.Color>(new THREE.Color("#FF0000")); // Start with red
+  const [alarmIntensity, setAlarmIntensity] = useState<number>(1.0); // For pulsating effect
+  
+  // State to track which icons are in the central view
+  const [centeredIcons, setCenteredIcons] = useState<Record<number, number>>({});
+  
+  // Update icon scales based on their position relative to camera
+  useEffect(() => {
+    const updateIconScales = () => {
+      const newCenteredIcons: Record<number, number> = {};
+      
+      // For each location, calculate its distance from the center of the globe
+      locations.forEach((location, index) => {
+        const phi = (90 - location.lat) * (Math.PI / 180);
+        const theta = (location.lng + 180) * (Math.PI / 180);
+        
+        // Calculate position
+        const x = -(3 * Math.sin(phi) * Math.cos(theta));
+        const z = 3 * Math.sin(phi) * Math.sin(theta);
+        const y = 3 * Math.cos(phi);
+        
+        // Determine if the point is visible in the current view
+        // Front of the globe is more visible (has a larger z value)
+        const visibilityFactor = z + 3; // Range roughly -3 to 3, higher means more visible
+
+        // Convert to scale (0.7 to 1.2)
+        const scale = 0.7 + (visibilityFactor / 6) * 0.5;
+        
+        newCenteredIcons[index] = Math.max(0.7, Math.min(1.2, scale));
+      });
+      
+      setCenteredIcons(newCenteredIcons);
+    };
+    
+    // Initial update
+    updateIconScales();
+    
+    // Update scales every 100ms during rotation
+    const interval = setInterval(updateIconScales, 100);
+    
+    return () => {
+      clearInterval(interval);
+    };
+  }, [locations]);
   
   // Try to load a texture but use white if it fails
   useEffect(() => {
@@ -68,21 +124,30 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
     // Load textures for all locations with icon URLs
     locations.forEach(location => {
       if (location.iconUrl) {
-        textureLoader.load(
-          location.iconUrl,
-          (texture) => {
-            newLoadedIcons[location.repoName] = texture;
-            setLoadedIcons(prev => ({ ...prev, [location.repoName]: texture }));
-          },
-          undefined,
-          (error) => {
-            console.error(`Error loading icon for ${location.repoName}:`, error);
-            newLoadedIcons[location.repoName] = null;
-            setLoadedIcons(prev => ({ ...prev, [location.repoName]: null }));
-          }
-        );
+        // Check if iconUrl is a URL string (starts with http or /)
+        if (typeof location.iconUrl === 'string' && 
+            (location.iconUrl.startsWith('http') || location.iconUrl.startsWith('/'))) {
+          textureLoader.load(
+            location.iconUrl,
+            (texture) => {
+              newLoadedIcons[location.repoName] = texture;
+              setLoadedIcons(prev => ({ ...prev, [location.repoName]: texture }));
+            },
+            undefined,
+            (error) => {
+              console.error(`Error loading icon for ${location.repoName}:`, error);
+              newLoadedIcons[location.repoName] = null;
+              setLoadedIcons(prev => ({ ...prev, [location.repoName]: null }));
+            }
+          );
+        } else {
+          // If it's just a string (like "W" or "C"), don't try to load it as a texture
+          newLoadedIcons[location.repoName] = null;
+          setLoadedIcons(prev => ({ ...prev, [location.repoName]: null }));
+        }
       } else {
         newLoadedIcons[location.repoName] = null;
+        setLoadedIcons(prev => ({ ...prev, [location.repoName]: null }));
       }
     });
     
@@ -104,31 +169,77 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
     return () => clearInterval(interval);
   }, []);
   
-  // Generate a color based on location name
-  const getLocationColor = (name: string) => {
+  // Alarm blinking effect with smooth fade
+  useEffect(() => {
+    let fadeTimer: number;
+    let redColor = new THREE.Color("#FF0000");
+    let blackColor = new THREE.Color("#000000");
+    let targetColor = blackColor;
+    let transitionProgress = 0;
+    
+    // Smoother color transition using requestAnimationFrame
+    const updateColor = () => {
+      // Increase transition progress
+      transitionProgress += 0.01;
+      
+      if (transitionProgress >= 1) {
+        // When transition completes, switch target color
+        targetColor = targetColor.equals(blackColor) ? redColor : blackColor;
+        transitionProgress = 0;
+      }
+      
+      // Create a new color that's a mix between current and target
+      const newColor = new THREE.Color().copy(
+        targetColor.equals(blackColor) ? redColor : blackColor
+      ).lerp(targetColor, transitionProgress);
+      
+      setAlarmColor(newColor);
+      
+      // Also update intensity for pulsating effect
+      setAlarmIntensity(0.7 + Math.sin(transitionProgress * Math.PI) * 0.3);
+      
+      fadeTimer = requestAnimationFrame(updateColor);
+    };
+    
+    fadeTimer = requestAnimationFrame(updateColor);
+    
+    return () => {
+      cancelAnimationFrame(fadeTimer);
+    };
+  }, []);
+  
+  // Generate a color based on location name and whether it's private
+  const getLocationColor = (location: EnhancedLocation) => {
     // Generate a deterministic but varied color based on the string
+    const name = location.repoName;
     const hash = name.split('').reduce((acc, char) => {
       return char.charCodeAt(0) + ((acc << 5) - acc);
     }, 0);
     
+    // Same color palette for all repos
     const colors = [
       '#007AFF', // iOS blue
       '#34C759', // iOS green
       '#FF9500', // iOS orange
+      '#5AC8FA', // iOS light blue
+      '#FFCC00', // iOS yellow
       '#FF2D55', // iOS pink
       '#AF52DE', // iOS purple
-      '#5856D6', // iOS indigo
-      '#FF3B30', // iOS red
-      '#5AC8FA', // iOS light blue
-      '#FFCC00'  // iOS yellow
+      '#5856D6'  // iOS indigo
     ];
     
     return colors[Math.abs(hash) % colors.length];
   };
 
   // Get the first letter or icon for the marker
-  const getLocationIcon = (name: string) => {
-    return name.charAt(0).toUpperCase();
+  const getLocationIcon = (location: EnhancedLocation) => {
+    // If iconUrl is a string that's not a URL, use that as the icon text
+    if (typeof location.iconUrl === 'string' && 
+        !(location.iconUrl.startsWith('http') || location.iconUrl.startsWith('/'))) {
+      return location.iconUrl;
+    }
+    // Otherwise use the first letter of the repo name
+    return location.repoName.charAt(0).toUpperCase();
   };
   
   // Create a rounded rectangle shape for iOS app icons
@@ -172,6 +283,17 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
         />
       </mesh>
       
+      <OrbitControls 
+        enableZoom={false}
+        enablePan={false}
+        rotateSpeed={0.2}
+        zoomSpeed={0.5}
+        minDistance={5}
+        maxDistance={8}
+        autoRotate={true}
+        autoRotateSpeed={0.5}
+      />
+      
       {/* Location markers as iOS-style app icons */}
       {locations.map((location, index) => {
         // Calculate the position on the sphere for each marker
@@ -179,92 +301,139 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
         const theta = (location.lng + 180) * (Math.PI / 180);
         
         // Position slightly further from sphere surface to prevent clipping
-        const distanceFactor = 3.3;
+        const distanceFactor = 3.2;
         const x = -(distanceFactor * Math.sin(phi) * Math.cos(theta));
         const z = distanceFactor * Math.sin(phi) * Math.sin(theta);
         const y = distanceFactor * Math.cos(phi);
         
+        // Calculate the position on the globe surface
+        const globeSurfaceFactor = 3.0;
+        const surfaceX = -(globeSurfaceFactor * Math.sin(phi) * Math.cos(theta));
+        const surfaceZ = globeSurfaceFactor * Math.sin(phi) * Math.sin(theta);
+        const surfaceY = globeSurfaceFactor * Math.cos(phi);
+        
         // Get color and icon
-        const color = getLocationColor(location.repoName);
-        const icon = getLocationIcon(location.repoName);
+        const color = getLocationColor(location);
+        const icon = getLocationIcon(location);
         
-        // Truncate location name if it's too long
-        const displayName = location.name.length > 10 
-          ? location.name.substring(0, 10) + '...' 
-          : location.name;
+        // Get the scale factor for this icon
+        const scaleFactor = centeredIcons[index] || 1;
         
-        // Create rounded rect shape for iOS app icon
-        const iconShape = createRoundedRectShape(0.3, 0.3, 0.06);
+        // No truncation - display full name
+        const displayName = location.name;
+        
+        // Create shape based on repo type
+        const isPrivate = location.isPrivate;
+        let iconShape;
+        
+        // Use rounded rect for all repos (both public and private)
+        iconShape = createRoundedRectShape(0.2, 0.2, 0.04);
         
         // Check if we have a loaded icon texture for this location
         const hasCustomIcon = loadedIcons[location.repoName] !== undefined && loadedIcons[location.repoName] !== null;
         
         return (
-          <group key={index} position={[x, y, z]}>
-            <Billboard
-              follow={true}
-              lockX={false}
-              lockY={false}
-              lockZ={false}
-            >
-              <group>
-                {/* iOS app-style icon with rounded corners */}
-                <mesh>
-                  <shapeGeometry args={[iconShape]} />
-                  <meshBasicMaterial 
-                    color={color} 
-                    side={THREE.DoubleSide}
-                  />
-                </mesh>
-                
-                {/* Icon image or text label */}
-                {hasCustomIcon ? (
-                  <mesh position={[0, 0, 0.001]}>
-                    <planeGeometry args={[0.25, 0.25]} />
-                    <meshBasicMaterial
-                      map={loadedIcons[location.repoName] as THREE.Texture}
-                      transparent={true}
+          <group key={index} position={[0, 0, 0]}>
+            {/* Blinking alarm marker on the globe surface */}
+            <mesh position={[surfaceX, surfaceY, surfaceZ]}>
+              <sphereGeometry args={[0.02, 12, 12]} />
+              <meshBasicMaterial 
+                color={alarmColor} 
+                opacity={alarmIntensity}
+                transparent
+              />
+            </mesh>
+            
+            {/* Connection line from surface marker to floating icon */}
+            <line>
+              <bufferGeometry attach="geometry" 
+                onUpdate={(self) => {
+                  const positions = new Float32Array([
+                    surfaceX, surfaceY, surfaceZ,
+                    x, y, z
+                  ]);
+                  self.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                }}
+              />
+              <lineBasicMaterial 
+                attach="material" 
+                color={alarmColor} 
+                opacity={alarmIntensity * 0.5} 
+                transparent 
+              />
+            </line>
+            
+            <group position={[x, y, z]}>
+              <Billboard
+                follow={true}
+                lockX={false}
+                lockY={false}
+                lockZ={false}
+              >
+                {/* Scale group based on visibility */}
+                <group scale={scaleFactor}>
+                  {/* Icon background shape (rounded square for all repos) */}
+                  <mesh>
+                    <shapeGeometry args={[iconShape]} />
+                    <meshBasicMaterial 
+                      color={color} 
                       side={THREE.DoubleSide}
                     />
                   </mesh>
-                ) : (
+                  
+                  {/* Icon image or text label */}
+                  {hasCustomIcon ? (
+                    <mesh position={[0, 0, 0.001]}>
+                      <planeGeometry args={[0.18, 0.18]} />
+                      <meshBasicMaterial
+                        map={loadedIcons[location.repoName] as THREE.Texture}
+                        transparent={true}
+                        side={THREE.DoubleSide}
+                      />
+                    </mesh>
+                  ) : (
+                    <Text
+                      position={[0, 0, 0.002]}
+                      fontSize={0.1}
+                      color="white"
+                      anchorX="center"
+                      anchorY="middle"
+                      renderOrder={2}
+                    >
+                      {icon}
+                    </Text>
+                  )}
+                  
+                  {/* Repository label without lock icon */}
                   <Text
-                    position={[0, 0, 0.002]}
-                    fontSize={0.15}
+                    position={[0, -0.15, 0.002]}
+                    fontSize={0.04}
                     color="white"
                     anchorX="center"
                     anchorY="middle"
                     renderOrder={2}
+                    maxWidth={0.8}
+                    textAlign="center"
                   >
-                    {icon}
+                    {location.repoName.replace('.com', '')}
                   </Text>
-                )}
-                
-                {/* Repository name below */}
-                <Text
-                  position={[0, -0.2, 0.002]}
-                  fontSize={0.06}
-                  color="white"
-                  anchorX="center"
-                  anchorY="middle"
-                  renderOrder={2}
-                >
-                  {location.repoName.replace('.com', '')}
-                </Text>
-                
-                {/* Location name below repo name */}
-                <Text
-                  position={[0, -0.28, 0.002]}
-                  fontSize={0.05}
-                  color="rgba(255,255,255,0.8)"
-                  anchorX="center"
-                  anchorY="middle"
-                  renderOrder={2}
-                >
-                  {displayName}
-                </Text>
-              </group>
-            </Billboard>
+                  
+                  {/* Location name below repo name */}
+                  <Text
+                    position={[0, -0.21, 0.002]}
+                    fontSize={0.028} 
+                    color="rgba(255,255,255,0.7)"
+                    anchorX="center"
+                    anchorY="middle"
+                    renderOrder={2}
+                    maxWidth={0.8}
+                    textAlign="center"
+                  >
+                    {displayName}
+                  </Text>
+                </group>
+              </Billboard>
+            </group>
           </group>
         );
       })}
@@ -272,27 +441,53 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
   );
 }
 
+// Example of how the privatereposlocation.json should look like
+const privateRepoExample = `
+[
+  {
+    "repoName": "Private-Project-Name",
+    "location": "San Francisco, CA",
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "iconUrl": "https://example.com/icon.png"
+  }
+]`;
+
+// Example of how the location.json should look like for individual repositories
+const locationExample = `
+{
+  "location": "New York, NY",
+  "latitude": 40.7128,
+  "longitude": -74.0060,
+  "iconUrl": "https://example.com/icon.png"
+}`;
+
 export default function HeroSection() {
   const [locations, setLocations] = useState<EnhancedLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reposScanned, setReposScanned] = useState<number>(0);
   const [locationsFound, setLocationsFound] = useState<number>(0);
+  const [privateLocationsFound, setPrivateLocationsFound] = useState<number>(0);
 
   useEffect(() => {
     async function fetchLocations() {
       try {
-        // First, get all repos from the organization
+        // Fetch both public and private repo locations
+        let allLocations: EnhancedLocation[] = [];
+        let totalReposScanned = 0;
+        
+        // 1. Fetch public repos from the organization
         console.log('Fetching repositories from WebRendHQ organization...');
         const reposResponse = await axios.get('https://api.github.com/orgs/WebRendHQ/repos?per_page=100');
         const repos = reposResponse.data;
-        setReposScanned(repos.length);
+        totalReposScanned += repos.length;
         
-        console.log(`Found ${repos.length} repositories to scan`);
+        console.log(`Found ${repos.length} public repositories to scan`);
         
-        // Try to find location.json in each repo, trying different branch names
-        const locationPromises = repos.map(async (repo: any) => {
-          console.log(`Scanning repository: ${repo.name}, default branch: ${repo.default_branch || 'unknown'}`);
+        // Try to find location.json in each public repo, trying different branch names
+        const publicLocationPromises = repos.map(async (repo: any) => {
+          console.log(`Scanning public repository: ${repo.name}, default branch: ${repo.default_branch || 'unknown'}`);
           
           // Get the default branch name or fallback to common ones
           const branchesToTry = [
@@ -328,7 +523,8 @@ export default function HeroSection() {
                     lng: locationData.longitude,
                     name: locationData.location,
                     repoName: repo.name,
-                    iconUrl: locationData.iconUrl || undefined
+                    iconUrl: locationData.iconUrl || undefined,
+                    isPrivate: false
                   };
                   
                   return enhancedLocation;
@@ -351,32 +547,133 @@ export default function HeroSection() {
           return null;
         });
         
-        const locationResults = await Promise.allSettled(locationPromises);
+        // 2. Fetch private repos location data from GitHub
+        console.log('Fetching private repositories location data from GitHub...');
+        let privateLocations: EnhancedLocation[] = [];
+        try {
+          // Try to fetch privatereposlocation.json from the same organization, using different branches
+          const branchesToTry = ['main', 'master', 'development', 'dev'];
+          
+          // Try each branch name until we find privatereposlocation.json
+          for (const branch of branchesToTry) {
+            try {
+              const privateReposUrl = `https://raw.githubusercontent.com/WebRendHQ/WebRend.com/${branch}/privatereposlocation.json`;
+              console.log(`Trying to fetch private repos from: ${privateReposUrl}`);
+              
+              const privateReposResponse = await axios.get(privateReposUrl, { timeout: 5000 });
+              
+              if (privateReposResponse.status === 200 && Array.isArray(privateReposResponse.data)) {
+                const privateReposData = privateReposResponse.data;
+                console.log(`✅ Found ${privateReposData.length} private repositories location data`);
+                
+                // Process each private repo location
+                privateLocations = privateReposData
+                  .filter((repo: PrivateRepoLocationData) => 
+                    repo.repoName && 
+                    repo.location && 
+                    typeof repo.latitude === 'number' && 
+                    typeof repo.longitude === 'number'
+                  )
+                  .map((repo: PrivateRepoLocationData): EnhancedLocation => ({
+                    lat: repo.latitude,
+                    lng: repo.longitude,
+                    name: repo.location,
+                    repoName: repo.repoName,
+                    iconUrl: repo.iconUrl,
+                    isPrivate: true
+                  }));
+                
+                setPrivateLocationsFound(privateLocations.length);
+                totalReposScanned += privateLocations.length;
+                
+                // If we found valid data, break out of the branch loop
+                if (privateLocations.length > 0) {
+                  console.log(`✅ Found ${privateLocations.length} private repositories with location data`);
+                  break;
+                }
+              }
+            } catch (error) {
+              console.log(`❌ Could not fetch private repos from branch ${branch}:`, error);
+              // Continue trying other branches
+            }
+          }
+        } catch (error) {
+          console.log('Error fetching private repositories location data:', error);
+        }
+        
+        // 3. Fetch local private locations from the data directory
+        console.log('Fetching local private repositories location data...');
+        try {
+          const response = await fetch('/api/private-locations');
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success && Array.isArray(data.locations)) {
+              const localPrivateReposData = data.locations;
+              console.log('✅ Found local private repositories data:', localPrivateReposData);
+              
+              // Create enhanced locations from local data
+              const localPrivateLocations = localPrivateReposData
+                .filter((repo: PrivateRepoLocationData) => 
+                  repo.repoName && 
+                  repo.location && 
+                  typeof repo.latitude === 'number' && 
+                  typeof repo.longitude === 'number'
+                )
+                .map((repo: PrivateRepoLocationData): EnhancedLocation => ({
+                  lat: repo.latitude,
+                  lng: repo.longitude,
+                  name: repo.location,
+                  repoName: repo.repoName,
+                  iconUrl: repo.iconUrl,
+                  isPrivate: true
+                }));
+              
+              console.log(`✅ Added ${localPrivateLocations.length} private repositories from local data`);
+              
+              // Add to private locations array
+              privateLocations = [...privateLocations, ...localPrivateLocations];
+              setPrivateLocationsFound(privateLocations.length);
+              totalReposScanned += localPrivateLocations.length;
+            } else {
+              console.log('❌ No valid private locations data found in the response', data);
+            }
+          } else {
+            console.log(`❌ Error fetching private locations: ${response.status} ${response.statusText}`);
+          }
+        } catch (error) {
+          console.log('Error fetching local private repositories data:', error);
+        }
+        
+        // Process results from public repos
+        const publicLocationResults = await Promise.allSettled(publicLocationPromises);
         
         // Filter out only fulfilled promises with valid locations
-        const validLocations = locationResults
+        const validPublicLocations = publicLocationResults
           .filter(
             (result): result is PromiseFulfilledResult<EnhancedLocation> => 
               result.status === 'fulfilled' && result.value !== null
           )
           .map(result => result.value);
         
-        setLocationsFound(validLocations.length);
-        console.log(`Found ${validLocations.length} valid locations from ${repos.length} repositories`);
+        setLocationsFound(validPublicLocations.length);
         
-        if (validLocations.length > 0) {
-          setLocations(validLocations);
+        // Combine public and private locations
+        allLocations = [...validPublicLocations, ...privateLocations];
+        setReposScanned(totalReposScanned);
+        
+        console.log(`Found ${validPublicLocations.length} public and ${privateLocations.length} private locations from ${totalReposScanned} total repositories`);
+        
+        if (allLocations.length > 0) {
+          setLocations(allLocations);
         } else {
-          console.log('No valid locations found in repos. Sample location.json format:');
-          console.log(`
-{
-  "location": "New York",
-  "latitude": 40.7128,
-  "longitude": -74.0060,
-  "iconUrl": "https://example.com/icon.png" (optional)
-}
-          `);
-          setError('No location.json files found. Add a location.json to any repo with latitude, longitude and location fields.');
+          console.log('No valid locations found in repos.');
+          console.log('Sample location.json format:');
+          console.log(locationExample);
+          console.log('Sample privatereposlocation.json format:');
+          console.log(privateRepoExample);
+          
+          setError('No location data found. Add location.json files to public repos or create a privatereposlocation.json file.');
           
           // Just set some placeholder locations as a fallback
           setLocations([
@@ -385,6 +682,7 @@ export default function HeroSection() {
               lng: -74.0060, 
               name: 'New York', 
               repoName: 'Example Repo',
+              isPrivate: false
             }
           ]);
         }
@@ -399,6 +697,7 @@ export default function HeroSection() {
             lng: -74.0060, 
             name: 'New York', 
             repoName: 'Example Repo',
+            isPrivate: false
           }
         ]);
       } finally {
@@ -444,16 +743,6 @@ export default function HeroSection() {
               <Suspense fallback={null}>
                 <Globe locations={locations} />
               </Suspense>
-              <OrbitControls 
-                enableZoom={false}
-                enablePan={false}
-                rotateSpeed={0.2}
-                zoomSpeed={0.5}
-                minDistance={5}
-                maxDistance={8}
-                autoRotate={true}
-                autoRotateSpeed={0.5}
-              />
             </Canvas>
           )}
         </div>

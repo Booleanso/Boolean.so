@@ -1,0 +1,51 @@
+[
+  {
+    "repoName": "Vital-Element",
+    "location": "Scottsdale, AZ",
+    "latitude": 33.4942,
+    "longitude": -111.9261,
+    "iconUrl": "VE"
+  },
+  {
+    "repoName": "Trading Decision Engine",
+    "location": "Dubai, UAE",
+    "latitude": 25.2048,
+    "longitude": 55.2708,
+    "iconUrl": "TDE"
+  },
+  {
+    "repoName": "Serene Solitude Sanctuary",
+    "location": "Riyadh, Saudi Arabia",
+    "latitude": 24.7136,
+    "longitude": 46.6753,
+    "iconUrl": "SSS"
+  },
+  {
+    "repoName": "Marv Studio",
+    "location": "New Port Richey, Florida",
+    "latitude": 28.2442,
+    "longitude": -82.7219,
+    "iconUrl": "MS"
+  },
+  {
+    "repoName": "MICA",
+    "location": "Mumbai, India",
+    "latitude": 19.0760,
+    "longitude": 72.8777,
+    "iconUrl": "MCA"
+  },
+  {
+    "repoName": "Tata Technologies",
+    "location": "Pune, India",
+    "latitude": 18.5204,
+    "longitude": 73.8567,
+    "iconUrl": "TT"
+  },
+  {
+    "repoName": "Mclellan Pinterest App",
+    "location": "Salt Lake City, Utah",
+    "latitude": 40.7608,
+    "longitude": -111.8910,
+    "iconUrl": "MPA"
+  }
+] 
