@@ -72,6 +72,31 @@
   color: #666;
 }
 
+.iconTooltip {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateY(-10px);
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.iconTooltip:after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  margin-left: -4px;
+  width: 8px;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.8);
+  transform: rotate(45deg);
+}
+
 .locationsLegend {
   margin-top: 1rem;
   width: 100%;
