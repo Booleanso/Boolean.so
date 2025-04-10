@@ -22,7 +22,7 @@ export default function Marketplace() {
         setLoading(true);
         setError(null);
         
-        // Check if our file-based DB exists yet, and fallback to demo data if not
+        // Fetch listings from our API that now uses Firestore
         const response = await fetch('/api/marketplace/listings');
         
         if (!response.ok) {
@@ -33,9 +33,8 @@ export default function Marketplace() {
         setListings(data.listings || []);
       } catch (err) {
         console.error('Error fetching marketplace listings:', err);
-        setError('Failed to load listings. Using demo data instead.');
-        // Fallback to demo data
-        setListings(demoRepos);
+        setError('Failed to load listings. Please try again later.');
+        setListings([]);
       } finally {
         setLoading(false);
       }
@@ -59,6 +58,11 @@ export default function Marketplace() {
 
       {error && (
         <div className={styles.error}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2rem', height: '1.2rem', marginRight: '0.5rem' }}>
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
           {error}
         </div>
       )}
@@ -94,7 +98,27 @@ export default function Marketplace() {
       </div>
 
       {loading ? (
-        <div className={styles.loading}>Loading repositories...</div>
+        <div className={styles.loading}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin" style={{ animation: 'spin 1s linear infinite', marginRight: '0.5rem' }}>
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+          </svg>
+          Loading repositories...
+        </div>
+      ) : listings.length === 0 ? (
+        <div className={styles.emptyState}>
+          <h2>No repositories available</h2>
+          <p>Be the first to list a repository for sale!</p>
+          <Link href="/marketplace/sell" className={styles.sellButton}>
+            List a Repository
+          </Link>
+        </div>
       ) : (
         <div className={styles.grid}>
           {listings
@@ -104,7 +128,7 @@ export default function Marketplace() {
               if (activeFilter === 'subscription' && !repo.isSubscription) return false;
               
               // Then filter sold status
-              if (!includeSold && repo.isSold) return false;
+              if (!includeSold && repo.sold) return false;
               
               return true;
             })
@@ -118,7 +142,7 @@ export default function Marketplace() {
                     height={400}
                     layout="responsive"
                   />
-                  {repo.isSold && (
+                  {repo.sold && (
                     <div className={styles.soldBadge}>
                       Sold
                     </div>
@@ -175,8 +199,8 @@ export default function Marketplace() {
                     </div>
                   </div>
                   <Link href={`/marketplace/buy/${repo.id}`}>
-                    <button className={styles.buyButton} disabled={repo.isSold}>
-                      {repo.isSold 
+                    <button className={styles.buyButton} disabled={repo.sold}>
+                      {repo.sold 
                         ? 'Sold Out' 
                         : repo.isSubscription 
                           ? 'Subscribe' 
@@ -192,69 +216,3 @@ export default function Marketplace() {
     </div>
   );
 }
-
-// Sample data for demo purposes - used as fallback
-const demoRepos: MarketplaceListing[] = [
-  {
-    id: 1,
-    name: 'E-Commerce Platform',
-    description: 'A complete e-commerce solution with React frontend and Node.js backend. Includes shopping cart, user authentication, and payment processing.',
-    price: 499,
-    isSubscription: false,
-    imageUrl: 'https://placehold.co/600x400/0366d6/FFFFFF/png?text=E-Commerce+Platform',
-    seller: {
-      username: 'techdev',
-      avatarUrl: 'https://placehold.co/100/24292e/FFFFFF/png?text=TD'
-    },
-    stars: 45,
-    forks: 12,
-    lastUpdated: '2023-12-15'
-  },
-  {
-    id: 2,
-    name: 'Dashboard UI Kit',
-    description: 'Modern dashboard components built with React and Tailwind CSS. Fully customizable and responsive design elements.',
-    price: 29,
-    isSubscription: true,
-    subscriptionPrice: 9.99,
-    imageUrl: 'https://placehold.co/600x400/0366d6/FFFFFF/png?text=Dashboard+UI+Kit',
-    seller: {
-      username: 'designstudio',
-      avatarUrl: 'https://placehold.co/100/24292e/FFFFFF/png?text=DS'
-    },
-    stars: 87,
-    forks: 33,
-    lastUpdated: '2024-01-21'
-  },
-  {
-    id: 3,
-    name: 'AI Content Generator',
-    description: 'Text and image generation API powered by machine learning models. Easy to integrate with any application.',
-    price: 199,
-    isSubscription: true,
-    subscriptionPrice: 39.99,
-    imageUrl: 'https://placehold.co/600x400/0366d6/FFFFFF/png?text=AI+Content+Generator',
-    seller: {
-      username: 'aiinnovators',
-      avatarUrl: 'https://placehold.co/100/24292e/FFFFFF/png?text=AI'
-    },
-    stars: 215,
-    forks: 68,
-    lastUpdated: '2024-02-05'
-  },
-  {
-    id: 4,
-    name: 'Analytics Engine',
-    description: 'User behavior tracking and analytics dashboard. Collect and visualize data from your web applications.',
-    price: 349,
-    isSubscription: false,
-    imageUrl: 'https://placehold.co/600x400/0366d6/FFFFFF/png?text=Analytics+Engine',
-    seller: {
-      username: 'datastudio',
-      avatarUrl: 'https://placehold.co/100/24292e/FFFFFF/png?text=DS'
-    },
-    stars: 68,
-    forks: 21,
-    lastUpdated: '2024-01-18'
-  }
-];

@@ -49,9 +49,7 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
-    // Note: buyerData would be used in the actual implementation when removing collaborator
-    // Currently unused but kept for reference in the commented API call
-    // const buyerData = buyerDoc.data() || {};
+    const buyerData = buyerDoc.data() || {};
     
     const sellerDoc = await db.collection('customers').doc(sellerId).get();
     if (!sellerDoc.exists) {
@@ -89,12 +87,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get repository details
+    const repoDoc = await db.collection('repositories').doc(repoId).get();
+    if (!repoDoc.exists) {
+      return NextResponse.json(
+        { error: 'Repository not found' },
+        { status: 404 }
+      );
+    }
+    const repoData = repoDoc.data() || {};
+    const repoName = repoData.name;
+    
+    if (!repoName) {
+      return NextResponse.json(
+        { error: 'Repository name not found' },
+        { status: 400 }
+      );
+    }
+
     try {
-      // In a real implementation, you would use GitHub's API to remove a collaborator
-      // See: https://docs.github.com/en/rest/reference/repos#remove-a-repository-collaborator
-      
-      // Example implementation (not executed here):
-      /*
+      // Use GitHub's API to remove a collaborator
       const removeCollabResponse = await fetch(`https://api.github.com/repos/${sellerData.githubUsername}/${repoName}/collaborators/${buyerData.githubUsername}`, {
         method: 'DELETE',
         headers: {
@@ -104,14 +116,29 @@ export async function POST(request: NextRequest) {
       });
       
       if (!removeCollabResponse.ok) {
-        throw new Error(`GitHub API error: ${removeCollabResponse.status}`);
+        // 404 is acceptable as it means the collaborator is already removed
+        if (removeCollabResponse.status !== 404) {
+          const errorData = await removeCollabResponse.json();
+          console.error('GitHub API error:', errorData);
+          throw new Error(`GitHub API error: ${removeCollabResponse.status} - ${errorData.message || 'Unknown error'}`);
+        }
       }
-      */
       
       // Update subscription status in Firestore
       await db.collection('subscriptions').doc(subscriptionId).update({
         status: 'canceled',
-        canceledAt: new Date().toISOString()
+        canceledAt: new Date().toISOString(),
+        accessRevokedAt: new Date().toISOString()
+      });
+      
+      // Log the access revocation
+      await db.collection('accessLogs').add({
+        type: 'revoke_access',
+        subscriptionId,
+        repoId,
+        sellerId,
+        buyerId,
+        timestamp: new Date().toISOString()
       });
       
       return NextResponse.json({
@@ -120,15 +147,22 @@ export async function POST(request: NextRequest) {
       });
     } catch (error) {
       console.error('GitHub revoke error:', error);
+      
+      // Update subscription with error information
+      await db.collection('subscriptions').doc(subscriptionId).update({
+        revocationError: error instanceof Error ? error.message : 'Unknown error',
+        revocationAttemptedAt: new Date().toISOString()
+      });
+      
       return NextResponse.json(
-        { error: 'Failed to revoke repository access' },
+        { error: 'Failed to revoke repository access', details: error instanceof Error ? error.message : 'Unknown error' },
         { status: 500 }
       );
     }
   } catch (error) {
     console.error('GitHub revoke error:', error);
     return NextResponse.json(
-      { error: 'Failed to process access revocation' },
+      { error: 'Failed to process access revocation', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

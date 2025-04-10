@@ -5,7 +5,7 @@ import Stripe from 'stripe';
 
 // Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-06-20'
+  apiVersion: '2025-02-24.acacia'
 });
 
 // Platform fee percentage (your commission) will be used in the payment route

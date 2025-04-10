@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-
-// In a real application, you would use a database
-// For this demo, we'll use a simple JSON file
-import fs from 'fs';
-import path from 'path';
+import { db } from '../../../lib/firebase-admin';
 
 // Define types for our marketplace listings
 export type MarketplaceListing = {
@@ -18,69 +14,43 @@ export type MarketplaceListing = {
   seller: {
     username: string;
     avatarUrl: string;
+    id?: string;
   };
   stars: number;
   forks: number;
   lastUpdated: string;
   stripeProductId?: string;
   stripePriceId?: string;
-  isSold?: boolean;
-};
-
-// This would be a database in production
-const getMarketplaceDataPath = () => {
-  const dataDir = path.join(process.cwd(), 'data');
-  
-  // Create the data directory if it doesn't exist
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
-  
-  return path.join(dataDir, 'marketplace-listings.json');
-};
-
-const getMarketplaceListings = (): MarketplaceListing[] => {
-  const filePath = getMarketplaceDataPath();
-  
-  if (!fs.existsSync(filePath)) {
-    // Return empty array if file doesn't exist yet
-    return [];
-  }
-  
-  try {
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(fileContents);
-  } catch (error) {
-    console.error('Error reading marketplace data:', error);
-    return [];
-  }
-};
-
-const saveMarketplaceListings = (listings: MarketplaceListing[]) => {
-  const filePath = getMarketplaceDataPath();
-  fs.writeFileSync(filePath, JSON.stringify(listings, null, 2), 'utf8');
+  stripeSubscriptionPriceId?: string;
+  sold?: boolean;
+  repoId?: number | string;
+  githubUrl?: string;
+  language?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export async function POST(request: Request) {
   try {
     const listing = await request.json() as MarketplaceListing;
     
-    // Generate a unique ID - in a real application, this would be handled by the database
-    const listings = getMarketplaceListings();
-    const newId = listings.length > 0 
-      ? Math.max(...listings.map(item => item.id)) + 1 
-      : 1;
+    // Generate a unique ID
+    const listingsSnapshot = await db.collection('listings').orderBy('id', 'desc').limit(1).get();
+    const lastId = listingsSnapshot.empty ? 0 : listingsSnapshot.docs[0].data().id || 0;
+    const newId = lastId + 1;
     
     // Create the new listing
     const newListing: MarketplaceListing = {
       ...listing,
       id: newId,
-      lastUpdated: new Date().toISOString().split('T')[0] // YYYY-MM-DD
+      lastUpdated: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      sold: false
     };
     
-    // Add it to our "database"
-    listings.push(newListing);
-    saveMarketplaceListings(listings);
+    // Add it to Firestore
+    await db.collection('listings').doc(newId.toString()).set(newListing);
     
     // Revalidate the marketplace page to show the new listing
     revalidatePath('/marketplace');

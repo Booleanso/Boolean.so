@@ -1,11 +1,16 @@
 'use client';
 
+/**
+ * Marketplace Sell Page
+ * 
+ * This component allows users to list their GitHub repositories for sale.
+ * Instead of using Firebase client directly (which caused permission errors),
+ * we now use secure server-side API routes to access Firestore.
+ */
+
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './sell.module.scss';
-import { auth, db } from '../../lib/firebase-client';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
 import { MarketplaceListing } from '../../api/marketplace/list-repo/route';
 
 type RepositoryInfo = {
@@ -18,6 +23,8 @@ type RepositoryInfo = {
   };
   stargazers_count: number;
   forks_count: number;
+  language?: string;
+  html_url?: string;
 };
 
 // Define the shape of the repository data returned from our API
@@ -56,67 +63,64 @@ export default function SellPage() {
   const [existingListing, setExistingListing] = useState<MarketplaceListing | null>(null);
   
   useEffect(() => {
-    // Check if bank details are added
-    const bankDetailsAdded = localStorage.getItem('stripeBankDetailsAdded') === 'true';
-    if (!bankDetailsAdded) {
-      setError('You need to add your bank details in your profile before selling repos.');
-      return;
-    }
-    
-    // Listen for auth state changes to get the current user
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Get username from Firestore first (most reliable source)
-        try {
-          const userRef = doc(db, 'users', user.uid);
-          const userSnap = await getDoc(userRef);
-          
-          if (userSnap.exists() && userSnap.data().username) {
-            const firestoreUsername = userSnap.data().username;
-            setSellerUsername(firestoreUsername);
-            
-            // Also update localStorage to keep everything in sync
-            localStorage.setItem('sellerUsername', firestoreUsername);
-            
-            // If the user's displayName doesn't match the Firestore username,
-            // we'll use the API to update displayName in auth and ensure consistency
-            if (user.displayName !== firestoreUsername) {
-              try {
-                await fetch('/api/user/update-username', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ username: firestoreUsername }),
-                });
-                // No need to handle the response, this is just to ensure consistency
-              } catch (syncError) {
-                console.warn('Could not sync username with Auth:', syncError);
-              }
-            }
-          } else if (user.displayName) {
-            // Fallback to displayName
-            setSellerUsername(user.displayName);
-          } else if (user.email) {
-            // Last resort: use email username
-            setSellerUsername(user.email.split('@')[0]);
+    // Replace direct Firebase auth check with server API call
+    const fetchCurrentUser = async () => {
+      try {
+        // Use our secure API endpoints to get user data
+        const userResponse = await fetch('/api/user/get-current');
+        
+        if (!userResponse.ok) {
+          if (userResponse.status === 401) {
+            // Not authenticated, redirect to auth
+            router.push('/auth?from=/marketplace/sell');
+            return;
           }
-        } catch (err) {
-          console.error('Error fetching username from Firestore:', err);
-          
-          // Fallback to localStorage in case of error
-          const storedUsername = localStorage.getItem('sellerUsername');
-          if (storedUsername) {
-            setSellerUsername(storedUsername);
-          } else if (user.displayName) {
-            setSellerUsername(user.displayName);
-          } else if (user.email) {
-            setSellerUsername(user.email.split('@')[0]);
-          }
+          throw new Error('Failed to fetch user information');
         }
-      } else {
-        // User not logged in, redirect to auth
-        router.push('/auth?from=/marketplace/sell');
+        
+        const userData = await userResponse.json();
+        
+        // Check if user exists and has auth/firestore data
+        if (userData) {
+          // Get username from firestore data if available
+          if (userData.firestore) {
+            // Check bank details
+            const bankDetailsAdded = userData.firestore.bankDetailsAdded || false;
+            
+            // If no bank details, show error but don't block
+            if (!bankDetailsAdded) {
+              setError('You need to add your bank account details in your profile before you can receive payments. You can still create a listing now.');
+            }
+            
+            // Set username if available
+            if (userData.firestore.username) {
+              setSellerUsername(userData.firestore.username);
+              localStorage.setItem('sellerUsername', userData.firestore.username);
+            }
+          }
+          
+          // Fallback to auth display name if needed
+          if (!sellerUsername && userData.auth?.displayName) {
+            setSellerUsername(userData.auth.displayName);
+          } else if (!sellerUsername && userData.auth?.email) {
+            setSellerUsername(userData.auth.email.split('@')[0]);
+          }
+        } else {
+          // No user data found, redirect to auth
+          router.push('/auth?from=/marketplace/sell');
+        }
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+        
+        // Fallback to localStorage in case of error
+        const storedUsername = localStorage.getItem('sellerUsername');
+        if (storedUsername) {
+          setSellerUsername(storedUsername);
+        }
       }
-    });
+    };
+
+    fetchCurrentUser();
     
     // If editing an existing listing, fetch it
     if (isEditing && listingId) {
@@ -126,8 +130,6 @@ export default function SellPage() {
     else if (repoId) {
       fetchRepoInfo(repoId);
     }
-    
-    return () => unsubscribe();
   }, [repoId, listingId, isEditing, router]);
   
   const fetchExistingListing = async (id: string) => {
@@ -250,29 +252,34 @@ export default function SellPage() {
       
       // Different flow for editing vs creating new listing
       if (isEditing && existingListing) {
-        // Update existing listing
-        const updateResponse = await fetch(`/api/marketplace/listings/${existingListing.id}`, {
-          method: 'PUT',
+        // Update existing listing using our Firestore access API
+        const updateResponse = await fetch('/api/marketplace/firestore-access', {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            name: repoInfo.name,
-            description: repoInfo.description,
-            price: parseFloat(price),
-            isSubscription,
-            subscriptionPrice: isSubscription ? parseFloat(subscriptionPrice) : undefined,
-            imageUrl,
-            seller: {
-              username: sellerUsername,
-              avatarUrl: sellerAvatarUrl
-            },
-            stars: repoInfo.stargazers_count,
-            forks: repoInfo.forks_count,
-            lastUpdated: new Date().toISOString().split('T')[0],
-            stripeProductId: existingListing.stripeProductId,
-            stripePriceId: existingListing.stripePriceId,
-            isSold: existingListing.isSold
+            operation: 'update',
+            collection: 'listings',
+            documentId: existingListing.id.toString(),
+            data: {
+              name: repoInfo.name,
+              description: repoInfo.description,
+              price: parseFloat(price),
+              isSubscription,
+              subscriptionPrice: isSubscription ? parseFloat(subscriptionPrice) : undefined,
+              imageUrl,
+              seller: {
+                username: sellerUsername,
+                avatarUrl: sellerAvatarUrl
+              },
+              stars: repoInfo.stargazers_count,
+              forks: repoInfo.forks_count,
+              lastUpdated: new Date().toISOString().split('T')[0],
+              stripeProductId: existingListing.stripeProductId,
+              stripePriceId: existingListing.stripePriceId,
+              sold: existingListing.sold
+            }
           })
         });
         
@@ -320,28 +327,37 @@ export default function SellPage() {
       
       const stripeData = await stripeResponse.json();
       
-      // Then, create the marketplace listing
-      const listingResponse = await fetch('/api/marketplace/list-repo', {
+      // Then, create the marketplace listing using our new Firestore access API
+      const listingResponse = await fetch('/api/marketplace/firestore-access', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name: repoInfo.name,
-          description: repoInfo.description,
-          price: parseFloat(price),
-          isSubscription,
-          subscriptionPrice: isSubscription ? parseFloat(subscriptionPrice) : undefined,
-          imageUrl,
-          seller: {
-            username: sellerUsername,
-            avatarUrl: sellerAvatarUrl
-          },
-          stars: repoInfo.stargazers_count,
-          forks: repoInfo.forks_count,
-          lastUpdated: new Date().toISOString().split('T')[0],
-          stripeProductId: stripeData.productId,
-          stripePriceId: stripeData.priceId
+          operation: 'create',
+          collection: 'listings',
+          data: {
+            name: repoInfo.name,
+            description: repoInfo.description,
+            price: parseFloat(price),
+            isSubscription,
+            subscriptionPrice: isSubscription ? parseFloat(subscriptionPrice) : undefined,
+            imageUrl,
+            seller: {
+              username: sellerUsername,
+              avatarUrl: sellerAvatarUrl,
+            },
+            stars: repoInfo.stargazers_count,
+            forks: repoInfo.forks_count,
+            lastUpdated: new Date().toISOString().split('T')[0],
+            stripeProductId: stripeData.productId,
+            stripePriceId: stripeData.priceId,
+            sold: false,
+            // Store repository details for easier access
+            repoId: repoInfo.id.toString(),
+            language: repoInfo.language || 'Unknown',
+            githubUrl: repoInfo.html_url || `https://github.com/${repoInfo.owner.login}/${repoInfo.name}`
+          }
         })
       });
       

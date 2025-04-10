@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get request body
-    const { repoId, sellerId, isSinglePurchase } = await request.json();
+    const { repoId, sellerId, isSinglePurchase, transactionId } = await request.json();
     
     if (!repoId || !sellerId) {
       return NextResponse.json(
@@ -75,15 +75,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get repository details from database
+    const repoDoc = await db.collection('repositories').doc(repoId).get();
+    if (!repoDoc.exists) {
+      return NextResponse.json(
+        { error: 'Repository not found' },
+        { status: 404 }
+      );
+    }
+    const repoData = repoDoc.data() || {};
+    const repoName = repoData.name;
+    
+    if (!repoName) {
+      return NextResponse.json(
+        { error: 'Repository name not found' },
+        { status: 400 }
+      );
+    }
+
     if (isSinglePurchase) {
       // For one-time purchase, transfer repository ownership
       try {
-        // In a real implementation, you would use GitHub's API to transfer repository ownership
-        // This requires the GitHub API with appropriate scopes and potentially GitHub Apps integration
-        // See: https://docs.github.com/en/rest/reference/repos#transfer-a-repository
-        
-        // Example implementation (not executed here):
-        /*
+        // Use GitHub's API to transfer repository ownership
         const transferResponse = await fetch(`https://api.github.com/repos/${sellerData.githubUsername}/${repoName}/transfer`, {
           method: 'POST',
           headers: {
@@ -96,42 +109,55 @@ export async function POST(request: NextRequest) {
         });
         
         if (!transferResponse.ok) {
-          throw new Error(`GitHub API error: ${transferResponse.status}`);
+          const errorData = await transferResponse.json();
+          console.error('GitHub API error:', errorData);
+          throw new Error(`GitHub API error: ${transferResponse.status} - ${errorData.message || 'Unknown error'}`);
         }
-        */
         
-        // For demo purposes, we'll just record the transaction in Firestore
-        await db.collection('transactions').add({
+        const transferResult = await transferResponse.json();
+        
+        // Record the transaction in Firestore
+        await db.collection('transactions').doc(transactionId).update({
           type: 'repository_transfer',
-          repoId,
-          sellerId,
-          buyerId,
-          sellerGithubUsername: sellerData.githubUsername,
-          buyerGithubUsername: buyerData.githubUsername,
-          status: 'completed',
-          timestamp: new Date().toISOString()
+          githubTransferId: transferResult.id,
+          transferStatus: 'initiated',
+          transferInitiatedAt: new Date().toISOString()
+        });
+        
+        // Update repository ownership in database
+        await db.collection('repositories').doc(repoId).update({
+          ownerUserId: buyerId,
+          previousOwnerUserId: sellerId,
+          transferredAt: new Date().toISOString()
         });
         
         return NextResponse.json({
           success: true,
-          message: 'Repository transfer initiated successfully'
+          message: 'Repository transfer initiated successfully',
+          transferId: transferResult.id
         });
         
       } catch (error) {
         console.error('GitHub transfer error:', error);
+        
+        // Update transaction with error
+        if (transactionId) {
+          await db.collection('transactions').doc(transactionId).update({
+            transferStatus: 'failed',
+            transferError: error instanceof Error ? error.message : 'Unknown error',
+            updatedAt: new Date().toISOString()
+          });
+        }
+        
         return NextResponse.json(
-          { error: 'Failed to transfer repository' },
+          { error: 'Failed to transfer repository', details: error instanceof Error ? error.message : 'Unknown error' },
           { status: 500 }
         );
       }
     } else {
       // For subscription, add buyer as collaborator
       try {
-        // In a real implementation, you would use GitHub's API to add a collaborator
-        // See: https://docs.github.com/en/rest/reference/repos#add-a-repository-collaborator
-        
-        // Example implementation (not executed here):
-        /*
+        // Use GitHub's API to add a collaborator
         const addCollabResponse = await fetch(`https://api.github.com/repos/${sellerData.githubUsername}/${repoName}/collaborators/${buyerData.githubUsername}`, {
           method: 'PUT',
           headers: {
@@ -144,30 +170,40 @@ export async function POST(request: NextRequest) {
         });
         
         if (!addCollabResponse.ok) {
-          throw new Error(`GitHub API error: ${addCollabResponse.status}`);
+          const errorData = await addCollabResponse.json();
+          console.error('GitHub API error:', errorData);
+          throw new Error(`GitHub API error: ${addCollabResponse.status} - ${errorData.message || 'Unknown error'}`);
         }
-        */
         
-        // For demo purposes, we'll just record the subscription in Firestore
-        await db.collection('subscriptions').add({
-          repoId,
-          sellerId,
-          buyerId,
-          sellerGithubUsername: sellerData.githubUsername,
-          buyerGithubUsername: buyerData.githubUsername,
-          status: 'active',
-          startDate: new Date().toISOString(),
-          nextBillingDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
-        });
+        const collabResult = await addCollabResponse.json();
+        
+        // Update transaction with collaboration status
+        if (transactionId) {
+          await db.collection('transactions').doc(transactionId).update({
+            collaborationStatus: 'added',
+            collaborationAddedAt: new Date().toISOString()
+          });
+        }
         
         return NextResponse.json({
           success: true,
-          message: 'Repository access granted successfully'
+          message: 'Repository access granted successfully',
+          invitationId: collabResult.id
         });
       } catch (error) {
         console.error('GitHub collaboration error:', error);
+        
+        // Update transaction with error
+        if (transactionId) {
+          await db.collection('transactions').doc(transactionId).update({
+            collaborationStatus: 'failed',
+            collaborationError: error instanceof Error ? error.message : 'Unknown error',
+            updatedAt: new Date().toISOString()
+          });
+        }
+        
         return NextResponse.json(
-          { error: 'Failed to grant repository access' },
+          { error: 'Failed to grant repository access', details: error instanceof Error ? error.message : 'Unknown error' },
           { status: 500 }
         );
       }
@@ -175,7 +211,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('GitHub transfer error:', error);
     return NextResponse.json(
-      { error: 'Failed to process repository transfer' },
+      { error: 'Failed to process repository transfer', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

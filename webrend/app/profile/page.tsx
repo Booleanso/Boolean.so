@@ -31,15 +31,20 @@ type GithubRepo = {
 
 type PurchasedRepo = {
   id: string;
-  repoId: number;
+  repoId: string | number;
   title: string;
   description: string;
   image: string;
-  seller: string;
+  seller: {
+    id: string;
+    username: string;
+  };
   purchaseDate: string;
   type: 'purchase' | 'subscription';
-  accessUntil?: string; // Only present for subscriptions
+  accessUntil?: string;
   githubUrl: string;
+  status: string;
+  transferStatus?: string;
 };
 
 type StripeConnectionStatus = {
@@ -79,6 +84,8 @@ export default function ProfilePage() {
   const [country, setCountry] = useState('US');
   const [stripeAccountId, setStripeAccountId] = useState<string | null>(null);
   const [accountStatus, setAccountStatus] = useState<'pending' | 'verified' | 'restricted' | null>(null);
+  const [showingSoldListings, setShowingSoldListings] = useState(false);
+  const [allUserListings, setAllUserListings] = useState<MarketplaceListing[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -179,43 +186,43 @@ export default function ProfilePage() {
     }
   };
 
-  const fetchPurchasedRepos = async () => {
+  const fetchPurchasedRepos = async (retryCount = 0) => {
     try {
       setPurchasesLoading(true);
+      setError(null); // Clear any previous errors
       
-      // In a real app, we would fetch from an API
-      // For demo purposes, we'll use mock data
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Fetch from the API
+      const response = await fetch('/api/user/purchased-repos');
       
-      const mockPurchasedRepos: PurchasedRepo[] = [
-        {
-          id: 'purchase1',
-          repoId: 12345,
-          title: 'Advanced React Component Library',
-          description: 'A comprehensive library of React components with TypeScript support',
-          image: 'https://placehold.co/400x250/4299e1/ffffff?text=React+Components',
-          seller: 'DevShop Solutions',
-          purchaseDate: '2023-08-15',
-          type: 'purchase',
-          githubUrl: 'https://github.com/yourusername/advanced-react-components'
-        },
-        {
-          id: 'subscription1',
-          repoId: 67890,
-          title: 'AI Model Collection',
-          description: 'Collection of trained AI models for image recognition',
-          image: 'https://placehold.co/400x250/805ad5/ffffff?text=AI+Models',
-          seller: 'AI Solutions LLC',
-          purchaseDate: '2023-09-22',
-          type: 'subscription',
-          accessUntil: '2023-11-22',
-          githubUrl: 'https://github.com/yourusername/ai-model-collection'
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Not authenticated, just return empty array
+          setPurchasedRepos([]);
+          return;
         }
-      ];
+        
+        console.error(`Failed to fetch purchased repos. Status: ${response.status}`);
+        
+        // If we got a 500 error and have retries left, try again after a delay
+        if (response.status === 500 && retryCount < 2) {
+          console.log(`Retrying fetch purchased repos (${retryCount + 1}/2)...`);
+          setTimeout(() => {
+            fetchPurchasedRepos(retryCount + 1);
+          }, 1000 * (retryCount + 1)); // Increasing delay with each retry
+          return;
+        }
+        
+        throw new Error(`Failed to fetch purchased repositories. Status: ${response.status}`);
+      }
       
-      setPurchasedRepos(mockPurchasedRepos);
+      const data = await response.json();
+      setPurchasedRepos(data.purchasedRepos || []);
     } catch (err) {
       console.error('Error fetching purchased repositories:', err);
+      // Show error but don't block the UI
+      setError('Failed to load purchased repositories');
+      // Display empty data rather than breaking the UI completely
+      setPurchasedRepos([]);
     } finally {
       setPurchasesLoading(false);
     }
@@ -279,7 +286,19 @@ export default function ProfilePage() {
       });
       
       console.log(`Found ${userListings.length} listings belonging to current user ${currentUsername}`);
-      setListedRepos(userListings);
+
+      // Store all user listings in state for toggling
+      setAllUserListings(userListings);
+
+      // Add an additional filter to only show non-sold listings by default
+      const activeListings = userListings.filter((listing: MarketplaceListing) => !listing.sold);
+      const soldListings = userListings.filter((listing: MarketplaceListing) => listing.sold);
+
+      console.log(`Active listings: ${activeListings.length}, Sold listings: ${soldListings.length}`);
+
+      // Set both types of listings for display
+      setListedRepos(activeListings);
+      setShowingSoldListings(false);
       
     } catch (err) {
       console.error('Error fetching listed repositories:', err);
@@ -660,6 +679,21 @@ export default function ProfilePage() {
     }
   };
 
+  // Add this function to the component to toggle showing sold listings
+  const toggleSoldListings = () => {
+    if (showingSoldListings) {
+      // Switch to active listings
+      const activeListings = allUserListings.filter((listing: MarketplaceListing) => !listing.sold);
+      setListedRepos(activeListings);
+      setShowingSoldListings(false);
+    } else {
+      // Switch to sold listings
+      const soldListings = allUserListings.filter((listing: MarketplaceListing) => listing.sold);
+      setListedRepos(soldListings);
+      setShowingSoldListings(true);
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -828,26 +862,23 @@ export default function ProfilePage() {
             <div className={styles.connectionInfo}>
               <div className={styles.connectionIcon}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M14.31 8L20.05 17.94" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M9.69 8H21.17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M7.38 12.0001L13.12 2.06006" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M9.69 16.0001L3.95 6.06006" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M14.31 16H2.83" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M16.62 12L10.88 21.94" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 6h18v3H3V6zm0 5h18v3H3v-3zm0 5h18v3H3v-3z" fill="currentColor"/>
                 </svg>
               </div>
               <div className={styles.connectionDetails}>
-                <h3>Stripe Connect</h3>
+                <h3>Bank Details</h3>
                 <p>
                   {stripeLoading 
                     ? 'Checking status...' 
-                    : stripeStatus.connected 
-                      ? `Connected${stripeAccountId ? ` - Account ${stripeAccountId.slice(-4)}` : ''} ${accountStatus ? `(${accountStatus})` : ''}`
-                      : 'Not connected - Set up to receive payments'}
+                    : stripeStatus.bankDetailsAdded 
+                      ? `Bank account ending in ${bankAccountNumber.slice(-4) || '****'}`
+                      : 'No bank account connected - Required to receive payments'}
                 </p>
-                {stripeStatus.connected && accountStatus === 'pending' && (
-                  <small className={styles.verificationNote}>Your account is pending verification</small>
+                {stripeStatus.bankDetailsAdded && accountStatus === 'pending' && (
+                  <small className={styles.verificationNote}>
+                    Your account is pending verification. This usually takes 1-2 business days. 
+                    You can still list repositories for sale during this time.
+                  </small>
                 )}
               </div>
             </div>
@@ -860,7 +891,7 @@ export default function ProfilePage() {
                 >
                   Loading...
                 </button>
-              ) : stripeStatus.connected ? (
+              ) : stripeStatus.bankDetailsAdded ? (
                 <div className={styles.bankDetailsButtons}>
                   <button
                     className={`${styles.connectionButton} ${styles.edit}`}
@@ -872,7 +903,7 @@ export default function ProfilePage() {
                     className={`${styles.connectionButton} ${styles.disconnect}`}
                     onClick={handleRemoveBankDetails}
                   >
-                    Disconnect
+                    Remove
                   </button>
                 </div>
               ) : (
@@ -880,7 +911,7 @@ export default function ProfilePage() {
                   className={`${styles.connectionButton} ${styles.connect}`}
                   onClick={() => setShowBankForm(true)}
                 >
-                  Connect Stripe
+                  Add Bank Account
                 </button>
               )}
             </div>
@@ -899,9 +930,10 @@ export default function ProfilePage() {
           {showBankForm && (
             <div className={styles.formContainer}>
               <div className={styles.formSection}>
-                <h3>Set Up Stripe Connect Account</h3>
+                <h3>Set Up Bank Account</h3>
                 <p className={styles.formHelper}>
-                  These details will be used to create a Stripe Connect account for your marketplace sales. Each seller has their own unique account.
+                  These details will be used to receive payments from your marketplace sales. Bank verification typically takes 1-2 business days.
+                  You can still list repositories during verification.
                 </p>
                 <div className={styles.formGroup}>
                   <label htmlFor="accountHolderName">Account Holder Name</label>
@@ -990,7 +1022,21 @@ export default function ProfilePage() {
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>Your Purchased Repositories</h2>
+                <button 
+                  onClick={() => fetchPurchasedRepos(0)} 
+                  className={styles.refreshButton}
+                  disabled={purchasesLoading}
+                  title="Refresh purchased repositories"
+                >
+                  <FiRefreshCw className={purchasesLoading ? styles.spinning : ''} />
+                </button>
               </div>
+              
+              {error && (
+                <div className={styles.error}>
+                  {error}
+                </div>
+              )}
               
               {purchasesLoading ? (
                 <div className={styles.loading}>Loading purchases...</div>
@@ -1015,13 +1061,18 @@ export default function ProfilePage() {
                           {repo.description}
                         </p>
                         <div className={styles.purchasedRepoMeta}>
-                          <span>From {repo.seller}</span>
+                          <span>From {repo.seller.username}</span>
                           <span>•</span>
                           <span>Purchased on {new Date(repo.purchaseDate).toLocaleDateString()}</span>
                         </div>
                         {repo.type === 'subscription' && repo.accessUntil && (
                           <div className={styles.subscriptionInfo}>
                             Access until: {new Date(repo.accessUntil).toLocaleDateString()}
+                          </div>
+                        )}
+                        {repo.type === 'purchase' && repo.transferStatus && (
+                          <div className={`${styles.transferStatus} ${styles[`status-${repo.transferStatus}`] || ''}`}>
+                            Transfer status: {repo.transferStatus}
                           </div>
                         )}
                         <div className={styles.purchasedRepoActions}>
@@ -1051,14 +1102,23 @@ export default function ProfilePage() {
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>Your Listed Repositories</h2>
-                <button 
-                  onClick={handleRefreshListings}
-                  className={styles.refreshButton}
-                  disabled={refreshingListings || listedReposLoading}
-                  title="Refresh listings"
-                >
-                  <FiRefreshCw className={refreshingListings || listedReposLoading ? styles.spinning : ''} />
-                </button>
+                <div className={styles.sectionControls}>
+                  <button 
+                    onClick={toggleSoldListings}
+                    className={styles.toggleSoldButton}
+                    title={showingSoldListings ? "Show active listings" : "Show sold listings"}
+                  >
+                    {showingSoldListings ? "Show Active" : "Show Sold"}
+                  </button>
+                  <button 
+                    onClick={handleRefreshListings}
+                    className={styles.refreshButton}
+                    disabled={refreshingListings || listedReposLoading}
+                    title="Refresh listings"
+                  >
+                    <FiRefreshCw className={refreshingListings || listedReposLoading ? styles.spinning : ''} />
+                  </button>
+                </div>
               </div>
               
               {listedReposLoading ? (
@@ -1077,6 +1137,11 @@ export default function ProfilePage() {
                         <div className={styles.listingType}>
                           {repo.isSubscription ? 'Subscription' : 'One-time Purchase'}
                         </div>
+                        {repo.sold && (
+                          <div className={styles.soldBadge}>
+                            Sold
+                          </div>
+                        )}
                       </div>
                       <div className={styles.listedRepoInfo}>
                         <h3>{repo.name}</h3>

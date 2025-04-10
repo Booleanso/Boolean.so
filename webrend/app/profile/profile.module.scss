@@ -1,7 +1,7 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 7rem 2rem 2rem;
 }
 
 .profile {
@@ -915,4 +915,72 @@
   font-size: 0.8rem;
   color: #c05621;
   margin-top: 0.25rem;
+}
+
+.transferStatus {
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-block;
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.status-initiated {
+  background-color: #dbeafe;
+  color: #3b82f6;
+}
+
+.status-completed {
+  background-color: #dcfce7;
+  color: #22c55e;
+}
+
+.status-failed {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.status-pending {
+  background-color: #fef9c3;
+  color: #ca8a04;
+}
+
+.sectionControls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toggleSoldButton {
+  background-color: #f6f8fa;
+  color: #24292e;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #f0f4f9;
+    border-color: #0969da;
+    color: #0969da;
+  }
+}
+
+.soldBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(207, 34, 46, 0.9);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  z-index: 2;
 }

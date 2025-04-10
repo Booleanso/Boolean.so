@@ -1,44 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { db } from '../../../../../lib/firebase-admin';
 
 // Import helpers
 import { MarketplaceListing } from '../../../list-repo/route';
-
-// This would be a database in production
-const getMarketplaceDataPath = () => {
-  const dataDir = path.join(process.cwd(), 'data');
-  
-  // Create the data directory if it doesn't exist
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
-  
-  return path.join(dataDir, 'marketplace-listings.json');
-};
-
-const getMarketplaceListings = (): MarketplaceListing[] => {
-  const filePath = getMarketplaceDataPath();
-  
-  if (!fs.existsSync(filePath)) {
-    // Return empty array if file doesn't exist yet
-    return [];
-  }
-  
-  try {
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(fileContents);
-  } catch (error) {
-    console.error('Error reading marketplace data:', error);
-    return [];
-  }
-};
-
-const saveMarketplaceListings = (listings: MarketplaceListing[]) => {
-  const filePath = getMarketplaceDataPath();
-  fs.writeFileSync(filePath, JSON.stringify(listings, null, 2), 'utf8');
-};
 
 export async function POST(
   request: NextRequest,
@@ -54,12 +19,10 @@ export async function POST(
       );
     }
     
-    const listings = getMarketplaceListings();
+    // Get the listing document from Firestore
+    const listingDoc = await db.collection('listings').doc(listingId.toString()).get();
     
-    // Find the listing to mark as sold
-    const listingIndex = listings.findIndex(listing => listing.id === listingId);
-    
-    if (listingIndex === -1) {
+    if (!listingDoc.exists) {
       return NextResponse.json(
         { error: 'Listing not found' },
         { status: 404 }
@@ -67,15 +30,19 @@ export async function POST(
     }
     
     // Mark the listing as sold
-    listings[listingIndex].isSold = true;
+    await db.collection('listings').doc(listingId.toString()).update({
+      sold: true,
+      updatedAt: new Date().toISOString()
+    });
     
-    // Save the updated listings
-    saveMarketplaceListings(listings);
+    // Get the updated listing
+    const updatedDoc = await db.collection('listings').doc(listingId.toString()).get();
+    const updatedListing = updatedDoc.data() as MarketplaceListing;
     
     return NextResponse.json({
       success: true,
       message: 'Listing marked as sold',
-      listing: listings[listingIndex]
+      listing: updatedListing
     });
     
   } catch (error) {

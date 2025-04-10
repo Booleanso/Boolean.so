@@ -5,7 +5,7 @@ import Stripe from 'stripe';
 
 // Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-06-20'
+  apiVersion: '2025-02-24.acacia' as any
 });
 
 // This should be your webhook endpoint secret from the Stripe dashboard
@@ -112,49 +112,153 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   // Save the transaction
   const transactionRef = await db.collection('transactions').add(transactionData);
   
-  // For one-time purchases, initiate repository transfer
-  if (pricingType === 'onetime') {
-    // Call our repository transfer API
-    await fetch(`${process.env.NEXT_PUBLIC_URL}/api/github/transfer`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        repoId,
-        sellerId,
-        buyerId,
-        isSinglePurchase: true,
-        transactionId: transactionRef.id
-      })
-    });
-  } else {
-    // For subscriptions, add buyer as a collaborator
-    await fetch(`${process.env.NEXT_PUBLIC_URL}/api/github/transfer`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        repoId,
-        sellerId,
-        buyerId,
-        isSinglePurchase: false,
-        transactionId: transactionRef.id
-      })
-    });
+  // Update buyer's purchased repositories in their user document
+  const userRef = db.collection('customers').doc(buyerId);
+  const userDoc = await userRef.get();
+  
+  if (userDoc.exists) {
+    // Get current purchases or initialize empty array
+    const currentPurchases = userDoc.data()?.purchasedRepos || [];
     
-    // Create a subscription record
-    await db.collection('subscriptions').add({
+    // Add new purchase
+    const purchaseData = {
+      transactionId: transactionRef.id,
       listingId,
       repoId,
-      sellerId,
-      buyerId,
-      stripeSubscriptionId: session.subscription,
-      status: 'active',
-      startDate: new Date().toISOString(),
-      transactionId: transactionRef.id
+      purchaseDate: new Date().toISOString(),
+      type: pricingType === 'onetime' ? 'purchase' : 'subscription',
+      status: 'completed'
+    };
+    
+    // Update user document with the new purchase
+    await userRef.update({
+      purchasedRepos: [...currentPurchases, purchaseData]
     });
+  }
+  
+  // Mark the listing as sold for one-time purchases
+  if (pricingType === 'onetime') {
+    try {
+      // Update the listing in Firestore
+      const listingRef = db.collection('listings').doc(listingId);
+      const listingDoc = await listingRef.get();
+      
+      if (listingDoc.exists) {
+        await listingRef.update({
+          sold: true,
+          updatedAt: new Date().toISOString(),
+          buyerId: buyerId
+        });
+        console.log(`Marked listing ${listingId} as sold`);
+      } else {
+        console.log(`Listing ${listingId} not found in Firestore`);
+      }
+    } catch (listingError) {
+      console.error('Error updating listing sold status:', listingError);
+    }
+  }
+  
+  // For one-time purchases, initiate repository transfer
+  if (pricingType === 'onetime') {
+    try {
+      // Call our repository transfer API
+      const transferResponse = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/github/transfer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          repoId,
+          sellerId,
+          buyerId,
+          isSinglePurchase: true,
+          transactionId: transactionRef.id
+        })
+      });
+      
+      if (!transferResponse.ok) {
+        const errorData = await transferResponse.json();
+        console.error('GitHub transfer API error:', errorData);
+        // Update transaction with transfer error
+        await transactionRef.update({
+          transferError: errorData.error || 'Failed to initiate repository transfer',
+          transferStatus: 'failed',
+          updatedAt: new Date().toISOString()
+        });
+      } else {
+        // Transfer initiated successfully
+        const transferResult = await transferResponse.json();
+        await transactionRef.update({
+          transferStatus: 'initiated',
+          transferInitiatedAt: new Date().toISOString(),
+          transferDetails: transferResult
+        });
+      }
+    } catch (error) {
+      console.error('Error initiating repository transfer:', error);
+      // Update transaction with general error
+      await transactionRef.update({
+        transferError: error instanceof Error ? error.message : 'Unknown error during transfer',
+        transferStatus: 'failed',
+        updatedAt: new Date().toISOString()
+      });
+    }
+  } else {
+    // For subscriptions, add buyer as a collaborator
+    try {
+      const collabResponse = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/github/transfer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          repoId,
+          sellerId,
+          buyerId,
+          isSinglePurchase: false,
+          transactionId: transactionRef.id
+        })
+      });
+      
+      if (!collabResponse.ok) {
+        const errorData = await collabResponse.json();
+        console.error('GitHub collaboration API error:', errorData);
+        // Update transaction with collaboration error
+        await transactionRef.update({
+          collaborationError: errorData.error || 'Failed to grant repository access',
+          collaborationStatus: 'failed',
+          updatedAt: new Date().toISOString()
+        });
+      } else {
+        // Collaboration access granted successfully
+        const collabResult = await collabResponse.json();
+        await transactionRef.update({
+          collaborationStatus: 'initiated',
+          collaborationInitiatedAt: new Date().toISOString(),
+          collaborationDetails: collabResult
+        });
+      }
+      
+      // Create a subscription record
+      await db.collection('subscriptions').add({
+        listingId,
+        repoId,
+        sellerId,
+        buyerId,
+        stripeSubscriptionId: session.subscription,
+        status: 'active',
+        startDate: new Date().toISOString(),
+        transactionId: transactionRef.id
+      });
+    } catch (error) {
+      console.error('Error granting repository access:', error);
+      // Update transaction with general error
+      await transactionRef.update({
+        collaborationError: error instanceof Error ? error.message : 'Unknown error during collaboration setup',
+        collaborationStatus: 'failed',
+        updatedAt: new Date().toISOString()
+      });
+    }
   }
 }
 
@@ -221,15 +325,34 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   });
   
   // Revoke repository access
-  await fetch(`${process.env.NEXT_PUBLIC_URL}/api/github/revoke-access`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      subscriptionId: subscriptionDoc.id,
-      buyerId: subscriptionData.buyerId,
-      repoId: subscriptionData.repoId
-    })
-  });
+  try {
+    const revokeResponse = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/github/revoke-access`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        subscriptionId: subscriptionDoc.id,
+        buyerId: subscriptionData.buyerId,
+        repoId: subscriptionData.repoId
+      })
+    });
+    
+    if (!revokeResponse.ok) {
+      const errorData = await revokeResponse.json();
+      console.error('GitHub revoke access API error:', errorData);
+      // Update subscription with revocation error
+      await subscriptionDoc.ref.update({
+        revocationError: errorData.error || 'Failed to revoke repository access',
+        revocationAttemptedAt: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    console.error('Error revoking repository access:', error);
+    // Update subscription with general error
+    await subscriptionDoc.ref.update({
+      revocationError: error instanceof Error ? error.message : 'Unknown error during access revocation',
+      revocationAttemptedAt: new Date().toISOString()
+    });
+  }
 } 
