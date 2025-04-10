@@ -232,16 +232,6 @@ export default function ProfilePage() {
     try {
       setListedReposLoading(true);
       
-      // Fetch all listings
-      const response = await fetch('/api/marketplace/listings');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('All marketplace listings:', data.listings);
-      
       if (!user) {
         setListedRepos([]);
         return;
@@ -255,44 +245,47 @@ export default function ProfilePage() {
       
       const userData = await userResponse.json();
       
-      // Get the current username (prioritize Firestore username as it's the most reliable)
-      const currentUsername = (
-        userData.firestore?.username || 
-        username || 
-        userData.auth.displayName || 
-        (userData.auth.email ? userData.auth.email.split('@')[0] : null)
-      )?.toLowerCase();
+      // Get the user ID from Firebase Auth
+      const userId = userData.auth.uid;
       
-      console.log('Current authenticated username:', currentUsername);
-      
-      if (!currentUsername) {
-        console.log('No username found for current user, cannot match listings');
+      if (!userId) {
+        console.log('No user ID found for current user, cannot fetch listings');
         setListedRepos([]);
         return;
       }
       
-      // Filter only the listings created by this user with EXACT username matching
-      const userListings = data.listings.filter((listing: MarketplaceListing) => {
-        if (!listing.seller || !listing.seller.username) {
-          return false;
-        }
-        
-        const sellerUsername = listing.seller.username.toLowerCase();
-        const isMatch = sellerUsername === currentUsername;
-        
-        console.log(`Checking listing: "${listing.name}" by "${sellerUsername}" against current user "${currentUsername}" - Match: ${isMatch}`);
-        
-        return isMatch;
+      // Fetch listings from Firestore using the user ID
+      const response = await fetch('/api/marketplace/firestore-access', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          operation: 'query',
+          collection: 'listings',
+          data: {
+            field: 'seller.id',
+            operator: '==',
+            value: userId,
+            orderByField: 'createdAt',
+            orderDirection: 'desc'
+          }
+        }),
       });
       
-      console.log(`Found ${userListings.length} listings belonging to current user ${currentUsername}`);
-
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('User marketplace listings:', data.documents);
+      
       // Store all user listings in state for toggling
-      setAllUserListings(userListings);
+      setAllUserListings(data.documents);
 
       // Add an additional filter to only show non-sold listings by default
-      const activeListings = userListings.filter((listing: MarketplaceListing) => !listing.sold);
-      const soldListings = userListings.filter((listing: MarketplaceListing) => listing.sold);
+      const activeListings = data.documents.filter((listing: MarketplaceListing) => !listing.sold);
+      const soldListings = data.documents.filter((listing: MarketplaceListing) => listing.sold);
 
       console.log(`Active listings: ${activeListings.length}, Sold listings: ${soldListings.length}`);
 
@@ -511,9 +504,17 @@ export default function ProfilePage() {
     try {
       setDeleteLoading(listingId);
       
-      // Call API to remove the listing from the marketplace
-      const deleteResponse = await fetch(`/api/marketplace/listings/${listingId}`, {
-        method: 'DELETE',
+      // Call Firestore API to remove the listing
+      const deleteResponse = await fetch('/api/marketplace/firestore-access', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          operation: 'delete',
+          collection: 'listings',
+          documentId: String(listingId)
+        }),
       });
       
       if (!deleteResponse.ok) {
@@ -552,9 +553,21 @@ export default function ProfilePage() {
     try {
       setDeleteLoading(listingId); // Reuse the loading state for now
       
-      // Call API to mark the listing as sold
-      const response = await fetch(`/api/marketplace/listings/${listingId}/mark-sold`, {
+      // Use Firestore API to mark the listing as sold
+      const response = await fetch('/api/marketplace/firestore-access', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          operation: 'update',
+          collection: 'listings',
+          documentId: String(listingId),
+          data: {
+            sold: true,
+            updatedAt: new Date().toISOString()
+          }
+        }),
       });
       
       if (!response.ok) {

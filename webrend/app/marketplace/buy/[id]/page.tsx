@@ -50,18 +50,56 @@ export default function BuyPage({ params }: BuyPageProps) {
         setLoading(true);
         setError(null);
         
-        // Fetch the listing details from the API
-        const response = await fetch(`/api/marketplace/listings/${repoId}`);
+        // First, try to fetch using the ID as the document ID directly
+        const response = await fetch('/api/marketplace/firestore-access', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            operation: 'get',
+            collection: 'listings',
+            documentId: repoId
+          }),
+        });
         
         if (!response.ok) {
           throw new Error(`Failed to fetch repository details. Status: ${response.status}`);
         }
         
         const data = await response.json();
-        if (data.listing) {
-          setListing(data.listing);
+        
+        if (data.success && data.document) {
+          setListing(data.document);
         } else {
-          setError('Repository not found');
+          // If not found, try querying by the internal id field
+          const queryResponse = await fetch('/api/marketplace/firestore-access', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              operation: 'query',
+              collection: 'listings',
+              data: {
+                field: 'id',
+                operator: '==',
+                value: parseInt(repoId) || repoId
+              }
+            }),
+          });
+          
+          if (!queryResponse.ok) {
+            throw new Error(`Failed to query repository details. Status: ${queryResponse.status}`);
+          }
+          
+          const queryData = await queryResponse.json();
+          
+          if (queryData.success && queryData.documents && queryData.documents.length > 0) {
+            setListing(queryData.documents[0]);
+          } else {
+            setError('Repository not found');
+          }
         }
       } catch (err) {
         console.error('Error fetching repository details:', err);
@@ -96,6 +134,7 @@ export default function BuyPage({ params }: BuyPageProps) {
           listingId: listing.id,
           priceId: listing.stripePriceId, // Use the stored Stripe Price ID
           isSubscription: listing.isSubscription,
+          documentId: listing.docId || repoId // Use docId if available, otherwise fall back to repoId
         }),
       });
       
@@ -150,6 +189,7 @@ export default function BuyPage({ params }: BuyPageProps) {
         body: JSON.stringify({
           listingId: listing.id,
           purchaseType: listing.isSubscription ? 'subscription' : 'purchase',
+          documentId: listing.docId || repoId // Use docId if available, otherwise fall back to repoId
         }),
       });
       
@@ -286,7 +326,6 @@ export default function BuyPage({ params }: BuyPageProps) {
               alt={listing.name}
               width={600}
               height={400}
-              layout="responsive"
             />
           </div>
           <div className={styles.productDetails}>

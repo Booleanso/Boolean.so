@@ -198,7 +198,7 @@ export default function Marketplace() {
                       </div>
                     </div>
                   </div>
-                  <Link href={`/marketplace/buy/${repo.id}`}>
+                  <Link href={`/marketplace/buy/${repo.docId || repo.id}`}>
                     <button className={styles.buyButton} disabled={repo.sold}>
                       {repo.sold 
                         ? 'Sold Out' 

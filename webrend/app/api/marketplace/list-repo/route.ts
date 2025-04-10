@@ -4,7 +4,8 @@ import { db } from '../../../lib/firebase-admin';
 
 // Define types for our marketplace listings
 export type MarketplaceListing = {
-  id: number;
+  id: number | string;
+  docId?: string; // Add explicit document ID field for Firestore
   name: string;
   description: string;
   price: number;

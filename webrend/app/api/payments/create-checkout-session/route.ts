@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     }
 
     // Parse the request body
-    const { listingId, priceId, isSubscription } = await request.json();
+    const { listingId, priceId, isSubscription, documentId } = await request.json();
     
     if (!listingId || !priceId) {
       return NextResponse.json(
@@ -92,6 +92,7 @@ export async function POST(request: Request) {
       metadata: {
         listingId: listingId.toString(),
         buyerId: userId,
+        documentId: documentId || listingId.toString(), // Add document ID for Firestore
       },
       // For demo purposes, we'll skip the application fee and transfer
       // In a real app, you would use this with proper Stripe Connect accounts

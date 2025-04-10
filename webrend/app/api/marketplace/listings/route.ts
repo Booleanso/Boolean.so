@@ -45,7 +45,8 @@ export async function GET() {
       // Return the normalized listing
       return {
         ...data,
-        id: parseInt(doc.id) || data.id,
+        id: doc.id,
+        docId: doc.id,
         createdAt,
         updatedAt
       } as MarketplaceListing;
