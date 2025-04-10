@@ -8,6 +8,7 @@ export async function POST(request: Request) {
     // Extract the session cookie from the request
     const cookies = request.headers.get('cookie');
     if (!cookies) {
+      console.log('No cookies found in request');
       return NextResponse.json(
         { error: 'Authentication cookies not found' },
         { status: 401 }
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
       ?.split('=')[1];
       
     if (!sessionCookie) {
+      console.log('No session cookie found');
       return NextResponse.json(
         { error: 'Session cookie not found' },
         { status: 401 }
@@ -41,6 +43,7 @@ export async function POST(request: Request) {
     
     const userId = decodedClaims.uid;
     if (!userId) {
+      console.log('No user ID found in session');
       return NextResponse.json(
         { error: 'User ID not found in session' },
         { status: 401 }
@@ -73,7 +76,7 @@ export async function POST(request: Request) {
     // 1. You would retrieve the seller's Stripe account ID from your database
     // 2. Set up proper transfer_data with the actual account ID
     
-    const success_url = new URL('/marketplace/buy/success', request.url).toString();
+    const success_url = new URL('/marketplace/buy/success?session_id={CHECKOUT_SESSION_ID}', request.url).toString();
     const cancel_url = new URL(`/marketplace/buy/${listingId}`, request.url).toString();
     
     // Create a Stripe checkout session

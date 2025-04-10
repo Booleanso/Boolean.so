@@ -1085,7 +1085,9 @@ export default function ProfilePage() {
                         )}
                         {repo.type === 'purchase' && repo.transferStatus && (
                           <div className={`${styles.transferStatus} ${styles[`status-${repo.transferStatus}`] || ''}`}>
-                            Transfer status: {repo.transferStatus}
+                            Transfer status: {repo.transferStatus === 'self-purchase' || repo.transferStatus === 'not_applicable' 
+                              ? 'Self-purchase (already owned)' 
+                              : repo.transferStatus}
                           </div>
                         )}
                         <div className={styles.purchasedRepoActions}>

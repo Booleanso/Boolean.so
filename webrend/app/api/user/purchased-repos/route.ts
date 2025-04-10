@@ -128,7 +128,7 @@ export async function GET(request: NextRequest) {
         }
         
         const transaction = transactionDoc.data();
-        console.log(`Processing transaction ${transactionDoc.id}, type: ${transaction.pricingType}`);
+        console.log(`Processing transaction ${transactionDoc.id}, type: ${transaction.pricingType || transaction.type}`);
         
         try {
           // Get repository details - skip if not found
@@ -167,9 +167,10 @@ export async function GET(request: NextRequest) {
           // Determine GitHub URL based on purchase type
           let githubUrl = '';
           const isOnetime = transaction.pricingType === 'onetime';
+          const isSelfPurchase = transaction.type === 'repository_self_purchase';
           
-          if (isOnetime) {
-            // For one-time purchases, the repo should be transferred to the buyer
+          if (isOnetime || isSelfPurchase) {
+            // For one-time purchases or self-purchases, the repo should be with the buyer
             githubUrl = `https://github.com/${transaction.buyerGithubUsername || 'username'}/${repoData.name || 'repo'}`;
           } else {
             // For subscriptions, the repo remains with the seller but buyer has access

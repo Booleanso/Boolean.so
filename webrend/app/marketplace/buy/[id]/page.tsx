@@ -207,16 +207,45 @@ export default function BuyPage({ params }: BuyPageProps) {
     try {
       setPurchaseLoading(true);
       
-      // Simulate GitHub repository transfer process
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Call the GitHub transfer API
+      const response = await fetch('/api/github/transfer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          repoId: listing.repoId,
+          sellerId: listing.seller.id,
+          isSinglePurchase: true
+        }),
+      });
       
-      // In a real application, this would initiate GitHub's repository transfer API
-      // and would be handled by a background job or webhook
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to transfer repository');
+      }
+      
+      // Mark listing as sold
+      await fetch('/api/marketplace/firestore-access', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          operation: 'update',
+          collection: 'listings',
+          documentId: listing.docId || String(listing.id),
+          data: {
+            sold: true,
+            updatedAt: new Date().toISOString()
+          }
+        }),
+      });
       
       setPurchaseSuccess(true);
     } catch (err) {
       console.error('Error transferring repository:', err);
-      setPurchaseError('Failed to transfer the GitHub repository');
+      setPurchaseError(err instanceof Error ? err.message : 'Failed to transfer the GitHub repository');
     } finally {
       setPurchaseLoading(false);
     }

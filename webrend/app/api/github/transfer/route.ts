@@ -75,6 +75,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if buyer and seller are the same user
+    if (buyerId === sellerId) {
+      console.log('GitHub transfer: Buyer and seller are the same user. No transfer needed.');
+      
+      // Update transaction with self-purchase status
+      if (transactionId) {
+        await db.collection('transactions').doc(transactionId).update({
+          type: 'repository_self_purchase',
+          transferStatus: 'not_applicable',
+          note: 'Self-purchase: Repository already owned by buyer',
+          updatedAt: new Date().toISOString()
+        });
+      }
+      
+      return NextResponse.json({
+        success: true,
+        message: 'Self-purchase detected. Repository already belongs to the buyer.',
+        selfPurchase: true
+      });
+    }
+
     // Get repository details from database
     const repoDoc = await db.collection('repositories').doc(repoId).get();
     if (!repoDoc.exists) {

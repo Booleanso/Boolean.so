@@ -89,15 +89,79 @@ export async function POST(request: Request) {
     
     // For one-time purchases, initiate GitHub repository transfer
     if (purchaseType === 'purchase') {
-      // In a real app, this would call GitHub's API to initiate the transfer
-      // For demo purposes, we're just recording the purchase
-      
-      // Mark the listing as sold in Firestore
-      if (documentId) {
-        await db.collection('listings').doc(documentId).update({
+      try {
+        // Get listing details to find the repository info and seller
+        const listingRef = db.collection('listings').doc(documentId);
+        const listingDoc = await listingRef.get();
+        
+        if (!listingDoc.exists) {
+          console.error(`Listing ${documentId} not found`);
+          return NextResponse.json({
+            success: false, 
+            error: 'Listing not found',
+            purchase: newPurchase
+          }, { status: 404 });
+        }
+        
+        const listingData = listingDoc.data() || {};
+        
+        // Mark the listing as sold in Firestore
+        await listingRef.update({
           sold: true,
+          buyerId: userId,
           updatedAt: new Date().toISOString()
         });
+        
+        // Create a transaction record
+        const transactionRef = await db.collection('transactions').add({
+          listingId: listingData.id || documentId,
+          repoId: listingData.repoId || null,
+          sellerId: listingData.seller?.id || null,
+          buyerId: userId,
+          amount: listingData.price || 0,
+          status: 'completed',
+          type: 'repository_purchase',
+          pricingType: 'onetime',
+          createdAt: new Date().toISOString(),
+          purchaseId: newPurchase.id
+        });
+        
+        // Call the GitHub transfer API
+        const transferResponse = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/github/transfer`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            repoId: listingData.repoId || null,
+            sellerId: listingData.seller?.id || null,
+            buyerId: userId,
+            isSinglePurchase: true,
+            transactionId: transactionRef.id
+          })
+        });
+        
+        if (!transferResponse.ok) {
+          const errorData = await transferResponse.json();
+          console.error('GitHub transfer API error:', errorData);
+          // Update transaction with transfer error
+          await transactionRef.update({
+            transferError: errorData.error || 'Failed to initiate repository transfer',
+            transferStatus: 'failed',
+            updatedAt: new Date().toISOString()
+          });
+        } else {
+          // Transfer initiated successfully
+          const transferResult = await transferResponse.json();
+          await transactionRef.update({
+            transferStatus: 'initiated',
+            transferInitiatedAt: new Date().toISOString(),
+            transferDetails: transferResult
+          });
+        }
+      } catch (error) {
+        console.error('Error initiating repository transfer:', error);
+        // We don't want to fail the purchase recording, so we just log the error
       }
     }
     
