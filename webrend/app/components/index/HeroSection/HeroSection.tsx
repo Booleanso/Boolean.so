@@ -1036,17 +1036,17 @@ export default function HeroSection() {
       <div className={styles.container}>
         <div className={styles.content}>
           <div className={styles.heading}>
-            <h1>WebRend</h1>
+            <h1>Build. Share. Sell. Explore a World of Code.</h1>
             <p className={styles.subtitle}>
-              Turn ideas into reality—fast, lean, and strategically
+              We build cutting-edge software — and help you profit from your GitHub projects.
             </p>
           </div>
 
           {error && <div className={styles.errorMessage}>{error}</div>}
 
           <div className={styles.ctas}>
-            <a href="#contact" className={styles.primaryBtn}>Get Started</a>
-            <a href="#services" className={styles.secondaryBtn}>Explore Services</a>
+            <a href="#contact" className={styles.primaryBtn}>Let's Build</a>
+            <a href="/marketplace" className={styles.secondaryBtn}>Sell Your Repo</a>
           </div>
         </div>
 

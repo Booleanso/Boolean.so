@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
       'github.com',
       'raw.githubusercontent.com',
       'user-images.githubusercontent.com',
-      'placehold.co'
+      'placehold.co',
+      'images.unsplash.com'
     ],
   },
 };

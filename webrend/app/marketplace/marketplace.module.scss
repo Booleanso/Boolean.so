@@ -10,6 +10,150 @@ $radius: 12px;
 $card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 $transition: all 0.2s ease-in-out;
 
+// Featured repository styles
+.featuredRepo {
+  height: 90vh;
+  margin-bottom: 4rem;
+  border-radius: $radius;
+  overflow: hidden;
+  position: relative;
+  box-shadow: $card-shadow;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border: 1px solid $border-color;
+  transition: $transition;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  }
+  
+  @media (max-width: 768px) {
+    height: auto;
+    min-height: 70vh;
+  }
+}
+
+.featuredImage {
+  height: 60%;
+  position: relative;
+  overflow: hidden;
+  
+  img {
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  &:hover img {
+    transform: scale(1.03);
+  }
+  
+  @media (max-width: 768px) {
+    height: 40%;
+  }
+}
+
+.featuredContent {
+  padding: 2rem;
+  height: 40%;
+  display: flex;
+  flex-direction: column;
+  
+  @media (max-width: 768px) {
+    height: 60%;
+  }
+}
+
+.featuredHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  
+  h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    
+    @media (max-width: 768px) {
+      font-size: 1.75rem;
+    }
+  }
+}
+
+.featuredBadge {
+  display: inline-block;
+  background: linear-gradient(90deg, $primary-color, $accent-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.featuredPrice {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $accent-color;
+  background-color: rgba(46, 164, 79, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.featuredDescription {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: $text-light;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+  max-width: 80%;
+  
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+}
+
+.featuredFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.featuredSeller {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+  color: $text-light;
+  
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.featuredStats {
+  display: flex;
+  gap: 1.5rem;
+  
+  .stat {
+    font-size: 1rem;
+  }
+}
+
+.featuredAction {
+  margin-top: 1.5rem;
+  
+  .buyButton {
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+  }
+}
+
 // Main container with navbar padding
 .marketplaceContainer {
   max-width: 1400px;
