@@ -4,6 +4,7 @@ import styles from "./page.module.css";
 import HeroSection from "./components/index/HeroSection/HeroSection";
 import VideoSection from "./components/VideoSection/VideoSection";
 import FeaturedRepos from "./components/FeaturedRepos/FeaturedRepos";
+import ServicesSection from "./components/ServicesSection/ServicesSection";
 import Footer from "./components/Footer/Footer";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
         <HeroSection />
         <FeaturedRepos />
         <VideoSection />
+        <ServicesSection />
       </main>
       <Footer />
     </div>
