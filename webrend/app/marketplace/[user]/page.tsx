@@ -3,27 +3,31 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import styles from './marketplace.module.scss';
+import { useParams } from 'next/navigation';
+import styles from '../marketplace.module.scss';
 
 // Import the type from our API
-import { MarketplaceListing } from '../api/marketplace/list-repo/route';
+import { MarketplaceListing } from '../../api/marketplace/list-repo/route';
 
-export default function Marketplace() {
-  const [activeFilter, setActiveFilter] = useState('all');
+export default function UserMarketplace() {
+  const params = useParams();
+  const username = params.user as string;
+  
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [includeSold, setIncludeSold] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('all');
 
   // Fetch listings when component mounts
   useEffect(() => {
-    const fetchListings = async () => {
+    const fetchUserListings = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        // Fetch listings from our API that now uses Firestore
-        const response = await fetch('/api/marketplace/listings');
+        // Fetch listings for the specific user
+        const response = await fetch(`/api/marketplace/listings?username=${encodeURIComponent(username)}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -33,7 +37,7 @@ export default function Marketplace() {
         const fetchedListings = data.listings || [];
         setListings(fetchedListings);
       } catch (err) {
-        console.error('Error fetching marketplace listings:', err);
+        console.error('Error fetching user marketplace listings:', err);
         setError('Failed to load listings. Please try again later.');
         setListings([]);
       } finally {
@@ -41,20 +45,20 @@ export default function Marketplace() {
       }
     };
     
-    fetchListings();
-  }, []);
+    fetchUserListings();
+  }, [username]);
 
   return (
     <div className={styles.marketplaceContainer}>
       <div className={styles.header}>
-        <h1>GitHub Repository Marketplace</h1>
-        <Link href="/marketplace/sell" className={styles.listButton}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
+        <Link href="/marketplace" className={styles.backLink}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          List a Repo to Sell
+          Back to Marketplace
         </Link>
+        <h1>Repos from @{username}</h1>
       </div>
 
       {error && (
@@ -84,10 +88,10 @@ export default function Marketplace() {
         </div>
       ) : listings.length === 0 ? (
         <div className={styles.emptyState}>
-          <h2>No repositories available</h2>
-          <p>Be the first to list a repository for sale!</p>
-          <Link href="/marketplace/sell" className={styles.sellButton}>
-            List a Repository
+          <h2>No repositories found</h2>
+          <p>This user hasn't listed any repositories yet.</p>
+          <Link href="/marketplace" className={styles.sellButton}>
+            Back to Marketplace
           </Link>
         </div>
       ) : (
@@ -190,9 +194,7 @@ export default function Marketplace() {
                             height={24}
                           />
                         </div>
-                        <Link href={`/marketplace/user/${repo.seller.username}`} className={styles.sellerUsername}>
-                          @{repo.seller.username}
-                        </Link>
+                        @{repo.seller.username}
                       </div>
                       <div className={styles.stats}>
                         <div className={styles.stat}>
@@ -221,4 +223,4 @@ export default function Marketplace() {
       )}
     </div>
   );
-}
+} 

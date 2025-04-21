@@ -3,27 +3,33 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import styles from './marketplace.module.scss';
+import { useParams } from 'next/navigation';
+import styles from './user.module.scss';
+import marketplaceStyles from '../../marketplace.module.scss';
 
 // Import the type from our API
-import { MarketplaceListing } from '../api/marketplace/list-repo/route';
+import { MarketplaceListing } from '../../../api/marketplace/list-repo/route';
 
-export default function Marketplace() {
-  const [activeFilter, setActiveFilter] = useState('all');
+export default function UserMarketplace() {
+  const params = useParams();
+  const username = params.username as string;
+  
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [includeSold, setIncludeSold] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
 
   // Fetch listings when component mounts
   useEffect(() => {
-    const fetchListings = async () => {
+    const fetchUserListings = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        // Fetch listings from our API that now uses Firestore
-        const response = await fetch('/api/marketplace/listings');
+        // Fetch listings for the specific user
+        const response = await fetch(`/api/marketplace/listings?username=${encodeURIComponent(username)}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -32,8 +38,13 @@ export default function Marketplace() {
         const data = await response.json();
         const fetchedListings = data.listings || [];
         setListings(fetchedListings);
+        
+        // Get user avatar from first listing if available
+        if (fetchedListings.length > 0 && fetchedListings[0].seller.avatarUrl) {
+          setUserAvatar(fetchedListings[0].seller.avatarUrl);
+        }
       } catch (err) {
-        console.error('Error fetching marketplace listings:', err);
+        console.error('Error fetching user marketplace listings:', err);
         setError('Failed to load listings. Please try again later.');
         setListings([]);
       } finally {
@@ -41,24 +52,44 @@ export default function Marketplace() {
       }
     };
     
-    fetchListings();
-  }, []);
+    fetchUserListings();
+  }, [username]);
 
   return (
-    <div className={styles.marketplaceContainer}>
-      <div className={styles.header}>
-        <h1>GitHub Repository Marketplace</h1>
-        <Link href="/marketplace/sell" className={styles.listButton}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
+    <div className={styles.userMarketplaceContainer}>
+      <div className={marketplaceStyles.header}>
+        <Link href="/marketplace" className={marketplaceStyles.backLink}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          List a Repo to Sell
+          Back to Marketplace
         </Link>
       </div>
 
+      <div className={styles.userProfileSection}>
+        <div className={styles.userProfileContainer}>
+          <div className={styles.userAvatar}>
+            {userAvatar ? (
+              <Image 
+                src={userAvatar} 
+                alt={username}
+                width={120}
+                height={120}
+                className={styles.avatar}
+              />
+            ) : (
+              <div className={styles.placeholderAvatar}>
+                {username.substring(0, 1).toUpperCase()}
+              </div>
+            )}
+          </div>
+          <h2 className={styles.username}>@{username}</h2>
+        </div>
+      </div>
+
       {error && (
-        <div className={styles.error}>
+        <div className={marketplaceStyles.error}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '1.2rem', height: '1.2rem', marginRight: '0.5rem' }}>
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -69,7 +100,7 @@ export default function Marketplace() {
       )}
 
       {loading ? (
-        <div className={styles.loading}>
+        <div className={marketplaceStyles.loading}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin" style={{ animation: 'spin 1s linear infinite', marginRight: '0.5rem' }}>
             <line x1="12" y1="2" x2="12" y2="6"></line>
             <line x1="12" y1="18" x2="12" y2="22"></line>
@@ -83,46 +114,50 @@ export default function Marketplace() {
           Loading repositories...
         </div>
       ) : listings.length === 0 ? (
-        <div className={styles.emptyState}>
-          <h2>No repositories available</h2>
-          <p>Be the first to list a repository for sale!</p>
-          <Link href="/marketplace/sell" className={styles.sellButton}>
-            List a Repository
+        <div className={marketplaceStyles.emptyState}>
+          <h2>No repositories found</h2>
+          <p>This user hasn't listed any repositories yet.</p>
+          <Link href="/marketplace" className={marketplaceStyles.sellButton}>
+            Back to Marketplace
           </Link>
         </div>
       ) : (
         <>
-          <div className={styles.filters}>
+          <div className={styles.repoSectionHeader}>
+            <h3>Repositories</h3>
+          </div>
+          
+          <div className={marketplaceStyles.filters}>
             <button 
-              className={`${styles.filter} ${activeFilter === 'all' ? styles.active : ''}`}
+              className={`${marketplaceStyles.filter} ${activeFilter === 'all' ? marketplaceStyles.active : ''}`}
               onClick={() => setActiveFilter('all')}
             >
               All Repos
             </button>
             <button 
-              className={`${styles.filter} ${activeFilter === 'onetime' ? styles.active : ''}`}
+              className={`${marketplaceStyles.filter} ${activeFilter === 'onetime' ? marketplaceStyles.active : ''}`}
               onClick={() => setActiveFilter('onetime')}
             >
               One-time Purchase
             </button>
             <button 
-              className={`${styles.filter} ${activeFilter === 'subscription' ? styles.active : ''}`}
+              className={`${marketplaceStyles.filter} ${activeFilter === 'subscription' ? marketplaceStyles.active : ''}`}
               onClick={() => setActiveFilter('subscription')}
             >
               Subscription
             </button>
-            <label className={styles.toggleLabel}>
+            <label className={marketplaceStyles.toggleLabel}>
               <input 
                 type="checkbox" 
                 checked={includeSold}
                 onChange={() => setIncludeSold(!includeSold)}
-                className={styles.toggleInput}
+                className={marketplaceStyles.toggleInput}
               />
               Include Sold
             </label>
           </div>
 
-          <div className={styles.grid}>
+          <div className={styles.repoGrid}>
             {listings
               .filter(repo => {
                 // Filter by type (all, onetime, subscription)
@@ -135,8 +170,8 @@ export default function Marketplace() {
                 return true;
               })
               .map(repo => (
-                <div key={repo.id} className={styles.card}>
-                  <div className={styles.cardImage}>
+                <div key={repo.id} className={styles.repoCard}>
+                  <div className={marketplaceStyles.cardImage}>
                     <Image 
                       src={repo.imageUrl} 
                       alt={repo.name}
@@ -145,12 +180,12 @@ export default function Marketplace() {
                       layout="responsive"
                     />
                     {repo.sold && (
-                      <div className={styles.soldBadge}>
+                      <div className={marketplaceStyles.soldBadge}>
                         Sold
                       </div>
                     )}
                     <Link href={`/marketplace/buy/${repo.docId || repo.id}`}>
-                      <button className={styles.buyButton} disabled={repo.sold}>
+                      <button className={marketplaceStyles.buyButton} disabled={repo.sold}>
                         {repo.sold 
                           ? 'Sold Out' 
                           : repo.isSubscription 
@@ -160,17 +195,17 @@ export default function Marketplace() {
                       </button>
                     </Link>
                   </div>
-                  <div className={styles.cardContent}>
-                    <div className={styles.cardHeader}>
-                      <h2 className={styles.repoName}>{repo.name}</h2>
+                  <div className={marketplaceStyles.cardContent}>
+                    <div className={marketplaceStyles.cardHeader}>
+                      <h2 className={marketplaceStyles.repoName}>{repo.name}</h2>
                       <div>
                         {repo.isSubscription ? (
-                          <div className={styles.price}>${repo.subscriptionPrice}/mo</div>
+                          <div className={marketplaceStyles.price}>${repo.subscriptionPrice}/mo</div>
                         ) : (
-                          <div className={styles.price}>${repo.price}</div>
+                          <div className={marketplaceStyles.price}>${repo.price}</div>
                         )}
                         {repo.isSubscription && (
-                          <div className={styles.subscription}>
+                          <div className={marketplaceStyles.subscription}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M12 2v20M2 12h20"></path>
                             </svg>
@@ -179,29 +214,16 @@ export default function Marketplace() {
                         )}
                       </div>
                     </div>
-                    <p className={styles.description}>{repo.description}</p>
-                    <div className={styles.cardFooter}>
-                      <div className={styles.seller}>
-                        <div className={styles.avatar}>
-                          <Image 
-                            src={repo.seller.avatarUrl} 
-                            alt={repo.seller.username}
-                            width={24}
-                            height={24}
-                          />
-                        </div>
-                        <Link href={`/marketplace/user/${repo.seller.username}`} className={styles.sellerUsername}>
-                          @{repo.seller.username}
-                        </Link>
-                      </div>
+                    <p className={marketplaceStyles.description}>{repo.description}</p>
+                    <div className={marketplaceStyles.cardFooter}>
                       <div className={styles.stats}>
-                        <div className={styles.stat}>
+                        <div className={marketplaceStyles.stat}>
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                           </svg>
                           {repo.stars}
                         </div>
-                        <div className={styles.stat}>
+                        <div className={marketplaceStyles.stat}>
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="6" y1="3" x2="6" y2="15"></line>
                             <circle cx="18" cy="6" r="3"></circle>
@@ -221,4 +243,4 @@ export default function Marketplace() {
       )}
     </div>
   );
-}
+} 

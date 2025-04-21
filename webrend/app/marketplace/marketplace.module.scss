@@ -505,6 +505,17 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   font-weight: 400;
 }
 
+.sellerUsername {
+  color: $text-light;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: $accent-color;
+    text-decoration: underline;
+  }
+}
+
 .avatar {
   width: 20px;
   height: 20px;
@@ -595,6 +606,29 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     &:hover {
       background-color: darken($primary-color, 5%);
       transform: translateY(-1px);
+    }
+  }
+}
+
+.backLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: $text-light;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  
+  svg {
+    transition: transform 0.2s ease;
+  }
+  
+  &:hover {
+    color: $accent-color;
+    
+    svg {
+      transform: translateX(-3px);
     }
   }
 }

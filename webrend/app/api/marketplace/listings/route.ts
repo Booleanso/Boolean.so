@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { db } from '../../../lib/firebase-admin';
+import { CollectionReference, Query, DocumentData } from 'firebase-admin/firestore';
 
-// Import the basic type
+// Import the types
 import { MarketplaceListing } from '../list-repo/route';
 
 // Define new type for Firestore timestamps
@@ -15,10 +17,22 @@ interface FirestoreDocument extends Omit<MarketplaceListing, 'createdAt' | 'upda
   updatedAt?: string | FirestoreTimestamp;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Get all listings from Firebase
-    const listingsSnapshot = await db.collection('listings').get();
+    // Get query parameters
+    const { searchParams } = new URL(request.url);
+    const username = searchParams.get('username');
+    
+    // Start with base query
+    let listingsQuery: CollectionReference<DocumentData> | Query<DocumentData> = db.collection('listings');
+    
+    // Filter by username if provided
+    if (username) {
+      listingsQuery = listingsQuery.where('seller.username', '==', username);
+    }
+    
+    // Execute the query
+    const listingsSnapshot = await listingsQuery.get();
     
     if (listingsSnapshot.empty) {
       // Return empty array when no listings found
