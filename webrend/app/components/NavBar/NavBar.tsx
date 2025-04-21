@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 import { auth } from '../../lib/firebase-client';
 import { signOut, User } from 'firebase/auth';
 import './NavBar.scss';
@@ -11,6 +12,7 @@ export default function NavBar() {
   const [user, setUser] = React.useState<User | null>(null);
   const [loading, setLoading] = React.useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   React.useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -38,16 +40,28 @@ export default function NavBar() {
   return (
     <div className="navbar-container">
       <div className="navbar">
-        <Link href="/" className="navbar-brand">
-          WebRend
+        <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
+          <Image 
+            src="/logo/logo.png" 
+            alt="WebRend Logo" 
+            width={35} 
+            height={35} 
+            className="navbar-logo"
+          />
         </Link>
         
         <div className="navbar-menu">
-          <Link href="/marketplace" className="nav-button marketplace-button">
+          <Link 
+            href="/marketplace" 
+            className={`nav-button marketplace-button ${pathname === '/marketplace' ? 'active' : ''}`}
+          >
             Marketplace
           </Link>
           
-          <Link href="/portfolio" className="nav-button portfolio-button">
+          <Link 
+            href="/portfolio" 
+            className={`nav-button portfolio-button ${pathname === '/portfolio' ? 'active' : ''}`}
+          >
             Portfolio
           </Link>
           
@@ -55,7 +69,10 @@ export default function NavBar() {
             <>
               {user ? (
                 <div className="user-section">
-                  <Link href="/profile" className="nav-button profile-button">
+                  <Link 
+                    href="/profile" 
+                    className={`nav-button profile-button ${pathname === '/profile' ? 'active' : ''}`}
+                  >
                     Profile
                   </Link>
                   <div className="user-info">
@@ -72,13 +89,13 @@ export default function NavBar() {
                 <>
                   <Link
                     href="/auth?mode=signin"
-                    className="nav-button login-button"
+                    className={`nav-button login-button ${pathname === '/auth' && new URLSearchParams(window.location.search).get('mode') === 'signin' ? 'active' : ''}`}
                   >
                     Login
                   </Link>
                   <Link
                     href="/auth?mode=signup"
-                    className="nav-button signup-button"
+                    className={`nav-button signup-button ${pathname === '/auth' && new URLSearchParams(window.location.search).get('mode') === 'signup' ? 'active' : ''}`}
                   >
                     Sign Up
                   </Link>
