@@ -11,7 +11,6 @@ import { MarketplaceListing } from '../api/marketplace/list-repo/route';
 export default function Marketplace() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
-  const [featuredRepo, setFeaturedRepo] = useState<MarketplaceListing | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [includeSold, setIncludeSold] = useState(false);
@@ -33,13 +32,6 @@ export default function Marketplace() {
         const data = await response.json();
         const fetchedListings = data.listings || [];
         setListings(fetchedListings);
-        
-        // Select a random repo to feature (excluding sold ones)
-        const availableRepos = fetchedListings.filter((repo: MarketplaceListing) => !repo.sold);
-        if (availableRepos.length > 0) {
-          const randomIndex = Math.floor(Math.random() * availableRepos.length);
-          setFeaturedRepo(availableRepos[randomIndex]);
-        }
       } catch (err) {
         console.error('Error fetching marketplace listings:', err);
         setError('Failed to load listings. Please try again later.');
@@ -100,90 +92,12 @@ export default function Marketplace() {
         </div>
       ) : (
         <>
-          {/* Featured Repository */}
-          {featuredRepo && (
-            <div className={styles.featuredRepo}>
-              <div className={styles.featuredImage}>
-                <Image 
-                  src={featuredRepo.imageUrl} 
-                  alt={featuredRepo.name}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  priority
-                />
-                {featuredRepo.sold && (
-                  <div className={styles.soldBadge}>
-                    Sold
-                  </div>
-                )}
-              </div>
-              <div className={styles.featuredContent}>
-                <span className={styles.featuredBadge}>Featured Repository</span>
-                <div className={styles.featuredHeader}>
-                  <h2>{featuredRepo.name}</h2>
-                  <div>
-                    {featuredRepo.isSubscription ? (
-                      <div className={styles.featuredPrice}>${featuredRepo.subscriptionPrice}/mo</div>
-                    ) : (
-                      <div className={styles.featuredPrice}>${featuredRepo.price}</div>
-                    )}
-                  </div>
-                </div>
-                <p className={styles.featuredDescription}>
-                  {featuredRepo.description}
-                </p>
-                <div className={styles.featuredFooter}>
-                  <div className={styles.featuredSeller}>
-                    <div className={styles.avatar}>
-                      <Image 
-                        src={featuredRepo.seller.avatarUrl} 
-                        alt={featuredRepo.seller.username}
-                        width={32}
-                        height={32}
-                      />
-                    </div>
-                    @{featuredRepo.seller.username}
-                  </div>
-                  <div className={styles.featuredStats}>
-                    <div className={styles.stat}>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                      </svg>
-                      {featuredRepo.stars}
-                    </div>
-                    <div className={styles.stat}>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="6" y1="3" x2="6" y2="15"></line>
-                        <circle cx="18" cy="6" r="3"></circle>
-                        <circle cx="6" cy="18" r="3"></circle>
-                        <path d="M18 9a9 9 0 0 1-9 9"></path>
-                      </svg>
-                      {featuredRepo.forks}
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.featuredAction}>
-                  <Link href={`/marketplace/buy/${featuredRepo.docId || featuredRepo.id}`}>
-                    <button className={styles.buyButton} disabled={featuredRepo.sold}>
-                      {featuredRepo.sold 
-                        ? 'Sold Out' 
-                        : featuredRepo.isSubscription 
-                          ? 'Subscribe' 
-                          : 'Buy Now'
-                      }
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          )}
-
           <div className={styles.filters}>
             <button 
               className={`${styles.filter} ${activeFilter === 'all' ? styles.active : ''}`}
               onClick={() => setActiveFilter('all')}
             >
-              All Repositories
+              All Repos
             </button>
             <button 
               className={`${styles.filter} ${activeFilter === 'onetime' ? styles.active : ''}`}
@@ -211,14 +125,11 @@ export default function Marketplace() {
           <div className={styles.grid}>
             {listings
               .filter(repo => {
-                // Exclude the featured repo
-                if (featuredRepo && repo.id === featuredRepo.id) return false;
-                
-                // First filter by type (all, onetime, subscription)
+                // Filter by type (all, onetime, subscription)
                 if (activeFilter === 'onetime' && repo.isSubscription) return false;
                 if (activeFilter === 'subscription' && !repo.isSubscription) return false;
                 
-                // Then filter sold status
+                // Filter sold status
                 if (!includeSold && repo.sold) return false;
                 
                 return true;
@@ -238,6 +149,16 @@ export default function Marketplace() {
                         Sold
                       </div>
                     )}
+                    <Link href={`/marketplace/buy/${repo.docId || repo.id}`}>
+                      <button className={styles.buyButton} disabled={repo.sold}>
+                        {repo.sold 
+                          ? 'Sold Out' 
+                          : repo.isSubscription 
+                            ? 'Subscribe' 
+                            : 'Buy Now'
+                        }
+                      </button>
+                    </Link>
                   </div>
                   <div className={styles.cardContent}>
                     <div className={styles.cardHeader}>
@@ -289,16 +210,6 @@ export default function Marketplace() {
                         </div>
                       </div>
                     </div>
-                    <Link href={`/marketplace/buy/${repo.docId || repo.id}`}>
-                      <button className={styles.buyButton} disabled={repo.sold}>
-                        {repo.sold 
-                          ? 'Sold Out' 
-                          : repo.isSubscription 
-                            ? 'Subscribe' 
-                            : 'Buy Now'
-                        }
-                      </button>
-                    </Link>
                   </div>
                 </div>
               ))

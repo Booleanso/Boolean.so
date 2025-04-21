@@ -1,0 +1,219 @@
+.featuredSection {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 4rem 4rem;
+  background-color: #fff;
+  color: #000;
+}
+
+.sectionHeader {
+  margin-bottom: 4rem;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 2rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sectionHeader h2 {
+  font-size: 3rem;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  color: #000;
+}
+
+.featuredRepoIntro {
+  font-size: 1.2rem;
+  color: #333;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.loadingContainer,
+.error,
+.emptyState {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  width: 100%;
+  gap: 1rem;
+  background-color: #fff;
+}
+
+.loadingBar {
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #000, transparent);
+  background-size: 200% 100%;
+  animation: loadingAnimation 1.5s infinite;
+}
+
+@keyframes loadingAnimation {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.error {
+  font-size: 1rem;
+  color: #d32f2f;
+  text-align: center;
+  padding: 2rem;
+  border: 1px solid #f5f5f5;
+  background-color: #fff;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #333;
+  border: 1px solid #f5f5f5;
+  font-size: 1.1rem;
+  background-color: #fff;
+}
+
+.repoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 3rem;
+  margin-top: 2rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.repoCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: #000;
+  transition: transform 0.3s ease;
+  height: 100%;
+  border-bottom: 1px solid transparent;
+  background-color: #fff;
+}
+
+.repoCard:hover {
+  transform: translateY(-8px);
+  border-bottom-color: #000;
+}
+
+.repoImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.repoImage {
+  transition: transform 0.6s ease;
+}
+
+.repoCard:hover .repoImage {
+  transform: scale(1.05);
+}
+
+.repoContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background-color: #fff;
+}
+
+.repoName {
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+  color: #000;
+}
+
+.repoDetails {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.repoDescription {
+  color: #333;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.repoStats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  border-top: 1px solid #eaeaea;
+  padding-top: 1rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.statValue {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #000;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.price {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #000;
+}
+
+@media (max-width: 768px) {
+  .repoGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sectionHeader h2 {
+    font-size: 2.2rem;
+  }
+  
+  .featuredRepoIntro {
+    font-size: 1rem;
+  }
+  
+  .featuredSection {
+    padding: 3rem 1.5rem;
+  }
+}
+
+/* Remove the last-child selector since DemoRepoCard is gone */
+/* .featuredSection > :last-child {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 4rem;
+} */ 
