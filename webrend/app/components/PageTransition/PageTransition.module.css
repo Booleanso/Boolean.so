@@ -1,0 +1,12 @@
+.pageTransition {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  will-change: opacity, transform;
+  overflow-x: hidden;
+  position: relative;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+} 
