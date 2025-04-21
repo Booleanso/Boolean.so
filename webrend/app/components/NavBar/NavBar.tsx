@@ -47,6 +47,10 @@ export default function NavBar() {
             Marketplace
           </Link>
           
+          <Link href="/portfolio" className="nav-button portfolio-button">
+            Portfolio
+          </Link>
+          
           {!loading && (
             <>
               {user ? (
