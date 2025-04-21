@@ -1,140 +1,97 @@
+// Variables - matching marketplace styling
+$primary-color: #0070c9; // Apple blue
+$secondary-color: #333333;
+$accent-color: #007aff; // Apple accent blue
+$light-bg: #f5f5f7; // Apple light background
+$border-color: #d2d2d7; // Apple light border
+$text-color: #1d1d1f; // Apple dark text
+$text-light: #6e6e73; // Apple secondary text
+$button-radius: 55px; // Rounded button corners
+$card-shadow: none;
+$transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 7rem 2rem 2rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  color: $text-color;
+  background-color: white;
+  min-height: 100vh;
 }
 
 .profile {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .title {
-  font-size: 2rem;
-  margin: 0 0 2rem;
-  color: #2d3748;
+  font-size: 48px;
+  font-weight: 600;
+  color: $text-color;
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  padding: 7rem 5% 2rem;
+  background-color: white;
 }
 
 .section {
-  margin-bottom: 3rem;
-  
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.sectionTitle {
-  font-size: 1.5rem;
-  color: #2d3748;
-  margin: 0 0 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  background-color: white;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  border-top: 1px solid $border-color;
+  border-bottom: 1px solid $border-color;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
 }
 
 .sectionHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e2e8f0;
-  
-  .sectionTitle {
-    margin: 0;
-    padding: 0;
-    border: none;
-  }
+  padding: 2rem 5%;
+  border-bottom: 1px solid $border-color;
 }
 
-.refreshButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: #4a5568;
-  font-size: 1.25rem;
-  padding: 5px;
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: $text-color;
+}
+
+.sectionControls {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    color: #4299e1;
-    background-color: #ebf8ff;
-  }
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  gap: 0.5rem;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.spinning {
-  animation: spin 1s linear infinite;
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  color: #718096;
-}
-
-.error {
-  background-color: #fff5f5;
-  border: 1px solid #feb2b2;
-  border-radius: 4px;
-  color: #c53030;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.statusMessage {
-  padding: 0.75rem 1rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  
-  &.successStatus {
-    background-color: #f0fff4;
-    border: 1px solid #9ae6b4;
-    color: #276749;
-  }
-  
-  &.errorStatus {
-    background-color: #fff5f5;
-    border: 1px solid #feb2b2;
-    color: #c53030;
-  }
-}
-
+// Profile Content
 .accountInfo {
-  padding: 1.5rem;
-  background-color: #f7fafc;
-  border-radius: 8px;
+  padding: 2rem 5%;
 }
 
 .userInfo {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .avatar {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  
+  background-color: $light-bg;
+
   img {
     width: 100%;
     height: 100%;
@@ -143,199 +100,169 @@
 }
 
 .placeholderAvatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background-color: #4299e1;
-  color: white;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  font-weight: bold;
+  background-color: $accent-color;
+  color: white;
+  font-size: 40px;
+  font-weight: 600;
 }
 
 .userDetails {
+  flex: 1;
+
   h3 {
+    font-size: 28px;
+    font-weight: 600;
     margin: 0 0 0.5rem;
-    font-size: 1.25rem;
-    color: #2d3748;
   }
-  
+
   p {
+    color: $text-light;
     margin: 0;
-    color: #718096;
+    font-size: 16px;
   }
 }
 
+// Username edit
 .usernameDisplay {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  
-  h3 {
-    margin: 0;
-  }
-}
-
-.usernameActions {
-  display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .editUsernameButton {
-  background: transparent;
-  border: none;
-  font-size: 0.8rem;
+  background-color: transparent;
+  border: 1px solid $border-color;
+  color: $text-color;
+  font-size: 14px;
+  padding: 0.4rem 1rem;
+  border-radius: $button-radius;
   cursor: pointer;
-  padding: 2px 5px;
-  border-radius: 4px;
-  color: #4299e1;
-  
+  transition: $transition;
+
   &:hover {
-    text-decoration: underline;
-    background-color: #e6f6ff;
+    background-color: $light-bg;
   }
 }
 
 .usernameEdit {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .usernameInputContainer {
-  position: relative;
   display: flex;
   align-items: center;
+  border: 1px solid $border-color;
+  padding: 0 1rem;
+  border-radius: $button-radius;
+  background-color: white;
   margin-bottom: 0.5rem;
+  max-width: 300px;
 }
 
 .atSymbol {
-  position: absolute;
-  left: 10px;
-  color: #4a5568;
-  font-size: 1rem;
-  pointer-events: none;
+  color: $text-light;
+  font-weight: 500;
 }
 
 .usernameInput {
+  border: none;
+  padding: 0.8rem 0.5rem;
+  font-size: 16px;
   width: 100%;
-  padding: 0.5rem;
-  padding-left: 25px;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  font-size: 1rem;
-  
-  &:focus {
-    outline: none;
-    border-color: #4299e1;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
-  }
+  color: $text-color;
+  outline: none;
 }
 
 .usernameRequirements {
-  font-size: 0.8rem;
-  color: #718096;
-  background-color: #f7fafc;
-  border-radius: 4px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 0.75rem;
-  border: 1px solid #e2e8f0;
-  
+  font-size: 14px;
+  color: $text-light;
+  margin-bottom: 1rem;
+  max-width: 400px;
+
   ul {
-    margin: 0.25rem 0 0 0;
-    padding-left: 1.25rem;
-    
-    li {
-      margin-bottom: 0.25rem;
-      
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
+    margin: 0.5rem 0 0;
+    padding-left: 1.5rem;
+  }
+
+  li {
+    margin-bottom: 0.25rem;
   }
 }
 
 .usernameValidation {
-  color: #dd6b20;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  padding: 0.5rem;
-  background-color: #fffaf0;
-  border-radius: 4px;
-  border: 1px solid #fbd38d;
+  color: #ff3b30;
+  font-size: 14px;
+  margin-bottom: 1rem;
 }
 
 .usernameError {
-  color: #e53e3e;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  padding: 0.25rem 0;
-  background-color: #fff5f5;
-  border-radius: 4px;
-  padding: 0.5rem;
-  border: 1px solid #feb2b2;
+  color: #ff3b30;
+  font-size: 14px;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: rgba(255, 59, 48, 0.1);
+  border-radius: 6px;
 }
 
 .usernameButtons {
   display: flex;
-  gap: 0.5rem;
-}
-
-.cancelButton, .saveButton {
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s;
+  gap: 1rem;
 }
 
 .cancelButton {
-  background-color: #f7fafc;
-  border: 1px solid #e2e8f0;
-  color: #4a5568;
-  
+  background-color: transparent;
+  border: 1px solid $border-color;
+  color: $text-color;
+  padding: 0.8rem 1.5rem;
+  border-radius: $button-radius;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: $transition;
+
   &:hover {
-    background-color: #edf2f7;
-  }
-  
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    background-color: $light-bg;
   }
 }
 
 .saveButton {
-  background-color: #4299e1;
-  border: 1px solid #3182ce;
+  background-color: $primary-color;
   color: white;
-  
+  padding: 0.8rem 1.5rem;
+  border-radius: $button-radius;
+  font-weight: 500;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: $transition;
+
   &:hover {
-    background-color: #3182ce;
+    background-color: darken($primary-color, 5%);
   }
-  
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
 }
 
-.notLoggedIn {
-  text-align: center;
-  padding: 1rem;
-  color: #718096;
-}
-
+// Connection cards
 .connectionCard {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
-  background-color: #f7fafc;
-  border-radius: 8px;
-  margin-bottom: 1rem;
+  padding: 1.5rem 5%;
+  border-bottom: 1px solid $border-color;
   
-  &:last-child {
-    margin-bottom: 0;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 }
 
@@ -351,66 +278,72 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  color: #4a5568;
+  background-color: $light-bg;
+  border-radius: 50%;
+  font-size: 20px;
+  color: $text-color;
 }
 
 .connectionDetails {
   h3 {
+    font-size: 18px;
+    font-weight: 600;
     margin: 0 0 0.25rem;
-    font-size: 1.1rem;
-    color: #2d3748;
   }
-  
+
   p {
+    color: $text-light;
     margin: 0;
-    color: #718096;
+    font-size: 14px;
   }
+}
+
+.verificationNote {
+  display: block;
+  margin-top: 0.5rem;
+  color: #f7b955;
 }
 
 .connectionActions {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 }
 
 .connectionButton {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: $button-radius;
+  font-weight: 500;
+  font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  text-decoration: none;
-  display: inline-block;
-  
+  transition: $transition;
+
   &.connect {
-    background-color: #2da44e;
+    background-color: $primary-color;
     color: white;
-    border: 1px solid #2a9147;
-    
+    border: none;
+
     &:hover {
-      background-color: #2c974b;
+      background-color: darken($primary-color, 5%);
     }
   }
-  
-  &.disconnect {
-    background-color: #f6f8fa;
-    color: #cf222e;
-    border: 1px solid #d0d7de;
-    
+
+  &.disconnect, &.edit {
+    background-color: transparent;
+    border: 1px solid $border-color;
+    color: $text-color;
+
     &:hover {
-      background-color: #ffebe9;
-      border-color: #cf222e;
+      background-color: $light-bg;
     }
   }
-  
-  &.edit {
-    background-color: #f6f8fa;
-    color: #0969da;
-    border: 1px solid #d0d7de;
-    
-    &:hover {
-      background-color: #f0f4f9;
-    }
+
+  &.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 }
 
@@ -419,568 +352,489 @@
   gap: 0.5rem;
 }
 
-.sellReposButton {
-  margin-top: 1rem;
-  padding-left: 1rem;
-}
+// Status messages
+.statusMessage {
+  margin: 0;
+  padding: 1rem 5%;
+  font-size: 14px;
 
-.sellButton {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  background-color: #2da44e;
-  color: white;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background-color 0.2s;
-  
-  &:hover {
-    background-color: #2c974b;
+  &.errorStatus {
+    background-color: #fff1f0;
+    color: #ff3b30;
+    border-bottom: 1px solid rgba(255, 59, 48, 0.2);
+  }
+
+  &.successStatus {
+    background-color: #f0fff4;
+    color: #34c759;
+    border-bottom: 1px solid rgba(52, 199, 89, 0.2);
   }
 }
 
-.repoGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
+.error {
+  background-color: #fff1f0;
+  color: #ff3b30;
+  padding: 1rem 5%;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 59, 48, 0.2);
 }
 
-.repoCard {
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 1.5rem;
-  
-  &:hover {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .repoName {
-    margin: 0 0 0.5rem;
-    font-size: 1.25rem;
-    
-    a {
-      color: #3182ce;
-      text-decoration: none;
-      
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-  
-  .repoDescription {
-    color: #718096;
-    margin-bottom: 1rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .repoStats {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: #718096;
-  }
-  
-  .repoLanguage {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    
-    &::before {
-      content: '';
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: #3182ce;
-    }
-  }
-  
-  .repoStat {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-}
-
-.repoActions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.emptyState {
-  text-align: center;
-  padding: 3rem 1rem;
-  background-color: #f7fafc;
-  border-radius: 8px;
-  color: #718096;
-  
-  p {
-    margin-bottom: 1.5rem;
-  }
-}
-
-.browseButton {
-  padding: 0.75rem 1.5rem;
-  background-color: #4299e1;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  text-decoration: none;
-  
-  &:hover {
-    background-color: #3182ce;
-  }
-}
-
-.purchasedRepos {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.purchasedRepoCard {
-  display: flex;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
-  
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
-}
-
-.purchasedRepoImage {
-  position: relative;
-  width: 300px;
-  height: 200px;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-  
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .purchaseType {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-}
-
-.purchasedRepoInfo {
-  flex: 1;
-  padding: 1.5rem;
-  
-  h3 {
-    margin: 0 0 0.5rem;
-    font-size: 1.25rem;
-    color: #2d3748;
-  }
-}
-
-.purchasedRepoDescription {
-  color: #718096;
-  margin-bottom: 1rem;
-}
-
-.purchasedRepoMeta {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  color: #718096;
-}
-
-.subscriptionInfo {
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  padding: 0.5rem;
-  background-color: #ebf8ff;
-  border-radius: 4px;
-  color: #2c5282;
-}
-
-.purchasedRepoActions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.viewRepoButton {
-  padding: 0.5rem 1rem;
-  background-color: #4299e1;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  text-decoration: none;
-  
-  &:hover {
-    background-color: #3182ce;
-  }
-}
-
+// Form
 .formContainer {
-  margin-top: 1rem;
-  padding: 1.5rem;
-  background-color: #f6f8fa;
-  border: 1px solid #d0d7de;
-  border-radius: 6px;
+  padding: 0 5% 2rem;
+  background-color: $light-bg;
 }
 
 .formSection {
-  margin-bottom: 1.5rem;
-  
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
   h3 {
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-    color: #24292e;
-  }
-  
-  .formHelper {
-    margin-bottom: 1.5rem;
-    color: #57606a;
-    font-size: 0.9rem;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 1rem;
   }
 }
 
+.formHelper {
+  color: $text-light;
+  font-size: 14px;
+  margin-bottom: 1.5rem;
+}
+
 .formGroup {
-  margin-bottom: 1.25rem;
-  
+  margin-bottom: 1.5rem;
+
   label {
     display: block;
-    margin-bottom: 0.5rem;
+    font-size: 14px;
     font-weight: 500;
-    color: #24292e;
+    margin-bottom: 0.5rem;
+    color: $text-color;
   }
-  
-  .formInput {
-    width: 100%;
-    padding: 0.625rem;
-    border: 1px solid #d0d7de;
-    border-radius: 6px;
-    font-size: 1rem;
-    
-    &:focus {
-      border-color: #0969da;
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.3);
-    }
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font-size: 16px;
+  border: 1px solid $border-color;
+  border-radius: $button-radius;
+  background-color: white;
+  color: $text-color;
+
+  &:focus {
+    outline: none;
+    border-color: $accent-color;
   }
+}
+
+.formHint {
+  display: block;
+  color: $text-light;
+  font-size: 12px;
+  margin-top: 0.5rem;
 }
 
 .formActions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
-.cancelButton {
-  padding: 0.625rem 1rem;
-  background-color: #f6f8fa;
-  border: 1px solid #d0d7de;
-  color: #24292e;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  
-  &:hover {
-    background-color: #eaeef2;
-  }
+// Sell Repos button
+.sellReposButton {
+  padding: 1.5rem 5%;
+  text-align: center;
 }
 
-.saveButton {
-  padding: 0.625rem 1rem;
-  background-color: #2da44e;
-  border: 1px solid #2a9147;
+.sellButton {
+  display: inline-block;
+  background-color: $primary-color;
   color: white;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  padding: 0.8rem 2rem;
+  border-radius: $button-radius;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 14px;
+  transition: $transition;
+  border: none;
   cursor: pointer;
-  
+
   &:hover {
-    background-color: #2c974b;
-  }
-  
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+    background-color: darken($primary-color, 5%);
+    transform: translateY(-1px);
   }
 }
 
-// Listed Repositories Styles
-.listedRepos {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-top: 1rem;
+// Empty states
+.emptyState {
+  padding: 4rem 5%;
+  text-align: center;
+
+  p {
+    color: $text-light;
+    margin-bottom: 1.5rem;
+    font-size: 16px;
+  }
 }
 
-.listedRepoCard {
+.browseButton {
+  display: inline-block;
+  background-color: $primary-color;
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: $button-radius;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 14px;
+  transition: $transition;
+
+  &:hover {
+    background-color: darken($primary-color, 5%);
+    transform: translateY(-1px);
+  }
+}
+
+// Repo grids
+.repoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem 5%;
+}
+
+.repoCard {
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: $transition;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.repoName {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+
+  a {
+    color: $text-color;
+    text-decoration: none;
+
+    &:hover {
+      color: $accent-color;
+    }
+  }
+}
+
+.repoDescription {
+  color: $text-light;
+  font-size: 14px;
+  margin-bottom: 1rem;
+  min-height: 3em;
+}
+
+.repoStats {
   display: flex;
-  background-color: #fff;
-  border: 1px solid #d0d7de;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.repoLanguage {
+  display: inline-flex;
+  align-items: center;
+  background-color: $light-bg;
+  padding: 0.3rem 0.75rem;
+  border-radius: $button-radius;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.repoStat {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  color: $text-light;
+}
+
+.repoActions {
+  text-align: center;
+}
+
+// Repository cards - Purchased and Listed
+.purchasedRepos, .listedRepos {
+  padding: 2rem 5%;
+}
+
+.purchasedRepoCard, .listedRepoCard {
+  display: flex;
+  margin-bottom: 2rem;
+  border: 1px solid $border-color;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  
+  background-color: white;
+  transition: $transition;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
   @media (max-width: 768px) {
     flex-direction: column;
   }
 }
 
-.listedRepoImage {
-  flex: 0 0 300px;
+.purchasedRepoImage, .listedRepoImage {
+  width: 250px;
+  height: 175px;
   position: relative;
-  
-  @media (max-width: 768px) {
-    flex: 0 0 auto;
-    height: 200px;
-  }
-  
+
   img {
-    object-fit: cover;
     width: 100%;
     height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 200px;
   }
 }
 
-.listingType {
+.purchaseType, .listingType {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 1rem;
+  left: 1rem;
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: $button-radius;
+  font-size: 12px;
   font-weight: 500;
+  z-index: 1;
 }
 
-.listedRepoInfo {
+.soldBadge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.3rem 0.75rem;
+  border-radius: $button-radius;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.purchasedRepoInfo, .listedRepoInfo {
   flex: 1;
-  padding: 1.25rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  
+
   h3 {
+    font-size: 20px;
+    font-weight: 600;
     margin: 0 0 0.75rem;
-    font-size: 1.25rem;
-    color: #24292e;
   }
 }
 
-.listedRepoDescription {
-  color: #57606a;
+.purchasedRepoDescription, .listedRepoDescription {
+  color: $text-light;
+  font-size: 14px;
   margin-bottom: 1rem;
-  line-height: 1.5;
   flex-grow: 1;
 }
 
-.listedRepoMeta {
+.purchasedRepoMeta, .listedRepoMeta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
+  font-size: 12px;
+  color: $text-light;
 }
 
 .listedRepoPrice {
-  font-size: 1.25rem;
   font-weight: 600;
-  color: #24292e;
+  color: $accent-color;
 }
 
 .listedRepoStats {
   display: flex;
   gap: 1rem;
-  
+
   span {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    color: #57606a;
-    font-size: 0.875rem;
-  }
-  
-  .statIcon {
-    width: 16px;
-    height: 16px;
+    gap: 0.3rem;
   }
 }
 
-.listedRepoControls {
-  display: flex;
-  gap: 0.75rem;
-  
-  @media (max-width: 576px) {
-    flex-direction: column;
-  }
+.statIcon {
+  width: 14px;
+  height: 14px;
 }
 
-.viewListingButton, .removeListingButton, .editListingButton, .soldButton {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-align: center;
+.subscriptionInfo, .transferStatus {
+  font-size: 13px;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: $button-radius;
   display: inline-block;
+}
+
+.subscriptionInfo {
+  background-color: #f0f8ff;
+  color: $accent-color;
+}
+
+.transferStatus {
+  background-color: #f0fff4;
+  color: #34c759;
+
+  &.status-pending {
+    background-color: #fffdf0;
+    color: #f7b955;
+  }
+
+  &.status-failed {
+    background-color: #fff1f0;
+    color: #ff3b30;
+  }
+}
+
+.purchasedRepoActions, .listedRepoControls {
+  margin-top: auto;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.viewRepoButton, .viewListingButton, .editListingButton, .removeListingButton, .soldButton {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  border-radius: $button-radius;
+  font-size: 13px;
+  font-weight: 500;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s;
-  border: none;
+  transition: $transition;
 }
 
-.viewListingButton {
-  background-color: #0969da;
+.viewRepoButton, .viewListingButton {
+  background-color: $primary-color;
   color: white;
-  
+  border: none;
+
   &:hover {
-    background-color: #0860c0;
+    background-color: darken($primary-color, 5%);
   }
 }
 
 .editListingButton {
-  background-color: #f6f8fa;
-  color: #0969da;
-  border: 1px solid #d0d7de;
-  
+  background-color: transparent;
+  border: 1px solid $border-color;
+  color: $text-color;
+
   &:hover {
-    background-color: #f0f4f9;
-    border-color: #0969da;
+    background-color: $light-bg;
   }
 }
 
 .removeListingButton {
-  background-color: #f6f8fa;
-  color: #cf222e;
-  border: 1px solid #d0d7de;
-  
+  background-color: transparent;
+  border: 1px solid #ff3b30;
+  color: #ff3b30;
+
   &:hover {
-    background-color: #ffebe9;
-    border-color: #cf222e;
+    background-color: rgba(255, 59, 48, 0.1);
   }
-  
+
   &:disabled {
-    opacity: 0.7;
+    opacity: 0.6;
     cursor: not-allowed;
   }
 }
 
 .soldButton {
-  background-color: #f6f8fa;
-  color: #24292e;
-  border: 1px solid #d0d7de;
-  
+  background-color: transparent;
+  border: 1px solid #34c759;
+  color: #34c759;
+
   &:hover {
-    background-color: #f0f4f9;
-    border-color: #57606a;
+    background-color: rgba(52, 199, 89, 0.1);
   }
-  
+
   &:disabled {
-    opacity: 0.7;
+    opacity: 0.6;
     cursor: not-allowed;
   }
 }
 
-.formHint {
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin-top: 0.25rem;
-  display: block;
-}
-
-.verificationNote {
-  display: block;
-  font-size: 0.8rem;
-  color: #c05621;
-  margin-top: 0.25rem;
-}
-
-.transferStatus {
-  margin-top: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  display: inline-block;
-  background-color: #f1f5f9;
-  color: #64748b;
-}
-
-.status-initiated {
-  background-color: #dbeafe;
-  color: #3b82f6;
-}
-
-.status-completed {
-  background-color: #dcfce7;
-  color: #22c55e;
-}
-
-.status-failed {
-  background-color: #fee2e2;
-  color: #ef4444;
-}
-
-.status-pending {
-  background-color: #fef9c3;
-  color: #ca8a04;
-}
-
-.sectionControls {
+// Refresh and toggle buttons
+.refreshButton, .toggleSoldButton {
+  background-color: transparent;
+  border: 1px solid $border-color;
+  color: $text-color;
+  padding: 0.5rem;
+  border-radius: $button-radius;
+  cursor: pointer;
+  transition: $transition;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
+  justify-content: center;
+  width: 32px;
+  height: 32px;
 
-.toggleSoldButton {
-  background-color: #f6f8fa;
-  color: #24292e;
-  border: 1px solid #d0d7de;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
   &:hover {
-    background-color: #f0f4f9;
-    border-color: #0969da;
-    color: #0969da;
+    background-color: $light-bg;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
-.soldBadge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(207, 34, 46, 0.9);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  z-index: 2;
+.toggleSoldButton {
+  width: auto;
+  padding: 0.5rem 1rem;
+  font-size: 12px;
 }
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Utility classes
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem;
+  color: $text-light;
+}
+
+
