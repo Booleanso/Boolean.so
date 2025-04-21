@@ -177,29 +177,12 @@ function usePlayerSync(userId: string, username: string) {
   return { otherPlayers, playerCount, updatePlayerData };
 }
 
-// Floor component
-function Floor(props: { position: [number, number, number] }) {
-  const [ref] = usePlane(() => ({ 
-    rotation: [-Math.PI / 2, 0, 0],
-    position: props.position,
-    type: 'Static',
-    friction: 0.2,  // Low friction for smoother movement
-    restitution: 0.1  // Small bounce factor
-  }));
-  
-  return (
-    <mesh ref={ref} receiveShadow>
-      <planeGeometry args={[100, 100]} />
-      <meshStandardMaterial color="#303030" />
-    </mesh>
-  );
-}
-
 // Wall component
-function Wall({ position, rotation = [0, 0, 0], size = [20, 5, 0.5] }: { 
+function Wall({ position, rotation = [0, 0, 0], size = [20, 5, 0.5], color = "#ffffff" }: { 
   position: [number, number, number]; 
   rotation?: [number, number, number]; 
   size?: [number, number, number]; 
+  color?: string;
 }) {
   const [ref] = useBox(() => ({ 
     position,
@@ -213,7 +196,43 @@ function Wall({ position, rotation = [0, 0, 0], size = [20, 5, 0.5] }: {
   return (
     <mesh ref={ref} castShadow receiveShadow>
       <boxGeometry args={size} />
-      <meshStandardMaterial color="#ffffff" />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  );
+}
+
+// Floor component
+function Floor(props: { position: [number, number, number] }) {
+  const [ref] = usePlane(() => ({ 
+    rotation: [-Math.PI / 2, 0, 0],
+    position: props.position,
+    type: 'Static',
+    friction: 0.2,
+    restitution: 0.1
+  }));
+  
+  return (
+    <mesh ref={ref} receiveShadow>
+      <planeGeometry args={[100, 100]} />
+      <meshStandardMaterial color="#f0f0f0" />
+    </mesh>
+  );
+}
+
+// Ceiling component
+function Ceiling(props: { position: [number, number, number] }) {
+  const [ref] = usePlane(() => ({ 
+    rotation: [Math.PI / 2, 0, 0],
+    position: props.position,
+    type: 'Static',
+    friction: 0.2,
+    restitution: 0.1
+  }));
+  
+  return (
+    <mesh ref={ref} receiveShadow>
+      <planeGeometry args={[100, 100]} />
+      <meshStandardMaterial color="#f0f0f0" />
     </mesh>
   );
 }
@@ -458,15 +477,28 @@ function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData 
   
   return (
     <Canvas shadows style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh' }}>
-      <fog attach="fog" args={['#000', 10, 50]} />
-      <ambientLight intensity={0.3} />
+      <fog attach="fog" args={['#f8f8f8', 20, 50]} />
+      <ambientLight intensity={0.5} />
+      
+      {/* Main directional light - coming from above */}
       <directionalLight
-        position={[10, 10, 10]}
-        intensity={1.5}
+        position={[0, 15, 0]}
+        intensity={0.7}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
+        shadow-camera-far={50}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
       />
+      
+      {/* Secondary lights for better corners */}
+      <pointLight position={[20, 2, 20]} intensity={0.8} castShadow distance={15} decay={2} />
+      <pointLight position={[-20, 2, -20]} intensity={0.8} castShadow distance={15} decay={2} />
+      <pointLight position={[20, 2, -20]} intensity={0.8} castShadow distance={15} decay={2} />
+      <pointLight position={[-20, 2, 20]} intensity={0.8} castShadow distance={15} decay={2} />
       
       <Physics gravity={[0, -9.8, 0]}>
         <FirstPersonControls 
@@ -475,18 +507,32 @@ function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData 
           username={username} 
           updatePlayerData={updatePlayerData}
         />
+        
+        {/* Ground and ceiling */}
         <Floor position={[0, 0, 0]} />
+        <Ceiling position={[0, 8, 0]} />
         
-        {/* Walls */}
-        <Wall position={[0, 2.5, -10]} />
-        <Wall position={[0, 2.5, 10]} />
-        <Wall position={[-10, 2.5, 0]} rotation={[0, Math.PI / 2, 0]} />
-        <Wall position={[10, 2.5, 0]} rotation={[0, Math.PI / 2, 0]} />
+        {/* Outer Walls */}
+        <Wall position={[0, 4, -25]} size={[50, 8, 0.5]} />
+        <Wall position={[0, 4, 25]} size={[50, 8, 0.5]} />
+        <Wall position={[-25, 4, 0]} rotation={[0, Math.PI / 2, 0]} size={[50, 8, 0.5]} />
+        <Wall position={[25, 4, 0]} rotation={[0, Math.PI / 2, 0]} size={[50, 8, 0.5]} />
         
-        {/* Boxes */}
-        <Box position={[2, 2, -5]} />
-        <Box position={[-2, 2, 5]} />
-        <Box position={[5, 2, 3]} />
+        {/* Inner corridors - horizontal */}
+        <Wall position={[-15, 4, -10]} size={[20, 8, 0.5]} />
+        <Wall position={[15, 4, -10]} size={[20, 8, 0.5]} />
+        <Wall position={[-15, 4, 10]} size={[20, 8, 0.5]} />
+        <Wall position={[15, 4, 10]} size={[20, 8, 0.5]} />
+        
+        {/* Inner corridors - vertical */}
+        <Wall position={[-10, 4, -5]} rotation={[0, Math.PI / 2, 0]} size={[10, 8, 0.5]} />
+        <Wall position={[10, 4, -5]} rotation={[0, Math.PI / 2, 0]} size={[10, 8, 0.5]} />
+        <Wall position={[-10, 4, 5]} rotation={[0, Math.PI / 2, 0]} size={[10, 8, 0.5]} />
+        <Wall position={[10, 4, 5]} rotation={[0, Math.PI / 2, 0]} size={[10, 8, 0.5]} />
+        
+        {/* More gallery rooms */}
+        <Wall position={[0, 4, -15]} size={[10, 8, 0.5]} />
+        <Wall position={[0, 4, 15]} size={[10, 8, 0.5]} />
         
         {/* Render other players */}
         {otherPlayers.map(player => (
@@ -594,7 +640,7 @@ export default function GamePage() {
           </svg>
           Back to Portfolio
         </Link>
-        <h1>3D Art Room Experience</h1>
+        <h1>Interactive White Gallery</h1>
         <div className={styles.playerCount}>
           <span>{playerCount} Player{playerCount !== 1 ? 's' : ''} Online</span>
           {isAuthenticated ? (
@@ -610,8 +656,8 @@ export default function GamePage() {
       {!gameStarted ? (
         <div className={styles.startScreen} onClick={handleStartGame}>
           <div className={styles.startPrompt}>
-            <h2>Click to Play</h2>
-            <p>Click here to start the game and enable mouse controls</p>
+            <h2>Click to Enter Gallery</h2>
+            <p>Click here to explore the virtual gallery</p>
           </div>
         </div>
       ) : (
@@ -624,7 +670,7 @@ export default function GamePage() {
               <p>Space - Jump</p>
               <p>Shift - Sprint</p>
               <p>Click to lock mouse cursor. Press ESC to unlock.</p>
-              <p className={styles.multiplayerInfo}>Other players are shown with blue avatars and their usernames.</p>
+              <p className={styles.multiplayerInfo}>Other visitors are shown with blue avatars and their usernames.</p>
             </div>
           )}
           
