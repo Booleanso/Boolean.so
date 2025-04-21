@@ -5,7 +5,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Physics, useBox, usePlane } from '@react-three/cannon';
-import { PerspectiveCamera, PointerLockControls, Text } from '@react-three/drei';
+import { PerspectiveCamera, PointerLockControls, Text, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import styles from './game.module.scss';
 import { auth } from '../../lib/firebase-client';
@@ -201,7 +201,7 @@ function Wall({ position, rotation = [0, 0, 0], size = [20, 5, 0.5], color = "#f
   );
 }
 
-// Floor component
+// Floor component - keep for physics collision
 function Floor(props: { position: [number, number, number] }) {
   const [ref] = usePlane(() => ({ 
     rotation: [-Math.PI / 2, 0, 0],
@@ -212,7 +212,7 @@ function Floor(props: { position: [number, number, number] }) {
   }));
   
   return (
-    <mesh ref={ref} receiveShadow>
+    <mesh ref={ref} receiveShadow visible={false}>
       <planeGeometry args={[100, 100]} />
       <meshStandardMaterial color="#f0f0f0" />
     </mesh>
@@ -448,6 +448,23 @@ function FirstPersonControls({ joystickData, userId, username, updatePlayerData 
   );
 }
 
+// Gallery Model Component
+function GalleryModel() {
+  const { scene } = useGLTF('/game/vr-art-gallery.glb');
+  
+  useEffect(() => {
+    // Set materials and shadows for imported model
+    scene.traverse((node) => {
+      if (node instanceof THREE.Mesh) {
+        node.castShadow = true;
+        node.receiveShadow = true;
+      }
+    });
+  }, [scene]);
+
+  return <primitive object={scene} />;
+}
+
 // Main Scene component
 function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData }: { 
   joystickData: JoystickData; 
@@ -458,6 +475,7 @@ function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData 
 }) {
   const isMobile = useIsMobile();
   const [pointerLockControls, setPointerLockControls] = useState<any>(null);
+  const [modelLoaded, setModelLoaded] = useState(false);
   
   // Handle pointer lock errors
   useEffect(() => {
@@ -474,6 +492,9 @@ function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData 
       document.removeEventListener('pointerlockerror', handlePointerLockError);
     };
   }, [pointerLockControls]);
+  
+  // Preload the GLB model
+  useGLTF.preload('/game/vr-art-gallery.glb');
   
   return (
     <Canvas shadows style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh' }}>
@@ -508,32 +529,12 @@ function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData 
           updatePlayerData={updatePlayerData}
         />
         
-        {/* Ground and ceiling */}
+        {/* Invisible floor for physics */}
         <Floor position={[0, 0, 0]} />
-        <Ceiling position={[0, 8, 0]} />
         
-        {/* Outer Walls */}
-        <Wall position={[0, 4, -25]} size={[50, 8, 0.5]} />
-        <Wall position={[0, 4, 25]} size={[50, 8, 0.5]} />
-        <Wall position={[-25, 4, 0]} rotation={[0, Math.PI / 2, 0]} size={[50, 8, 0.5]} />
-        <Wall position={[25, 4, 0]} rotation={[0, Math.PI / 2, 0]} size={[50, 8, 0.5]} />
-        
-        {/* Inner corridors - horizontal */}
-        <Wall position={[-15, 4, -10]} size={[20, 8, 0.5]} />
-        <Wall position={[15, 4, -10]} size={[20, 8, 0.5]} />
-        <Wall position={[-15, 4, 10]} size={[20, 8, 0.5]} />
-        <Wall position={[15, 4, 10]} size={[20, 8, 0.5]} />
-        
-        {/* Inner corridors - vertical */}
-        <Wall position={[-10, 4, -5]} rotation={[0, Math.PI / 2, 0]} size={[10, 8, 0.5]} />
-        <Wall position={[10, 4, -5]} rotation={[0, Math.PI / 2, 0]} size={[10, 8, 0.5]} />
-        <Wall position={[-10, 4, 5]} rotation={[0, Math.PI / 2, 0]} size={[10, 8, 0.5]} />
-        <Wall position={[10, 4, 5]} rotation={[0, Math.PI / 2, 0]} size={[10, 8, 0.5]} />
-        
-        {/* More gallery rooms */}
-        <Wall position={[0, 4, -15]} size={[10, 8, 0.5]} />
-        <Wall position={[0, 4, 15]} size={[10, 8, 0.5]} />
-        
+        {/* Import the GLB gallery model */}
+        <GalleryModel />
+
         {/* Render other players */}
         {otherPlayers.map(player => (
           <OtherPlayer key={player.id} player={player} />
