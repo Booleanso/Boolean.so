@@ -792,6 +792,8 @@ export default function HeroSection() {
   const [reposScanned, setReposScanned] = useState<number>(0);
   const [locationsFound, setLocationsFound] = useState<number>(0);
   const [privateLocationsFound, setPrivateLocationsFound] = useState<number>(0);
+  const [globeOpacity, setGlobeOpacity] = useState<number>(0);
+  const globeContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchLocations() {
@@ -1025,11 +1027,21 @@ export default function HeroSection() {
         ]);
       } finally {
         setLoading(false);
+        // Add animation for globe fade-in after loading is complete
+        setTimeout(() => {
+          setGlobeOpacity(1);
+        }, 300); // Small delay for smoother transition after loading completes
       }
     }
     
     fetchLocations();
   }, []);
+
+  // Configure the animation for the globe opacity
+  const globeStyle = {
+    opacity: globeOpacity,
+    transition: 'opacity 1.2s ease-in-out' // Slow fade-in effect
+  };
 
   return (
     <section className={styles.heroSection}>
@@ -1050,7 +1062,7 @@ export default function HeroSection() {
           </div>
         </div>
 
-        <div className={styles.globeContainer}>
+        <div ref={globeContainerRef} className={styles.globeContainer} style={globeStyle}>
           {loading ? (
             <div className={styles.loading}>Loading globe...</div>
           ) : (
