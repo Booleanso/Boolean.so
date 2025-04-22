@@ -1,75 +1,230 @@
-// Variables - matching marketplace styling
-$primary-color: #0070c9; // Apple blue
-$secondary-color: #333333;
-$accent-color: #007aff; // Apple accent blue
-$light-bg: #f5f5f7; // Apple light background
-$border-color: #d2d2d7; // Apple light border
-$text-color: #1d1d1f; // Apple dark text
-$text-light: #6e6e73; // Apple secondary text
-$button-radius: 55px; // Rounded button corners
-$card-shadow: none;
-$transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+// Variables - more neutral palette
+$primary-color: #333333; // Dark gray
+$secondary-color: #666666; // Medium gray
+$accent-color: #444444; // Slate gray
+$light-bg: #f8f8f8; // Very light gray
+$border-color: #e0e0e0; // Light gray
+$text-color: #222222; // Almost black
+$text-light: #666666; // Medium gray
+$radius: 6px; // Subtle border radius
+$card-shadow: 0 1px 3px rgba(0, 0, 0, 0.07); // Subtle shadow
+$transition: all 0.2s ease-in-out;
 
+// Dark mode variables
+$dark-primary-color: #333333;
+$dark-secondary-color: #666666;
+$dark-accent-color: #777777;
+$dark-bg: #000000;
+$dark-border-color: #222222;
+$dark-text-color: #ffffff;
+$dark-text-light: #cccccc;
+$dark-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+$dark-component-bg: #0a0a0a;
+$dark-input-bg: #151515;
+$dark-hover-bg: #1a1a1a;
+
+// Theme toggle styles
+.themeToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.themeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  border: 1px solid $border-color;
+  background-color: transparent;
+  color: $text-color;
+  cursor: pointer;
+  transition: $transition;
+  
+  &:hover {
+    background-color: $light-bg;
+  }
+  
+  &.activeTheme {
+    background-color: $primary-color;
+    color: white;
+    border-color: $primary-color;
+  }
+  
+  // Apply dark mode styles when dark theme is active
+  :global(.dark-theme) & {
+    border-color: $dark-border-color;
+    color: $dark-text-color;
+    
+    &:hover {
+      background-color: $dark-hover-bg;
+    }
+    
+    &.activeTheme {
+      background-color: $dark-primary-color;
+      border-color: $dark-primary-color;
+      color: white;
+    }
+  }
+}
+
+// Main container
 .container {
   width: 100%;
   max-width: 100%;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   color: $text-color;
   background-color: white;
-  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+    background-color: $dark-bg;
+  }
 }
 
+// Header section
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  padding: 7rem 5% 2rem;
+  background-color: white;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+  
+  h1 {
+    font-size: 38px;
+    font-weight: 500;
+    color: $text-color;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+}
+
+// Profile section
 .profile {
   width: 100%;
   max-width: 100%;
-  margin: 0;
-  padding: 0;
+  background-color: white;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
 }
 
 .title {
-  font-size: 48px;
-  font-weight: 600;
-  color: $text-color;
+  font-size: 30px;
+  font-weight: 500;
   margin: 0;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  padding: 7rem 5% 2rem;
-  background-color: white;
+  color: $text-color;
+  padding: 2rem 5% 1rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
 }
 
 .section {
-  background-color: white;
   margin-bottom: 2rem;
-  overflow: hidden;
-  border-top: 1px solid $border-color;
   border-bottom: 1px solid $border-color;
-  border-left: none;
-  border-right: none;
-  border-radius: 0;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    border-color: $dark-border-color;
+  }
+  
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 4rem;
+  }
 }
 
 .sectionHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem 5%;
+  padding: 1.5rem 5% 1rem;
+  background-color: $light-bg;
+  border-top: 1px solid $border-color;
   border-bottom: 1px solid $border-color;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: $dark-border-color;
+  }
 }
 
 .sectionTitle {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 500;
   margin: 0;
   color: $text-color;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
 }
 
 .sectionControls {
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 1rem;
 }
 
-// Profile Content
+// Unified layout for account and connections
+.unifiedSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem 5%;
+  
+  @media (max-width: 992px) {
+    flex-direction: column;
+  }
+}
+
+.accountColumn {
+  flex: 1;
+  min-width: 300px;
+  
+  .accountInfo {
+    padding: 0;
+  }
+}
+
+.connectionsColumn {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  
+  .sellReposButton {
+    padding: 1.5rem 0 0;
+    text-align: left;
+  }
+}
+
+// User info styling
 .accountInfo {
   padding: 2rem 5%;
 }
@@ -77,7 +232,7 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 .userInfo {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2rem;
   
   @media (max-width: 768px) {
     flex-direction: column;
@@ -86,16 +241,16 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .avatar {
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
   overflow: hidden;
-  background-color: $light-bg;
-
+  box-shadow: $card-shadow;
+  
   img {
+    object-fit: cover;
     width: 100%;
     height: 100%;
-    object-fit: cover;
   }
 }
 
@@ -107,151 +262,38 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   justify-content: center;
   background-color: $accent-color;
   color: white;
-  font-size: 40px;
-  font-weight: 600;
+  font-size: 42px;
+  font-weight: 500;
 }
 
 .userDetails {
   flex: 1;
-
+  
   h3 {
-    font-size: 28px;
-    font-weight: 600;
+    font-size: 26px;
+    font-weight: 500;
     margin: 0 0 0.5rem;
+    color: $text-color;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
   }
-
+  
   p {
     color: $text-light;
     margin: 0;
-    font-size: 16px;
+    font-size: 15px;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
   }
 }
 
-// Username edit
-.usernameDisplay {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.editUsernameButton {
-  background-color: transparent;
-  border: 1px solid $border-color;
-  color: $text-color;
-  font-size: 14px;
-  padding: 0.4rem 1rem;
-  border-radius: $button-radius;
-  cursor: pointer;
-  transition: $transition;
-
-  &:hover {
-    background-color: $light-bg;
-  }
-}
-
-.usernameEdit {
-  margin-bottom: 1rem;
-}
-
-.usernameInputContainer {
-  display: flex;
-  align-items: center;
-  border: 1px solid $border-color;
-  padding: 0 1rem;
-  border-radius: $button-radius;
-  background-color: white;
-  margin-bottom: 0.5rem;
-  max-width: 300px;
-}
-
-.atSymbol {
-  color: $text-light;
-  font-weight: 500;
-}
-
-.usernameInput {
-  border: none;
-  padding: 0.8rem 0.5rem;
-  font-size: 16px;
-  width: 100%;
-  color: $text-color;
-  outline: none;
-}
-
-.usernameRequirements {
-  font-size: 14px;
-  color: $text-light;
-  margin-bottom: 1rem;
-  max-width: 400px;
-
-  ul {
-    margin: 0.5rem 0 0;
-    padding-left: 1.5rem;
-  }
-
-  li {
-    margin-bottom: 0.25rem;
-  }
-}
-
-.usernameValidation {
-  color: #ff3b30;
-  font-size: 14px;
-  margin-bottom: 1rem;
-}
-
-.usernameError {
-  color: #ff3b30;
-  font-size: 14px;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background-color: rgba(255, 59, 48, 0.1);
-  border-radius: 6px;
-}
-
-.usernameButtons {
-  display: flex;
-  gap: 1rem;
-}
-
-.cancelButton {
-  background-color: transparent;
-  border: 1px solid $border-color;
-  color: $text-color;
-  padding: 0.8rem 1.5rem;
-  border-radius: $button-radius;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: $transition;
-
-  &:hover {
-    background-color: $light-bg;
-  }
-}
-
-.saveButton {
-  background-color: $primary-color;
-  color: white;
-  padding: 0.8rem 1.5rem;
-  border-radius: $button-radius;
-  font-weight: 500;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-  transition: $transition;
-
-  &:hover {
-    background-color: darken($primary-color, 5%);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-// Connection cards
+// GitHub and bank connections
 .connectionCard {
   display: flex;
   justify-content: space-between;
@@ -259,184 +301,483 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   padding: 1.5rem 5%;
   border-bottom: 1px solid $border-color;
   
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+  // Dark mode styles
+  :global(.dark-theme) & {
+    border-color: $dark-border-color;
+  }
+  
+  .connectionsColumn & {
+    padding: 1.5rem;
+    margin: 0;
+    border-radius: $radius;
+    border: 1px solid $border-color;
+    box-shadow: $card-shadow;
+    background-color: white;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: $dark-component-bg;
+      border-color: $dark-border-color;
+      box-shadow: $dark-card-shadow;
+    }
+    
+    &:last-child {
+      border-bottom: 1px solid $border-color;
+      
+      // Dark mode styles
+      :global(.dark-theme) & {
+        border-color: $dark-border-color;
+      }
+    }
+  }
+  
+  &:last-child {
+    border-bottom: none;
   }
 }
 
 .connectionInfo {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .connectionIcon {
-  width: 40px;
-  height: 40px;
+  font-size: 22px;
+  color: $text-color;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $light-bg;
-  border-radius: 50%;
-  font-size: 20px;
-  color: $text-color;
+  width: 38px;
+  height: 38px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
 }
 
 .connectionDetails {
   h3 {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 500;
     margin: 0 0 0.25rem;
+    color: $text-color;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
   }
-
+  
   p {
     color: $text-light;
     margin: 0;
     font-size: 14px;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
   }
-}
-
-.verificationNote {
-  display: block;
-  margin-top: 0.5rem;
-  color: #f7b955;
 }
 
 .connectionActions {
   display: flex;
-  gap: 1rem;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-  }
+  gap: 0.75rem;
 }
 
 .connectionButton {
-  padding: 0.8rem 1.5rem;
-  border-radius: $button-radius;
+  padding: 0.5rem 1.2rem;
+  border-radius: $radius;
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
+  border: none;
   transition: $transition;
-
+  
   &.connect {
     background-color: $primary-color;
     color: white;
-    border: none;
-
+    
     &:hover {
       background-color: darken($primary-color, 5%);
     }
-  }
-
-  &.disconnect, &.edit {
-    background-color: transparent;
-    border: 1px solid $border-color;
-    color: $text-color;
-
-    &:hover {
-      background-color: $light-bg;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: $dark-primary-color;
     }
   }
-
-  &.loading {
-    opacity: 0.7;
-    cursor: not-allowed;
+  
+  &.disconnect {
+    background-color: $light-bg;
+    color: $text-color;
+    border: 1px solid $border-color;
+    
+    &:hover {
+      background-color: darken($light-bg, 3%);
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: $dark-component-bg;
+      color: $dark-text-color;
+      border-color: $dark-border-color;
+      
+      &:hover {
+        background-color: $dark-hover-bg;
+      }
+    }
   }
-}
-
-.bankDetailsButtons {
-  display: flex;
-  gap: 0.5rem;
+  
+  &.edit {
+    background-color: $light-bg;
+    color: $text-color;
+    border: 1px solid $border-color;
+    
+    &:hover {
+      background-color: darken($light-bg, 3%);
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: $dark-component-bg;
+      color: $dark-text-color;
+      border-color: $dark-border-color;
+      
+      &:hover {
+        background-color: $dark-hover-bg;
+      }
+    }
+  }
+  
+  &.loading {
+    background-color: $light-bg;
+    color: $text-light;
+    cursor: not-allowed;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: $dark-component-bg;
+      color: $dark-text-light;
+    }
+  }
 }
 
 // Status messages
 .statusMessage {
-  margin: 0;
   padding: 1rem 5%;
-  font-size: 14px;
-
-  &.errorStatus {
-    background-color: #fff1f0;
-    color: #ff3b30;
-    border-bottom: 1px solid rgba(255, 59, 48, 0.2);
-  }
-
+  margin: 0;
+  width: 100%;
+  font-size: 15px;
+  font-weight: 400;
+  
   &.successStatus {
-    background-color: #f0fff4;
-    color: #34c759;
-    border-bottom: 1px solid rgba(52, 199, 89, 0.2);
+    background-color: rgba(0, 0, 0, 0.03);
+    color: $text-color;
+    border-bottom: 1px solid $border-color;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: $dark-text-color;
+      border-color: $dark-border-color;
+    }
+  }
+  
+  &.errorStatus {
+    background-color: rgba(0, 0, 0, 0.03);
+    color: $text-color;
+    border-bottom: 1px solid $border-color;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: $dark-text-color;
+      border-color: $dark-border-color;
+    }
   }
 }
 
 .error {
-  background-color: #fff1f0;
-  color: #ff3b30;
-  padding: 1rem 5%;
-  font-size: 14px;
-  border-bottom: 1px solid rgba(255, 59, 48, 0.2);
+  background-color: rgba(0, 0, 0, 0.03);
+  color: $text-color;
+  padding: 1.2rem 5%;
+  margin: 0;
+  width: 100%;
+  border-bottom: 1px solid $border-color;
+  font-size: 15px;
+  font-weight: 400;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+  }
 }
 
-// Form
+// Username edit section
+.usernameEdit {
+  margin: 1rem 0;
+  max-width: 500px;
+}
+
+.usernameInputContainer {
+  display: flex;
+  align-items: center;
+  border: 1px solid $border-color;
+  border-radius: $radius;
+  padding: 0 0.75rem;
+  margin-bottom: 0.5rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    border-color: $dark-border-color;
+    background-color: $dark-input-bg;
+  }
+  
+  .atSymbol {
+    color: $text-light;
+    font-size: 16px;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
+  }
+  
+  .usernameInput {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: $text-color;
+    width: 100%;
+    background-color: transparent;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+}
+
+.usernameRequirements {
+  font-size: 14px;
+  color: $text-light;
+  margin-bottom: 1rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+  
+  ul {
+    margin: 0.5rem 0 0 1.5rem;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 0.25rem;
+  }
+}
+
+.usernameValidation, .usernameError {
+  color: $text-color;
+  font-size: 14px;
+  margin-bottom: 1rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
+}
+
+.usernameButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.cancelButton, .saveButton {
+  padding: 0.5rem 1.2rem;
+  border-radius: $radius;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: $transition;
+}
+
+.cancelButton {
+  background-color: $light-bg;
+  color: $text-color;
+  border: 1px solid $border-color;
+  
+  &:hover {
+    background-color: darken($light-bg, 3%);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+    
+    &:hover {
+      background-color: $dark-hover-bg;
+    }
+  }
+}
+
+.saveButton {
+  background-color: $primary-color;
+  color: white;
+  border: none;
+  
+  &:hover:not(:disabled) {
+    background-color: darken($primary-color, 5%);
+  }
+  
+  &:disabled {
+    background-color: lighten($primary-color, 30%);
+    cursor: not-allowed;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-primary-color;
+    
+    &:disabled {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+.usernameDisplay {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  
+  .editUsernameButton {
+    padding: 0.3rem 0.8rem;
+    border-radius: $radius;
+    font-weight: 500;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid $border-color;
+    background-color: $light-bg;
+    color: $text-color;
+    transition: $transition;
+    
+    &:hover {
+      background-color: darken($light-bg, 3%);
+    }
+  }
+}
+
+// Bank details form
 .formContainer {
   padding: 0 5% 2rem;
-  background-color: $light-bg;
 }
 
 .formSection {
   background-color: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-top: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-
+  padding: 2rem;
+  border-radius: $radius;
+  border: 1px solid $border-color;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: $card-shadow;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: $dark-border-color;
+    box-shadow: $dark-card-shadow;
+  }
+  
   h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0 0 1rem;
+    margin-top: 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: $text-color;
+    margin-bottom: 1rem;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
   }
 }
 
 .formHelper {
   color: $text-light;
-  font-size: 14px;
   margin-bottom: 1.5rem;
+  font-size: 14px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
 }
 
 .formGroup {
   margin-bottom: 1.5rem;
-
+  
   label {
     display: block;
-    font-size: 14px;
-    font-weight: 500;
     margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 14px;
     color: $text-color;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
   }
-}
-
-.formInput {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  font-size: 16px;
-  border: 1px solid $border-color;
-  border-radius: $button-radius;
-  background-color: white;
-  color: $text-color;
-
-  &:focus {
+  
+  .formInput {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid $border-color;
+    border-radius: $radius;
+    font-size: 16px;
+    color: $text-color;
     outline: none;
-    border-color: $accent-color;
+    transition: border-color 0.2s ease;
+    background-color: white;
+    
+    &:focus {
+      border-color: darken($border-color, 15%);
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: $dark-input-bg;
+      border-color: $dark-border-color;
+      color: $dark-text-color;
+      
+      &:focus {
+        border-color: lighten($dark-border-color, 15%);
+      }
+    }
   }
-}
-
-.formHint {
-  display: block;
-  color: $text-light;
-  font-size: 12px;
-  margin-top: 0.5rem;
+  
+  .formHint {
+    display: block;
+    margin-top: 0.5rem;
+    color: $text-light;
+    font-size: 12px;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
+  }
 }
 
 .formActions {
@@ -446,373 +787,72 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   margin-top: 2rem;
 }
 
-// Sell Repos button
+// Buttons and actions
 .sellReposButton {
-  padding: 1.5rem 5%;
+  padding: 2rem 5%;
   text-align: center;
 }
 
-.sellButton {
+.sellButton, .browseButton, .viewRepoButton {
   display: inline-block;
   background-color: $primary-color;
   color: white;
-  padding: 0.8rem 2rem;
-  border-radius: $button-radius;
+  padding: 0.8rem 1.8rem;
+  border-radius: $radius;
   font-weight: 500;
-  text-decoration: none;
-  font-size: 14px;
-  transition: $transition;
   border: none;
   cursor: pointer;
-
-  &:hover {
-    background-color: darken($primary-color, 5%);
-    transform: translateY(-1px);
-  }
-}
-
-// Empty states
-.emptyState {
-  padding: 4rem 5%;
-  text-align: center;
-
-  p {
-    color: $text-light;
-    margin-bottom: 1.5rem;
-    font-size: 16px;
-  }
-}
-
-.browseButton {
-  display: inline-block;
-  background-color: $primary-color;
-  color: white;
-  padding: 0.8rem 2rem;
-  border-radius: $button-radius;
-  font-weight: 500;
   text-decoration: none;
-  font-size: 14px;
   transition: $transition;
-
+  font-size: 14px;
+  
   &:hover {
     background-color: darken($primary-color, 5%);
-    transform: translateY(-1px);
   }
-}
-
-// Repo grids
-.repoGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 2rem 5%;
-}
-
-.repoCard {
-  border: 1px solid $border-color;
-  border-radius: 8px;
-  padding: 1.5rem;
-  transition: $transition;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-}
-
-.repoName {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0 0 0.75rem;
-
-  a {
-    color: $text-color;
-    text-decoration: none;
-
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-primary-color;
+    
     &:hover {
-      color: $accent-color;
+      background-color: lighten($dark-primary-color, 10%);
     }
   }
 }
 
-.repoDescription {
-  color: $text-light;
-  font-size: 14px;
-  margin-bottom: 1rem;
-  min-height: 3em;
-}
-
-.repoStats {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.repoLanguage {
-  display: inline-flex;
-  align-items: center;
-  background-color: $light-bg;
-  padding: 0.3rem 0.75rem;
-  border-radius: $button-radius;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.repoStat {
-  display: inline-flex;
-  align-items: center;
-  font-size: 12px;
-  color: $text-light;
-}
-
-.repoActions {
-  text-align: center;
-}
-
-// Repository cards - Purchased and Listed
-.purchasedRepos, .listedRepos {
-  padding: 2rem 5%;
-}
-
-.purchasedRepoCard, .listedRepoCard {
-  display: flex;
-  margin-bottom: 2rem;
-  border: 1px solid $border-color;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: white;
-  transition: $transition;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
-}
-
-.purchasedRepoImage, .listedRepoImage {
-  width: 250px;
-  height: 175px;
-  position: relative;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-    height: 200px;
-  }
-}
-
-.purchaseType, .listingType {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 0.3rem 0.75rem;
-  border-radius: $button-radius;
-  font-size: 12px;
-  font-weight: 500;
-  z-index: 1;
-}
-
-.soldBadge {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 0.3rem 0.75rem;
-  border-radius: $button-radius;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  z-index: 1;
-}
-
-.purchasedRepoInfo, .listedRepoInfo {
-  flex: 1;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-
-  h3 {
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0 0 0.75rem;
-  }
-}
-
-.purchasedRepoDescription, .listedRepoDescription {
-  color: $text-light;
-  font-size: 14px;
-  margin-bottom: 1rem;
-  flex-grow: 1;
-}
-
-.purchasedRepoMeta, .listedRepoMeta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  font-size: 12px;
-  color: $text-light;
-}
-
-.listedRepoPrice {
-  font-weight: 600;
-  color: $accent-color;
-}
-
-.listedRepoStats {
-  display: flex;
-  gap: 1rem;
-
-  span {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-}
-
-.statIcon {
-  width: 14px;
-  height: 14px;
-}
-
-.subscriptionInfo, .transferStatus {
-  font-size: 13px;
-  margin-bottom: 1rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: $button-radius;
-  display: inline-block;
-}
-
-.subscriptionInfo {
-  background-color: #f0f8ff;
-  color: $accent-color;
-}
-
-.transferStatus {
-  background-color: #f0fff4;
-  color: #34c759;
-
-  &.status-pending {
-    background-color: #fffdf0;
-    color: #f7b955;
-  }
-
-  &.status-failed {
-    background-color: #fff1f0;
-    color: #ff3b30;
-  }
-}
-
-.purchasedRepoActions, .listedRepoControls {
-  margin-top: auto;
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.viewRepoButton, .viewListingButton, .editListingButton, .removeListingButton, .soldButton {
-  display: inline-block;
-  padding: 0.6rem 1.2rem;
-  border-radius: $button-radius;
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
-  transition: $transition;
-}
-
-.viewRepoButton, .viewListingButton {
-  background-color: $primary-color;
-  color: white;
+.refreshButton {
+  background: none;
   border: none;
-
-  &:hover {
-    background-color: darken($primary-color, 5%);
-  }
-}
-
-.editListingButton {
-  background-color: transparent;
-  border: 1px solid $border-color;
-  color: $text-color;
-
-  &:hover {
-    background-color: $light-bg;
-  }
-}
-
-.removeListingButton {
-  background-color: transparent;
-  border: 1px solid #ff3b30;
-  color: #ff3b30;
-
-  &:hover {
-    background-color: rgba(255, 59, 48, 0.1);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-.soldButton {
-  background-color: transparent;
-  border: 1px solid #34c759;
-  color: #34c759;
-
-  &:hover {
-    background-color: rgba(52, 199, 89, 0.1);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-// Refresh and toggle buttons
-.refreshButton, .toggleSoldButton {
-  background-color: transparent;
-  border: 1px solid $border-color;
-  color: $text-color;
-  padding: 0.5rem;
-  border-radius: $button-radius;
   cursor: pointer;
-  transition: $transition;
+  color: $text-light;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
-
+  border-radius: 50%;
+  
   &:hover {
     background-color: $light-bg;
   }
-
+  
   &:disabled {
-    opacity: 0.6;
     cursor: not-allowed;
+    opacity: 0.5;
   }
-}
-
-.toggleSoldButton {
-  width: auto;
-  padding: 0.5rem 1rem;
-  font-size: 12px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+    
+    &:hover {
+      background-color: $dark-hover-bg;
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
 }
 
 .spinning {
@@ -820,21 +860,931 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.toggleSoldButton {
+  background-color: white;
+  border: 1px solid $border-color;
+  color: $text-color;
+  padding: 0.6rem 1.3rem;
+  border-radius: $radius;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: $transition;
+  
+  &:hover {
+    background-color: $light-bg;
   }
-  to {
-    transform: rotate(360deg);
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+    
+    &:hover {
+      background-color: $dark-hover-bg;
+    }
+    
+    &:active {
+      background-color: lighten($dark-hover-bg, 5%);
+    }
   }
 }
 
-// Utility classes
+// Grids for repos, purchased repos, listed repos
 .loading {
+  text-align: center;
+  padding: 4rem 0;
+  color: $text-light;
+  font-size: 16px;
+  font-weight: 400;
+  width: 100%;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 5%;
+  
+  p {
+    color: $text-light;
+    margin-bottom: 1.5rem;
+    font-size: 16px;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.repoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  padding: 3rem 5%;
+  background-color: white;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 2rem 5%;
+    gap: 2rem;
+  }
+}
+
+.repoCard {
+  background-color: white;
+  border-radius: $radius;
+  box-shadow: $card-shadow;
+  overflow: hidden;
+  transition: $transition;
+  border: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.07);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: $dark-border-color;
+    box-shadow: $dark-card-shadow;
+  }
+}
+
+.repoName {
+  font-size: 17px;
+  font-weight: 500;
+  margin: 0 0 0.75rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
+  
+  a {
+    color: $text-color;
+    text-decoration: none;
+    
+    &:hover {
+      color: darken($text-color, 15%);
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+      
+      &:hover {
+        color: white;
+      }
+    }
+  }
+}
+
+.repoDescription {
+  color: $text-light;
+  margin: 0 0 1rem;
+  font-size: 14px;
+  line-height: 1.5;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.repoStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 13px;
+  color: $text-light;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.repoLanguage {
+  background-color: $light-bg;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    color: $dark-text-light;
+  }
+}
+
+.repoStat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.repoActions {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid $border-color;
   display: flex;
   justify-content: center;
+}
+
+// Purchased and listed repos styling
+.purchasedRepos, .listedRepos {
+  padding: 2rem 5%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.purchasedRepoCard, .listedRepoCard {
+  background-color: white;
+  border-radius: $radius;
+  box-shadow: $card-shadow;
+  overflow: hidden;
+  display: flex;
+  border: 1px solid $border-color;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: $dark-border-color;
+    box-shadow: $dark-card-shadow;
+  }
+}
+
+.purchasedRepoImage, .listedRepoImage {
+  width: 300px;
+  position: relative;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 200px;
+  }
+  
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.purchaseType, .listingType {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: $radius;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.soldBadge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: $radius;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.purchasedRepoInfo, .listedRepoInfo {
+  flex: 1;
+  padding: 1.5rem;
+  
+  h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 0 0.8rem;
+    color: $text-color;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+}
+
+.purchasedRepoDescription, .listedRepoDescription {
+  color: $text-light;
+  margin: 0 0 1rem;
+  font-size: 14px;
+  line-height: 1.5;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.purchasedRepoMeta, .listedRepoMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 13px;
+  color: $text-light;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.subscriptionInfo, .transferStatus {
+  background-color: $light-bg;
+  padding: 0.5rem 1rem;
+  border-radius: $radius;
+  font-size: 13px;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: $dark-text-color;
+  }
+}
+
+.purchasedRepoActions, .listedRepoControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.viewListingButton, .editListingButton, .removeListingButton, .soldButton {
+  padding: 0.5rem 1.2rem;
+  border-radius: $radius;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: $transition;
+}
+
+.viewListingButton {
+  background-color: $primary-color;
+  color: white;
+  
+  &:hover {
+    background-color: darken($primary-color, 5%);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-primary-color;
+    
+    &:hover {
+      background-color: lighten($dark-primary-color, 10%);
+    }
+  }
+}
+
+.editListingButton {
+  background-color: $light-bg;
+  color: $text-color;
+  border: 1px solid $border-color;
+  
+  &:hover {
+    background-color: darken($light-bg, 3%);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+    
+    &:hover {
+      background-color: $dark-hover-bg;
+    }
+  }
+}
+
+.removeListingButton {
+  background-color: $light-bg;
+  color: $text-color;
+  border: 1px solid $border-color;
+  
+  &:hover:not(:disabled) {
+    background-color: darken($light-bg, 3%);
+  }
+  
+  &:disabled {
+    background-color: lighten($light-bg, 2%);
+    cursor: not-allowed;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+    
+    &:hover:not(:disabled) {
+      background-color: $dark-hover-bg;
+    }
+    
+    &:disabled {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.5);
+      cursor: not-allowed;
+    }
+  }
+}
+
+.soldButton {
+  background-color: $light-bg;
+  color: $text-color;
+  border: 1px solid $border-color;
+  
+  &:hover:not(:disabled) {
+    background-color: darken($light-bg, 3%);
+  }
+  
+  &:disabled {
+    background-color: lighten($light-bg, 2%);
+    cursor: not-allowed;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+    
+    &:hover:not(:disabled) {
+      background-color: $dark-hover-bg;
+    }
+    
+    &:disabled {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.5);
+      cursor: not-allowed;
+    }
+  }
+}
+
+.listedRepoPrice {
+  font-size: 15px;
+  font-weight: 500;
+  color: $text-color;
+  background-color: $light-bg;
+  padding: 0.4rem 0.8rem;
+  border-radius: $radius;
+  display: inline-block;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.listedRepoStats {
+  display: flex;
+  gap: 1rem;
+  margin-left: 1rem;
+  
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: $text-light;
+    font-size: 13px;
+  }
+  
+  .statIcon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// Status colors for transfers - make more subtle
+.status-completed {
+  background-color: $light-bg;
+  color: $text-color;
+}
+
+.status-pending {
+  background-color: $light-bg;
+  color: $text-color;
+}
+
+.status-failed {
+  background-color: $light-bg;
+  color: $text-color;
+}
+
+.bankDetailsButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+// Verifications notes
+.verificationNote {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 12px;
+  color: $text-color;
+}
+
+// Repository list styling
+.repoListContainer {
+  padding: 1.5rem 5%;
+  display: flex;
+  flex-direction: column;
+}
+
+.repoControls {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  padding: 4rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.filterContainer {
+  flex: 1;
+  max-width: 500px;
+  
+  @media (max-width: 768px) {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+.repoFilterInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid $border-color;
+  border-radius: $radius;
+  font-size: 14px;
+  color: $text-color;
+  outline: none;
+  transition: border-color 0.2s ease;
+  background-color: white;
+  
+  &:focus {
+    border-color: darken($border-color, 15%);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-input-bg;
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+    
+    &:focus {
+      border-color: lighten($dark-border-color, 15%);
+    }
+  }
+}
+
+.sortContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.repoSortSelect {
+  padding: 0.65rem 2rem 0.65rem 0.75rem;
+  border: 1px solid $border-color;
+  border-radius: $radius;
+  font-size: 14px;
+  color: $text-color;
+  outline: none;
+  background-color: white;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1rem;
+  appearance: none;
+  cursor: pointer;
+  
+  &:focus {
+    border-color: darken($border-color, 15%);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-input-bg;
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+    
+    &:focus {
+      border-color: lighten($dark-border-color, 15%);
+    }
+  }
+}
+
+.sortDirectionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid $border-color;
+  border-radius: $radius;
+  background-color: white;
+  color: $text-color;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: $light-bg;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-input-bg;
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+    
+    &:hover {
+      background-color: $dark-hover-bg;
+    }
+  }
+}
+
+.repoList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.repoListItem {
+  padding: 1.5rem;
+  border: 1px solid $border-color;
+  border-radius: $radius;
+  background-color: white;
+  transition: $transition;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $card-shadow;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: $dark-border-color;
+    
+    &:hover {
+      box-shadow: $dark-card-shadow;
+    }
+  }
+}
+
+.repoListItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+  
+  .repoName {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+    
+    a {
+      color: $text-color;
+      text-decoration: none;
+      
+      &:hover {
+        color: darken($text-color, 15%);
+      }
+      
+      // Dark mode styles  
+      :global(.dark-theme) & {
+        color: $dark-text-color;
+        
+        &:hover {
+          color: white;
+        }
+      }
+    }
+  }
+  
+  .sellButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+
+.repoListItemFooter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-size: 13px;
+  color: $text-light;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.repoDate {
+  margin-left: auto;
+  font-size: 13px;
+  color: $text-light;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.noResults {
+  padding: 3rem 0;
+  text-align: center;
   color: $text-light;
 }
+
+// Compressed Footer
+.compressedFooter {
+  width: 100%;
+  background-color: transparent;
+  border-top: 1px solid $border-color;
+  padding: 1.5rem 0;
+  margin-top: 3rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    border-color: $dark-border-color;
+  }
+}
+
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5%;
+  max-width: 1400px;
+  margin: 0 auto;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+}
+
+.footerLeft {
+  color: $text-light;
+  font-size: 14px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+}
+
+.footerLink {
+  color: $text-light;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: $text-color;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+    
+    &:hover {
+      color: $dark-text-color;
+    }
+  }
+}
+
+.footerCopyright {
+  color: $text-light;
+  font-size: 14px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+// Global heading styles for dark mode
+h1, h2, h3, h4, h5, h6 {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
+}
+
+// All background containers
+.repoCard, .purchasedRepoCard, .listedRepoCard, .formSection, .connectionCard, .usernameInputContainer {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: $dark-border-color;
+    box-shadow: $dark-card-shadow;
+  }
+}
+
+// Repository grid backgrounds
+.repoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  padding: 3rem 5%;
+  background-color: white;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 2rem 5%;
+    gap: 2rem;
+  }
+}
+
+// All white background sections
+.accountInfo, .purchasedRepos, .listedRepos {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+}
+
+// All loading and empty states
+.loading, .emptyState, .noResults {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+    color: $dark-text-light;
+  }
+}
+
+// Ensure all buttons with white backgrounds have dark mode styles
+button, .button {
+  // Dark mode styles for buttons that don't have specific styles
+  :global(.dark-theme) & {
+    &:not([class*="connectionButton"]):not([class*="saveButton"]):not([class*="cancelButton"]):not([class*="editUsernameButton"]):not([class*="themeButton"]):not([class*="refreshButton"]):not([class*="toggleSoldButton"]):not([class*="sortDirectionButton"]):not([class*="removeListingButton"]):not([class*="soldButton"]):not([class*="viewListingButton"]):not([class*="editListingButton"]) {
+      background-color: $dark-component-bg;
+      color: $dark-text-color;
+      border-color: $dark-border-color;
+      
+      &:hover {
+        background-color: $dark-hover-bg;
+      }
+    }
+  }
+}
+
+// Placeholder avatar background
+.placeholderAvatar {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-accent-color;
+  }
+}
+
+// Status messages and info sections
+.verificationNote, .formHint {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+// Additional specific containers that need dark backgrounds
+.repoListContainer {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+}
+
+// Bank details form background
+.formContainer {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+}
+
+// Footer container
+.compressedFooter {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+    border-color: $dark-border-color;
+  }
+}
+
+// Any remaining input fields
+input, select, textarea {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-input-bg;
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+  }
+}
+
 
 

@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { FaGithub } from 'react-icons/fa';
+import { FiRefreshCw, FiSun, FiMoon, FiMonitor } from 'react-icons/fi';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './profile.module.scss';
 import { auth } from '../lib/firebase-client';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import { MarketplaceListing } from '../api/marketplace/list-repo/route';
-import { FiRefreshCw } from 'react-icons/fi';
+import { useTheme } from '../components/ThemeProvider/ThemeProvider';
 
 type GithubRepo = {
   id: number;
@@ -54,6 +54,31 @@ type StripeConnectionStatus = {
   accountStatus?: 'pending' | 'verified' | 'restricted';
 };
 
+// Updated MarketplaceListing type to include id as string or number
+type MarketplaceListing = {
+  id: string | number;
+  docId?: string;
+  name: string;
+  description: string;
+  price?: number;
+  subscriptionPrice?: number;
+  isSubscription: boolean;
+  imageUrl: string;
+  seller: {
+    id: string;
+    username: string;
+    avatarUrl?: string;
+  };
+  repoUrl: string;
+  stars: number;
+  forks: number;
+  stripeProductId?: string;
+  stripePriceId?: string;
+  sold?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export default function ProfilePage() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -86,6 +111,12 @@ export default function ProfilePage() {
   const [accountStatus, setAccountStatus] = useState<'pending' | 'verified' | 'restricted' | null>(null);
   const [showingSoldListings, setShowingSoldListings] = useState(false);
   const [allUserListings, setAllUserListings] = useState<MarketplaceListing[]>([]);
+  const [repoFilter, setRepoFilter] = useState('');
+  const [repoSort, setRepoSort] = useState('name'); // Default sort by name
+  const [sortDirection, setSortDirection] = useState('asc'); // Default ascending
+  
+  // Get theme from context
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -498,11 +529,12 @@ export default function ProfilePage() {
     }
   };
 
-  const handleRemoveListing = async (listingId: number, stripeProductId: string) => {
+  const handleRemoveListing = async (listingId: string | number, stripeProductId: string) => {
     if (!user) return;
     
     try {
-      setDeleteLoading(listingId);
+      // Convert string id to number if needed for the loading state
+      setDeleteLoading(typeof listingId === 'string' ? parseInt(listingId, 10) : listingId);
       
       // Call Firestore API to remove the listing
       const deleteResponse = await fetch('/api/marketplace/firestore-access', {
@@ -537,7 +569,10 @@ export default function ProfilePage() {
       }
       
       // Update the UI by removing the deleted listing
-      setListedRepos(prev => prev.filter(repo => repo.id !== listingId));
+      setListedRepos(prev => prev.filter(repo => {
+        // Compare as strings to avoid type issues
+        return String(repo.id) !== String(listingId);
+      }));
       
     } catch (err) {
       console.error('Error removing listing:', err);
@@ -547,11 +582,11 @@ export default function ProfilePage() {
     }
   };
 
-  const handleMarkAsSold = async (listingId: number) => {
+  const handleMarkAsSold = async (listingId: string | number) => {
     if (!user) return;
     
     try {
-      setDeleteLoading(listingId); // Reuse the loading state for now
+      setDeleteLoading(typeof listingId === 'string' ? parseInt(listingId, 10) : listingId);
       
       // Use Firestore API to mark the listing as sold
       const response = await fetch('/api/marketplace/firestore-access', {
@@ -707,6 +742,90 @@ export default function ProfilePage() {
     }
   };
 
+  // Add load preferences from localStorage
+  useEffect(() => {
+    // Load filter/sort preferences from localStorage
+    if (typeof window !== 'undefined') {
+      const savedFilter = localStorage.getItem('githubRepoFilter');
+      const savedSort = localStorage.getItem('githubRepoSort');
+      const savedDirection = localStorage.getItem('githubRepoSortDirection');
+      
+      if (savedFilter) setRepoFilter(savedFilter);
+      if (savedSort) setRepoSort(savedSort);
+      if (savedDirection) setSortDirection(savedDirection as 'asc' | 'desc');
+    }
+  }, []);
+
+  // Add a function to save preferences
+  const saveFilterPreferences = (filter: string, sort: string, direction: string) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('githubRepoFilter', filter);
+      localStorage.setItem('githubRepoSort', sort);
+      localStorage.setItem('githubRepoSortDirection', direction);
+    }
+  };
+
+  // Handle filter changes
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const filter = e.target.value;
+    setRepoFilter(filter);
+    saveFilterPreferences(filter, repoSort, sortDirection);
+  };
+
+  // Handle sort changes
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const sort = e.target.value;
+    setRepoSort(sort);
+    saveFilterPreferences(repoFilter, sort, sortDirection);
+  };
+
+  // Handle sort direction change
+  const toggleSortDirection = () => {
+    const newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    setSortDirection(newDirection);
+    saveFilterPreferences(repoFilter, repoSort, newDirection);
+  };
+
+  // Function to sort repositories
+  const getSortedFilteredRepos = () => {
+    // First filter the repos
+    const filtered = repos.filter(repo => {
+      if (!repoFilter) return true;
+      const searchTerm = repoFilter.toLowerCase();
+      return (
+        repo.name.toLowerCase().includes(searchTerm) ||
+        (repo.description && repo.description.toLowerCase().includes(searchTerm))
+      );
+    });
+    
+    // Then sort them
+    return filtered.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (repoSort) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'stars':
+          comparison = b.stargazers_count - a.stargazers_count;
+          break;
+        case 'forks':
+          comparison = b.forks_count - a.forks_count;
+          break;
+        case 'updated':
+          comparison = new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+          break;
+        case 'created':
+          comparison = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          break;
+        default:
+          comparison = a.name.localeCompare(b.name);
+      }
+      
+      return sortDirection === 'asc' ? comparison * -1 : comparison;
+    });
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -717,227 +836,263 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.header}>
+        <h1>Your Profile</h1>
+      </div>
+      
       <div className={styles.profile}>
-        <h1 className={styles.title}>Your Profile</h1>
-
+        {/* Account & Connections unified section */}
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Account</h2>
-          </div>
-          <div className={styles.accountInfo}>
-            {user ? (
-              <div className={styles.userInfo}>
-                <div className={styles.avatar}>
-                  {user.photoURL ? (
-                    <Image 
-                      src={user.photoURL} 
-                      alt="User avatar" 
-                      width={80} 
-                      height={80} 
-                    />
-                  ) : (
-                    <div className={styles.placeholderAvatar}>
-                      {user.displayName?.charAt(0) || user.email?.charAt(0) || '?'}
-                    </div>
-                  )}
-                </div>
-                <div className={styles.userDetails}>
-                  {isEditingUsername ? (
-                    <div className={styles.usernameEdit}>
-                      <div className={styles.usernameInputContainer}>
-                        <span className={styles.atSymbol}>@</span>
-                        <input
-                          type="text"
-                          value={username}
-                          onChange={handleUsernameChange}
-                          className={styles.usernameInput}
-                          placeholder="username"
-                          autoComplete="off"
-                        />
-                      </div>
-                      <div className={styles.usernameRequirements}>
-                        Username must:
-                        <ul>
-                          <li>Be 3-30 characters long</li>
-                          <li>Only contain letters, numbers, underscores (_) and periods (.)</li>
-                          <li>Not start or end with a period</li>
-                          <li>Not contain consecutive periods</li>
-                        </ul>
-                      </div>
-                      {validationMessage && (
-                        <div className={styles.usernameValidation}>
-                          {validationMessage}
-                        </div>
-                      )}
-                      {error && (
-                        <div className={styles.usernameError}>
-                          {error}
-                        </div>
-                      )}
-                      <div className={styles.usernameButtons}>
-                        <button 
-                          onClick={() => {
-                            setIsEditingUsername(false);
-                            setError(null); // Clear error when canceling
-                          }} 
-                          className={styles.cancelButton}
-                          disabled={usernameLoading}
-                        >
-                          Cancel
-                        </button>
-                        <button 
-                          onClick={handleUpdateUsername} 
-                          className={styles.saveButton}
-                          disabled={usernameLoading || !username.trim() || validationMessage !== null}
-                        >
-                          {usernameLoading ? 'Saving...' : 'Save'}
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className={styles.usernameDisplay}>
-                      <h3>@{username || user.displayName || 'user'}</h3>
-                      <div className={styles.usernameActions}>
-                        <button 
-                          onClick={() => setIsEditingUsername(true)}
-                          className={styles.editUsernameButton}
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  <p>{user.email}</p>
-                </div>
-              </div>
-            ) : (
-              <div className={styles.notLoggedIn}>
-                <p>You are not logged in</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Connections</h2>
+            <h2 className={styles.sectionTitle}>Account & Connections</h2>
           </div>
           
+          {/* Status messages */}
           {githubConnectStatus && (
             <div className={`${styles.statusMessage} ${githubConnectStatus.includes('Error') || githubConnectStatus.includes('Failed') ? styles.errorStatus : styles.successStatus}`}>
               {githubConnectStatus}
             </div>
           )}
           
-          {error && (
+          {error && !isEditingUsername && (
             <div className={styles.error}>
               {error}
             </div>
           )}
           
-          <div className={styles.connectionCard}>
-            <div className={styles.connectionInfo}>
-              <div className={styles.connectionIcon}>
-                <FaGithub />
-              </div>
-              <div className={styles.connectionDetails}>
-                <h3>GitHub</h3>
-                <p>{repos.length > 0 ? 'Connected to GitHub' : 'Not connected'}</p>
-              </div>
-            </div>
-            <div className={styles.connectionActions}>
-              {reposLoading ? (
-                <button 
-                  className={`${styles.connectionButton} ${styles.loading}`}
-                  disabled
-                >
-                  Loading...
-                </button>
-              ) : repos.length > 0 ? (
-                <button 
-                  className={`${styles.connectionButton} ${styles.disconnect}`}
-                  onClick={handleDisconnectGithub}
-                >
-                  Disconnect
-                </button>
-              ) : (
-                <button 
-                  className={`${styles.connectionButton} ${styles.connect}`}
-                  onClick={handleConnectGithub}
-                >
-                  Connect
-                </button>
-              )}
-            </div>
-          </div>
-          
-          <div className={styles.connectionCard}>
-            <div className={styles.connectionInfo}>
-              <div className={styles.connectionIcon}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 6h18v3H3V6zm0 5h18v3H3v-3zm0 5h18v3H3v-3z" fill="currentColor"/>
-                </svg>
-              </div>
-              <div className={styles.connectionDetails}>
-                <h3>Bank Details</h3>
-                <p>
-                  {stripeLoading 
-                    ? 'Checking status...' 
-                    : stripeStatus.bankDetailsAdded 
-                      ? `Bank account ending in ${bankAccountNumber.slice(-4) || '****'}`
-                      : 'No bank account connected - Required to receive payments'}
-                </p>
-                {stripeStatus.bankDetailsAdded && accountStatus === 'pending' && (
-                  <small className={styles.verificationNote}>
-                    Your account is pending verification. This usually takes 1-2 business days. 
-                    You can still list repositories for sale during this time.
-                  </small>
+          <div className={styles.unifiedSection}>
+            {/* Account info on left */}
+            <div className={styles.accountColumn}>
+              <div className={styles.accountInfo}>
+                {user ? (
+                  <div className={styles.userInfo}>
+                    <div className={styles.avatar}>
+                      {user.photoURL ? (
+                        <Image 
+                          src={user.photoURL} 
+                          alt="User avatar" 
+                          width={120} 
+                          height={120} 
+                        />
+                      ) : (
+                        <div className={styles.placeholderAvatar}>
+                          {user.displayName?.charAt(0) || user.email?.charAt(0) || '?'}
+                        </div>
+                      )}
+                    </div>
+                    <div className={styles.userDetails}>
+                      {isEditingUsername ? (
+                        <div className={styles.usernameEdit}>
+                          <div className={styles.usernameInputContainer}>
+                            <span className={styles.atSymbol}>@</span>
+                            <input
+                              type="text"
+                              value={username}
+                              onChange={handleUsernameChange}
+                              className={styles.usernameInput}
+                              placeholder="username"
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div className={styles.usernameRequirements}>
+                            Username must:
+                            <ul>
+                              <li>Be 3-30 characters long</li>
+                              <li>Only contain letters, numbers, underscores (_) and periods (.)</li>
+                              <li>Not start or end with a period</li>
+                              <li>Not contain consecutive periods</li>
+                            </ul>
+                          </div>
+                          {validationMessage && (
+                            <div className={styles.usernameValidation}>
+                              {validationMessage}
+                            </div>
+                          )}
+                          {error && (
+                            <div className={styles.usernameError}>
+                              {error}
+                            </div>
+                          )}
+                          <div className={styles.usernameButtons}>
+                            <button 
+                              onClick={() => {
+                                setIsEditingUsername(false);
+                                setError(null); // Clear error when canceling
+                              }} 
+                              className={styles.cancelButton}
+                              disabled={usernameLoading}
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              onClick={handleUpdateUsername} 
+                              className={styles.saveButton}
+                              disabled={usernameLoading || !username.trim() || validationMessage !== null}
+                            >
+                              {usernameLoading ? 'Saving...' : 'Save'}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={styles.usernameDisplay}>
+                          <h3>@{username || user.displayName || 'user'}</h3>
+                          <div className={styles.usernameActions}>
+                            <button 
+                              onClick={() => setIsEditingUsername(true)}
+                              className={styles.editUsernameButton}
+                            >
+                              Edit
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <p>{user.email}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.emptyState}>
+                    <p>You are not logged in</p>
+                  </div>
                 )}
               </div>
             </div>
             
-            <div className={styles.connectionActions}>
-              {stripeLoading ? (
-                <button 
-                  className={`${styles.connectionButton} ${styles.connect}`}
-                  disabled
-                >
-                  Loading...
-                </button>
-              ) : stripeStatus.bankDetailsAdded ? (
-                <div className={styles.bankDetailsButtons}>
-                  <button
-                    className={`${styles.connectionButton} ${styles.edit}`}
-                    onClick={() => setShowBankForm(true)}
+            {/* Connections on right */}
+            <div className={styles.connectionsColumn}>
+              {/* Theme Toggle Connection */}
+              <div className={styles.connectionCard}>
+                <div className={styles.connectionInfo}>
+                  <div className={styles.connectionIcon}>
+                    {theme === 'light' ? <FiSun /> : theme === 'dark' ? <FiMoon /> : <FiMonitor />}
+                  </div>
+                  <div className={styles.connectionDetails}>
+                    <h3>Theme</h3>
+                    <p>Current theme: {theme.charAt(0).toUpperCase() + theme.slice(1)}</p>
+                  </div>
+                </div>
+                <div className={styles.themeToggle}>
+                  <button 
+                    onClick={() => setTheme('light')}
+                    className={`${styles.themeButton} ${theme === 'light' ? styles.activeTheme : ''}`}
+                    title="Light mode"
                   >
-                    Update Details
+                    <FiSun />
                   </button>
-                  <button
-                    className={`${styles.connectionButton} ${styles.disconnect}`}
-                    onClick={handleRemoveBankDetails}
+                  <button 
+                    onClick={() => setTheme('dark')}
+                    className={`${styles.themeButton} ${theme === 'dark' ? styles.activeTheme : ''}`}
+                    title="Dark mode"
                   >
-                    Remove
+                    <FiMoon />
+                  </button>
+                  <button 
+                    onClick={() => setTheme('system')}
+                    className={`${styles.themeButton} ${theme === 'system' ? styles.activeTheme : ''}`}
+                    title="System default"
+                  >
+                    <FiMonitor />
                   </button>
                 </div>
-              ) : (
-                <button 
-                  className={`${styles.connectionButton} ${styles.connect}`}
-                  onClick={() => setShowBankForm(true)}
-                >
-                  Add Bank Account
-                </button>
-              )}
+              </div>
+
+              {/* GitHub connection */}
+              <div className={styles.connectionCard}>
+                <div className={styles.connectionInfo}>
+                  <div className={styles.connectionIcon}>
+                    <FaGithub />
+                  </div>
+                  <div className={styles.connectionDetails}>
+                    <h3>GitHub</h3>
+                    <p>{repos.length > 0 ? 'Connected to GitHub' : 'Not connected'}</p>
+                  </div>
+                </div>
+                <div className={styles.connectionActions}>
+                  {reposLoading ? (
+                    <button 
+                      className={`${styles.connectionButton} ${styles.loading}`}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : repos.length > 0 ? (
+                    <button 
+                      className={`${styles.connectionButton} ${styles.disconnect}`}
+                      onClick={handleDisconnectGithub}
+                    >
+                      Disconnect
+                    </button>
+                  ) : (
+                    <button 
+                      className={`${styles.connectionButton} ${styles.connect}`}
+                      onClick={handleConnectGithub}
+                    >
+                      Connect
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              {/* Bank details connection */}
+              <div className={styles.connectionCard}>
+                <div className={styles.connectionInfo}>
+                  <div className={styles.connectionIcon}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 6h18v3H3V6zm0 5h18v3H3v-3zm0 5h18v3H3v-3z" fill="currentColor"/>
+                    </svg>
+                  </div>
+                  <div className={styles.connectionDetails}>
+                    <h3>Bank Details</h3>
+                    <p>
+                      {stripeLoading 
+                        ? 'Checking status...' 
+                        : stripeStatus.bankDetailsAdded 
+                          ? `Bank account ending in ${bankAccountNumber.slice(-4) || '****'}`
+                          : 'No bank account connected - Required to receive payments'}
+                    </p>
+                    {stripeStatus.bankDetailsAdded && accountStatus === 'pending' && (
+                      <small className={styles.verificationNote}>
+                        Your account is pending verification. This usually takes 1-2 business days. 
+                        You can still list repositories for sale during this time.
+                      </small>
+                    )}
+                  </div>
+                </div>
+                
+                <div className={styles.connectionActions}>
+                  {stripeLoading ? (
+                    <button 
+                      className={`${styles.connectionButton} ${styles.connect}`}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : stripeStatus.bankDetailsAdded ? (
+                    <div className={styles.bankDetailsButtons}>
+                      <button
+                        className={`${styles.connectionButton} ${styles.edit}`}
+                        onClick={() => setShowBankForm(true)}
+                      >
+                        Update Details
+                      </button>
+                      <button
+                        className={`${styles.connectionButton} ${styles.disconnect}`}
+                        onClick={handleRemoveBankDetails}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <button 
+                      className={`${styles.connectionButton} ${styles.connect}`}
+                      onClick={() => setShowBankForm(true)}
+                    >
+                      Add Bank Account
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-          
-          {/* Add a "Sell Repositories" button below the Stripe section when bank details are added */}
-          {stripeStatus.bankDetailsAdded && (
-            <div className={styles.sellReposButton}>
-              <Link href="/marketplace/sell" className={styles.sellButton}>
-                Sell Repositories
-              </Link>
-            </div>
-          )}
           
           {/* Bank Details Form */}
           {showBankForm && (
@@ -1032,88 +1187,7 @@ export default function ProfilePage() {
 
         {user && (
           <>
-            <div className={styles.section}>
-              <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Your Purchased Repositories</h2>
-                <button 
-                  onClick={() => fetchPurchasedRepos(0)} 
-                  className={styles.refreshButton}
-                  disabled={purchasesLoading}
-                  title="Refresh purchased repositories"
-                >
-                  <FiRefreshCw className={purchasesLoading ? styles.spinning : ''} />
-                </button>
-              </div>
-              
-              {error && (
-                <div className={styles.error}>
-                  {error}
-                </div>
-              )}
-              
-              {purchasesLoading ? (
-                <div className={styles.loading}>Loading purchases...</div>
-              ) : purchasedRepos.length > 0 ? (
-                <div className={styles.purchasedRepos}>
-                  {purchasedRepos.map(repo => (
-                    <div key={repo.id} className={styles.purchasedRepoCard}>
-                      <div className={styles.purchasedRepoImage}>
-                        <Image 
-                          src={repo.image} 
-                          alt={repo.title} 
-                          width={400} 
-                          height={250}
-                        />
-                        <div className={styles.purchaseType}>
-                          {repo.type === 'purchase' ? 'Purchased' : 'Subscription'}
-                        </div>
-                      </div>
-                      <div className={styles.purchasedRepoInfo}>
-                        <h3>{repo.title}</h3>
-                        <p className={styles.purchasedRepoDescription}>
-                          {repo.description}
-                        </p>
-                        <div className={styles.purchasedRepoMeta}>
-                          <span>From {repo.seller.username}</span>
-                          <span>•</span>
-                          <span>Purchased on {new Date(repo.purchaseDate).toLocaleDateString()}</span>
-                        </div>
-                        {repo.type === 'subscription' && repo.accessUntil && (
-                          <div className={styles.subscriptionInfo}>
-                            Access until: {new Date(repo.accessUntil).toLocaleDateString()}
-                          </div>
-                        )}
-                        {repo.type === 'purchase' && repo.transferStatus && (
-                          <div className={`${styles.transferStatus} ${styles[`status-${repo.transferStatus}`] || ''}`}>
-                            Transfer status: {repo.transferStatus === 'self-purchase' || repo.transferStatus === 'not_applicable' 
-                              ? 'Self-purchase (already owned)' 
-                              : repo.transferStatus}
-                          </div>
-                        )}
-                        <div className={styles.purchasedRepoActions}>
-                          <a 
-                            href={repo.githubUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className={styles.viewRepoButton}
-                          >
-                            View on GitHub
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className={styles.emptyState}>
-                  <p>You haven&apos;t purchased any repositories yet.</p>
-                  <Link href="/marketplace" className={styles.browseButton}>
-                    Browse Marketplace
-                  </Link>
-                </div>
-              )}
-            </div>
-            
+            {/* Listed Repositories - moved to be right after Account & Connections */}
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>Your Listed Repositories</h2>
@@ -1232,6 +1306,88 @@ export default function ProfilePage() {
             
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Your Purchased Repositories</h2>
+                <button 
+                  onClick={() => fetchPurchasedRepos(0)} 
+                  className={styles.refreshButton}
+                  disabled={purchasesLoading}
+                  title="Refresh purchased repositories"
+                >
+                  <FiRefreshCw className={purchasesLoading ? styles.spinning : ''} />
+                </button>
+              </div>
+              
+              {error && (
+                <div className={styles.error}>
+                  {error}
+                </div>
+              )}
+              
+              {purchasesLoading ? (
+                <div className={styles.loading}>Loading purchases...</div>
+              ) : purchasedRepos.length > 0 ? (
+                <div className={styles.purchasedRepos}>
+                  {purchasedRepos.map(repo => (
+                    <div key={repo.id} className={styles.purchasedRepoCard}>
+                      <div className={styles.purchasedRepoImage}>
+                        <Image 
+                          src={repo.image} 
+                          alt={repo.title} 
+                          width={400} 
+                          height={250}
+                        />
+                        <div className={styles.purchaseType}>
+                          {repo.type === 'purchase' ? 'Purchased' : 'Subscription'}
+                        </div>
+                      </div>
+                      <div className={styles.purchasedRepoInfo}>
+                        <h3>{repo.title}</h3>
+                        <p className={styles.purchasedRepoDescription}>
+                          {repo.description}
+                        </p>
+                        <div className={styles.purchasedRepoMeta}>
+                          <span>From {repo.seller.username}</span>
+                          <span>•</span>
+                          <span>Purchased on {new Date(repo.purchaseDate).toLocaleDateString()}</span>
+                        </div>
+                        {repo.type === 'subscription' && repo.accessUntil && (
+                          <div className={styles.subscriptionInfo}>
+                            Access until: {new Date(repo.accessUntil).toLocaleDateString()}
+                          </div>
+                        )}
+                        {repo.type === 'purchase' && repo.transferStatus && (
+                          <div className={`${styles.transferStatus} ${styles[`status-${repo.transferStatus}`] || ''}`}>
+                            Transfer status: {repo.transferStatus === 'self-purchase' || repo.transferStatus === 'not_applicable' 
+                              ? 'Self-purchase (already owned)' 
+                              : repo.transferStatus}
+                          </div>
+                        )}
+                        <div className={styles.purchasedRepoActions}>
+                          <a 
+                            href={repo.githubUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className={styles.viewRepoButton}
+                          >
+                            View on GitHub
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={styles.emptyState}>
+                  <p>You haven&apos;t purchased any repositories yet.</p>
+                  <Link href="/marketplace" className={styles.browseButton}>
+                    Browse Marketplace
+                  </Link>
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.section}>
+              <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>Your GitHub Repositories</h2>
               </div>
               
@@ -1240,29 +1396,77 @@ export default function ProfilePage() {
               ) : error ? (
                 <div className={styles.error}>{error}</div>
               ) : repos.length > 0 ? (
-                <div className={styles.repoGrid}>
-                  {repos.map((repo) => (
-                    <div key={repo.id} className={styles.repoCard}>
-                      <h3 className={styles.repoName}>
-                        <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
-                          {repo.name}
-                        </a>
-                      </h3>
-                      <p className={styles.repoDescription}>
-                        {repo.description || 'No description provided'}
-                      </p>
-                      <div className={styles.repoStats}>
-                        {repo.language && <span className={styles.repoLanguage}>{repo.language}</span>}
-                        <span className={styles.repoStat}>⭐ {repo.stargazers_count}</span>
-                        <span className={styles.repoStat}>🍴 {repo.forks_count}</span>
-                      </div>
-                      <div className={styles.repoActions}>
-                        <Link href={`/marketplace/sell?repo=${repo.id}`} className={styles.sellButton}>
-                          Sell This Repo
-                        </Link>
-                      </div>
+                <div className={styles.repoListContainer}>
+                  {/* Filter and sort controls */}
+                  <div className={styles.repoControls}>
+                    <div className={styles.filterContainer}>
+                      <input
+                        type="text"
+                        placeholder="Find a repository..."
+                        value={repoFilter}
+                        onChange={handleFilterChange}
+                        className={styles.repoFilterInput}
+                      />
                     </div>
-                  ))}
+                    <div className={styles.sortContainer}>
+                      <select 
+                        value={repoSort}
+                        onChange={handleSortChange}
+                        className={styles.repoSortSelect}
+                      >
+                        <option value="name">Name</option>
+                        <option value="stars">Stars</option>
+                        <option value="forks">Forks</option>
+                        <option value="updated">Last updated</option>
+                        <option value="created">Created</option>
+                      </select>
+                      <button 
+                        onClick={toggleSortDirection}
+                        className={styles.sortDirectionButton}
+                        title={sortDirection === 'asc' ? 'Sort ascending' : 'Sort descending'}
+                      >
+                        {sortDirection === 'asc' ? '↑' : '↓'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Repositories list */}
+                  <div className={styles.repoList}>
+                    {getSortedFilteredRepos().map((repo) => (
+                      <div key={repo.id} className={styles.repoListItem}>
+                        <div className={styles.repoListItemHeader}>
+                          <h3 className={styles.repoName}>
+                            <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
+                              {repo.name}
+                            </a>
+                          </h3>
+                          <Link href={`/marketplace/sell?repo=${repo.id}`} className={styles.sellButton}>
+                            Sell This Repo
+                          </Link>
+                        </div>
+                        {repo.description && (
+                          <p className={styles.repoDescription}>
+                            {repo.description}
+                          </p>
+                        )}
+                        <div className={styles.repoListItemFooter}>
+                          {repo.language && <span className={styles.repoLanguage}>{repo.language}</span>}
+                          <span className={styles.repoStat} title="Stars">⭐ {repo.stargazers_count}</span>
+                          <span className={styles.repoStat} title="Forks">🍴 {repo.forks_count}</span>
+                          <span className={styles.repoDate}>
+                            Updated {new Date(repo.updated_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Show "No results" if filtered repositories is empty */}
+                  {getSortedFilteredRepos().length === 0 && (
+                    <div className={styles.noResults}>
+                      <p>No repositories match your filter criteria.</p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className={styles.emptyState}>
@@ -1273,6 +1477,20 @@ export default function ProfilePage() {
           </>
         )}
       </div>
+      
+      {/* Compressed Footer */}
+      <footer className={styles.compressedFooter}>
+        <div className={styles.footerContent}>
+          <div className={styles.footerLeft}>
+            Made with love, by WebRend
+          </div>
+          <div className={styles.footerRight}>
+            <a href="/privacy" className={styles.footerLink}>Privacy Policy</a>
+            <a href="/terms" className={styles.footerLink}>Terms and Conditions</a>
+            <span className={styles.footerCopyright}>Copyright 2025, All rights reserved</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

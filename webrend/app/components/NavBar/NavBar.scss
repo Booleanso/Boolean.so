@@ -1,26 +1,33 @@
 .navbar-container {
   display: flex;
-  justify-content: center;
-  width: 100%;
-  padding: 15px 0;
+  width: 80%;
+  max-width: 750px;
   position: fixed;
-  top: 0;
+  bottom: 30px;
   left: 0;
+  right: 0;
+  margin: 0 auto;
   z-index: 1000;
+  border-radius: 12px;
   
   .navbar {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(20, 20, 20, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    width: 65%;
-    max-width: 900px;
-    height: 45px;
-    border-radius: 55px;
+    width: 100%;
+    height: 60px;
+    border-radius: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 30px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
     
     .navbar-brand {
       display: flex;
@@ -32,6 +39,7 @@
       
       &:hover {
         opacity: 0.85;
+        transform: translateY(-1px);
       }
       
       .navbar-logo {
@@ -39,49 +47,36 @@
       }
       
       &.active .navbar-logo {
-        filter: drop-shadow(0 0 2px rgba(0, 113, 227, 0.5));
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
       }
     }
     
     .navbar-menu {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 20px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       
       .user-section {
         display: flex;
         align-items: center;
         gap: 12px;
-      }
-      
-      .user-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding-left: 12px;
-        border-left: 1px solid rgba(255, 255, 255, 0.1);
-        
-        .user-email {
-          font-size: 13px;
-          color: rgba(255, 255, 255, 0.7);
-          max-width: 150px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
       
       .nav-button {
         border: none;
-        border-radius: 20px;
-        padding: 6px 14px;
-        font-size: 13px;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 14px;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-decoration: none;
         display: flex;
         align-items: center;
+        position: relative;
+        overflow: hidden;
         
         &.marketplace-button {
           background-color: transparent;
@@ -89,23 +84,23 @@
           
           &:hover {
             color: white;
+            background-color: rgba(255, 255, 255, 0.05);
           }
           
           &.active {
             color: white;
-          }
-        }
-        
-        &.portfolio-button {
-          background-color: transparent;
-          color: rgba(255, 255, 255, 0.8);
-          
-          &:hover {
-            color: white;
-          }
-          
-          &.active {
-            color: white;
+            
+            &:after {
+              content: '';
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 20px;
+              height: 2px;
+              background-color: white;
+              border-radius: 2px;
+            }
           }
         }
         
@@ -115,10 +110,23 @@
           
           &:hover {
             color: white;
+            background-color: rgba(255, 255, 255, 0.05);
           }
           
           &.active {
             color: white;
+            
+            &:after {
+              content: '';
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 20px;
+              height: 2px;
+              background-color: white;
+              border-radius: 2px;
+            }
           }
         }
         
@@ -128,26 +136,42 @@
           
           &:hover {
             color: white;
+            background-color: rgba(255, 255, 255, 0.05);
           }
           
           &.active {
             color: white;
+            
+            &:after {
+              content: '';
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 20px;
+              height: 2px;
+              background-color: white;
+              border-radius: 2px;
+            }
           }
         }
         
         &.signup-button {
-          background-color: #0071e3;
-          color: white;
-          font-weight: 500;
-          padding: 6px 16px;
+          background-color: white;
+          color: #111;
+          font-weight: 600;
+          padding: 8px 20px;
+          border-radius: 8px;
+          letter-spacing: 0.2px;
           
           &:hover {
-            background-color: #0077ed;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
           }
           
           &.active {
-            background-color: #0077ed;
+            background-color: white;
+            color: #000;
           }
         }
         
@@ -157,6 +181,264 @@
           
           &:hover {
             color: rgba(255, 59, 48, 1);
+            background-color: rgba(255, 59, 48, 0.1);
+          }
+        }
+      }
+    }
+  }
+}
+
+.top-navbar-container {
+  display: flex;
+  width: 100%;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: all 0.4s ease;
+  
+  &.scrolled {
+    background-color: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    
+    .top-navbar {
+      height: 60px;
+      padding-top: 0;
+      border-bottom: none;
+    }
+    
+    // Light mode scrolled styles
+    .light-theme & {
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+  }
+  
+  .top-navbar {
+    background-color: transparent;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: all 0.4s ease;
+    
+    &:hover {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    // Light mode hover styles
+    .light-theme & {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+      
+      &:hover {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+    }
+    
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      width: 40px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        opacity: 0.85;
+        transform: scale(1.05);
+      }
+      
+      .navbar-logo {
+        object-fit: contain;
+      }
+      
+      &.active .navbar-logo {
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+      }
+      
+      // Light mode logo styles
+      .light-theme &.active .navbar-logo {
+        filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.2));
+      }
+    }
+    
+    .top-navbar-menu {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      .nav-button {
+        position: relative;
+        border: none;
+        padding: 8px 0;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.8);
+        
+        &:hover {
+          color: white;
+        }
+        
+        &.active {
+          color: white;
+          
+          &:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: white;
+            border-radius: 2px;
+          }
+        }
+        
+        &:hover:not(.active):after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background-color: rgba(255, 255, 255, 0.5);
+          border-radius: 2px;
+        }
+        
+        // Light mode button styles
+        .light-theme & {
+          color: rgba(0, 0, 0, 0.7);
+          
+          &:hover {
+            color: #000;
+          }
+          
+          &.active {
+            color: #000;
+            
+            &:after {
+              background-color: #000;
+            }
+          }
+          
+          &:hover:not(.active):after {
+            background-color: rgba(0, 0, 0, 0.3);
+          }
+        }
+      }
+      
+      .search-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        
+        .search-form {
+          display: flex;
+          align-items: center;
+          background-color: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          padding: 0 15px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          
+          &:focus-within {
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+          }
+          
+          &:hover:not(:focus-within) {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+          }
+          
+          // Light mode search form styles
+          .light-theme & {
+            background-color: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            
+            &:focus-within {
+              background-color: rgba(0, 0, 0, 0.05);
+              border: 1px solid rgba(0, 0, 0, 0.15);
+            }
+            
+            &:hover:not(:focus-within) {
+              border: 1px solid rgba(0, 0, 0, 0.12);
+            }
+          }
+        }
+        
+        .search-input {
+          background-color: transparent;
+          border: none;
+          color: white;
+          padding: 10px 0;
+          font-size: 14px;
+          width: 220px;
+          max-width: 220px;
+          outline: none;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 300;
+          }
+          
+          // Light mode search input styles
+          .light-theme & {
+            color: #000;
+            
+            &::placeholder {
+              color: rgba(0, 0, 0, 0.4);
+            }
+          }
+        }
+        
+        .search-button {
+          background-color: transparent;
+          border: none;
+          color: rgba(255, 255, 255, 0.6);
+          padding: 8px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.15s ease;
+          
+          &:hover {
+            color: white;
+          }
+          
+          &.active {
+            color: white;
+          }
+          
+          // Light mode search button styles
+          .light-theme & {
+            color: rgba(0, 0, 0, 0.5);
+            
+            &:hover {
+              color: #000;
+            }
+            
+            &.active {
+              color: #000;
+            }
           }
         }
       }
@@ -166,31 +448,68 @@
 
 @media (max-width: 1024px) {
   .navbar-container {
+    width: 90%;
+    
     .navbar {
-      width: 80%;
+      padding: 0 25px;
+    }
+  }
+  
+  .top-navbar-container {
+    .top-navbar {
+      padding: 0 30px;
+      
+      .top-navbar-menu {
+        gap: 20px;
+        
+        .search-container {
+          .search-input {
+            width: 180px;
+            max-width: 180px;
+          }
+        }
+      }
     }
   }
 }
 
 @media (max-width: 768px) {
   .navbar-container {
+    width: 95%;
+    
     .navbar {
-      width: 90%;
-      padding: 0 24px;
+      padding: 0 20px;
       
       .navbar-menu {
-        gap: 10px;
+        gap: 12px;
         
         .user-section {
-          gap: 8px;
+          gap: 10px;
         }
         
-        .user-info {
-          padding-left: 6px;
-          gap: 8px;
+        .nav-button {
+          padding: 7px 14px;
+          font-size: 13px;
+        }
+      }
+    }
+  }
+  
+  .top-navbar-container {
+    .top-navbar {
+      padding: 0 20px;
+      
+      .top-navbar-menu {
+        gap: 15px;
+        
+        .search-container {
+          .search-form {
+            padding: 0 10px;
+          }
           
-          .user-email {
-            max-width: 100px;
+          .search-input {
+            width: 150px;
+            max-width: 150px;
           }
         }
       }
@@ -201,10 +520,35 @@
 @media (max-width: 600px) {
   .navbar-container {
     .navbar {
-      padding: 0 18px;
+      padding: 0 15px;
+      height: 55px;
       
       .navbar-menu {
         gap: 8px;
+        
+        .nav-button {
+          padding: 6px 12px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+  
+  .top-navbar-container {
+    .top-navbar {
+      padding: 0 15px;
+      height: 60px;
+      
+      .top-navbar-menu {
+        gap: 10px;
+        
+        .search-container {
+          .search-input {
+            width: 120px;
+            max-width: 120px;
+            font-size: 13px;
+          }
+        }
       }
     }
   }
@@ -212,33 +556,99 @@
 
 @media (max-width: 480px) {
   .navbar-container {
+    width: 100%;
+    bottom: 0;
+    border-radius: 0;
+    
     .navbar {
-      width: 95%;
+      border-radius: 0;
       padding: 0 15px;
+      height: 55px;
       
       .navbar-menu {
         gap: 5px;
         
         .nav-button {
-          padding: 5px 8px;
+          padding: 6px 10px;
           font-size: 12px;
         }
         
         .user-section {
-          flex-direction: column;
-          align-items: flex-end;
+          flex-direction: row;
+          align-items: center;
           gap: 5px;
         }
+      }
+    }
+  }
+  
+  .top-navbar-container {
+    .top-navbar {
+      padding: 0 12px;
+      height: 55px;
+      
+      .top-navbar-menu {
+        gap: 8px;
         
-        .user-info {
-          border-left: none;
-          padding-left: 0;
-          
-          .user-email {
-            max-width: 80px;
+        .search-container {
+          .search-input {
+            width: 100px;
+            max-width: 100px;
+            padding: 8px 0;
           }
         }
       }
     }
+  }
+}
+
+// Add some nice hover effects to buttons
+.nav-button {
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+// Add subtle animation for logo
+.navbar-brand {
+  .navbar-logo {
+    transition: all 0.3s ease;
+  }
+  
+  &:hover .navbar-logo {
+    transform: rotate(5deg);
+  }
+  
+  &.active .navbar-logo {
+    animation: pulse-dark 2s infinite;
+  }
+  
+  // Light mode logo animation
+  .light-theme &.active .navbar-logo {
+    animation: pulse-light 2s infinite;
+  }
+}
+
+@keyframes pulse-dark {
+  0% {
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+  }
+  100% {
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
+  }
+}
+
+@keyframes pulse-light {
+  0% {
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15));
+  }
+  50% {
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.25));
+  }
+  100% {
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15));
   }
 } 

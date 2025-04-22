@@ -3,17 +3,31 @@
   max-width: 100%;
   margin: 0 auto;
   padding: 4rem 4rem;
+  background-color: var(--background, #fff);
+  color: var(--foreground, #333);
+}
+
+:global(.dark-theme) .featuredSection {
+  background-color: #000;
+  color: #fff;
+}
+
+:global(.light-theme) .featuredSection {
   background-color: #fff;
-  color: #000;
+  color: #333;
 }
 
 .sectionHeader {
   margin-bottom: 4rem;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid var(--border, #eaeaea);
   padding-bottom: 2rem;
   max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
+}
+
+:global(.dark-theme) .sectionHeader {
+  border-bottom-color: #333;
 }
 
 .sectionHeader h2 {
@@ -22,14 +36,30 @@
   letter-spacing: -0.05em;
   margin-bottom: 1rem;
   line-height: 1.2;
-  color: #000;
+  color: var(--text-primary, #333);
+}
+
+:global(.dark-theme) .sectionHeader h2 {
+  color: #fff;
+}
+
+:global(.light-theme) .sectionHeader h2 {
+  color: #333;
 }
 
 .featuredRepoIntro {
   font-size: 1.2rem;
-  color: #333;
+  color: var(--text-secondary, #666);
   max-width: 600px;
   line-height: 1.6;
+}
+
+:global(.dark-theme) .featuredRepoIntro {
+  color: #cccccc;
+}
+
+:global(.light-theme) .featuredRepoIntro {
+  color: #666;
 }
 
 .loadingContainer,
@@ -101,11 +131,18 @@
   display: flex;
   flex-direction: column;
   text-decoration: none;
-  color: #000;
+  color: var(--text-primary, #333);
   transition: transform 0.3s ease;
   height: 100%;
   border-bottom: 1px solid transparent;
-  background-color: #fff;
+}
+
+:global(.dark-theme) .repoCard {
+  color: #fff;
+}
+
+:global(.light-theme) .repoCard {
+  color: #333;
 }
 
 .repoCard:hover {
@@ -133,7 +170,6 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  background-color: #fff;
 }
 
 .repoName {
@@ -141,7 +177,15 @@
   font-weight: 500;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
-  color: #000;
+  color: var(--text-primary, #333);
+}
+
+:global(.dark-theme) .repoName {
+  color: #fff;
+}
+
+:global(.light-theme) .repoName {
+  color: #333;
 }
 
 .repoDetails {
@@ -151,11 +195,19 @@
 }
 
 .repoDescription {
-  color: #333;
+  color: var(--text-secondary, #666);
   margin-bottom: 2rem;
   font-size: 1rem;
   line-height: 1.6;
   flex: 1;
+}
+
+:global(.dark-theme) .repoDescription {
+  color: #cccccc;
+}
+
+:global(.light-theme) .repoDescription {
+  color: #666;
 }
 
 .repoStats {
@@ -176,20 +228,44 @@
 .statValue {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #000;
+  color: var(--text-primary, #333);
+}
+
+:global(.dark-theme) .statValue {
+  color: #fff;
+}
+
+:global(.light-theme) .statValue {
+  color: #333;
 }
 
 .statLabel {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-secondary, #666);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+:global(.dark-theme) .statLabel {
+  color: #cccccc;
+}
+
+:global(.light-theme) .statLabel {
+  color: #666;
 }
 
 .price {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #000;
+  color: var(--text-primary, #333);
+}
+
+:global(.dark-theme) .price {
+  color: #fff;
+}
+
+:global(.light-theme) .price {
+  color: #333;
 }
 
 @media (max-width: 768px) {

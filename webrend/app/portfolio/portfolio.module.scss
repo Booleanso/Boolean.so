@@ -10,6 +10,19 @@ $radius: 0px; // No border radius for awwwards style
 $card-shadow: none; // No shadow for awwwards style
 $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 
+// Dark mode variables
+$dark-primary-color: #0078d7; // Slightly brighter blue for dark mode
+$dark-secondary-color: #555555;
+$dark-accent-color: #2997ff; // Brighter accent for dark mode
+$dark-bg: #000000;
+$dark-component-bg: #0a0a0a;
+$dark-border-color: #222222;
+$dark-text-color: #ffffff;
+$dark-text-light: #cccccc;
+$dark-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+$dark-hover-bg: #1a1a1a;
+$dark-input-bg: #151515;
+
 // Main container
 .portfolioContainer {
   width: 100%;
@@ -18,6 +31,12 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   padding: 0; // No padding to allow full width
   color: $text-color;
   background-color: white;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+    background-color: $dark-bg;
+  }
 }
 
 // Featured Project Hero Section
@@ -29,6 +48,11 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   overflow: hidden;
   position: relative;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .featuredProjectImage {
@@ -50,6 +74,11 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   align-items: center;
   justify-content: center;
   text-align: center;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background: rgba(0, 0, 0, 0.6); // Darker overlay for better contrast
+  }
   
   .content {
     max-width: 600px;
@@ -92,6 +121,17 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
   }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-primary-color;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    
+    &:hover {
+      background-color: lighten($dark-primary-color, 5%);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+  }
 }
 
 // Header section
@@ -110,6 +150,15 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     margin: 0;
     letter-spacing: -0.02em;
     line-height: 1.1;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+    
+    h1 {
+      color: $dark-text-color;
+    }
   }
 }
 
@@ -138,6 +187,15 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     background-color: darken($primary-color, 5%);
     transform: translateY(-1px);
   }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-primary-color;
+    
+    &:hover {
+      background-color: lighten($dark-primary-color, 5%);
+    }
+  }
 }
 
 // Filters section
@@ -156,6 +214,12 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: $dark-border-color;
   }
 }
 
@@ -180,6 +244,24 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     color: white;
     border-color: $text-color;
   }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: $dark-border-color;
+    color: $dark-text-color;
+    
+    &:hover {
+      background-color: $dark-hover-bg;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    &.active {
+      background-color: $dark-accent-color;
+      color: white;
+      border-color: $dark-accent-color;
+    }
+  }
 }
 
 // Grid layout for cards
@@ -194,6 +276,11 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     grid-template-columns: 1fr;
     padding: 3rem 5%;
     gap: 3rem;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
   }
 }
 
@@ -280,6 +367,17 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
       background-color: $text-color;
       color: white;
     }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: $dark-text-color;
+      color: $dark-bg;
+      
+      &:hover {
+        background-color: white;
+        color: $dark-bg;
+      }
+    }
   }
 }
 
@@ -306,6 +404,11 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   margin: 0;
   color: $text-color;
   line-height: 1.3;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
 }
 
 .description {
@@ -321,6 +424,11 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
 }
 
 .cardFooter {
@@ -330,6 +438,11 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   margin-bottom: 0;
   padding-top: 0.8rem;
   border-top: 1px solid rgba(0, 0, 0, 0.1); // Subtle border
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
 }
 
 .technologies {
@@ -347,6 +460,12 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   font-size: 12px;
   font-weight: 500;
   color: $text-color;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: $dark-text-color;
+  }
 }
 
 // Contact section
@@ -368,6 +487,20 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     color: $text-light;
     margin: 0 auto 3rem;
     max-width: 600px;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: $dark-border-color;
+    
+    h2 {
+      color: $dark-text-color;
+    }
+    
+    p {
+      color: $dark-text-light;
+    }
   }
 }
 
@@ -398,6 +531,17 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   &:focus {
     border-color: $accent-color;
   }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-input-bg;
+    border-color: $dark-border-color;
+    color: $dark-text-color;
+    
+    &:focus {
+      border-color: $dark-accent-color;
+    }
+  }
 }
 
 .textarea {
@@ -413,6 +557,17 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   
   &:focus {
     border-color: $accent-color;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-input-bg;
+    border-color: $dark-border-color;
+    color: $dark-text-color;
+    
+    &:focus {
+      border-color: $dark-accent-color;
+    }
   }
 }
 
@@ -431,5 +586,15 @@ $transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     background-color: darken($primary-color, 5%);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-primary-color;
+    
+    &:hover {
+      background-color: lighten($dark-primary-color, 5%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
   }
 } 

@@ -49,6 +49,8 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
   const [loadedIcons, setLoadedIcons] = useState<Record<string, THREE.Texture | null>>({});
   const [alarmColor, setAlarmColor] = useState<THREE.Color>(new THREE.Color("#FF0000")); // Start with red
   const [alarmIntensity, setAlarmIntensity] = useState<number>(1.0); // For pulsating effect
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [lightsError, setLightsError] = useState<string | null>(null);
   
   // State to track which icons are in the central view
   const [centeredIcons, setCenteredIcons] = useState<Record<number, number>>({});
@@ -60,6 +62,29 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
   const orbitControlsRef = useRef<any>(null);
   const iconsRef = useRef<THREE.Group[]>([]);
   const globeGroupRef = useRef<THREE.Group>(null);
+  
+  // Check for dark mode
+  useEffect(() => {
+    // Check if dark-theme class exists on html element
+    const isDark = document.documentElement.classList.contains('dark-theme');
+    setIsDarkMode(isDark);
+    console.log(`Dark mode detected: ${isDark}`);
+    
+    // Set up a mutation observer to detect theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          const isDarkUpdated = document.documentElement.classList.contains('dark-theme');
+          setIsDarkMode(isDarkUpdated);
+          console.log(`Dark mode changed to: ${isDarkUpdated}`);
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    
+    return () => observer.disconnect();
+  }, []);
   
   // Spring animation for globe rotation slowdown
   const { rotationSpeedSpring } = useSpring({
@@ -180,14 +205,33 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
   useEffect(() => {
     const textureLoader = new THREE.TextureLoader();
     
-    // Try to load the primary earth texture
+    // Define texture paths based on theme
+    const dayTexturePath = '/earth-blue-marble.jpg';
+    const nightTexturePath = '/earth-night.jpg';
+    const cityLightsPath = '/earth-city-lights.jpg';
+    
+    console.log(`Loading globe textures for ${isDarkMode ? 'dark' : 'light'} mode:`);
+    console.log(`- Main texture: ${isDarkMode ? nightTexturePath : dayTexturePath}`);
+    if (isDarkMode) console.log(`- City lights: ${cityLightsPath}`);
+    
+    // Try to load the primary earth texture based on theme
     textureLoader.load(
-      '/earth-blue-marble.jpg',
+      isDarkMode ? nightTexturePath : dayTexturePath,
       (texture) => {
         setTextureLoaded(true);
         if (globeRef.current) {
-          (globeRef.current.material as THREE.MeshStandardMaterial).map = texture;
-          (globeRef.current.material as THREE.MeshStandardMaterial).needsUpdate = true;
+          const material = globeRef.current.material as THREE.MeshStandardMaterial;
+          material.map = texture;
+
+          // If in dark mode, adjust the color to make the texture darker and less blue
+          if (isDarkMode) {
+            // Apply a dark overlay to reduce blue tint and make it darker
+            material.color = new THREE.Color(0x222222); // Dark gray overlay
+          } else {
+            material.color = new THREE.Color(0xeeeeee); // Default light color
+          }
+          
+          material.needsUpdate = true;
           
           // Now load the displacement/bump map for terrain elevation
           textureLoader.load(
@@ -209,6 +253,45 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
               console.error('Error loading topology texture:', topologyError);
             }
           );
+          
+          // If dark mode, try to load city lights texture as emissive map
+          if (isDarkMode) {
+            console.log('Loading city lights texture...');
+            textureLoader.load(
+              cityLightsPath,
+              (lightsTexture) => {
+                console.log('City lights texture loaded successfully');
+                if (globeRef.current) {
+                  const material = globeRef.current.material as THREE.MeshStandardMaterial;
+                  material.emissiveMap = lightsTexture;
+                  material.emissive = new THREE.Color(0xffcc77); // Warmer amber glow for city lights
+                  material.emissiveIntensity = 0.8; // Increased intensity
+                  material.needsUpdate = true;
+                  setLightsError(null);
+                }
+              },
+              (progress) => {
+                // Optional progress callback
+                if (progress.loaded && progress.total) {
+                  const percent = Math.round((progress.loaded / progress.total) * 100);
+                  if (percent % 25 === 0) console.log(`City lights loading: ${percent}%`);
+                }
+              },
+              (error: unknown) => {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                console.error(`Error loading city lights texture: ${errorMessage}`);
+                setLightsError(`Error loading city lights texture: ${errorMessage}`);
+                
+                // Add fallback for city lights - just create a subtle emissive effect
+                if (globeRef.current) {
+                  const material = globeRef.current.material as THREE.MeshStandardMaterial;
+                  material.emissive = new THREE.Color(0x555555);
+                  material.emissiveIntensity = 0.2;
+                  material.needsUpdate = true;
+                }
+              }
+            );
+          }
         }
       },
       undefined,
@@ -241,7 +324,7 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
     return () => {
       // Cleanup
     };
-  }, []);
+  }, [isDarkMode]);
 
   // Try to load the clouds texture
   useEffect(() => {
@@ -526,17 +609,6 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
           />
         </mesh>
         
-        {/* Grid lines for visual reference */}
-        <mesh>
-          <sphereGeometry args={[3.01, 36, 18]} />
-          <meshBasicMaterial 
-            color={0x2980b9} 
-            wireframe={true} 
-            transparent={true} 
-            opacity={0.1} 
-          />
-        </mesh>
-        
         {/* Location markers as iOS-style app icons */}
         {locations.map((location, index) => {
           // Calculate the position on the sphere for each marker
@@ -567,13 +639,7 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
           
           // Create animated scaling when hovered
           const { iconScale } = useSpring({
-            iconScale: isHovered ? baseScaleFactor * 1.15 : baseScaleFactor,
-            config: { mass: 2, tension: 170, friction: 26 }
-          });
-          
-          // Add z-position animation to bring hovered icons forward
-          const { zPosition } = useSpring({
-            zPosition: isHovered ? 0.5 : 0,
+            iconScale: isHovered ? baseScaleFactor * 1.3 : baseScaleFactor, // Increased scale factor for more visible hover effect
             config: { mass: 2, tension: 170, friction: 26 }
           });
           
@@ -634,10 +700,9 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
                   lockY={false}
                   lockZ={false}
                 >
-                  {/* Animated scale and z-position group based on hover state */}
+                  {/* Animated scale group based on hover state (without z-position animation) */}
                   <animated.group 
-                    scale={iconScale} 
-                    position-z={zPosition} // Animate z-position to bring hovered icons forward
+                    scale={iconScale}
                   >
                     {/* Hit detection area - larger than visual icon for easier interaction */}
                     <mesh
@@ -793,6 +858,7 @@ export default function HeroSection() {
   const [locationsFound, setLocationsFound] = useState<number>(0);
   const [privateLocationsFound, setPrivateLocationsFound] = useState<number>(0);
   const [globeOpacity, setGlobeOpacity] = useState<number>(0);
+  const [globePosition, setGlobePosition] = useState<number>(100); // Start 100px lower for more dramatic rise
   const globeContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1027,9 +1093,10 @@ export default function HeroSection() {
         ]);
       } finally {
         setLoading(false);
-        // Add animation for globe fade-in after loading is complete
+        // Add animation for globe fade-in and rise-up after loading is complete
         setTimeout(() => {
           setGlobeOpacity(1);
+          setGlobePosition(0); // Move to original position
         }, 300); // Small delay for smoother transition after loading completes
       }
     }
@@ -1037,10 +1104,11 @@ export default function HeroSection() {
     fetchLocations();
   }, []);
 
-  // Configure the animation for the globe opacity
+  // Configure the animation for the globe opacity and position
   const globeStyle = {
     opacity: globeOpacity,
-    transition: 'opacity 1.2s ease-in-out' // Slow fade-in effect
+    transform: `translateY(${globePosition}px)`,
+    transition: 'opacity 1.5s ease-in-out, transform 3.5s cubic-bezier(0.19, 1, 0.22, 1)' // Slower rise-up with longer duration
   };
 
   return (
