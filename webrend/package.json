@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-articles": "ts-node --project tsconfig.json app/scripts/scheduler.ts",
+    "scrape-news": "ts-node --project tsconfig.json app/scripts/news-scraper.ts"
   },
   "dependencies": {
     "@react-spring/three": "^9.7.5",
@@ -16,18 +18,23 @@
     "@react-three/postprocessing": "^3.0.4",
     "@types/three": "^0.175.0",
     "axios": "^1.8.4",
+    "dotenv": "^16.5.0",
     "firebase": "^11.4.0",
     "firebase-admin": "^13.2.0",
     "gsap": "^3.12.7",
     "next": "^15.2.4",
     "next-auth": "^4.24.11",
     "nipplejs": "^0.10.2",
+    "node-fetch": "^3.3.2",
+    "openai": "^4.96.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "react-markdown": "^10.1.0",
     "saas": "^1.0.0",
     "stripe": "^17.7.0",
     "three": "^0.175.0",
+    "ts-node": "^10.9.2",
     "webrend": "file:"
   },
   "devDependencies": {

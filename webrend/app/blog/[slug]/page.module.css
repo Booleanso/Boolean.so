@@ -1,0 +1,352 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.articleHeader {
+  margin-bottom: 2.5rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  transition: color 0.15s ease;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--text-primary);
+}
+
+.categoryAndDate {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-muted);
+}
+
+.category {
+  background-color: var(--accent-muted);
+  color: var(--accent);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.dot {
+  opacity: 0.5;
+}
+
+.title {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.description {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.imageContainer {
+  margin-bottom: 3rem;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.featuredImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+.content {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin-bottom: 3rem;
+}
+
+/* Markdown content styling */
+.content h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+  color: var(--text-primary);
+}
+
+.content h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.content p {
+  margin-bottom: 1.5rem;
+}
+
+.content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-muted);
+  transition: border-color 0.2s ease;
+}
+
+.content a:hover {
+  border-color: var(--accent);
+}
+
+.content ul, .content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.content li {
+  margin-bottom: 0.5rem;
+}
+
+.content blockquote {
+  border-left: 4px solid var(--accent-muted);
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.content code {
+  background-color: var(--code-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: var(--font-geist-mono);
+  font-size: 0.9em;
+}
+
+.content pre {
+  background-color: var(--code-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.content pre code {
+  background-color: transparent;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  margin-bottom: 3rem;
+}
+
+.sourceLink {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.sourceLink a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.sourceLink a:hover {
+  text-decoration: underline;
+}
+
+.share {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.share p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.shareButtons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.shareButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background-color: var(--card-bg);
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+}
+
+.shareButton:hover {
+  color: var(--text-primary);
+  background-color: var(--hover-bg);
+  transform: translateY(-2px);
+}
+
+.relatedSection {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.relatedSection h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.relatedLink {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.relatedLink a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  background-color: var(--accent-muted);
+  transition: all 0.2s ease;
+}
+
+.relatedLink a:hover {
+  background-color: var(--accent);
+  color: white;
+}
+
+/* Light/Dark mode variables */
+:root {
+  --text-primary: #171717;
+  --text-secondary: #404040;
+  --text-muted: #6b7280;
+  --accent: #3b82f6;
+  --accent-muted: rgba(59, 130, 246, 0.1);
+  --border-color: #e5e7eb;
+  --card-bg: #ffffff;
+  --hover-bg: #f9fafb;
+  --code-bg: #f3f4f6;
+}
+
+/* Dark mode - these are applied when the theme-provider sets data-theme="dark" */
+.darkTheme {
+  --text-primary: #f3f4f6;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --accent: #60a5fa;
+  --accent-muted: rgba(96, 165, 250, 0.1);
+  --border-color: #2d3748;
+  --card-bg: #1f2937;
+  --hover-bg: #374151;
+  --code-bg: #111827;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+  
+  .description {
+    font-size: 1.125rem;
+  }
+  
+  .content {
+    font-size: 1rem;
+  }
+  
+  .container {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.75rem;
+  }
+  
+  .description {
+    font-size: 1rem;
+  }
+  
+  .imageContainer {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: 0;
+  }
+  
+  .featuredImage {
+    border-radius: 0;
+  }
+}
+
+.errorContainer {
+  text-align: center;
+  padding: 4rem 2rem;
+  margin: 2rem auto;
+  max-width: 600px;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
+}
+
+.errorContainer h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.errorContainer p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+} 

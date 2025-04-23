@@ -86,6 +86,13 @@ export default function NavBar() {
               Portfolio
             </Link>
             
+            <Link 
+              href="/blog" 
+              className={`nav-button portfolio-button ${pathname === '/blog' ? 'active' : ''}`}
+            >
+              Blog
+            </Link>
+            
             <div className="search-container">
               <form onSubmit={handleSearch} className="search-form">
                 <input 
