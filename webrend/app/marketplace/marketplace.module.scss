@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Variables
 $primary-color: #0070c9; // Apple blue
 $secondary-color: #333333;
@@ -275,7 +277,7 @@ $dark-input-bg: #151515;
   }
   
   &:hover {
-    background-color: darken($primary-color, 5%);
+    background-color: color.scale($primary-color, $lightness: -5%);
     transform: translateY(-1px);
   }
   
@@ -284,7 +286,7 @@ $dark-input-bg: #151515;
     background-color: $dark-primary-color;
     
     &:hover {
-      background-color: lighten($dark-primary-color, 5%);
+      background-color: color.scale($dark-primary-color, $lightness: 5%);
     }
   }
 }
@@ -771,7 +773,7 @@ $dark-input-bg: #151515;
     font-size: 16px;
     
     &:hover {
-      background-color: darken($primary-color, 5%);
+      background-color: color.scale($primary-color, $lightness: -5%);
       transform: translateY(-1px);
     }
   }
