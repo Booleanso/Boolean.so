@@ -67,18 +67,21 @@ export default function FeaturedRepos() {
       <div className={styles.sectionHeader}>
         <h2>Featured GitHub Repositories</h2>
         <p className={styles.featuredRepoIntro}>
-          Explore our curated selection of high-quality, ready-to-use GitHub repositories for your next project.
+          Powerful, high-quality code ready for your next project
         </p>
       </div>
       
       {loading ? (
         <div className={styles.loadingContainer}>
           <div className={styles.loadingBar}></div>
-          <span>Loading featured repositories</span>
+          <span>Loading repositories</span>
         </div>
       ) : error ? (
         <div className={styles.error}>
-          {error}
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM11 15H9V9H11V15ZM11 7H9V5H11V7Z" fill="#FF443A"/>
+          </svg>
+          <span>{error}</span>
         </div>
       ) : featuredRepos.length === 0 ? (
         <div className={styles.emptyState}>
@@ -97,19 +100,22 @@ export default function FeaturedRepos() {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className={styles.repoImage}
                 />
+                <div className={styles.overlay}></div>
               </div>
               <div className={styles.repoContent}>
                 <div className={styles.repoName}>{repo.name}</div>
                 <div className={styles.repoDetails}>
                   <div className={styles.repoDescription}>{repo.description}</div>
                   <div className={styles.repoStats}>
-                    <div className={styles.stat}>
-                      <span className={styles.statValue}>{repo.stars}</span>
-                      <span className={styles.statLabel}>Stars</span>
-                    </div>
-                    <div className={styles.stat}>
-                      <span className={styles.statValue}>{repo.forks}</span>
-                      <span className={styles.statLabel}>Forks</span>
+                    <div className={styles.statsGroup}>
+                      <div className={styles.stat}>
+                        <span className={styles.statValue}>{repo.stars}</span>
+                        <span className={styles.statLabel}>Stars</span>
+                      </div>
+                      <div className={styles.stat}>
+                        <span className={styles.statValue}>{repo.forks}</span>
+                        <span className={styles.statLabel}>Forks</span>
+                      </div>
                     </div>
                     <div className={styles.price}>
                       {repo.isSubscription ? (
@@ -125,6 +131,15 @@ export default function FeaturedRepos() {
           ))}
         </div>
       )}
+      
+      <div className={styles.viewAllContainer}>
+        <Link href="/marketplace" className={styles.viewAllButton}>
+          View All Repositories
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 0L5.645 1.355L10.09 5.8H0V7.8H10.09L5.645 12.245L7 13.6L14 6.6L7 0Z" fill="currentColor"/>
+          </svg>
+        </Link>
+      </div>
     </section>
   );
 } 

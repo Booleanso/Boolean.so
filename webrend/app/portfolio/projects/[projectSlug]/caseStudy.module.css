@@ -1,0 +1,335 @@
+/* Overall container for the article */
+.caseStudyContainer {
+  background-color: #ffffff;
+  color: #1d1d1f; /* Apple's primary text color */
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1.6;
+}
+
+/* --- Hero Section --- */
+.heroSection {
+  position: relative;
+  min-height: 60vh; /* Adjust height as needed */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Align content to bottom */
+  color: #ffffff; /* Text color on hero */
+  padding: 4rem 5%; /* Generous padding */
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.heroImageWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.heroImage {
+  object-fit: cover; /* Cover the area */
+  object-position: center; 
+}
+
+/* Dark overlay for text contrast */
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1));
+  z-index: 2;
+}
+
+/* Content on top of overlay */
+.heroContent {
+  position: relative;
+  z-index: 3;
+  max-width: 800px; /* Limit content width */
+}
+
+.projectTitle {
+  font-size: 3rem; /* Large title */
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  line-height: 1.1;
+  color: #fff;
+}
+
+.projectSubtitle {
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.metaInfo {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.tag {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 0.3rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.liveLinkButton {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #0071e3; /* Apple blue */
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.liveLinkButton:hover {
+  background-color: #0077ed;
+}
+
+/* --- Main Content Area --- */
+.mainContent {
+  max-width: 850px; /* Slightly wider */
+  margin: 5rem auto; /* Increased top/bottom margin */
+  padding: 0 1.5rem; /* Adjusted padding */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem; /* Increased gap between major sections */
+}
+
+.contentSection {
+  margin-bottom: 0; /* Remove default bottom margin, use gap from mainContent */
+}
+
+.sectionTitle {
+  font-size: 1.8rem; /* Slightly smaller, more refined */
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #1d1d1f;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #d2d2d7; /* Lighter border */
+  letter-spacing: -0.01em;
+}
+
+.sectionText {
+  font-size: 1.1rem; /* Base text size */
+  color: #333333; /* Slightly softer black */
+  line-height: 1.7; /* Improve readability */
+  max-width: 75ch; /* Limit line length for readability */
+}
+
+.sectionText p {
+  margin-bottom: 1.25rem;
+}
+
+.sectionText strong {
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+/* Key Features Styling */
+.featureList {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
+  gap: 1.5rem;
+}
+
+.featureItem {
+  font-size: 1rem;
+  padding: 1rem 1.25rem;
+  background-color: #f5f5f7; /* Subtle background */
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start; /* Align icon and text */
+  gap: 0.75rem;
+  position: relative; /* Keep for pseudo-elements if needed */
+  margin-bottom: 0; /* Remove default list item margin */
+}
+
+/* Replace ::before with a background icon or similar */
+.featureItem::before {
+  /* Remove the old checkmark */
+  content: none; 
+}
+
+/* Example: Add an SVG icon - you would need actual SVG code or a component */
+/* .featureItem::before {
+  content: url('data:image/svg+xml,...'); 
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: 0.5em;
+  color: #0071e3;
+} */
+
+/* Testimonial Section Styling */
+.testimonialSection {
+  background-color: transparent; /* Remove distinct background */
+  border: 1px solid #e0e0e0;
+  padding: 2.5rem;
+  border-radius: 12px;
+  margin-top: 1rem; /* Reduced margin */
+  text-align: center; /* Center align testimonial */
+}
+
+.testimonialBlockquote {
+  border-left: none; /* Remove side border */
+  padding-left: 0;
+  margin: 0 auto; /* Center blockquote */
+  max-width: 65ch;
+}
+
+.testimonialText {
+  font-size: 1.4rem; /* Larger quote text */
+  font-style: normal; /* Remove italics if desired */
+  color: #1d1d1f;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  position: relative;
+  padding: 0 1rem; /* Space for quote marks */
+}
+
+/* Add quote marks */
+.testimonialText::before,
+.testimonialText::after {
+  content: '\201C'; /* Left double quote */
+  font-size: 3rem;
+  color: #0071e3; /* Accent color */
+  position: absolute;
+  top: -0.5rem;
+  left: -0.5rem;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.testimonialText::after {
+  content: '\201D'; /* Right double quote */
+  left: auto;
+  right: -0.5rem;
+  top: auto;
+  bottom: -1rem;
+}
+
+.testimonialFooter {
+  font-size: 1rem;
+  color: #555;
+  text-align: center; /* Center footer */
+  margin-top: 1rem;
+}
+
+/* Gallery Section Styling */
+.gallerySection {
+  margin-top: 1rem; /* Reduced margin */
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Slightly larger min size */
+  gap: 1.5rem; /* Increased gap */
+}
+
+.galleryItem {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px; /* More pronounced rounding */
+  aspect-ratio: 16 / 10; /* Adjust ratio if desired */
+  border: 1px solid #eee; /* Subtle border */
+}
+
+.galleryImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.galleryItem:hover .galleryImage {
+  transform: scale(1.03);
+}
+
+/* Remove the .imageError style if validation is robust enough */
+/* .imageError { ... } */
+
+/* Responsive Adjustments for Main Content */
+@media (max-width: 768px) {
+  .mainContent {
+    margin: 4rem auto; /* Adjust margin */
+    gap: 3rem; /* Adjust gap */
+  }
+  .sectionTitle {
+    font-size: 1.6rem;
+  }
+  .sectionText {
+    font-size: 1rem;
+    max-width: none; /* Remove line length limit on smaller screens */
+  }
+  .testimonialText {
+    font-size: 1.2rem;
+  }
+  .testimonialText::before, .testimonialText::after {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainContent {
+    padding: 0 1rem;
+  }
+  .featureList {
+    grid-template-columns: 1fr; /* Stack features */
+  }
+  .testimonialSection {
+    padding: 1.5rem;
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .heroSection {
+    padding: 3rem 5%;
+    min-height: 50vh;
+  }
+  .projectTitle {
+    font-size: 2.5rem;
+  }
+  .projectSubtitle {
+    font-size: 1.1rem;
+  }
+  .mainContent {
+    margin: 3rem auto;
+    padding: 0 1rem;
+  }
+  .sectionTitle {
+    font-size: 1.8rem;
+  }
+  .sectionText, .featureItem {
+    font-size: 1rem;
+  }
+  .galleryGrid {
+    grid-template-columns: 1fr; /* Stack gallery items */
+  }
+} 

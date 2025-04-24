@@ -5,6 +5,10 @@ import HeroSection from "./components/index/HeroSection/HeroSection";
 import VideoSection from "./components/VideoSection/VideoSection";
 import FeaturedRepos from "./components/FeaturedRepos/FeaturedRepos";
 import ServicesSection from "./components/ServicesSection/ServicesSection";
+import BlogPreview from "./components/BlogPreview/BlogPreview";
+import MarketplaceShowcase from "./components/MarketplaceShowcase/MarketplaceShowcase";
+import ServicesCardsSection from "./components/ServicesCardsSection/ServicesCardsSection";
+import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
 import Footer from "./components/Footer/Footer";
 
 export default function Home() {
@@ -12,7 +16,11 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main}>
         <HeroSection />
+        <MarketplaceShowcase />
         <FeaturedRepos />
+        <ServicesCardsSection />
+        <PortfolioPreview />
+        <BlogPreview />
         <VideoSection />
         <ServicesSection />
       </main>

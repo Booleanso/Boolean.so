@@ -1,0 +1,445 @@
+/* Main Page Styles */
+.portfolioPage {
+  background-color: #ffffff; /* White background */
+  color: #1d1d1f;
+  min-height: 100vh;
+}
+
+/* Featured Project Hero Section */
+.featuredSection {
+  position: relative;
+  height: 70vh;
+  min-height: 500px;
+  max-height: 800px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.featuredImageWrapper {
+  position: absolute;
+  inset: 0;
+}
+
+.featuredImage {
+  object-fit: cover;
+  filter: brightness(0.7); /* Darken image slightly */
+}
+
+.featuredOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2));
+}
+
+.featuredContent {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 4rem;
+  color: white;
+}
+
+.featuredLabel {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.15);
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(5px);
+}
+
+.featuredTitle {
+  font-size: 3.8rem;
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+  max-width: 700px;
+}
+
+.featuredDescription {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.featuredLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: white;
+  color: #1d1d1f;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 0.9rem 1.8rem;
+  border-radius: 30px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.featuredLink:hover {
+  background-color: #f5f5f7;
+  transform: scale(1.03);
+}
+
+.featuredLink svg {
+  transition: transform 0.2s ease;
+}
+
+.featuredLink:hover svg {
+  transform: translateX(3px);
+}
+
+/* Style for the secondary live site link on featured project */
+.liveSiteLink {
+  margin-left: 1rem; /* Space between buttons */
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.liveSiteLink:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Grid Section */
+.gridSection {
+  padding: 6rem 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.gridHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 4rem;
+  text-align: center;
+}
+
+.gridTitle {
+  font-size: 3rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #1d1d1f;
+  letter-spacing: -0.02em;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.filterButton {
+  appearance: none;
+  background-color: #f5f5f7;
+  color: #333;
+  border: none;
+  padding: 0.6rem 1.3rem;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterButton:hover {
+  background-color: #e5e5e7;
+}
+
+.filterButton.active {
+  background-color: #0071e3;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0, 113, 227, 0.2);
+}
+
+/* Project Grid */
+.projectGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2.5rem;
+}
+
+/* Replace .projectCard with container */
+.projectCardContainer {
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  overflow: hidden;
+  background-color: #f5f5f7;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.projectCardContainer:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* New style for the link covering the image */
+.cardImageLinkWrapper {
+  display: block; /* Takes up space */
+  text-decoration: none;
+  color: inherit;
+}
+
+.cardImageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  display: block; /* Ensure it behaves like a block */
+}
+
+.cardImage {
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.projectCardContainer:hover .cardImage {
+  transform: scale(1.05);
+}
+
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 70%);
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* Allows clicking through to link */
+}
+
+.projectCardContainer:hover .cardOverlay {
+  opacity: 1;
+}
+
+/* New content area styling */
+.cardContentArea {
+  padding: 1.2rem 1.5rem;
+  /* Remove absolute positioning if it was on cardContent */
+}
+
+.cardTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+
+/* Style for the title link specifically */
+.cardTitleLink {
+  text-decoration: none;
+  color: #1d1d1f; /* Match card text color */
+}
+
+.cardTitleLink:hover {
+  text-decoration: underline;
+}
+
+.cardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cardTag {
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.05); /* Adjusted for light bg */
+  color: #333;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+}
+
+/* Empty Grid State */
+.emptyGridState {
+  grid-column: 1 / -1; /* Span full width */
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: #f5f5f7;
+  border-radius: 16px;
+  color: #6e6e73;
+}
+
+.resetFilterButton {
+  appearance: none;
+  margin-top: 1.5rem;
+  background-color: #0071e3;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.resetFilterButton:hover {
+  background-color: #0077ed;
+}
+
+/* Dark Mode */
+:global(.dark-theme) .portfolioPage {
+  background-color: #000;
+}
+
+:global(.dark-theme) .featuredSection .featuredImage {
+  filter: brightness(0.6);
+}
+
+:global(.dark-theme) .featuredLink {
+  background-color: #1c1c1e;
+  color: #f5f5f7;
+}
+
+:global(.dark-theme) .featuredLink:hover {
+  background-color: #2c2c2e;
+}
+
+:global(.dark-theme) .gridSection {
+  /* No change needed, white background for cards provides contrast */
+}
+
+:global(.dark-theme) .gridTitle {
+  color: #f5f5f7;
+}
+
+:global(.dark-theme) .filterButton {
+  background-color: #1c1c1e;
+  color: #f5f5f7;
+}
+
+:global(.dark-theme) .filterButton:hover {
+  background-color: #2c2c2e;
+}
+
+:global(.dark-theme) .filterButton.active {
+  background-color: #2997ff;
+  color: #000;
+}
+
+:global(.dark-theme) .projectCardContainer {
+  background-color: #1c1c1e;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-theme) .projectCardContainer:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+:global(.dark-theme) .cardTitleLink {
+  color: #f5f5f7;
+}
+
+:global(.dark-theme) .cardTag {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #f5f5f7;
+}
+
+:global(.dark-theme) .emptyGridState {
+  background-color: #1c1c1e;
+  color: #a1a1a6;
+}
+
+:global(.dark-theme) .resetFilterButton {
+  background-color: #2997ff;
+  color: #000;
+}
+
+:global(.dark-theme) .resetFilterButton:hover {
+  background-color: #46a6ff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .featuredSection {
+    height: 60vh;
+  }
+  .featuredContent {
+    padding: 1.5rem;
+  }
+  .featuredTitle {
+    font-size: 2.8rem;
+  }
+  .featuredDescription {
+    font-size: 1.1rem;
+  }
+  .gridSection {
+    padding: 4rem 1.5rem;
+  }
+  .gridTitle {
+    font-size: 2.5rem;
+  }
+  .projectGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .featuredTitle {
+    font-size: 2.4rem;
+  }
+  .gridTitle {
+    font-size: 2.2rem;
+  }
+  .cardTitle {
+    font-size: 1.2rem;
+  }
+}
+
+/* Style for images that failed to load and were replaced */
+.imageError {
+  /* For example, add a subtle border or filter */
+  border: 1px dashed #ddd; 
+  filter: grayscale(50%);
+}
+
+.featuredImagePlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #eee;
+  color: #aaa;
+  font-size: 1.2rem;
+}
+
+/* Style for the wrapper when the featured image fails */
+.featuredImageErrorState {
+  background-color: #f0f0f0; /* Example background */
+}
+
+.liveSiteButtonContainer {
+  margin-top: 0.8rem; /* Space above the button */
+}
+
+.liveSiteButton {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background-color: #e5e5e7;
+  color: #0071e3;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.liveSiteButton:hover {
+  background-color: #dcdce0;
+  color: #005bb5;
+} 

@@ -1,0 +1,314 @@
+.servicesSection {
+  width: 100%;
+  padding: 7rem 2rem 12rem; /* Increased bottom padding again */
+  background-color: #000; /* Match FeaturedRepos background */
+  color: #f5f5f7; /* Match FeaturedRepos text color */
+  overflow: hidden; /* Hide overflow for cleaner look, adjust if needed */
+  position: relative; /* Needed for absolute positioning of cards */
+}
+
+.headerContent {
+  max-width: 800px;
+  margin: 0 auto 4rem auto;
+  text-align: center;
+}
+
+/* Copied and adapted from FeaturedRepos header styles */
+.heading {
+  font-size: 3.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  color: #f5f5f7;
+  background: linear-gradient(90deg, #f5f5f7, #a1a1a6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.description {
+  font-size: 1.3rem;
+  color: #a1a1a6;
+  line-height: 1.6;
+  margin: 0 auto;
+  font-weight: 400;
+  max-width: 700px;
+}
+
+.cardsContainerWrapper {
+  /* Wrapper to position the hand/cards */
+  position: relative;
+  max-width: 1200px; /* Wider for 7 cards */
+  margin: 7rem auto 0; /* Increased top margin */
+  height: 600px; /* Increased height */
+  /* Add a placeholder for the hand image */
+  /* background: url('/path/to/your/hand-image.png') no-repeat bottom center; */
+  /* background-size: contain; */
+}
+
+.cardsContainer {
+  position: absolute;
+  bottom: 70px; /* Adjust based on hand/visuals */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 500px; /* Increased height */
+  perspective: 1200px;
+  display: flex; 
+  justify-content: center; 
+  align-items: flex-end;
+}
+
+.serviceCard {
+  position: absolute;
+  bottom: 0;
+  width: 280px; /* Increased width */
+  height: 420px; /* Increased height (3:2 ratio) */
+  background-color: white;
+  border-radius: 16px; 
+  padding: 2rem; /* Increased padding */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-decoration: none;
+  color: #1d1d1f;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid #ddd;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), 
+              box-shadow 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+              z-index 0s 0.25s; 
+  transform-origin: bottom center;
+  will-change: transform, box-shadow;
+}
+
+/* Fan spread for 7 cards (Center is 4th card) */
+.serviceCard:nth-child(1) { transform: translateX(-165%) rotate(-24deg); }
+.serviceCard:nth-child(2) { transform: translateX(-110%) rotate(-16deg); }
+.serviceCard:nth-child(3) { transform: translateX(-55%) rotate(-8deg); }
+.serviceCard:nth-child(4) { transform: translateX(0) rotate(0deg); z-index: 4; } /* Center card */
+.serviceCard:nth-child(5) { transform: translateX(55%) rotate(8deg); }
+.serviceCard:nth-child(6) { transform: translateX(110%) rotate(16deg); }
+.serviceCard:nth-child(7) { transform: translateX(165%) rotate(24deg); }
+
+.serviceCard:hover {
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  z-index: 10;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), 
+              box-shadow 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+              z-index 0s 0s; 
+}
+
+/* Apply hover transforms specifically for each card (7 cards) */
+.serviceCard:nth-child(1):hover { transform: translateX(-165%) rotate(-24deg) translateY(-45px) scale(1.05); }
+.serviceCard:nth-child(2):hover { transform: translateX(-110%) rotate(-16deg) translateY(-45px) scale(1.05); }
+.serviceCard:nth-child(3):hover { transform: translateX(-55%) rotate(-8deg) translateY(-45px) scale(1.05); }
+.serviceCard:nth-child(4):hover { transform: translateX(0) rotate(0deg) translateY(-45px) scale(1.05); }
+.serviceCard:nth-child(5):hover { transform: translateX(55%) rotate(8deg) translateY(-45px) scale(1.05); }
+.serviceCard:nth-child(6):hover { transform: translateX(110%) rotate(16deg) translateY(-45px) scale(1.05); }
+.serviceCard:nth-child(7):hover { transform: translateX(165%) rotate(24deg) translateY(-45px) scale(1.05); }
+
+.cardIcon {
+  font-size: 2.2rem; /* Adjusted size */
+  margin-bottom: 1.5rem;
+}
+
+.cardTitle {
+  font-size: 1.4rem; /* Adjusted size */
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1d1d1f;
+}
+
+.cardDescription {
+  font-size: 1rem; /* Adjusted size */
+  line-height: 1.6;
+  color: #6e6e73;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.cardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1rem; /* Adjusted size */
+  font-weight: 500;
+  color: #0071e3;
+  margin-top: auto;
+  transition: color 0.2s ease;
+}
+
+.serviceCard:hover .cardLink {
+  color: #0077ed;
+}
+
+.cardLink svg {
+  transition: transform 0.2s ease;
+}
+
+.serviceCard:hover .cardLink svg {
+  transform: translateX(3px);
+}
+
+/* Dark mode styles remain largely the same for the section, 
+   but cards need adjusting if theme toggle affects them */
+:global(.dark-theme) .servicesSection {
+  background-color: #000;
+  color: #f5f5f7;
+}
+
+:global(.dark-theme) .heading {
+  color: #f5f5f7;
+  background: linear-gradient(90deg, #f5f5f7, #a1a1a6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:global(.dark-theme) .description {
+  color: #a1a1a6;
+}
+
+/* Dark mode for cards (if needed) - assumes cards stay light */
+/* :global(.dark-theme) .serviceCard { ... } */
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .cardsContainerWrapper {
+    max-width: 1050px; /* Adjusted */
+    height: 550px;
+  }
+  .cardsContainer {
+    height: 450px;
+  }
+  .serviceCard {
+    width: 240px;
+    height: 360px;
+  }
+  /* Fan for 7 cards */
+  .serviceCard:nth-child(1) { transform: translateX(-150%) rotate(-21deg); }
+  .serviceCard:nth-child(2) { transform: translateX(-100%) rotate(-14deg); }
+  .serviceCard:nth-child(3) { transform: translateX(-50%) rotate(-7deg); }
+  .serviceCard:nth-child(4) { transform: translateX(0) rotate(0deg); z-index: 4; }
+  .serviceCard:nth-child(5) { transform: translateX(50%) rotate(7deg); }
+  .serviceCard:nth-child(6) { transform: translateX(100%) rotate(14deg); }
+  .serviceCard:nth-child(7) { transform: translateX(150%) rotate(21deg); }
+
+  .serviceCard:nth-child(1):hover { transform: translateX(-150%) rotate(-21deg) translateY(-40px) scale(1.05); }
+  .serviceCard:nth-child(2):hover { transform: translateX(-100%) rotate(-14deg) translateY(-40px) scale(1.05); }
+  .serviceCard:nth-child(3):hover { transform: translateX(-50%) rotate(-7deg) translateY(-40px) scale(1.05); }
+  .serviceCard:nth-child(4):hover { transform: translateX(0) rotate(0deg) translateY(-40px) scale(1.05); }
+  .serviceCard:nth-child(5):hover { transform: translateX(50%) rotate(7deg) translateY(-40px) scale(1.05); }
+  .serviceCard:nth-child(6):hover { transform: translateX(100%) rotate(14deg) translateY(-40px) scale(1.05); }
+  .serviceCard:nth-child(7):hover { transform: translateX(150%) rotate(21deg) translateY(-40px) scale(1.05); }
+}
+
+@media (max-width: 900px) {
+  .cardsContainerWrapper {
+    max-width: 800px; /* Adjusted */
+    height: 500px;
+  }
+  .cardsContainer {
+    height: 400px;
+  }
+  .serviceCard {
+    width: 200px;
+    height: 300px;
+    padding: 1.5rem;
+  }
+  /* Fan for 7 cards */
+  .serviceCard:nth-child(1) { transform: translateX(-135%) rotate(-18deg); }
+  .serviceCard:nth-child(2) { transform: translateX(-90%) rotate(-12deg); }
+  .serviceCard:nth-child(3) { transform: translateX(-45%) rotate(-6deg); }
+  .serviceCard:nth-child(4) { transform: translateX(0) rotate(0deg); z-index: 4; }
+  .serviceCard:nth-child(5) { transform: translateX(45%) rotate(6deg); }
+  .serviceCard:nth-child(6) { transform: translateX(90%) rotate(12deg); }
+  .serviceCard:nth-child(7) { transform: translateX(135%) rotate(18deg); }
+
+  .serviceCard:nth-child(1):hover { transform: translateX(-135%) rotate(-18deg) translateY(-35px) scale(1.05); }
+  .serviceCard:nth-child(2):hover { transform: translateX(-90%) rotate(-12deg) translateY(-35px) scale(1.05); }
+  .serviceCard:nth-child(3):hover { transform: translateX(-45%) rotate(-6deg) translateY(-35px) scale(1.05); }
+  .serviceCard:nth-child(4):hover { transform: translateX(0) rotate(0deg) translateY(-35px) scale(1.05); }
+  .serviceCard:nth-child(5):hover { transform: translateX(45%) rotate(6deg) translateY(-35px) scale(1.05); }
+  .serviceCard:nth-child(6):hover { transform: translateX(90%) rotate(12deg) translateY(-35px) scale(1.05); }
+  .serviceCard:nth-child(7):hover { transform: translateX(135%) rotate(18deg) translateY(-35px) scale(1.05); }
+
+  .cardIcon { font-size: 1.8rem; }
+  .cardTitle { font-size: 1.2rem; }
+  .cardDescription { font-size: 0.9rem; }
+}
+
+@media (max-width: 768px) {
+  .servicesSection {
+    padding: 5rem 1rem 10rem;
+  }
+  .heading { font-size: 2.8rem; }
+  .description { font-size: 1.1rem; }
+  .cardsContainerWrapper {
+    max-width: 100%;
+    height: 480px;
+    margin-top: 5rem;
+  }
+  .cardsContainer {
+     height: 400px;
+     bottom: 50px;
+   }
+  .serviceCard {
+    width: 180px;
+    height: 270px;
+  }
+  /* Fan for 7 cards */
+  .serviceCard:nth-child(1) { transform: translateX(-120%) rotate(-16deg); }
+  .serviceCard:nth-child(2) { transform: translateX(-80%) rotate(-11deg); }
+  .serviceCard:nth-child(3) { transform: translateX(-40%) rotate(-5.5deg); }
+  .serviceCard:nth-child(4) { transform: translateX(0) rotate(0deg); z-index: 4; }
+  .serviceCard:nth-child(5) { transform: translateX(40%) rotate(5.5deg); }
+  .serviceCard:nth-child(6) { transform: translateX(80%) rotate(11deg); }
+  .serviceCard:nth-child(7) { transform: translateX(120%) rotate(16deg); }
+
+  .serviceCard:nth-child(1):hover { transform: translateX(-120%) rotate(-16deg) translateY(-30px) scale(1.05); }
+  .serviceCard:nth-child(2):hover { transform: translateX(-80%) rotate(-11deg) translateY(-30px) scale(1.05); }
+  .serviceCard:nth-child(3):hover { transform: translateX(-40%) rotate(-5.5deg) translateY(-30px) scale(1.05); }
+  .serviceCard:nth-child(4):hover { transform: translateX(0) rotate(0deg) translateY(-30px) scale(1.05); }
+  .serviceCard:nth-child(5):hover { transform: translateX(40%) rotate(5.5deg) translateY(-30px) scale(1.05); }
+  .serviceCard:nth-child(6):hover { transform: translateX(80%) rotate(11deg) translateY(-30px) scale(1.05); }
+  .serviceCard:nth-child(7):hover { transform: translateX(120%) rotate(16deg) translateY(-30px) scale(1.05); }
+}
+
+@media (max-width: 480px) {
+  .cardsContainerWrapper {
+     height: 450px;
+   }
+   .cardsContainer {
+      height: 350px;
+      bottom: 40px;
+    }
+   .serviceCard {
+     width: 160px;
+     height: 240px;
+     padding: 1.2rem;
+   }
+   /* Fan for 7 cards */
+   .serviceCard:nth-child(1) { transform: translateX(-105%) rotate(-15deg); }
+   .serviceCard:nth-child(2) { transform: translateX(-70%) rotate(-10deg); }
+   .serviceCard:nth-child(3) { transform: translateX(-35%) rotate(-5deg); }
+   .serviceCard:nth-child(4) { transform: translateX(0) rotate(0deg); z-index: 4; }
+   .serviceCard:nth-child(5) { transform: translateX(35%) rotate(5deg); }
+   .serviceCard:nth-child(6) { transform: translateX(70%) rotate(10deg); }
+   .serviceCard:nth-child(7) { transform: translateX(105%) rotate(15deg); }
+ 
+   .serviceCard:nth-child(1):hover { transform: translateX(-105%) rotate(-15deg) translateY(-25px) scale(1.05); }
+   .serviceCard:nth-child(2):hover { transform: translateX(-70%) rotate(-10deg) translateY(-25px) scale(1.05); }
+   .serviceCard:nth-child(3):hover { transform: translateX(-35%) rotate(-5deg) translateY(-25px) scale(1.05); }
+   .serviceCard:nth-child(4):hover { transform: translateX(0) rotate(0deg) translateY(-25px) scale(1.05); }
+   .serviceCard:nth-child(5):hover { transform: translateX(35%) rotate(5deg) translateY(-25px) scale(1.05); }
+   .serviceCard:nth-child(6):hover { transform: translateX(70%) rotate(10deg) translateY(-25px) scale(1.05); }
+   .serviceCard:nth-child(7):hover { transform: translateX(105%) rotate(15deg) translateY(-25px) scale(1.05); }
+
+  .cardIcon { font-size: 1.6rem; }
+  .cardTitle { font-size: 1.1rem; }
+  .cardDescription { font-size: 0.8rem; }
+  .cardLink { font-size: 0.85rem; }
+} 

@@ -2,64 +2,81 @@
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  padding: 4rem 4rem;
-  background-color: var(--background, #fff);
-  color: var(--foreground, #333);
+  padding: 4rem 4rem 6rem;
+  background-color: #ffffff; /* Changed to white background */
+  color: #1d1d1f; /* Changed to dark text for light background */
+  overflow: hidden;
 }
 
 :global(.dark-theme) .featuredSection {
   background-color: #000;
-  color: #fff;
+  color: #f5f5f7;
 }
 
 :global(.light-theme) .featuredSection {
-  background-color: #fff;
-  color: #333;
+  background-color: #ffffff; /* Changed to white background in light mode */
+  color: #1d1d1f;
 }
 
 .sectionHeader {
   margin-bottom: 4rem;
-  border-bottom: 1px solid var(--border, #eaeaea);
-  padding-bottom: 2rem;
   max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
+  text-align: center;
+  padding-bottom: 0; /* Remove padding from original design */
+  border-bottom: none; /* Remove border from original design */
 }
 
 :global(.dark-theme) .sectionHeader {
-  border-bottom-color: #333;
+  border-bottom: none;
 }
 
 .sectionHeader h2 {
-  font-size: 3rem;
-  font-weight: 400;
-  letter-spacing: -0.05em;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-  color: var(--text-primary, #333);
+  font-size: 3.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  color: #1d1d1f; /* Changed to dark text */
+  background: linear-gradient(90deg, #1d1d1f, #6e6e73); /* Changed gradient to dark */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
 }
 
 :global(.dark-theme) .sectionHeader h2 {
-  color: #fff;
+  color: #f5f5f7;
+  background: linear-gradient(90deg, #f5f5f7, #a1a1a6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 :global(.light-theme) .sectionHeader h2 {
-  color: #333;
+  color: #1d1d1f;
+  background: linear-gradient(90deg, #1d1d1f, #6e6e73);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .featuredRepoIntro {
-  font-size: 1.2rem;
-  color: var(--text-secondary, #666);
-  max-width: 600px;
+  font-size: 1.3rem;
+  color: #6e6e73; /* Changed to darker secondary text */
+  max-width: 700px;
   line-height: 1.6;
+  margin: 0 auto;
+  font-weight: 400;
 }
 
 :global(.dark-theme) .featuredRepoIntro {
-  color: #cccccc;
+  color: #a1a1a6;
 }
 
 :global(.light-theme) .featuredRepoIntro {
-  color: #666;
+  color: #6e6e73;
 }
 
 .loadingContainer,
@@ -78,49 +95,69 @@
   height: 200px;
   width: 100%;
   gap: 1rem;
-  background-color: #fff;
+  background-color: transparent;
 }
 
 .loadingBar {
-  width: 100px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #000, transparent);
-  background-size: 200% 100%;
-  animation: loadingAnimation 1.5s infinite;
+  width: 40px;
+  height: 40px;
+  border: 2px solid #0071e3; /* Changed to Apple's blue for light mode */
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
 }
 
-@keyframes loadingAnimation {
+@keyframes spin {
   0% {
-    background-position: 200% 0;
+    transform: rotate(0deg);
   }
   100% {
-    background-position: -200% 0;
+    transform: rotate(360deg);
   }
 }
 
 .error {
   font-size: 1rem;
-  color: #d32f2f;
+  color: #ff3b30; /* Apple's red for light mode */
   text-align: center;
   padding: 2rem;
-  border: 1px solid #f5f5f5;
-  background-color: #fff;
+  border: 1px solid #e5e5e7;
+  background-color: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.error svg {
+  flex-shrink: 0;
 }
 
 .emptyState {
   text-align: center;
   padding: 4rem 2rem;
-  color: #333;
-  border: 1px solid #f5f5f5;
+  color: #1d1d1f;
+  border: 1px solid #e5e5e7;
   font-size: 1.1rem;
-  background-color: #fff;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+:global(.dark-theme) .error,
+:global(.dark-theme) .emptyState {
+  border: 1px solid #2c2c2e;
+  background-color: #1c1c1e;
+  color: #f5f5f7;
 }
 
 .repoGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 3rem;
-  margin-top: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+  margin-top: 3rem;
   max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
@@ -131,61 +168,80 @@
   display: flex;
   flex-direction: column;
   text-decoration: none;
-  color: var(--text-primary, #333);
-  transition: transform 0.3s ease;
+  color: #1d1d1f; /* Changed to dark text */
   height: 100%;
-  border-bottom: 1px solid transparent;
+  background-color: #ffffff; /* Changed to white */
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Lightened shadow */
+  border: 1px solid #e5e5e7; /* Added subtle border */
 }
 
 :global(.dark-theme) .repoCard {
-  color: #fff;
+  color: #f5f5f7;
+  background-color: #1c1c1e;
+  border: none;
 }
 
 :global(.light-theme) .repoCard {
-  color: #333;
+  color: #1d1d1f;
+  background-color: #ffffff;
+  border: 1px solid #e5e5e7;
 }
 
 .repoCard:hover {
-  transform: translateY(-8px);
-  border-bottom-color: #000;
+  transform: scale(1.02) translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .repoImageWrapper {
   position: relative;
   width: 100%;
-  height: 240px;
+  height: 220px;
   overflow: hidden;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0; /* Remove margin that was in original */
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 50%);
+  z-index: 1;
 }
 
 .repoImage {
-  transition: transform 0.6s ease;
+  transition: transform 1.2s ease;
 }
 
 .repoCard:hover .repoImage {
-  transform: scale(1.05);
+  transform: scale(1.07);
 }
 
 .repoContent {
   display: flex;
   flex-direction: column;
   flex: 1;
+  padding: 1.5rem;
 }
 
 .repoName {
-  font-size: 1.6rem;
-  font-weight: 500;
+  font-size: 1.5rem;
+  font-weight: 600;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
-  color: var(--text-primary, #333);
+  color: #1d1d1f;
 }
 
 :global(.dark-theme) .repoName {
-  color: #fff;
+  color: #f5f5f7;
 }
 
 :global(.light-theme) .repoName {
-  color: #333;
+  color: #1d1d1f;
 }
 
 .repoDetails {
@@ -195,19 +251,19 @@
 }
 
 .repoDescription {
-  color: var(--text-secondary, #666);
+  color: #6e6e73; /* Changed to darker secondary text */
   margin-bottom: 2rem;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.6;
   flex: 1;
 }
 
 :global(.dark-theme) .repoDescription {
-  color: #cccccc;
+  color: #a1a1a6;
 }
 
 :global(.light-theme) .repoDescription {
-  color: #666;
+  color: #6e6e73;
 }
 
 .repoStats {
@@ -215,8 +271,17 @@
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid #e5e5e7; /* Changed to light separator */
   padding-top: 1rem;
+}
+
+:global(.dark-theme) .repoStats {
+  border-top: 1px solid #2c2c2e;
+}
+
+.statsGroup {
+  display: flex;
+  gap: 1.5rem;
 }
 
 .stat {
@@ -227,62 +292,114 @@
 
 .statValue {
   font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--text-primary, #333);
+  font-weight: 600;
+  color: #1d1d1f;
 }
 
 :global(.dark-theme) .statValue {
-  color: #fff;
+  color: #f5f5f7;
 }
 
 :global(.light-theme) .statValue {
-  color: #333;
+  color: #1d1d1f;
 }
 
 .statLabel {
   font-size: 0.8rem;
-  color: var(--text-secondary, #666);
+  color: #6e6e73; /* Changed to darker gray text */
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 :global(.dark-theme) .statLabel {
-  color: #cccccc;
+  color: #86868b;
 }
 
 :global(.light-theme) .statLabel {
-  color: #666;
+  color: #6e6e73;
 }
 
 .price {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 600;
-  color: var(--text-primary, #333);
+  color: #0071e3; /* Changed to Apple's blue for light mode */
 }
 
 :global(.dark-theme) .price {
-  color: #fff;
+  color: #2997ff;
 }
 
 :global(.light-theme) .price {
-  color: #333;
+  color: #0071e3;
+}
+
+.viewAllContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 3.5rem;
+}
+
+.viewAllButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #0071e3; /* Changed to Apple's blue for light mode */
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 0.8rem 1.5rem;
+  border-radius: 30px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 113, 227, 0.3);
+}
+
+:global(.dark-theme) .viewAllButton {
+  background-color: #2997ff;
+  box-shadow: 0 4px 10px rgba(41, 151, 255, 0.3);
+}
+
+.viewAllButton:hover {
+  background-color: #0080ff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 113, 227, 0.4);
+}
+
+:global(.dark-theme) .viewAllButton:hover {
+  background-color: #3ba3ff;
+  box-shadow: 0 6px 15px rgba(41, 151, 255, 0.4);
+}
+
+.viewAllButton svg {
+  transition: transform 0.2s ease;
+}
+
+.viewAllButton:hover svg {
+  transform: translateX(3px);
+}
+
+@media (max-width: 1200px) {
+  .repoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
   .repoGrid {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
   
   .sectionHeader h2 {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
   }
   
   .featuredRepoIntro {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
   .featuredSection {
-    padding: 3rem 1.5rem;
+    padding: 3rem 2rem 4rem;
   }
 }
 

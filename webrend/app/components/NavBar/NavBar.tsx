@@ -5,27 +5,26 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { auth } from '../../lib/firebase-client';
-import { signOut, User } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
+import type { SimpleUser } from '../../utils/auth-utils';
 import './NavBar.scss';
 
-export default function NavBar() {
-  const [user, setUser] = React.useState<User | null>(null);
-  const [loading, setLoading] = React.useState(true);
+interface NavBarProps {
+  serverUser: SimpleUser;
+}
+
+export default function NavBar({ serverUser }: NavBarProps) {
+  const [user, setUser] = React.useState<SimpleUser>(serverUser);
+  const [loading, setLoading] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [scrolled, setScrolled] = useState<boolean>(false);
   const router = useRouter();
   const pathname = usePathname();
 
-  React.useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      setLoading(false);
-    });
+  useEffect(() => {
+    setUser(serverUser);
+  }, [serverUser]);
 
-    return () => unsubscribe();
-  }, []);
-  
-  // Handle scroll effect for navbar
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 20;
@@ -43,10 +42,10 @@ export default function NavBar() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      // Clear session cookie
       await fetch('/api/auth/logout', {
         method: 'POST',
       });
+      setUser(null);
       router.push('/');
       router.refresh();
     } catch (error) {
@@ -61,10 +60,11 @@ export default function NavBar() {
       setSearchQuery('');
     }
   };
+  
+  const isAdmin = user?.email === 'ceo@webrend.com';
 
   return (
     <>
-      {/* Top Navbar */}
       <div className={`top-navbar-container ${scrolled ? 'scrolled' : ''}`}>
         <div className="top-navbar">
           <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
@@ -93,6 +93,15 @@ export default function NavBar() {
               AI Blog
             </Link>
             
+            {isAdmin && (
+              <Link 
+                href="/admin/portfolio/add"
+                className={`nav-button admin-button ${pathname.startsWith('/admin') ? 'active' : ''}`}
+              >
+                Admin
+              </Link>
+            )}
+            
             <div className="search-container">
               <form onSubmit={handleSearch} className="search-form">
                 <input 
@@ -115,7 +124,6 @@ export default function NavBar() {
         </div>
       </div>
       
-      {/* Bottom Navbar */}
       <div className="navbar-container">
         <div className="navbar">
           <div className="navbar-menu">
@@ -129,7 +137,6 @@ export default function NavBar() {
         </div>
       </div>
 
-      {/* Logo Island */}
       <div className="logo-island-container">
         <div className="logo-island">
           <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
@@ -145,7 +152,6 @@ export default function NavBar() {
         </div>
       </div>
 
-      {/* Auth Island */}
       {!loading && (
         <div className="auth-island-container">
           <div className="auth-island">
