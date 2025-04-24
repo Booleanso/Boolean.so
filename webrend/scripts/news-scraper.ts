@@ -199,7 +199,7 @@ function generateSlug(title: string): string {
 }
 
 /**
- * Fetches a relevant image for the article from Unsplash or Pexels based on keywords
+ * Fetches a relevant image for the article from reliable sources
  */
 async function fetchRelevantImage(title: string, category: string): Promise<string> {
   try {
@@ -223,46 +223,85 @@ async function fetchRelevantImage(title: string, category: string): Promise<stri
     // Clean up keywords to remove any special characters
     const cleanKeywords = keywords.map((word: string) => word.replace(/[^\w\s]/g, ''));
     
-    console.log(`Fetching image for keywords: ${cleanKeywords.join(', ')}`);
+    console.log(`Finding image for keywords: ${cleanKeywords.join(', ')}`);
     
-    // Try multiple image sources in case one fails
+    // Use reliable pre-selected Unsplash collections based on category
+    // These are popular tech-related collections on Unsplash
+    const techCollections = {
+      'technology': '8771938',
+      'tech': '4587603',
+      'development': '8117318',
+      'coding': '8117318',
+      'design': '4740053',
+      'ai': '48444612',
+      'artificial intelligence': '48444612',
+      'web3': '24836486',
+      'blockchain': '24836486',
+      'business': '317099',
+      'industry': '10753288',
+      'tools': '3696524',
+      'tutorial': '2476111',
+      'programming': '8117318'
+    };
+    
+    // Determine which collection to use based on category
+    const lowerCategory = category.toLowerCase();
+    let collectionId = techCollections['technology']; // Default tech collection
+    
+    // Try to match category to a specific collection
+    for (const [key, id] of Object.entries(techCollections)) {
+      if (lowerCategory.includes(key)) {
+        collectionId = id;
+        console.log(`Using collection for ${key}`);
+        break;
+      }
+    }
+    
+    // Use a specific Unsplash collection based on the category
+    // This is more reliable than random searches as these images actually exist
+    const imageUrl = `https://source.unsplash.com/collection/${collectionId}/1200x630`;
+    
     try {
-      // First try - Unsplash with specific keywords
-      const keywordString = encodeURIComponent(cleanKeywords.join(','));
-      const imageUrl = `https://source.unsplash.com/random/1200x630/?${keywordString}`;
-      
-      const response = await fetch(imageUrl, { method: 'GET', redirect: 'follow' });
+      // Fetch the image URL to ensure it resolves
+      const response = await fetch(imageUrl, { 
+        method: 'GET', 
+        redirect: 'follow',
+        headers: { 'User-Agent': 'Mozilla/5.0 WebRend Article Generator' }
+      });
       
       if (response.ok) {
         const finalUrl = response.url;
-        console.log(`Found image from Unsplash: ${finalUrl}`);
+        console.log(`Found image from Unsplash collection: ${finalUrl}`);
         return finalUrl;
       }
     } catch (error) {
-      console.warn(`Error with primary image fetch method: ${error}`);
+      console.warn(`Error fetching from Unsplash collection: ${error}`);
     }
     
-    // Second try - Use just the category and 'technology'
-    try {
-      const fallbackUrl = `https://source.unsplash.com/random/1200x630/?${encodeURIComponent(category.toLowerCase())},technology`;
-      const fallbackResponse = await fetch(fallbackUrl, { method: 'GET', redirect: 'follow' });
-      
-      if (fallbackResponse.ok) {
-        const fallbackFinalUrl = fallbackResponse.url;
-        console.log(`Found fallback image: ${fallbackFinalUrl}`);
-        return fallbackFinalUrl;
-      }
-    } catch (error) {
-      console.warn(`Error with fallback image fetch: ${error}`);
-    }
+    // Fallback to static reliable tech images
+    const reliableImages = [
+      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
+      'https://images.unsplash.com/photo-1550745165-9bc0b252726f',
+      'https://images.unsplash.com/photo-1518770660439-4636190af475',
+      'https://images.unsplash.com/photo-1562408590-e32931084e23',
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
+      'https://images.unsplash.com/photo-1531297484001-80022131f5a1',
+      'https://images.unsplash.com/photo-1535378620166-273708d44e4c',
+      'https://images.unsplash.com/photo-1624953587687-daf255b6b80a'
+    ];
     
-    // Last resort - generic technology image
-    console.warn(`Failed to fetch specific image, using default technology image`);
-    return `https://source.unsplash.com/random/1200x630/?technology`;
+    // Pick a reliable image based on some aspect of the article to ensure consistency
+    const hash = title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const index = hash % reliableImages.length;
+    const fallbackImage = reliableImages[index];
+    
+    console.log(`Using reliable fallback image: ${fallbackImage}`);
+    return fallbackImage;
   } catch (error) {
     console.error('Error in fetchRelevantImage:', error);
-    // Absolute fallback to a generic technology image
-    return `https://source.unsplash.com/random/1200x630/?technology`;
+    // Absolute fallback to a known working image
+    return 'https://images.unsplash.com/photo-1550745165-9bc0b252726f';
   }
 }
 

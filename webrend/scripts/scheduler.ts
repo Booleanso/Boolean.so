@@ -17,6 +17,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 // Create a lock file to prevent overlapping executions
 const LOCK_FILE = path.join(process.cwd(), 'article-generation.lock');
+const LAST_RUN_FILE = path.join(process.cwd(), 'article-generation-last-run.json');
 
 function createLockFile(): boolean {
   try {
@@ -48,6 +49,46 @@ function removeLockFile() {
     }
   } catch (error) {
     console.error('Error removing lock file:', error);
+  }
+}
+
+/**
+ * Check if we've already run article generation today
+ * This adds extra protection against duplicate articles
+ */
+function hasRunToday(): boolean {
+  try {
+    if (!fs.existsSync(LAST_RUN_FILE)) {
+      return false;
+    }
+
+    const lastRunData = JSON.parse(fs.readFileSync(LAST_RUN_FILE, 'utf8'));
+    const lastRunDate = new Date(lastRunData.lastRun);
+    const today = new Date();
+    
+    // Check if last run was today
+    return lastRunDate.getDate() === today.getDate() &&
+           lastRunDate.getMonth() === today.getMonth() &&
+           lastRunDate.getFullYear() === today.getFullYear();
+    
+  } catch (error) {
+    console.error('Error checking last run date:', error);
+    return false; // If error, assume not run today
+  }
+}
+
+/**
+ * Update the last run timestamp
+ */
+function updateLastRunTimestamp() {
+  try {
+    const data = {
+      lastRun: new Date().toISOString(),
+      articlesGenerated: true
+    };
+    fs.writeFileSync(LAST_RUN_FILE, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error('Error updating last run timestamp:', error);
   }
 }
 
@@ -89,9 +130,42 @@ function scheduleDaily() {
 }
 
 /**
+ * Entry point for the script
+ */
+async function main() {
+  const args = process.argv.slice(2);
+  const mode = args[0] || 'once';
+  const forceRun = args.includes('--force');
+  
+  try {
+    if (mode === 'daemon') {
+      // Run once immediately then schedule daily
+      console.log('Starting in daemon mode. Will run immediately and then daily at 8:00 AM.');
+      await runArticleGeneration(forceRun);
+      scheduleDaily();
+    } else {
+      // Run once and exit
+      console.log('Running article generation once...');
+      await runArticleGeneration(forceRun);
+      console.log('Article generation job completed. Exiting.');
+      process.exit(0);
+    }
+  } catch (error) {
+    console.error('Critical error in scheduler:', error);
+    process.exit(1);
+  }
+}
+
+/**
  * Main function to run the article generation with lock file protection
  */
-async function runArticleGeneration() {
+async function runArticleGeneration(forceRun = false) {
+  // Check if already run today to prevent duplicates (unless forced)
+  if (!forceRun && hasRunToday()) {
+    console.log('Article generation already ran today. Skipping to prevent duplicates.');
+    return;
+  }
+  
   // Create lock file to prevent concurrent runs
   if (!createLockFile()) {
     console.log('Another instance is already running. Exiting.');
@@ -107,6 +181,8 @@ async function runArticleGeneration() {
     
     if (result.success) {
       console.log(`Article generation completed successfully. Generated ${result.articlesGenerated} articles.`);
+      // Update last run timestamp
+      updateLastRunTimestamp();
     } else {
       console.error('Article generation failed:', result.error);
     }
@@ -115,32 +191,6 @@ async function runArticleGeneration() {
   } finally {
     // Always remove the lock file when done
     removeLockFile();
-  }
-}
-
-/**
- * Entry point for the script
- */
-async function main() {
-  const args = process.argv.slice(2);
-  const mode = args[0] || 'once';
-  
-  try {
-    if (mode === 'daemon') {
-      // Run once immediately then schedule daily
-      console.log('Starting in daemon mode. Will run immediately and then daily at 8:00 AM.');
-      await runArticleGeneration();
-      scheduleDaily();
-    } else {
-      // Run once and exit
-      console.log('Running article generation once...');
-      await runArticleGeneration();
-      console.log('Article generation job completed. Exiting.');
-      process.exit(0);
-    }
-  } catch (error) {
-    console.error('Critical error in scheduler:', error);
-    process.exit(1);
   }
 }
 

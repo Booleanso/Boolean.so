@@ -52,67 +52,44 @@ type FirestoreTimestamp = {
   toDate: () => Date;
 };
 
-// Debugging information
-let debugInfo = {
-  articlesFound: 0,
-  error: null as any,
-  indexUrl: '',
-  indexNeeded: false,
-  startTime: new Date(),
-  endTime: new Date(),
-  firebaseProjectId: process.env.FIREBASE_PROJECT_ID || 'Not set'
-};
-
 async function getArticles(): Promise<Article[]> {
-  debugInfo.startTime = new Date();
   try {
-    console.log(`[BlogPage] Fetching articles using Firebase Project ID: ${process.env.FIREBASE_PROJECT_ID}`);
-    
     // Create an index on the server if needed
     try {
       await db.collection('articles').orderBy('publishedAt', 'desc').limit(1).get();
     } catch (error) {
-      console.warn('[BlogPage] Collection index may need to be created:', error);
-      debugInfo.indexNeeded = true;
+      console.warn('Collection index may need to be created:', error);
       
       // Extract and log the index creation URL if it's a Firebase indexing error
       const errorString = String(error);
       if (errorString.includes('https://console.firebase.google.com/')) {
         const indexUrlMatch = errorString.match(/(https:\/\/console\.firebase\.google\.com\/[^\s"]+)/);
         if (indexUrlMatch && indexUrlMatch[1]) {
-          const cleanUrl = indexUrlMatch[1].replace(/\\n/g, '').replace(/\\"/g, '"');
-          debugInfo.indexUrl = cleanUrl;
           console.log('\n\n-------------------------------------------');
           console.log('⚠️ FIREBASE INDEX NEEDED');
           console.log('-------------------------------------------');
           console.log('Please create the required index by visiting:');
-          console.log(cleanUrl);
+          console.log(indexUrlMatch[1].replace(/\\n/g, '').replace(/\\"/g, '"'));
           console.log('-------------------------------------------\n\n');
         } else {
-          console.log('[BlogPage] Firebase index needed, but could not extract URL from error message');
+          console.log('Firebase index needed, but could not extract URL from error message');
         }
       }
     }
 
     // Fetch the articles
-    console.log('[BlogPage] Attempting to fetch articles from Firestore...');
     const articlesSnapshot = await db.collection('articles')
       .orderBy('publishedAt', 'desc')
       .limit(10)
       .get();
 
-    console.log(`[BlogPage] Query completed. Found ${articlesSnapshot.size} articles.`);
-    debugInfo.articlesFound = articlesSnapshot.size;
-    
     if (articlesSnapshot.empty) {
-      console.log('[BlogPage] No articles found in database - returning default content');
-      debugInfo.endTime = new Date();
+      console.log('No articles found in database - returning default content');
       return getDefaultArticles();
     }
 
-    const articles = articlesSnapshot.docs.map(doc => {
+    return articlesSnapshot.docs.map(doc => {
       const data = doc.data();
-      console.log(`[BlogPage] Article found: ${data.title}`);
       
       // Handle Firestore timestamp conversion
       let publishedAt = data.publishedAt;
@@ -142,27 +119,20 @@ async function getArticles(): Promise<Article[]> {
         slug: slug || doc.id
       } as Article;
     });
-    
-    debugInfo.endTime = new Date();
-    return articles;
   } catch (error) {
-    console.error('[BlogPage] Error fetching articles:', error);
-    debugInfo.error = error;
-    debugInfo.endTime = new Date();
+    console.error('Error fetching articles:', error);
+    console.log('Returning default articles due to error');
     
     // Handle the case where the main query fails due to missing index
     const errorString = String(error);
     if (errorString.includes('https://console.firebase.google.com/')) {
       const indexUrlMatch = errorString.match(/(https:\/\/console\.firebase\.google\.com\/[^\s"]+)/);
       if (indexUrlMatch && indexUrlMatch[1]) {
-        const cleanUrl = indexUrlMatch[1].replace(/\\n/g, '').replace(/\\"/g, '"');
-        debugInfo.indexUrl = cleanUrl;
-        debugInfo.indexNeeded = true;
         console.log('\n\n-------------------------------------------');
         console.log('⚠️ FIREBASE INDEX NEEDED');
         console.log('-------------------------------------------');
         console.log('Please create the required index by visiting:');
-        console.log(cleanUrl);
+        console.log(indexUrlMatch[1].replace(/\\n/g, '').replace(/\\"/g, '"'));
         console.log('-------------------------------------------\n\n');
       }
     }
@@ -179,8 +149,6 @@ function getDefaultArticles(): Article[] {
 
 export default async function BlogPage() {
   const articles = await getArticles();
-  
-  const executionTime = debugInfo.endTime.getTime() - debugInfo.startTime.getTime();
 
   // Generate structured data for the blog page
   const structuredData = {
@@ -229,39 +197,6 @@ export default async function BlogPage() {
           <p className={styles.subtitle}>
             Insights, tips, and inspiration for web developers and designers
           </p>
-        </div>
-
-        {/* Debug information section */}
-        <div style={{ 
-          margin: '20px 0', 
-          padding: '15px', 
-          backgroundColor: '#f5f5f5', 
-          border: '1px solid #ddd',
-          borderRadius: '4px' 
-        }}>
-          <h2>Debug Information</h2>
-          <ul>
-            <li><strong>Firebase Project ID:</strong> {debugInfo.firebaseProjectId}</li>
-            <li><strong>Articles Found:</strong> {debugInfo.articlesFound}</li>
-            <li><strong>Query Duration:</strong> {executionTime}ms</li>
-            <li><strong>Index Needed:</strong> {debugInfo.indexNeeded ? 'Yes' : 'No'}</li>
-            {debugInfo.indexNeeded && (
-              <li>
-                <strong>Create Index URL:</strong> 
-                <a href={debugInfo.indexUrl} target="_blank" rel="noopener noreferrer">
-                  Open Firebase Console (requires login)
-                </a>
-              </li>
-            )}
-            {debugInfo.error && (
-              <li>
-                <strong>Error:</strong> 
-                <pre style={{ whiteSpace: 'pre-wrap', backgroundColor: '#ffebe6', padding: '10px' }}>
-                  {String(debugInfo.error)}
-                </pre>
-              </li>
-            )}
-          </ul>
         </div>
 
         {articles.length > 0 ? (

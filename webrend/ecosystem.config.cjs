@@ -17,6 +17,8 @@ module.exports = {
       name: 'webrend-cron',
       script: './scripts/cron.js',  // Use direct path with './' prefix
       watch: false,
+      restart_delay: 10000, // 10 second delay between restarts
+      exp_backoff_restart_delay: 3000, // Exponential backoff for restarts
       env: {
         NODE_ENV: 'development',
       },

@@ -34,16 +34,54 @@ function log(message) {
   fs.appendFileSync(logFile, logMessage);
 }
 
+// System-wide flag file to indicate initial startup has happened
+const INITIAL_RUN_FLAG_FILE = path.join(process.cwd(), '.cron-initial-run-completed');
+
+// Check if this is the first startup by checking for a flag file
+function isFirstStartup() {
+  return !fs.existsSync(INITIAL_RUN_FLAG_FILE);
+}
+
+// Mark that initial startup has completed
+function markInitialStartupComplete() {
+  try {
+    fs.writeFileSync(INITIAL_RUN_FLAG_FILE, new Date().toISOString());
+    log('Initial startup complete - marked with flag file');
+  } catch (error) {
+    log(`Error creating initial run flag file: ${error.message}`);
+  }
+}
+
+// Check if initialization has already happened today
+function hasRunToday() {
+  try {
+    const today = new Date().toLocaleDateString().replace(/\//g, '-');
+    const logFile = path.join(logDir, `cron-${today}.log`);
+    
+    if (fs.existsSync(logFile)) {
+      const logContent = fs.readFileSync(logFile, 'utf8');
+      return logContent.includes('Article generation completed successfully');
+    }
+    return false;
+  } catch (error) {
+    log(`Error checking today's run status: ${error.message}`);
+    return false;
+  }
+}
+
 // Function to run the scheduler
-function runArticleGenerator() {
+function runArticleGenerator(force = false) {
   try {
     log('Starting scheduled article generation...');
     
     // Get the absolute path to the scheduler script
     const schedulerPath = path.resolve(__dirname, 'scheduler.ts');
     
+    // Add force flag for initial runs if needed
+    const forceFlag = force ? '--force' : '';
+    
     // Run the scheduler script with ts-node using ESM loader
-    execSync(`node --loader ts-node/esm ${schedulerPath} once`, { 
+    execSync(`node --loader ts-node/esm ${schedulerPath} once ${forceFlag}`, { 
       stdio: 'inherit',
       cwd: path.resolve(process.cwd())
     });
@@ -54,13 +92,21 @@ function runArticleGenerator() {
   }
 }
 
-// Run the article generator immediately when the script starts
-log('Initial run: Starting article generation on startup...');
-// Use setTimeout to allow logs to initialize first
-setTimeout(() => {
-  runArticleGenerator();
-  log('Initial article generation completed, setting up scheduled job...');
-}, 1000);
+// Decide whether to run immediately
+const shouldRunOnStartup = isFirstStartup() || !hasRunToday();
+
+if (shouldRunOnStartup) {
+  log('Initial run: Starting article generation on startup...');
+  // Use setTimeout to allow logs to initialize first
+  setTimeout(() => {
+    // Use force flag for first run to ensure it happens
+    runArticleGenerator(true);
+    markInitialStartupComplete();
+    log('Initial article generation completed, setting up scheduled job...');
+  }, 1000);
+} else {
+  log('Article generation already ran today or this is not the first startup, skipping initial run');
+}
 
 // Create a cron job that runs daily at 8:00 AM
 // Cron format: Seconds Minutes Hours DayOfMonth Month DayOfWeek
