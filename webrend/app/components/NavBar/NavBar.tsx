@@ -69,7 +69,7 @@ export default function NavBar() {
         <div className="top-navbar">
           <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
             <Image 
-              src="/logo/logo.png" 
+              src="/logo/logo_black.png" 
               alt="WebRend Logo" 
               width={40} 
               height={40} 
@@ -118,17 +118,6 @@ export default function NavBar() {
       {/* Bottom Navbar */}
       <div className="navbar-container">
         <div className="navbar">
-          <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
-            <Image 
-              src="/logo/logo.png" 
-              alt="WebRend Logo" 
-              width={35} 
-              height={35} 
-              className="navbar-logo"
-              priority
-            />
-          </Link>
-          
           <div className="navbar-menu">
             <Link 
               href="/marketplace" 
@@ -136,45 +125,64 @@ export default function NavBar() {
             >
               Marketplace
             </Link>
-            
-            {!loading && (
+          </div>
+        </div>
+      </div>
+
+      {/* Logo Island */}
+      <div className="logo-island-container">
+        <div className="logo-island">
+          <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
+            <Image 
+              src="/logo/logo_black.png" 
+              alt="WebRend Logo" 
+              width={35} 
+              height={35} 
+              className="navbar-logo"
+              priority
+            />
+          </Link>
+        </div>
+      </div>
+
+      {/* Auth Island */}
+      {!loading && (
+        <div className="auth-island-container">
+          <div className="auth-island">
+            {user ? (
               <>
-                {user ? (
-                  <div className="user-section">
-                    <Link 
-                      href="/profile" 
-                      className={`nav-button profile-button ${pathname === '/profile' ? 'active' : ''}`}
-                    >
-                      Profile
-                    </Link>
-                    <button
-                      onClick={handleSignOut}
-                      className="nav-button signout-button"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <Link
-                      href="/auth?mode=signin"
-                      className={`nav-button login-button ${pathname === '/auth' && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'signin' ? 'active' : ''}`}
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      href="/auth?mode=signup"
-                      className={`nav-button signup-button ${pathname === '/auth' && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'signup' ? 'active' : ''}`}
-                    >
-                      Sign Up
-                    </Link>
-                  </>
-                )}
+                <Link 
+                  href="/profile" 
+                  className={`nav-button profile-button ${pathname === '/profile' ? 'active' : ''}`}
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="nav-button signout-button"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth?mode=signin"
+                  className={`nav-button login-button ${pathname === '/auth' && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'signin' ? 'active' : ''}`}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/auth?mode=signup"
+                  className={`nav-button signup-button ${pathname === '/auth' && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'signup' ? 'active' : ''}`}
+                >
+                  Sign Up
+                </Link>
               </>
             )}
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 } 
