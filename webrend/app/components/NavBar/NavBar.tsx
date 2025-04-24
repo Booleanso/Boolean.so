@@ -90,7 +90,7 @@ export default function NavBar() {
               href="/blog" 
               className={`nav-button portfolio-button ${pathname === '/blog' ? 'active' : ''}`}
             >
-              Blog
+              AI Blog
             </Link>
             
             <div className="search-container">

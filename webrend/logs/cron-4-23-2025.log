@@ -108,3 +108,19 @@
 [2025-04-24T01:50:52.880Z] Article generation completed successfully
 [2025-04-24T01:50:52.882Z] Initial startup complete - marked with flag file
 [2025-04-24T01:50:52.882Z] Initial article generation completed, setting up scheduled job...
+[2025-04-24T02:51:45.146Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-24T02:54:12.796Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-24T02:54:12.805Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-24T02:54:12.805Z] Keep this process running to maintain the schedule.
+[2025-04-24T02:54:12.805Z] Press Ctrl+C to stop.
+[2025-04-24T03:39:28.077Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-24T03:39:30.893Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-24T03:39:30.904Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-24T03:39:30.904Z] Keep this process running to maintain the schedule.
+[2025-04-24T03:39:30.904Z] Press Ctrl+C to stop.
+[2025-04-24T03:57:09.036Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-24T03:58:05.284Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-24T03:58:05.295Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-24T03:58:05.295Z] Keep this process running to maintain the schedule.
+[2025-04-24T03:58:05.295Z] Press Ctrl+C to stop.
+[2025-04-24T03:58:58.901Z] Received SIGINT signal. Shutting down cron job...

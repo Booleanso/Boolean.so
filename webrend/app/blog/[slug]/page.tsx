@@ -56,7 +56,7 @@ export async function generateMetadata(
       : article.publishedAt.toDate();
     
     return {
-      title: `${article.title} - WebRend Blog`,
+      title: `${article.title} - WebRend's AI Blog`,
       description: article.description,
       keywords: [article.category, 'web development', 'webrend', 'tech news', article.title.split(' ').join(', ')],
       openGraph: {

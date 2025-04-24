@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { Metadata } from 'next';
-import styles from './page.module.css';
 import { db } from '../lib/firebase-admin';
+import BlogPageClient from './components/BlogPageClient';
 
 // Define SEO metadata for the blog index page
 export const metadata: Metadata = {
@@ -150,6 +149,11 @@ function getDefaultArticles(): Article[] {
 export default async function BlogPage() {
   const articles = await getArticles();
 
+  // Extract unique categories from articles for the categories bar
+  const uniqueCategories = Array.from(
+    new Set(articles.map(article => article.category))
+  );
+
   // Generate structured data for the blog page
   const structuredData = {
     '@context': 'https://schema.org',
@@ -191,52 +195,8 @@ export default async function BlogPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <main className={styles.container}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>WebRend Blog</h1>
-          <p className={styles.subtitle}>
-            Insights, tips, and inspiration for web developers and designers
-          </p>
-        </div>
-
-        {articles.length > 0 ? (
-          <div className={styles.bentoGrid}>
-            {articles.map((article, index) => (
-              <Link 
-                href={`/blog/${article.slug || article.id}`} 
-                key={article.id} 
-                className={`
-                  ${styles.bentoItem} 
-                  ${index === 0 ? styles.bentoItemFeatured : ''}
-                  ${index === 1 ? styles.bentoItemWide : ''}
-                  ${index === 2 ? styles.bentoItemTall : ''}
-                `}
-              >
-                <div 
-                  className={styles.articleImage}
-                  style={{ backgroundImage: article.imageUrl ? `url(${article.imageUrl})` : 'none' }}
-                >
-                  <div className={styles.category}>{article.category}</div>
-                </div>
-                <div className={styles.articleContent}>
-                  <h2 className={styles.articleTitle}>{article.title}</h2>
-                  <p className={styles.articleDescription}>{article.description}</p>
-                  <div className={styles.articleMeta}>
-                    <span>{article.publishedAt instanceof Date 
-                      ? article.publishedAt.toLocaleDateString() 
-                      : new Date(article.publishedAt).toLocaleDateString()}</span>
-                    <span>{article.readTime} min read</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className={styles.emptyState}>
-            <h2>No articles available</h2>
-            <p>There are currently no blog articles to display.</p>
-          </div>
-        )}
+      <main className="w-full min-h-screen bg-[#f5f5f7] p-0 m-0">
+        <BlogPageClient articles={articles} uniqueCategories={uniqueCategories} />
       </main>
     </>
   );
