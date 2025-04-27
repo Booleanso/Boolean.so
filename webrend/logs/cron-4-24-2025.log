@@ -38,3 +38,4 @@
 [2025-04-24T17:07:03.135Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
 [2025-04-24T17:07:03.135Z] Keep this process running to maintain the schedule.
 [2025-04-24T17:07:03.135Z] Press Ctrl+C to stop.
+[2025-04-24T17:08:09.717Z] Received SIGINT signal. Shutting down cron job...
