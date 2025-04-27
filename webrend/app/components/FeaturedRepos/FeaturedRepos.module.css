@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  padding: 4rem 4rem 6rem;
+  padding: 2.5rem 4rem 5rem;
   background-color: #ffffff; /* Changed to white background */
   color: #1d1d1f; /* Changed to dark text for light background */
   overflow: hidden;
@@ -19,11 +19,11 @@
 }
 
 .sectionHeader {
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
   max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
-  text-align: center;
+  text-align: left;
   padding-bottom: 0; /* Remove padding from original design */
   border-bottom: none; /* Remove border from original design */
 }
@@ -33,10 +33,10 @@
 }
 
 .sectionHeader h2 {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 600;
   letter-spacing: -0.02em;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
   line-height: 1.1;
   color: #1d1d1f; /* Changed to dark text */
   background: linear-gradient(90deg, #1d1d1f, #6e6e73); /* Changed gradient to dark */
@@ -44,6 +44,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   display: inline-block;
+  max-width: 800px; /* Added max-width for better readability */
 }
 
 :global(.dark-theme) .sectionHeader h2 {
@@ -63,11 +64,11 @@
 }
 
 .featuredRepoIntro {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: #6e6e73; /* Changed to darker secondary text */
   max-width: 700px;
-  line-height: 1.6;
-  margin: 0 auto;
+  line-height: 1.5;
+  margin: 0;
   font-weight: 400;
 }
 
@@ -156,8 +157,8 @@
 .repoGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2.5rem;
-  margin-top: 3rem;
+  gap: 2rem;
+  margin-top: 2.5rem;
   max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
@@ -198,9 +199,9 @@
 .repoImageWrapper {
   position: relative;
   width: 100%;
-  height: 220px;
+  height: 180px;
   overflow: hidden;
-  margin-bottom: 0; /* Remove margin that was in original */
+  margin-bottom: 0;
 }
 
 .overlay {
@@ -225,13 +226,13 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 1.5rem;
+  padding: 1.2rem;
 }
 
 .repoName {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   letter-spacing: -0.02em;
   color: #1d1d1f;
 }
@@ -251,10 +252,10 @@
 }
 
 .repoDescription {
-  color: #6e6e73; /* Changed to darker secondary text */
-  margin-bottom: 2rem;
-  font-size: 0.95rem;
-  line-height: 1.6;
+  color: #6e6e73;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
   flex: 1;
 }
 
@@ -335,39 +336,43 @@
 
 .viewAllContainer {
   display: flex;
-  justify-content: center;
-  margin-top: 3.5rem;
+  justify-content: flex-start;
+  margin-top: 2.5rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .viewAllButton {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  background-color: #0071e3; /* Changed to Apple's blue for light mode */
+  gap: 0.5rem;
+  background-color: #000000;
   color: white;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
-  padding: 0.8rem 1.5rem;
+  padding: 0.7rem 1.3rem;
   border-radius: 30px;
   text-decoration: none;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 10px rgba(0, 113, 227, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 :global(.dark-theme) .viewAllButton {
-  background-color: #2997ff;
-  box-shadow: 0 4px 10px rgba(41, 151, 255, 0.3);
+  background-color: #f5f5f7;
+  color: #000000;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
 }
 
 .viewAllButton:hover {
-  background-color: #0080ff;
+  background-color: #1d1d1f;
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 113, 227, 0.4);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 :global(.dark-theme) .viewAllButton:hover {
-  background-color: #3ba3ff;
-  box-shadow: 0 6px 15px rgba(41, 151, 255, 0.4);
+  background-color: #ffffff;
+  box-shadow: 0 6px 15px rgba(255, 255, 255, 0.15);
 }
 
 .viewAllButton svg {
@@ -391,7 +396,7 @@
   }
   
   .sectionHeader h2 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
   }
   
   .featuredRepoIntro {
@@ -399,7 +404,7 @@
   }
   
   .featuredSection {
-    padding: 3rem 2rem 4rem;
+    padding: 2rem 1.5rem 3rem;
   }
 }
 

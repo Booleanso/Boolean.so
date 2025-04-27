@@ -1,189 +1,325 @@
 .videoSection {
   width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 4rem 4rem;
-  background-color: #f9f9f9;
-  color: #000;
+  padding: 8rem 2rem;
+  background-color: #ffffff;
+  color: #1d1d1f;
+  overflow: hidden;
 }
 
 .container {
   max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .sectionHeader {
-  margin-bottom: 4rem;
-  border-bottom: 1px solid #eaeaea;
-  padding-bottom: 2rem;
+  text-align: center;
+  margin-bottom: 5rem;
+  width: 100%;
+  max-width: 800px;
 }
 
-.sectionHeader h2 {
-  font-size: 3rem;
-  font-weight: 400;
-  letter-spacing: -0.05em;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-  color: #000;
+.heading {
+  font-size: 4rem;
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  color: #1d1d1f;
+  letter-spacing: -0.02em;
+}
+
+.headingHighlight {
+  color: #1d1d1f;
+  background: linear-gradient(90deg, #1d1d1f, #6e6e73);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .sectionIntro {
-  font-size: 1.2rem;
-  color: #333;
-  max-width: 600px;
-  line-height: 1.6;
-}
-
-.contentContainer {
-  display: flex;
-  align-items: center;
-  gap: 4rem;
-}
-
-.textContent {
-  flex: 1;
-  padding-right: 2rem;
-}
-
-.textContent h3 {
-  font-size: 2.2rem;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: #6e6e73;
+  margin: 0 auto;
   font-weight: 400;
-  letter-spacing: -0.03em;
-  margin-bottom: 1.5rem;
-  color: #000;
 }
 
-.textContent p {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #333;
-  margin-bottom: 2rem;
-}
-
-.featuresList {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 2.5rem 0;
-}
-
-.featuresList li {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-  font-size: 1.05rem;
-  color: #333;
-}
-
-.featureIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 1rem;
-  color: #0066ff;
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-
-.ctaButton {
-  display: inline-block;
-  background-color: #0066ff;
-  color: white;
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  border-radius: 30px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  border: none;
-}
-
-.ctaButton:hover {
-  background-color: #0055cc;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 102, 255, 0.2);
+.videoContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 6rem;
+  position: relative;
 }
 
 .videoWrapper {
-  flex: 1;
-  min-width: 50%;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  position: relative;
+  width: 100%;
+  border-radius: 24px;
   overflow: hidden;
-  transition: transform 0.3s ease;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .videoWrapper:hover {
-  transform: translateY(-8px);
+  transform: translateY(-10px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.18);
 }
 
 .video {
   width: 100%;
   display: block;
-  border-radius: 8px;
-  object-fit: cover;
   aspect-ratio: 16/9;
+  object-fit: cover;
 }
 
-/* Media queries for responsive design */
-@media (max-width: 1024px) {
-  .contentContainer {
-    gap: 3rem;
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #1d1d1f;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.playButton svg {
+  width: 28px;
+  height: 28px;
+  margin-left: 5px;
+}
+
+.playButton:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  background-color: #ffffff;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 5rem;
+}
+
+.featureItem {
+  background-color: #f5f5f7;
+  border-radius: 20px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.featureItem:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.featureIcon {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1;
+}
+
+.featureTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1d1d1f;
+}
+
+.featureDescription {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #6e6e73;
+}
+
+.ctaContainer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #000000;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ctaButton:hover {
+  background-color: #1d1d1f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ctaButton svg {
+  transition: transform 0.2s ease;
+}
+
+.ctaButton:hover svg {
+  transform: translateX(3px);
+}
+
+/* Dark mode styles */
+:global(.dark-theme) .videoSection {
+  background-color: #000;
+  color: #f5f5f7;
+}
+
+:global(.dark-theme) .heading {
+  color: #f5f5f7;
+}
+
+:global(.dark-theme) .headingHighlight {
+  background: linear-gradient(90deg, #f5f5f7, #a1a1a6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:global(.dark-theme) .sectionIntro {
+  color: #a1a1a6;
+}
+
+:global(.dark-theme) .featureItem {
+  background-color: #1c1c1e;
+}
+
+:global(.dark-theme) .featureTitle {
+  color: #f5f5f7;
+}
+
+:global(.dark-theme) .featureDescription {
+  color: #a1a1a6;
+}
+
+:global(.dark-theme) .playButton {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+}
+
+:global(.dark-theme) .playButton:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+:global(.dark-theme) .ctaButton {
+  background-color: #f5f5f7;
+  color: #000000;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark-theme) .ctaButton:hover {
+  background-color: #ffffff;
+  box-shadow: 0 6px 12px rgba(255, 255, 255, 0.15);
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+  .heading {
+    font-size: 3.5rem;
   }
   
-  .sectionHeader h2 {
-    font-size: 2.5rem;
+  .sectionIntro {
+    font-size: 1.3rem;
   }
   
-  .textContent h3 {
-    font-size: 2rem;
+  .videoContainer {
+    max-width: 900px;
+  }
+  
+  .featuresGrid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 900px;
+    gap: 2rem;
   }
 }
 
 @media (max-width: 768px) {
   .videoSection {
-    padding: 3rem 2rem;
+    padding: 6rem 1.5rem;
   }
   
-  .contentContainer {
-    flex-direction: column;
-    gap: 2rem;
-  }
-  
-  .textContent {
-    padding-right: 0;
-    order: 2;
-  }
-  
-  .videoWrapper {
-    order: 1;
-    width: 100%;
-  }
-  
-  .sectionHeader h2 {
-    font-size: 2.2rem;
+  .heading {
+    font-size: 3rem;
   }
   
   .sectionIntro {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+  }
+  
+  .sectionHeader {
+    margin-bottom: 3rem;
+  }
+  
+  .videoContainer {
+    margin-bottom: 4rem;
+  }
+  
+  .playButton {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .playButton svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
   }
 }
 
 @media (max-width: 480px) {
   .videoSection {
-    padding: 2rem 1.5rem;
+    padding: 4rem 1.5rem;
   }
   
-  .sectionHeader {
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
+  .heading {
+    font-size: 2.5rem;
   }
   
-  .sectionHeader h2 {
-    font-size: 1.8rem;
+  .sectionIntro {
+    font-size: 1.1rem;
   }
   
-  .textContent h3 {
-    font-size: 1.6rem;
+  .featureItem {
+    padding: 2rem;
+  }
+  
+  .ctaButton {
+    font-size: 1rem;
+    padding: 0.9rem 1.8rem;
   }
 } 

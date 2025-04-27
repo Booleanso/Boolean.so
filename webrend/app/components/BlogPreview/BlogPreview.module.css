@@ -3,7 +3,7 @@
   max-width: 100%;
   margin: 0 auto;
   padding: 4rem 4rem 6rem;
-  background-color: #f5f5f7; /* Apple's light gray background */
+  background-color: #ffffff; /* Changed from light gray to white */
   color: #1d1d1f; /* Apple's dark text */
   overflow: hidden;
 }

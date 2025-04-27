@@ -1,8 +1,8 @@
 .servicesSection {
   width: 100%;
   padding: 7rem 2rem 12rem; /* Increased bottom padding again */
-  background-color: #000; /* Match FeaturedRepos background */
-  color: #f5f5f7; /* Match FeaturedRepos text color */
+  background-color: #ffffff; /* Changed from black to white */
+  color: #1d1d1f; /* Changed text color for better contrast */
   overflow: hidden; /* Hide overflow for cleaner look, adjust if needed */
   position: relative; /* Needed for absolute positioning of cards */
 }
@@ -20,8 +20,8 @@
   letter-spacing: -0.02em;
   margin-bottom: 1.5rem;
   line-height: 1.1;
-  color: #f5f5f7;
-  background: linear-gradient(90deg, #f5f5f7, #a1a1a6);
+  color: #1d1d1f; /* Changed from white to dark */
+  background: linear-gradient(90deg, #1d1d1f, #6e6e73); /* Updated gradient for light background */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -30,7 +30,7 @@
 
 .description {
   font-size: 1.3rem;
-  color: #a1a1a6;
+  color: #6e6e73; /* Changed from light gray to darker gray for white background */
   line-height: 1.6;
   margin: 0 auto;
   font-weight: 400;
@@ -152,8 +152,7 @@
   transform: translateX(3px);
 }
 
-/* Dark mode styles remain largely the same for the section, 
-   but cards need adjusting if theme toggle affects them */
+/* Dark mode styles updated for white background in light mode */
 :global(.dark-theme) .servicesSection {
   background-color: #000;
   color: #f5f5f7;

@@ -65,9 +65,9 @@ export default function FeaturedRepos() {
   return (
     <section className={styles.featuredSection}>
       <div className={styles.sectionHeader}>
-        <h2>Featured GitHub Repositories</h2>
+        <h2>Premium GitHub<br />Repositories</h2>
         <p className={styles.featuredRepoIntro}>
-          Powerful, high-quality code ready for your next project
+          Discover high-quality code ready to use in your next project. Our marketplace offers the best GitHub repositories from top developers worldwide.
         </p>
       </div>
       
