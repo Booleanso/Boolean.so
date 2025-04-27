@@ -7,6 +7,7 @@ import FeaturedRepos from "./components/FeaturedRepos/FeaturedRepos";
 import ServicesSection from "./components/ServicesSection/ServicesSection";
 import BlogPreview from "./components/BlogPreview/BlogPreview";
 import MarketplaceShowcase from "./components/MarketplaceShowcase/MarketplaceShowcase";
+import MarketplaceFeatures from "./components/MarketplaceFeatures/MarketplaceFeatures";
 import ServicesCardsSection from "./components/ServicesCardsSection/ServicesCardsSection";
 import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
 import Footer from "./components/Footer/Footer";
@@ -17,6 +18,7 @@ export default function Home() {
       <main className={styles.main}>
         <HeroSection />
         <MarketplaceShowcase />
+        <MarketplaceFeatures />
         <FeaturedRepos />
         <ServicesCardsSection />
         <PortfolioPreview />

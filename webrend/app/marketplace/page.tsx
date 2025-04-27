@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './marketplace.module.scss';
@@ -9,11 +10,21 @@ import styles from './marketplace.module.scss';
 import { MarketplaceListing } from '../api/marketplace/list-repo/route';
 
 export default function Marketplace() {
-  const [activeFilter, setActiveFilter] = useState('all');
+  const searchParams = useSearchParams();
+  const filterParam = searchParams.get('filter');
+  
+  const [activeFilter, setActiveFilter] = useState(filterParam || 'all');
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [includeSold, setIncludeSold] = useState(false);
+
+  // Set the active filter based on URL parameter when component mounts
+  useEffect(() => {
+    if (filterParam && ['all', 'onetime', 'subscription'].includes(filterParam)) {
+      setActiveFilter(filterParam);
+    }
+  }, [filterParam]);
 
   // Fetch listings when component mounts
   useEffect(() => {
