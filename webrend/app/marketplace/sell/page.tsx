@@ -12,6 +12,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './sell.module.scss';
 import { MarketplaceListing } from '../../api/marketplace/list-repo/route';
+import { generateSlug } from '../../lib/utils';
 
 type RepositoryInfo = {
   id: number;
@@ -250,6 +251,9 @@ export default function SellPage() {
       setLoading(true);
       setError(null);
       
+      // Generate slug from repository name
+      const slug = generateSlug(repoInfo.name);
+      
       // Different flow for editing vs creating new listing
       if (isEditing && existingListing) {
         // Update existing listing using our Firestore access API
@@ -278,7 +282,8 @@ export default function SellPage() {
               lastUpdated: new Date().toISOString().split('T')[0],
               stripeProductId: existingListing.stripeProductId,
               stripePriceId: existingListing.stripePriceId,
-              sold: existingListing.sold
+              sold: existingListing.sold,
+              slug: slug
             }
           })
         });
@@ -316,7 +321,8 @@ export default function SellPage() {
             username: sellerUsername,
             avatarUrl: sellerAvatarUrl
           },
-          imageUrl
+          imageUrl,
+          slug
         })
       });
       
@@ -356,7 +362,8 @@ export default function SellPage() {
             // Store repository details for easier access
             repoId: repoInfo.id.toString(),
             language: repoInfo.language || 'Unknown',
-            githubUrl: repoInfo.html_url || `https://github.com/${repoInfo.owner.login}/${repoInfo.name}`
+            githubUrl: repoInfo.html_url || `https://github.com/${repoInfo.owner.login}/${repoInfo.name}`,
+            slug: slug
           }
         })
       });

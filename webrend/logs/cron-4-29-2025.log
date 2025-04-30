@@ -1,0 +1,79 @@
+[2025-04-30T01:01:00.191Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:01:09.327Z] Initial run: Starting article generation on startup...
+[2025-04-30T01:01:09.337Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:01:09.337Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:01:09.337Z] Press Ctrl+C to stop.
+[2025-04-30T01:01:10.333Z] Starting scheduled article generation...
+[2025-04-30T01:01:38.967Z] Article generation completed successfully
+[2025-04-30T01:01:38.968Z] Initial startup complete - marked with flag file
+[2025-04-30T01:01:38.968Z] Initial article generation completed, setting up scheduled job...
+[2025-04-30T01:02:39.505Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:02:43.113Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:02:43.121Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:02:43.121Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:02:43.121Z] Press Ctrl+C to stop.
+[2025-04-30T01:03:39.434Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:03:44.783Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:03:44.791Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:03:44.791Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:03:44.791Z] Press Ctrl+C to stop.
+[2025-04-30T01:04:58.034Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:06:44.386Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:06:44.395Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:06:44.395Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:06:44.396Z] Press Ctrl+C to stop.
+[2025-04-30T01:15:24.783Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:15:27.366Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:15:27.376Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:15:27.376Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:15:27.376Z] Press Ctrl+C to stop.
+[2025-04-30T01:21:10.607Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:21:13.163Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:21:13.174Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:21:13.174Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:21:13.174Z] Press Ctrl+C to stop.
+[2025-04-30T01:32:07.474Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:34:00.956Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:34:00.966Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:34:00.966Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:34:00.966Z] Press Ctrl+C to stop.
+[2025-04-30T01:41:05.510Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:41:08.242Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:41:08.252Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:41:08.252Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:41:08.253Z] Press Ctrl+C to stop.
+[2025-04-30T01:51:47.533Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:51:52.485Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:51:52.493Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:51:52.493Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:51:52.494Z] Press Ctrl+C to stop.
+[2025-04-30T01:54:36.524Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:54:39.438Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:54:39.447Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:54:39.448Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:54:39.448Z] Press Ctrl+C to stop.
+[2025-04-30T01:56:05.076Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:56:07.304Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:56:07.314Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:56:07.314Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:56:07.315Z] Press Ctrl+C to stop.
+[2025-04-30T01:57:55.003Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T01:57:57.634Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T01:57:57.642Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T01:57:57.642Z] Keep this process running to maintain the schedule.
+[2025-04-30T01:57:57.643Z] Press Ctrl+C to stop.
+[2025-04-30T02:02:16.088Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T02:03:03.394Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T02:03:03.403Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T02:03:03.403Z] Keep this process running to maintain the schedule.
+[2025-04-30T02:03:03.403Z] Press Ctrl+C to stop.
+[2025-04-30T02:04:28.219Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T02:06:14.761Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T02:06:14.770Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T02:06:14.770Z] Keep this process running to maintain the schedule.
+[2025-04-30T02:06:14.770Z] Press Ctrl+C to stop.
+[2025-04-30T02:10:54.086Z] Received SIGINT signal. Shutting down cron job...
+[2025-04-30T02:10:57.510Z] Article generation already ran today or this is not the first startup, skipping initial run
+[2025-04-30T02:10:57.520Z] Cron job started. Will run daily at 8:00 AM Pacific Time.
+[2025-04-30T02:10:57.521Z] Keep this process running to maintain the schedule.
+[2025-04-30T02:10:57.521Z] Press Ctrl+C to stop.

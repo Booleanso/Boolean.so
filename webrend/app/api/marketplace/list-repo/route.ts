@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { db } from '../../../lib/firebase-admin';
+import { generateSlug } from '../../../lib/utils';
 
 // Define types for our marketplace listings
 export type MarketplaceListing = {
@@ -29,6 +30,7 @@ export type MarketplaceListing = {
   language?: string;
   createdAt?: string;
   updatedAt?: string;
+  slug: string; // Add slug for SEO-friendly URLs
 };
 
 export async function POST(request: Request) {
@@ -40,6 +42,9 @@ export async function POST(request: Request) {
     const lastId = listingsSnapshot.empty ? 0 : listingsSnapshot.docs[0].data().id || 0;
     const newId = lastId + 1;
     
+    // Generate slug if not provided
+    const slug = listing.slug || generateSlug(listing.name);
+    
     // Create the new listing
     const newListing: MarketplaceListing = {
       ...listing,
@@ -47,7 +52,8 @@ export async function POST(request: Request) {
       lastUpdated: new Date().toISOString().split('T')[0], // YYYY-MM-DD
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      sold: false
+      sold: false,
+      slug
     };
     
     // Add it to Firestore

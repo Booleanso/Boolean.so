@@ -3,35 +3,57 @@ import { db } from '../../../../lib/firebase-admin';
 import { withAuth } from '../../../../utils/stripe-utils';
 import Stripe from 'stripe';
 
+// Define interface for listing data
+interface ListingData {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  isSubscription: boolean;
+  subscriptionPrice?: number;
+  imageUrl: string;
+  sold: boolean;
+  seller: {
+    username: string;
+    avatarUrl: string;
+  };
+}
+
 // Initialize Stripe with your platform account's secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2022-11-15', // Use a compatible API version
+  apiVersion: '2025-02-24.acacia', // Updated to latest version
 });
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { slug: string } }
 ) {
+  // Await params before accessing properties
+  const params = await context.params;
+  
   return withAuth(req, async (userId, data) => {
     try {
-      const listingId = parseInt(params.id);
+      // Use slug instead of id to match the route parameter
+      const slug = params.slug;
       
-      if (isNaN(listingId)) {
-        return NextResponse.json({ error: 'Invalid listing ID' }, { status: 400 });
+      if (!slug) {
+        return NextResponse.json({ error: 'Invalid listing slug' }, { status: 400 });
       }
       
-      // Fetch the listing details
-      const listingsPath = `${process.cwd()}/data/marketplace-listings.json`;
-      const fs = require('fs');
-      const listingsData = JSON.parse(fs.readFileSync(listingsPath, 'utf8'));
+      // Fetch the listing by slug from Firestore instead of JSON file
+      const listingQuery = await db.collection('listings').where('slug', '==', slug).limit(1).get();
       
-      const listing = listingsData.find((item: any) => item.id === listingId);
-      
-      if (!listing) {
+      if (listingQuery.empty) {
         return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
       }
       
-      if (listing.isSold) {
+      const listingDoc = listingQuery.docs[0];
+      const listing = {
+        ...listingDoc.data(),
+        id: listingDoc.id
+      } as ListingData;
+      
+      if (listing.sold) {
         return NextResponse.json({ error: 'This listing has already been sold' }, { status: 400 });
       }
       
@@ -63,7 +85,7 @@ export async function POST(
         : 5;
       
       const price = listing.isSubscription 
-        ? listing.subscriptionPrice * 100 // Stripe uses cents
+        ? listing.subscriptionPrice! * 100 // Stripe uses cents
         : listing.price * 100;
       
       const platformFee = Math.round(price * (platformFeePercent / 100));
@@ -88,7 +110,7 @@ export async function POST(
         ],
         mode: listing.isSubscription ? 'subscription' : 'payment',
         success_url: `${process.env.NEXT_PUBLIC_URL}/marketplace/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_URL}/marketplace/buy/${listingId}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_URL}/marketplace/buy/${slug}`,
         payment_intent_data: listing.isSubscription ? undefined : {
           application_fee_amount: platformFee,
           transfer_data: {

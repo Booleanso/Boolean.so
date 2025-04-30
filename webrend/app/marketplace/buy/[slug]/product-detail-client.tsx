@@ -4,34 +4,30 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import styles from './buy.module.scss';
-import { auth } from '../../../lib/firebase-client';
+import styles from '../buy.module.scss';
+import { auth } from '@/app/lib/firebase-client';
 import { onAuthStateChanged } from 'firebase/auth';
-import { MarketplaceListing } from '../../../api/marketplace/list-repo/route';
-import { use } from 'react';
+import { MarketplaceListing } from '@/app/api/marketplace/list-repo/route';
 
-// Define the proper params interface
-interface BuyPageProps {
-  params: Promise<{
-    id: string;
-  }>;
+// Update the type to include slug
+interface ExtendedMarketplaceListing extends MarketplaceListing {
+  slug: string;
+  docId: string;
 }
 
-export default function BuyPage({ params }: BuyPageProps) {
+interface BuyPageClientProps {
+  initialListing: ExtendedMarketplaceListing;
+}
+
+export default function ProductDetailClient({ initialListing }: BuyPageClientProps) {
   const router = useRouter();
-  const [listing, setListing] = useState<MarketplaceListing | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [listing, setListing] = useState<ExtendedMarketplaceListing>(initialListing);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [showGithubTransferInfo, setShowGithubTransferInfo] = useState(false);
   
-  // Properly unwrap the params Promise with React.use()
-  const unwrappedParams = use(params);
-  const repoId = unwrappedParams.id;
-
   // Check if user is authenticated
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -41,84 +37,11 @@ export default function BuyPage({ params }: BuyPageProps) {
     return () => unsubscribe();
   }, []);
 
-  // Fetch the repository details
-  useEffect(() => {
-    const fetchListing = async () => {
-      if (!repoId) return;
-      
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // First, try to fetch using the ID as the document ID directly
-        const response = await fetch('/api/marketplace/firestore-access', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            operation: 'get',
-            collection: 'listings',
-            documentId: repoId
-          }),
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch repository details. Status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.document) {
-          setListing(data.document);
-        } else {
-          // If not found, try querying by the internal id field
-          const queryResponse = await fetch('/api/marketplace/firestore-access', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              operation: 'query',
-              collection: 'listings',
-              data: {
-                field: 'id',
-                operator: '==',
-                value: parseInt(repoId) || repoId
-              }
-            }),
-          });
-          
-          if (!queryResponse.ok) {
-            throw new Error(`Failed to query repository details. Status: ${queryResponse.status}`);
-          }
-          
-          const queryData = await queryResponse.json();
-          
-          if (queryData.success && queryData.documents && queryData.documents.length > 0) {
-            setListing(queryData.documents[0]);
-          } else {
-            setError('Repository not found');
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching repository details:', err);
-        setError('Failed to load repository details');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchListing();
-  }, [repoId]);
-
   const handlePurchase = async () => {
     if (!isAuthenticated) {
-      router.push('/auth/login?redirect=' + encodeURIComponent(`/marketplace/buy/${repoId}`));
+      router.push('/auth/login?redirect=' + encodeURIComponent(`/marketplace/buy/${listing.slug}`));
       return;
     }
-    
-    if (!listing) return;
     
     try {
       setPurchaseLoading(true);
@@ -131,10 +54,12 @@ export default function BuyPage({ params }: BuyPageProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          listingId: listing.id,
-          priceId: listing.stripePriceId, // Use the stored Stripe Price ID
+          listingId: listing.repoId || listing.id, // Use repoId as the primary identifier
+          priceId: listing.stripePriceId,
           isSubscription: listing.isSubscription,
-          documentId: listing.docId || repoId // Use docId if available, otherwise fall back to repoId
+          documentId: listing.docId,
+          slug: listing.slug, // Include slug for better tracking
+          name: listing.name // Include name for better identification
         }),
       });
       
@@ -189,7 +114,7 @@ export default function BuyPage({ params }: BuyPageProps) {
         body: JSON.stringify({
           listingId: listing.id,
           purchaseType: listing.isSubscription ? 'subscription' : 'purchase',
-          documentId: listing.docId || repoId // Use docId if available, otherwise fall back to repoId
+          documentId: listing.docId
         }),
       });
       
@@ -234,7 +159,7 @@ export default function BuyPage({ params }: BuyPageProps) {
         body: JSON.stringify({
           operation: 'update',
           collection: 'listings',
-          documentId: listing.docId || String(listing.id),
+          documentId: listing.docId,
           data: {
             sold: true,
             updatedAt: new Date().toISOString()
@@ -250,36 +175,6 @@ export default function BuyPage({ params }: BuyPageProps) {
       setPurchaseLoading(false);
     }
   };
-  
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loading}>Loading repository details...</div>
-      </div>
-    );
-  }
-  
-  if (error) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.error}>{error}</div>
-        <Link href="/marketplace" className={styles.backButton}>
-          Return to Marketplace
-        </Link>
-      </div>
-    );
-  }
-  
-  if (!listing) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.error}>Repository not found</div>
-        <Link href="/marketplace" className={styles.backButton}>
-          Return to Marketplace
-        </Link>
-      </div>
-    );
-  }
   
   if (purchaseSuccess) {
     return (

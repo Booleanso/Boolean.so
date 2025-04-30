@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     }
 
     // Parse the request body
-    const { listingId, priceId, isSubscription, documentId } = await request.json();
+    const { listingId, priceId, isSubscription, documentId, slug, name } = await request.json();
     
     if (!listingId || !priceId) {
       return NextResponse.json(
@@ -71,16 +71,12 @@ export async function POST(request: Request) {
       apiVersion: '2025-02-24.acacia',
     });
     
-    // For demo purposes, we'll create a basic checkout session without Connect features
-    // In a real application with Stripe Connect:
-    // 1. You would retrieve the seller's Stripe account ID from your database
-    // 2. Set up proper transfer_data with the actual account ID
-    
+    // Generate success and cancel URLs
     const success_url = new URL('/marketplace/buy/success?session_id={CHECKOUT_SESSION_ID}', request.url).toString();
-    const cancel_url = new URL(`/marketplace/buy/${listingId}`, request.url).toString();
+    // Use slug in the cancel URL if available for better UX
+    const cancel_url = new URL(`/marketplace/buy/${slug || listingId}`, request.url).toString();
     
-    // Create a Stripe checkout session
-    // For now, we're creating a direct charge without Connect to avoid the error
+    // Create a Stripe checkout session with improved metadata
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -95,7 +91,10 @@ export async function POST(request: Request) {
       metadata: {
         listingId: listingId.toString(),
         buyerId: userId,
-        documentId: documentId || listingId.toString(), // Add document ID for Firestore
+        documentId: documentId || listingId.toString(),
+        slug: slug || '',
+        repoName: name || '',
+        isSubscription: isSubscription ? 'true' : 'false'
       },
       // For demo purposes, we'll skip the application fee and transfer
       // In a real app, you would use this with proper Stripe Connect accounts

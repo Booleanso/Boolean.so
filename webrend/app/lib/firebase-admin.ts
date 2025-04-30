@@ -19,7 +19,15 @@ const firebaseAdminConfig = {
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET
 };
 
-const app = !getApps().length ? initializeApp(firebaseAdminConfig) : getApps()[0];
+/**
+ * Gets or initializes the Firebase Admin app
+ * @returns The Firebase Admin app instance
+ */
+export function getOrInitializeApp() {
+  return !getApps().length ? initializeApp(firebaseAdminConfig) : getApps()[0];
+}
+
+const app = getOrInitializeApp();
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
