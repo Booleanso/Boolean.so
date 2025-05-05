@@ -1,27 +1,28 @@
-// Variables - more neutral palette
-$primary-color: #333333; // Dark gray
-$secondary-color: #666666; // Medium gray
-$accent-color: #444444; // Slate gray
-$light-bg: #f8f8f8; // Very light gray
-$border-color: #e0e0e0; // Light gray
-$text-color: #222222; // Almost black
-$text-light: #666666; // Medium gray
-$radius: 6px; // Subtle border radius
-$card-shadow: 0 1px 3px rgba(0, 0, 0, 0.07); // Subtle shadow
-$transition: all 0.2s ease-in-out;
+// Variables - Apple-inspired design 
+$primary-color: #0071e3; // Apple blue
+$secondary-color: #86868b; // Apple secondary text
+$accent-color: #06c; // Apple accent blue
+$light-bg: #f5f5f7; // Apple light background
+$border-color: #d2d2d7; // Apple borders
+$text-color: #1d1d1f; // Apple dark text
+$text-light: #86868b; // Apple medium text
+$radius: 12px; // Increased rounded corners
+$card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); // Subtle shadow
+$card-hover-shadow: 0 4px 24px rgba(0, 0, 0, 0.12); // Hover shadow
+$transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1); // Smooth transitions
 
 // Dark mode variables
-$dark-primary-color: #333333;
-$dark-secondary-color: #666666;
-$dark-accent-color: #777777;
-$dark-bg: #000000;
-$dark-border-color: #222222;
-$dark-text-color: #ffffff;
-$dark-text-light: #cccccc;
-$dark-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-$dark-component-bg: #0a0a0a;
-$dark-input-bg: #151515;
-$dark-hover-bg: #1a1a1a;
+$dark-primary-color: #0a84ff; // Apple blue (dark mode)
+$dark-secondary-color: #98989d; // Apple secondary (dark mode)
+$dark-accent-color: #0a84ff; // Apple accent (dark mode)
+$dark-bg: #000000; // Pure black background
+$dark-border-color: #1d1d1f; // Dark mode borders
+$dark-text-color: #f5f5f7; // Light text color
+$dark-text-light: #98989d; // Medium gray text
+$dark-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+$dark-component-bg: #1c1c1e; // Apple card background (dark)
+$dark-input-bg: #1c1c1e; // Apple dark input
+$dark-hover-bg: #2c2c2e; // Apple hover (dark)
 
 // Theme toggle styles
 .themeToggle {
@@ -36,35 +37,33 @@ $dark-hover-bg: #1a1a1a;
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 18px;
-  border: 1px solid $border-color;
-  background-color: transparent;
+  border-radius: 50%;
+  border: none;
+  background-color: #e8e8ed;
   color: $text-color;
   cursor: pointer;
   transition: $transition;
   
   &:hover {
-    background-color: $light-bg;
+    background-color: darken(#e8e8ed, 5%);
   }
   
   &.activeTheme {
     background-color: $primary-color;
     color: white;
-    border-color: $primary-color;
   }
   
   // Apply dark mode styles when dark theme is active
   :global(.dark-theme) & {
-    border-color: $dark-border-color;
+    background-color: #323236;
     color: $dark-text-color;
     
     &:hover {
-      background-color: $dark-hover-bg;
+      background-color: lighten(#323236, 10%);
     }
     
     &.activeTheme {
       background-color: $dark-primary-color;
-      border-color: $dark-primary-color;
       color: white;
     }
   }
@@ -78,7 +77,8 @@ $dark-hover-bg: #1a1a1a;
   padding: 0;
   color: $text-color;
   background-color: white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  letter-spacing: -0.012em;
   
   // Dark mode styles
   :global(.dark-theme) & {
@@ -93,20 +93,22 @@ $dark-hover-bg: #1a1a1a;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0;
-  padding: 7rem 5% 2rem;
+  padding: 5rem 5% 2rem;
   background-color: white;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
   
   // Dark mode styles
   :global(.dark-theme) & {
     background-color: $dark-bg;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
   }
   
   h1 {
-    font-size: 38px;
-    font-weight: 500;
+    font-size: 40px;
+    font-weight: 600;
     color: $text-color;
     margin: 0;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
     line-height: 1.1;
     
     // Dark mode styles
@@ -142,17 +144,11 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .section {
-  margin-bottom: 2rem;
-  border-bottom: 1px solid $border-color;
-  
-  // Dark mode styles
-  :global(.dark-theme) & {
-    border-color: $dark-border-color;
-  }
+  margin-bottom: 3rem;
+  position: relative;
   
   &:last-child {
-    border-bottom: none;
-    margin-bottom: 4rem;
+    margin-bottom: 6rem;
   }
 }
 
@@ -160,23 +156,20 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 5% 1rem;
-  background-color: $light-bg;
-  border-top: 1px solid $border-color;
-  border-bottom: 1px solid $border-color;
+  padding: 2rem 5% 1.5rem;
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: $dark-component-bg;
     border-color: $dark-border-color;
   }
 }
 
 .sectionTitle {
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 600;
   margin: 0;
   color: $text-color;
+  letter-spacing: -0.025em;
   
   // Dark mode styles
   :global(.dark-theme) & {
@@ -195,7 +188,7 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
-  padding: 2rem 5%;
+  padding: 0 5% 2rem;
   
   @media (max-width: 992px) {
     flex-direction: column;
@@ -207,7 +200,17 @@ $dark-hover-bg: #1a1a1a;
   min-width: 300px;
   
   .accountInfo {
-    padding: 0;
+    padding: 2rem;
+    background-color: white;
+    border-radius: $radius;
+    box-shadow: $card-shadow;
+    border: 1px solid rgba(0,0,0,0.05);
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: $dark-component-bg;
+      border-color: rgba(255,255,255,0.05);
+    }
   }
 }
 
@@ -217,18 +220,9 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  
-  .sellReposButton {
-    padding: 1.5rem 0 0;
-    text-align: left;
-  }
 }
 
 // User info styling
-.accountInfo {
-  padding: 2rem 5%;
-}
-
 .userInfo {
   display: flex;
   align-items: center;
@@ -241,9 +235,9 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .avatar {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
   overflow: hidden;
   box-shadow: $card-shadow;
   
@@ -260,20 +254,21 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $accent-color;
+  background-color: $primary-color;
   color: white;
   font-size: 42px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .userDetails {
   flex: 1;
   
   h3 {
-    font-size: 26px;
-    font-weight: 500;
+    font-size: 28px;
+    font-weight: 600;
     margin: 0 0 0.5rem;
     color: $text-color;
+    letter-spacing: -0.02em;
     
     // Dark mode styles
     :global(.dark-theme) & {
@@ -284,7 +279,7 @@ $dark-hover-bg: #1a1a1a;
   p {
     color: $text-light;
     margin: 0;
-    font-size: 15px;
+    font-size: 16px;
     
     // Dark mode styles
     :global(.dark-theme) & {
@@ -298,41 +293,22 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 5%;
-  border-bottom: 1px solid $border-color;
+  padding: 1.75rem;
+  border-radius: $radius;
+  background-color: white;
+  box-shadow: $card-shadow;
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: $transition;
+  
+  &:hover {
+    transform: none;
+    box-shadow: $card-shadow;
+  }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    border-color: $dark-border-color;
-  }
-  
-  .connectionsColumn & {
-    padding: 1.5rem;
-    margin: 0;
-    border-radius: $radius;
-    border: 1px solid $border-color;
-    box-shadow: $card-shadow;
-    background-color: white;
-    
-    // Dark mode styles
-    :global(.dark-theme) & {
-      background-color: $dark-component-bg;
-      border-color: $dark-border-color;
-      box-shadow: $dark-card-shadow;
-    }
-    
-    &:last-child {
-      border-bottom: 1px solid $border-color;
-      
-      // Dark mode styles
-      :global(.dark-theme) & {
-        border-color: $dark-border-color;
-      }
-    }
-  }
-  
-  &:last-child {
-    border-bottom: none;
+    background-color: $dark-component-bg;
+    border-color: rgba(255,255,255,0.05);
   }
 }
 
@@ -343,24 +319,27 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .connectionIcon {
-  font-size: 22px;
-  color: $text-color;
+  font-size: 24px;
+  color: $primary-color;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 46px;
+  height: 46px;
+  background-color: rgba(0, 113, 227, 0.1);
+  border-radius: 50%;
   
   // Dark mode styles
   :global(.dark-theme) & {
-    color: $dark-text-color;
+    color: $dark-primary-color;
+    background-color: rgba(10, 132, 255, 0.15);
   }
 }
 
 .connectionDetails {
   h3 {
-    font-size: 17px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 600;
     margin: 0 0 0.25rem;
     color: $text-color;
     
@@ -388,8 +367,8 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .connectionButton {
-  padding: 0.5rem 1.2rem;
-  border-radius: $radius;
+  padding: 0.6rem 1.4rem;
+  border-radius: 20px;
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
@@ -402,6 +381,7 @@ $dark-hover-bg: #1a1a1a;
     
     &:hover {
       background-color: darken($primary-color, 5%);
+      transform: scale(1.02);
     }
     
     // Dark mode styles
@@ -411,55 +391,51 @@ $dark-hover-bg: #1a1a1a;
   }
   
   &.disconnect {
-    background-color: $light-bg;
+    background-color: rgba(0,0,0,0.05);
     color: $text-color;
-    border: 1px solid $border-color;
     
     &:hover {
-      background-color: darken($light-bg, 3%);
+      background-color: rgba(0,0,0,0.08);
     }
     
     // Dark mode styles
     :global(.dark-theme) & {
-      background-color: $dark-component-bg;
+      background-color: rgba(255,255,255,0.08);
       color: $dark-text-color;
-      border-color: $dark-border-color;
       
       &:hover {
-        background-color: $dark-hover-bg;
+        background-color: rgba(255,255,255,0.12);
       }
     }
   }
   
   &.edit {
-    background-color: $light-bg;
+    background-color: rgba(0,0,0,0.05);
     color: $text-color;
-    border: 1px solid $border-color;
     
     &:hover {
-      background-color: darken($light-bg, 3%);
+      background-color: rgba(0,0,0,0.08);
     }
     
     // Dark mode styles
     :global(.dark-theme) & {
-      background-color: $dark-component-bg;
+      background-color: rgba(255,255,255,0.08);
       color: $dark-text-color;
-      border-color: $dark-border-color;
       
       &:hover {
-        background-color: $dark-hover-bg;
+        background-color: rgba(255,255,255,0.12);
       }
     }
   }
   
   &.loading {
-    background-color: $light-bg;
+    background-color: rgba(0,0,0,0.05);
     color: $text-light;
     cursor: not-allowed;
     
     // Dark mode styles
     :global(.dark-theme) & {
-      background-color: $dark-component-bg;
+      background-color: rgba(255,255,255,0.08);
       color: $dark-text-light;
     }
   }
@@ -468,53 +444,53 @@ $dark-hover-bg: #1a1a1a;
 // Status messages
 .statusMessage {
   padding: 1rem 5%;
-  margin: 0;
+  margin: 0 0 1.5rem;
   width: 100%;
   font-size: 15px;
   font-weight: 400;
+  border-radius: $radius;
   
   &.successStatus {
-    background-color: rgba(0, 0, 0, 0.03);
-    color: $text-color;
-    border-bottom: 1px solid $border-color;
+    background-color: rgba(52, 199, 89, 0.1); // Apple success green
+    color: #34c759;
+    border: 1px solid rgba(52, 199, 89, 0.2);
     
     // Dark mode styles
     :global(.dark-theme) & {
-      background-color: rgba(255, 255, 255, 0.05);
-      color: $dark-text-color;
-      border-color: $dark-border-color;
+      background-color: rgba(48, 209, 88, 0.15);
+      color: #30d158;
+      border-color: rgba(48, 209, 88, 0.2);
     }
   }
   
   &.errorStatus {
-    background-color: rgba(0, 0, 0, 0.03);
-    color: $text-color;
-    border-bottom: 1px solid $border-color;
+    background-color: rgba(255, 59, 48, 0.1); // Apple error red
+    color: #ff3b30;
+    border: 1px solid rgba(255, 59, 48, 0.2);
     
     // Dark mode styles
     :global(.dark-theme) & {
-      background-color: rgba(255, 255, 255, 0.05);
-      color: $dark-text-color;
-      border-color: $dark-border-color;
+      background-color: rgba(255, 69, 58, 0.15);
+      color: #ff453a;
+      border-color: rgba(255, 69, 58, 0.2);
     }
   }
 }
 
 .error {
-  background-color: rgba(0, 0, 0, 0.03);
-  color: $text-color;
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
   padding: 1.2rem 5%;
-  margin: 0;
+  margin: 0 0 1.5rem;
   width: 100%;
-  border-bottom: 1px solid $border-color;
+  border-radius: $radius;
   font-size: 15px;
   font-weight: 400;
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: $dark-text-color;
-    border-color: $dark-border-color;
+    background-color: rgba(255, 69, 58, 0.15);
+    color: #ff453a;
   }
 }
 
@@ -528,14 +504,15 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   align-items: center;
   border: 1px solid $border-color;
-  border-radius: $radius;
+  border-radius: 10px;
   padding: 0 0.75rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  background-color: rgba(0,0,0,0.02);
   
   // Dark mode styles
   :global(.dark-theme) & {
     border-color: $dark-border-color;
-    background-color: $dark-input-bg;
+    background-color: rgba(255,255,255,0.05);
   }
   
   .atSymbol {
@@ -550,7 +527,7 @@ $dark-hover-bg: #1a1a1a;
   
   .usernameInput {
     flex: 1;
-    padding: 0.75rem;
+    padding: 0.85rem 0.5rem;
     border: none;
     outline: none;
     font-size: 16px;
@@ -568,11 +545,15 @@ $dark-hover-bg: #1a1a1a;
 .usernameRequirements {
   font-size: 14px;
   color: $text-light;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  background-color: rgba(0,0,0,0.02);
+  padding: 1rem;
+  border-radius: 10px;
   
   // Dark mode styles
   :global(.dark-theme) & {
     color: $dark-text-light;
+    background-color: rgba(255,255,255,0.05);
   }
   
   ul {
@@ -585,14 +566,25 @@ $dark-hover-bg: #1a1a1a;
   }
 }
 
-.usernameValidation, .usernameError {
-  color: $text-color;
+.usernameValidation {
+  color: #ff9500; // Apple orange warning color
   font-size: 14px;
   margin-bottom: 1rem;
   
   // Dark mode styles
   :global(.dark-theme) & {
-    color: $dark-text-color;
+    color: #ff9f0a; // Apple orange warning (dark mode)
+  }
+}
+
+.usernameError {
+  color: #ff3b30; // Apple red error color
+  font-size: 14px;
+  margin-bottom: 1rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: #ff453a; // Apple red error (dark mode)
   }
 }
 
@@ -602,8 +594,8 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .cancelButton, .saveButton {
-  padding: 0.5rem 1.2rem;
-  border-radius: $radius;
+  padding: 0.75rem 1.5rem;
+  border-radius: 20px;
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
@@ -611,22 +603,21 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .cancelButton {
-  background-color: $light-bg;
+  background-color: rgba(0,0,0,0.05);
   color: $text-color;
-  border: 1px solid $border-color;
+  border: none;
   
   &:hover {
-    background-color: darken($light-bg, 3%);
+    background-color: rgba(0,0,0,0.08);
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: $dark-component-bg;
+    background-color: rgba(255,255,255,0.08);
     color: $dark-text-color;
-    border-color: $dark-border-color;
     
     &:hover {
-      background-color: $dark-hover-bg;
+      background-color: rgba(255,255,255,0.12);
     }
   }
 }
@@ -638,11 +629,13 @@ $dark-hover-bg: #1a1a1a;
   
   &:hover:not(:disabled) {
     background-color: darken($primary-color, 5%);
+    transform: scale(1.02);
   }
   
   &:disabled {
-    background-color: lighten($primary-color, 30%);
+    background-color: lighten($primary-color, 25%);
     cursor: not-allowed;
+    transform: none;
   }
   
   // Dark mode styles
@@ -650,8 +643,8 @@ $dark-hover-bg: #1a1a1a;
     background-color: $dark-primary-color;
     
     &:disabled {
-      background-color: rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.5);
+      background-color: rgba(10, 132, 255, 0.4);
+      color: rgba(255, 255, 255, 0.6);
     }
   }
 }
@@ -662,18 +655,28 @@ $dark-hover-bg: #1a1a1a;
   gap: 1rem;
   
   .editUsernameButton {
-    padding: 0.3rem 0.8rem;
-    border-radius: $radius;
+    padding: 0.45rem 1rem;
+    border-radius: 15px;
     font-weight: 500;
-    font-size: 12px;
+    font-size: 13px;
     cursor: pointer;
-    border: 1px solid $border-color;
-    background-color: $light-bg;
+    border: none;
+    background-color: rgba(0,0,0,0.05);
     color: $text-color;
     transition: $transition;
     
     &:hover {
-      background-color: darken($light-bg, 3%);
+      background-color: rgba(0,0,0,0.08);
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: rgba(255,255,255,0.08);
+      color: $dark-text-color;
+      
+      &:hover {
+        background-color: rgba(255,255,255,0.12);
+      }
     }
   }
 }
@@ -685,9 +688,9 @@ $dark-hover-bg: #1a1a1a;
 
 .formSection {
   background-color: white;
-  padding: 2rem;
+  padding: 2.5rem;
   border-radius: $radius;
-  border: 1px solid $border-color;
+  border: 1px solid rgba(0,0,0,0.05);
   max-width: 600px;
   margin: 0 auto;
   box-shadow: $card-shadow;
@@ -695,16 +698,16 @@ $dark-hover-bg: #1a1a1a;
   // Dark mode styles
   :global(.dark-theme) & {
     background-color: $dark-component-bg;
-    border-color: $dark-border-color;
-    box-shadow: $dark-card-shadow;
+    border-color: rgba(255,255,255,0.05);
   }
   
   h3 {
     margin-top: 0;
-    font-size: 20px;
-    font-weight: 500;
+    font-size: 22px;
+    font-weight: 600;
     color: $text-color;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.02em;
     
     // Dark mode styles
     :global(.dark-theme) & {
@@ -715,8 +718,8 @@ $dark-hover-bg: #1a1a1a;
 
 .formHelper {
   color: $text-light;
-  margin-bottom: 1.5rem;
-  font-size: 14px;
+  margin-bottom: 2rem;
+  font-size: 15px;
   
   // Dark mode styles
   :global(.dark-theme) & {
@@ -725,13 +728,13 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .formGroup {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
   
   label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 15px;
     color: $text-color;
     
     // Dark mode styles
@@ -742,36 +745,38 @@ $dark-hover-bg: #1a1a1a;
   
   .formInput {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.85rem 1rem;
     border: 1px solid $border-color;
-    border-radius: $radius;
+    border-radius: 10px;
     font-size: 16px;
     color: $text-color;
     outline: none;
-    transition: border-color 0.2s ease;
-    background-color: white;
+    transition: all 0.2s ease;
+    background-color: rgba(0,0,0,0.02);
     
     &:focus {
-      border-color: darken($border-color, 15%);
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
     }
     
     // Dark mode styles
     :global(.dark-theme) & {
-      background-color: $dark-input-bg;
+      background-color: rgba(255,255,255,0.05);
       border-color: $dark-border-color;
       color: $dark-text-color;
       
       &:focus {
-        border-color: lighten($dark-border-color, 15%);
+        border-color: $dark-primary-color;
+        box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
       }
     }
   }
   
   .formHint {
     display: block;
-    margin-top: 0.5rem;
+    margin-top: 0.6rem;
     color: $text-light;
-    font-size: 12px;
+    font-size: 13px;
     
     // Dark mode styles
     :global(.dark-theme) & {
@@ -784,30 +789,27 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
 }
 
 // Buttons and actions
-.sellReposButton {
-  padding: 2rem 5%;
-  text-align: center;
-}
-
 .sellButton, .browseButton, .viewRepoButton {
   display: inline-block;
   background-color: $primary-color;
   color: white;
-  padding: 0.8rem 1.8rem;
-  border-radius: $radius;
+  padding: 0.85rem 1.8rem;
+  border-radius: 20px;
   font-weight: 500;
   border: none;
   cursor: pointer;
   text-decoration: none;
   transition: $transition;
-  font-size: 14px;
+  font-size: 15px;
+  text-align: center;
   
   &:hover {
     background-color: darken($primary-color, 5%);
+    transform: scale(1.02);
   }
   
   // Dark mode styles
@@ -815,7 +817,7 @@ $dark-hover-bg: #1a1a1a;
     background-color: $dark-primary-color;
     
     &:hover {
-      background-color: lighten($dark-primary-color, 10%);
+      background-color: lighten($dark-primary-color, 5%);
     }
   }
 }
@@ -828,25 +830,30 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
+  transition: $transition;
+  background-color: rgba(0,0,0,0.03);
   
   &:hover {
-    background-color: $light-bg;
+    background-color: rgba(0,0,0,0.05);
+    transform: rotate(15deg);
   }
   
   &:disabled {
     cursor: not-allowed;
     opacity: 0.5;
+    transform: none !important;
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
     color: $dark-text-light;
+    background-color: rgba(255,255,255,0.05);
     
     &:hover {
-      background-color: $dark-hover-bg;
+      background-color: rgba(255,255,255,0.08);
     }
     
     &:disabled {
@@ -856,7 +863,7 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .spinning {
-  animation: spin 1s linear infinite;
+  animation: spin 1.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
 }
 
 @keyframes spin {
@@ -865,32 +872,31 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .toggleSoldButton {
-  background-color: white;
-  border: 1px solid $border-color;
+  background-color: rgba(0,0,0,0.03);
+  border: none;
   color: $text-color;
-  padding: 0.6rem 1.3rem;
-  border-radius: $radius;
+  padding: 0.7rem 1.5rem;
+  border-radius: 20px;
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
   transition: $transition;
   
   &:hover {
-    background-color: $light-bg;
+    background-color: rgba(0,0,0,0.05);
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: $dark-component-bg;
+    background-color: rgba(255,255,255,0.05);
     color: $dark-text-color;
-    border-color: $dark-border-color;
     
     &:hover {
-      background-color: $dark-hover-bg;
+      background-color: rgba(255,255,255,0.08);
     }
     
     &:active {
-      background-color: lighten($dark-hover-bg, 5%);
+      background-color: rgba(255,255,255,0.12);
     }
   }
 }
@@ -907,7 +913,10 @@ $dark-hover-bg: #1a1a1a;
 
 .emptyState {
   text-align: center;
-  padding: 4rem 5%;
+  padding: 5rem 5%;
+  border-radius: $radius;
+  background-color: rgba(0,0,0,0.02);
+  margin: 0 5% 2rem;
   
   p {
     color: $text-light;
@@ -917,135 +926,21 @@ $dark-hover-bg: #1a1a1a;
   
   // Dark mode styles
   :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.05);
     color: $dark-text-light;
   }
-}
-
-.repoGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
-  padding: 3rem 5%;
-  background-color: white;
-  
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    padding: 2rem 5%;
-    gap: 2rem;
-  }
-}
-
-.repoCard {
-  background-color: white;
-  border-radius: $radius;
-  box-shadow: $card-shadow;
-  overflow: hidden;
-  transition: $transition;
-  border: 1px solid $border-color;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.07);
-  }
-  
-  // Dark mode styles
-  :global(.dark-theme) & {
-    background-color: $dark-component-bg;
-    border-color: $dark-border-color;
-    box-shadow: $dark-card-shadow;
-  }
-}
-
-.repoName {
-  font-size: 17px;
-  font-weight: 500;
-  margin: 0 0 0.75rem;
-  
-  // Dark mode styles
-  :global(.dark-theme) & {
-    color: $dark-text-color;
-  }
-  
-  a {
-    color: $text-color;
-    text-decoration: none;
-    
-    &:hover {
-      color: darken($text-color, 15%);
-    }
-    
-    // Dark mode styles
-    :global(.dark-theme) & {
-      color: $dark-text-color;
-      
-      &:hover {
-        color: white;
-      }
-    }
-  }
-}
-
-.repoDescription {
-  color: $text-light;
-  margin: 0 0 1rem;
-  font-size: 14px;
-  line-height: 1.5;
-  
-  // Dark mode styles
-  :global(.dark-theme) & {
-    color: $dark-text-light;
-  }
-}
-
-.repoStats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  font-size: 13px;
-  color: $text-light;
-  
-  // Dark mode styles
-  :global(.dark-theme) & {
-    color: $dark-text-light;
-  }
-}
-
-.repoLanguage {
-  background-color: $light-bg;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  
-  // Dark mode styles
-  :global(.dark-theme) & {
-    background-color: $dark-component-bg;
-    color: $dark-text-light;
-  }
-}
-
-.repoStat {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.repoActions {
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid $border-color;
-  display: flex;
-  justify-content: center;
 }
 
 // Purchased and listed repos styling
 .purchasedRepos, .listedRepos {
-  padding: 2rem 5%;
-  display: flex;
-  flex-direction: column;
+  padding: 1rem 5% 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 2rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .purchasedRepoCard, .listedRepoCard {
@@ -1053,29 +948,28 @@ $dark-hover-bg: #1a1a1a;
   border-radius: $radius;
   box-shadow: $card-shadow;
   overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.05);
   display: flex;
-  border: 1px solid $border-color;
+  flex-direction: column;
+  transition: $transition;
   
-  @media (max-width: 768px) {
-    flex-direction: column;
+  &:hover {
+    transform: none;
+    box-shadow: $card-shadow;
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
     background-color: $dark-component-bg;
-    border-color: $dark-border-color;
+    border-color: rgba(255,255,255,0.05);
     box-shadow: $dark-card-shadow;
   }
 }
 
 .purchasedRepoImage, .listedRepoImage {
-  width: 300px;
   position: relative;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-    height: 200px;
-  }
+  width: 100%;
+  height: 180px;
   
   img {
     object-fit: cover;
@@ -1088,35 +982,44 @@ $dark-hover-bg: #1a1a1a;
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
   padding: 0.4rem 1rem;
-  border-radius: $radius;
+  border-radius: 15px;
   font-size: 12px;
+  font-weight: 500;
   z-index: 1;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .soldBadge {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(255, 59, 48, 0.8);
   color: white;
   padding: 0.4rem 1rem;
-  border-radius: $radius;
+  border-radius: 15px;
   font-size: 12px;
+  font-weight: 500;
   z-index: 1;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .purchasedRepoInfo, .listedRepoInfo {
   flex: 1;
-  padding: 1.5rem;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
   
   h3 {
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 600;
     margin: 0 0 0.8rem;
     color: $text-color;
+    letter-spacing: -0.02em;
     
     // Dark mode styles
     :global(.dark-theme) & {
@@ -1127,8 +1030,8 @@ $dark-hover-bg: #1a1a1a;
 
 .purchasedRepoDescription, .listedRepoDescription {
   color: $text-light;
-  margin: 0 0 1rem;
-  font-size: 14px;
+  margin: 0 0 1.5rem;
+  font-size: 15px;
   line-height: 1.5;
   
   // Dark mode styles
@@ -1140,9 +1043,10 @@ $dark-hover-bg: #1a1a1a;
 .purchasedRepoMeta, .listedRepoMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
-  font-size: 13px;
+  font-size: 14px;
   color: $text-light;
   
   // Dark mode styles
@@ -1152,35 +1056,40 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .subscriptionInfo, .transferStatus {
-  background-color: $light-bg;
-  padding: 0.5rem 1rem;
-  border-radius: $radius;
+  background-color: rgba(0,0,0,0.03);
+  padding: 0.6rem 1.2rem;
+  border-radius: 15px;
   font-size: 13px;
   margin-bottom: 1.5rem;
   display: inline-block;
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255,255,255,0.08);
     color: $dark-text-color;
   }
 }
 
 .purchasedRepoActions, .listedRepoControls {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
 }
 
 .viewListingButton, .editListingButton, .removeListingButton, .soldButton {
-  padding: 0.5rem 1.2rem;
-  border-radius: $radius;
+  padding: 0.75rem 1rem;
+  border-radius: 20px;
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
   border: none;
   text-decoration: none;
   transition: $transition;
+  text-align: center;
+  width: 100%;
+  flex: none;
 }
 
 .viewListingButton {
@@ -1189,6 +1098,7 @@ $dark-hover-bg: #1a1a1a;
   
   &:hover {
     background-color: darken($primary-color, 5%);
+    transform: scale(1.02);
   }
   
   // Dark mode styles
@@ -1196,158 +1106,145 @@ $dark-hover-bg: #1a1a1a;
     background-color: $dark-primary-color;
     
     &:hover {
-      background-color: lighten($dark-primary-color, 10%);
+      background-color: lighten($dark-primary-color, 5%);
     }
   }
 }
 
 .editListingButton {
-  background-color: $light-bg;
+  background-color: rgba(0,0,0,0.03);
   color: $text-color;
-  border: 1px solid $border-color;
   
   &:hover {
-    background-color: darken($light-bg, 3%);
+    background-color: rgba(0,0,0,0.05);
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: $dark-component-bg;
+    background-color: rgba(255,255,255,0.08);
     color: $dark-text-color;
-    border-color: $dark-border-color;
     
     &:hover {
-      background-color: $dark-hover-bg;
+      background-color: rgba(255,255,255,0.12);
     }
   }
 }
 
 .removeListingButton {
-  background-color: $light-bg;
-  color: $text-color;
-  border: 1px solid $border-color;
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
   
   &:hover:not(:disabled) {
-    background-color: darken($light-bg, 3%);
+    background-color: rgba(255, 59, 48, 0.15);
   }
   
   &:disabled {
-    background-color: lighten($light-bg, 2%);
+    opacity: 0.5;
     cursor: not-allowed;
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: $dark-component-bg;
-    color: $dark-text-color;
-    border-color: $dark-border-color;
+    background-color: rgba(255, 69, 58, 0.2);
+    color: #ff453a;
     
     &:hover:not(:disabled) {
-      background-color: $dark-hover-bg;
-    }
-    
-    &:disabled {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.5);
-      cursor: not-allowed;
+      background-color: rgba(255, 69, 58, 0.25);
     }
   }
 }
 
 .soldButton {
-  background-color: $light-bg;
-  color: $text-color;
-  border: 1px solid $border-color;
+  background-color: rgba(255, 149, 0, 0.1); // Apple orange
+  color: #ff9500;
   
   &:hover:not(:disabled) {
-    background-color: darken($light-bg, 3%);
+    background-color: rgba(255, 149, 0, 0.15);
   }
   
   &:disabled {
-    background-color: lighten($light-bg, 2%);
+    opacity: 0.5;
     cursor: not-allowed;
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: $dark-component-bg;
-    color: $dark-text-color;
-    border-color: $dark-border-color;
+    background-color: rgba(255, 159, 10, 0.2);
+    color: #ff9f0a;
     
     &:hover:not(:disabled) {
-      background-color: $dark-hover-bg;
-    }
-    
-    &:disabled {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.5);
-      cursor: not-allowed;
+      background-color: rgba(255, 159, 10, 0.25);
     }
   }
 }
 
 .listedRepoPrice {
-  font-size: 15px;
-  font-weight: 500;
-  color: $text-color;
-  background-color: $light-bg;
-  padding: 0.4rem 0.8rem;
-  border-radius: $radius;
+  font-size: 16px;
+  font-weight: 600;
+  color: $primary-color;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  background-color: rgba(0, 113, 227, 0.1);
   display: inline-block;
   
   // Dark mode styles
   :global(.dark-theme) & {
-    color: $dark-text-color;
-    background-color: rgba(255, 255, 255, 0.1);
+    color: $dark-primary-color;
+    background-color: rgba(10, 132, 255, 0.15);
   }
 }
 
 .listedRepoStats {
   display: flex;
   gap: 1rem;
-  margin-left: 1rem;
+  align-items: center;
   
   span {
     display: flex;
     align-items: center;
     gap: 0.25rem;
     color: $text-light;
-    font-size: 13px;
+    font-size: 14px;
   }
   
   .statIcon {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
 }
 
-// Status colors for transfers - make more subtle
+// Status colors for transfers
 .status-completed {
-  background-color: $light-bg;
-  color: $text-color;
+  background-color: rgba(52, 199, 89, 0.1); // Apple green
+  color: #34c759;
 }
 
 .status-pending {
-  background-color: $light-bg;
-  color: $text-color;
+  background-color: rgba(255, 149, 0, 0.1); // Apple orange
+  color: #ff9500;
 }
 
 .status-failed {
-  background-color: $light-bg;
-  color: $text-color;
+  background-color: rgba(255, 59, 48, 0.1); // Apple red
+  color: #ff3b30;
 }
 
 .bankDetailsButtons {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 // Verifications notes
 .verificationNote {
   display: block;
   margin-top: 0.5rem;
-  font-size: 12px;
-  color: $text-color;
+  font-size: 13px;
+  color: #ff9500; // Apple orange
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: #ff9f0a; // Apple orange (dark)
+  }
 }
 
 // Repository list styling
@@ -1361,7 +1258,7 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   flex-wrap: wrap;
   gap: 1rem;
   
@@ -1383,27 +1280,29 @@ $dark-hover-bg: #1a1a1a;
 
 .repoFilterInput {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid $border-color;
-  border-radius: $radius;
-  font-size: 14px;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  font-size: 15px;
   color: $text-color;
   outline: none;
-  transition: border-color 0.2s ease;
-  background-color: white;
+  transition: all 0.2s ease;
+  background-color: rgba(0,0,0,0.02);
   
   &:focus {
-    border-color: darken($border-color, 15%);
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: $dark-input-bg;
+    background-color: rgba(255,255,255,0.05);
     color: $dark-text-color;
-    border-color: $dark-border-color;
+    border-color: rgba(255,255,255,0.1);
     
     &:focus {
-      border-color: lighten($dark-border-color, 15%);
+      border-color: $dark-primary-color;
+      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
     }
   }
 }
@@ -1411,36 +1310,39 @@ $dark-hover-bg: #1a1a1a;
 .sortContainer {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .repoSortSelect {
-  padding: 0.65rem 2rem 0.65rem 0.75rem;
-  border: 1px solid $border-color;
-  border-radius: $radius;
-  font-size: 14px;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  font-size: 15px;
   color: $text-color;
   outline: none;
-  background-color: white;
+  background-color: rgba(0,0,0,0.02);
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.5rem center;
+  background-position: right 0.75rem center;
   background-size: 1rem;
   appearance: none;
   cursor: pointer;
   
   &:focus {
-    border-color: darken($border-color, 15%);
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: $dark-input-bg;
+    background-color: rgba(255,255,255,0.05);
     color: $dark-text-color;
-    border-color: $dark-border-color;
+    border-color: rgba(255,255,255,0.1);
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ccc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     
     &:focus {
-      border-color: lighten($dark-border-color, 15%);
+      border-color: $dark-primary-color;
+      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
     }
   }
 }
@@ -1449,28 +1351,28 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: 1px solid $border-color;
-  border-radius: $radius;
-  background-color: white;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  background-color: rgba(0,0,0,0.02);
   color: $text-color;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   
   &:hover {
-    background-color: $light-bg;
+    background-color: rgba(0,0,0,0.04);
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: $dark-input-bg;
+    background-color: rgba(255,255,255,0.05);
     color: $dark-text-color;
-    border-color: $dark-border-color;
+    border-color: rgba(255,255,255,0.1);
     
     &:hover {
-      background-color: $dark-hover-bg;
+      background-color: rgba(255,255,255,0.08);
     }
   }
 }
@@ -1482,83 +1384,102 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .repoListItem {
-  padding: 1.5rem;
-  border: 1px solid $border-color;
+  padding: 1.75rem;
+  border: 1px solid rgba(0,0,0,0.05);
   border-radius: $radius;
   background-color: white;
   transition: $transition;
   
   &:hover {
-    transform: translateY(-2px);
+    transform: none;
     box-shadow: $card-shadow;
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
     background-color: $dark-component-bg;
-    border-color: $dark-border-color;
-    
-    &:hover {
-      box-shadow: $dark-card-shadow;
-    }
+    border-color: rgba(255,255,255,0.05);
   }
 }
 
 .repoListItemHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-  gap: 1rem;
-  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
   
   @media (max-width: 768px) {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+.repoName {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
   }
   
-  .repoName {
-    font-size: 18px;
-    font-weight: 500;
-    margin: 0;
+  a {
+    color: $text-color;
+    text-decoration: none;
+    
+    &:hover {
+      color: $primary-color;
+    }
     
     // Dark mode styles
     :global(.dark-theme) & {
       color: $dark-text-color;
-    }
-    
-    a {
-      color: $text-color;
-      text-decoration: none;
       
       &:hover {
-        color: darken($text-color, 15%);
-      }
-      
-      // Dark mode styles  
-      :global(.dark-theme) & {
-        color: $dark-text-color;
-        
-        &:hover {
-          color: white;
-        }
+        color: $dark-primary-color;
       }
     }
   }
+}
+
+.repoDescription {
+  color: $text-light;
+  margin: 0 0 1.25rem;
+  font-size: 15px;
+  line-height: 1.5;
   
-  .sellButton {
-    padding: 0.4rem 0.8rem;
-    font-size: 13px;
-    white-space: nowrap;
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
   }
 }
 
 .repoListItemFooter {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 0.75rem;
-  font-size: 13px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.repoLanguage {
+  background-color: rgba(0,0,0,0.03);
+  padding: 0.4rem 0.9rem;
+  border-radius: 15px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.08);
+    color: $dark-text-light;
+  }
+}
+
+.repoStat {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   color: $text-light;
   
   // Dark mode styles
@@ -1568,9 +1489,8 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .repoDate {
-  margin-left: auto;
-  font-size: 13px;
   color: $text-light;
+  margin-left: auto;
   
   // Dark mode styles
   :global(.dark-theme) & {
@@ -1579,22 +1499,26 @@ $dark-hover-bg: #1a1a1a;
 }
 
 .noResults {
-  padding: 3rem 0;
   text-align: center;
+  padding: 3rem 0;
   color: $text-light;
+  font-size: 16px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
 }
 
-// Compressed Footer
+// Footer styling
 .compressedFooter {
-  width: 100%;
-  background-color: transparent;
-  border-top: 1px solid $border-color;
-  padding: 1.5rem 0;
+  padding: 2rem 5%;
+  background-color: $light-bg;
   margin-top: 3rem;
   
   // Dark mode styles
   :global(.dark-theme) & {
-    border-color: $dark-border-color;
+    background-color: $dark-component-bg;
   }
 }
 
@@ -1602,13 +1526,12 @@ $dark-hover-bg: #1a1a1a;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 5%;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
     text-align: center;
   }
 }
@@ -1625,23 +1548,22 @@ $dark-hover-bg: #1a1a1a;
 
 .footerRight {
   display: flex;
+  gap: 1.5rem;
   align-items: center;
-  gap: 2.5rem;
   
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 0.75rem;
   }
 }
 
 .footerLink {
   color: $text-light;
-  text-decoration: none;
   font-size: 14px;
-  transition: color 0.2s ease;
+  text-decoration: none;
   
   &:hover {
-    color: $text-color;
+    color: $primary-color;
   }
   
   // Dark mode styles
@@ -1649,7 +1571,7 @@ $dark-hover-bg: #1a1a1a;
     color: $dark-text-light;
     
     &:hover {
-      color: $dark-text-color;
+      color: $dark-primary-color;
     }
   }
 }
@@ -1783,6 +1705,140 @@ input, select, textarea {
     background-color: $dark-input-bg;
     color: $dark-text-color;
     border-color: $dark-border-color;
+  }
+}
+
+// Marketplace listing card with blue background
+.marketplaceCard {
+  background-color: $primary-color;
+  border-radius: $radius;
+  overflow: hidden;
+  box-shadow: $card-shadow;
+  transition: $transition;
+  position: relative;
+  
+  &:hover {
+    transform: none;
+    box-shadow: $card-shadow;
+  }
+  
+  .cardHeader {
+    padding: 1rem;
+    position: relative;
+  }
+  
+  .purchaseType {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+  
+  .cardTitle {
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    margin: 3rem 1.5rem 2rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+  }
+  
+  .cardBody {
+    background-color: #222;
+    color: white;
+    padding: 1.75rem;
+  }
+  
+  .cardDescription {
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    min-height: 100px;
+  }
+  
+  .priceTag {
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+  
+  .cardStats {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0 1.5rem;
+    
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+    }
+  }
+  
+  .cardActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .cardButton {
+    padding: 0.75rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: $transition;
+    text-align: center;
+    width: 100%;
+    
+    &.primary {
+      background-color: white;
+      color: $primary-color;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+        transform: none;
+      }
+    }
+    
+    &.secondary {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: white;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+    
+    &.danger {
+      background-color: rgba(255, 59, 48, 0.15);
+      color: white;
+      
+      &:hover {
+        background-color: rgba(255, 59, 48, 0.25);
+      }
+    }
+    
+    &.warning {
+      background-color: rgba(255, 149, 0, 0.15);
+      color: white;
+      
+      &:hover {
+        background-color: rgba(255, 149, 0, 0.25);
+      }
+    }
   }
 }
 

@@ -4,34 +4,31 @@ import { db } from '../../../lib/firebase-admin';
 import { generateSlug } from '../../../lib/utils';
 
 // Define types for our marketplace listings
-export type MarketplaceListing = {
-  id: number | string;
+export interface MarketplaceListing {
+  id: string | number;
   docId?: string; // Add explicit document ID field for Firestore
   name: string;
   description: string;
-  price: number;
-  isSubscription: boolean;
+  price?: number;
   subscriptionPrice?: number;
+  isSubscription: boolean;
   imageUrl: string;
   seller: {
+    id: string; // Make sure id is required
     username: string;
-    avatarUrl: string;
-    id?: string;
+    avatarUrl?: string;
   };
+  repoUrl: string;
   stars: number;
   forks: number;
-  lastUpdated: string;
   stripeProductId?: string;
   stripePriceId?: string;
-  stripeSubscriptionPriceId?: string;
   sold?: boolean;
-  repoId?: number | string;
-  githubUrl?: string;
-  language?: string;
   createdAt?: string;
   updatedAt?: string;
-  slug: string; // Add slug for SEO-friendly URLs
-};
+  slug?: string; // Make slug optional to match its usage
+  tags?: string[]; // Optional tags array
+}
 
 export async function POST(request: Request) {
   try {
@@ -49,7 +46,6 @@ export async function POST(request: Request) {
     const newListing: MarketplaceListing = {
       ...listing,
       id: newId,
-      lastUpdated: new Date().toISOString().split('T')[0], // YYYY-MM-DD
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       sold: false,
