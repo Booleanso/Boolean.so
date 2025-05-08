@@ -202,7 +202,7 @@
 
 /* Dark Mode Styles */
 :global(.dark-theme) .portfolioSection {
-  background-color: #111;
+  background-color: #000;
 }
 
 :global(.dark-theme) .heading {
@@ -220,7 +220,7 @@
 :global(.dark-theme) .loadingContainer,
 :global(.dark-theme) .errorState,
 :global(.dark-theme) .emptyState {
-  background-color: #1c1c1e;
+  background-color: #000;
   color: #a1a1a6;
 }
 
@@ -236,7 +236,7 @@
 }
 
 :global(.dark-theme) .projectCard {
-  background-color: #1c1c1e;
+  background-color: #000;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
