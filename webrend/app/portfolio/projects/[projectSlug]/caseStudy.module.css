@@ -13,7 +13,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end; /* Align content to bottom */
-  color: #ffffff; /* Text color on hero */
+  color: #000000; /* Dark text for light overlay */
   padding: 4rem 5%; /* Generous padding */
   box-sizing: border-box;
   overflow: hidden;
@@ -33,14 +33,14 @@
   object-position: center; 
 }
 
-/* Dark overlay for text contrast */
+/* WHITE overlay - NO DARK MODE TOGGLE */
 .heroOverlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1));
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.5));
   z-index: 2;
 }
 
@@ -56,7 +56,7 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
   line-height: 1.1;
-  color: #fff;
+  color: #000; /* Dark text for light overlay */
 }
 
 .projectSubtitle {
@@ -64,7 +64,7 @@
   font-weight: 400;
   margin-bottom: 1.5rem;
   max-width: 600px;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.9); /* Dark text for light overlay */
 }
 
 .metaInfo {
@@ -72,7 +72,7 @@
   gap: 1.5rem;
   margin-bottom: 1rem;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(0, 0, 0, 0.8); /* Dark text for light overlay */
 }
 
 .tagsContainer {
@@ -83,8 +83,8 @@
 }
 
 .tag {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  background-color: rgba(0, 0, 0, 0.1); /* Dark background for light mode */
+  color: #000; /* Dark text */
   padding: 0.3rem 0.8rem;
   border-radius: 1rem;
   font-size: 0.8rem;
@@ -115,6 +115,92 @@
   display: flex;
   flex-direction: column;
   gap: 4rem; /* Increased gap between major sections */
+}
+
+/* Solution Section - Special Full-Width Layout */
+.solutionSection {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* Make video area twice as large */
+  gap: 40px;
+  align-items: center;
+  width: 100vw; /* Full width */
+  max-width: 100vw;
+  margin-left: calc(-50vw + 50%); /* Extend to full width regardless of parent */
+  margin-right: calc(-50vw + 50%);
+  padding: 120px 5%; /* Very generous padding */
+  background-color: #f7f7f7; /* Light background to set it apart */
+  box-sizing: border-box;
+}
+
+.solutionText {
+  text-align: left;
+  max-width: 100%;
+  padding-right: 20px;
+}
+
+.solutionText h2 {
+  text-align: left; /* Override default center alignment */
+  border-bottom: none; /* Remove bottom border */
+  margin-bottom: 2rem;
+}
+
+.solutionText .sectionText {
+  text-align: left; /* Override default center text */
+  max-width: 100%;
+  margin-left: 0;
+}
+
+.solutionVideo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 30vh; /* Minimum height of 30% viewport height */
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.solutionVideo::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30%; /* Wider gradient effect */
+  height: 100%;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95)); /* Whiter fade */
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Dark mode support for the video shadow */
+@media (prefers-color-scheme: dark) {
+  .solutionVideo::after {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.95));
+  }
+}
+
+/* Responsive adjustments for the solution section */
+@media (max-width: 1024px) {
+  .solutionSection {
+    grid-template-columns: 1fr 1.5fr; /* Less extreme on medium screens */
+    padding: 80px 5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .solutionSection {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 60px 20px;
+  }
+  
+  .solutionText {
+    padding-right: 0;
+  }
+  
+  .solutionVideo {
+    min-height: 50vh; /* Even bigger on mobile relative to screen */
+  }
 }
 
 .contentSection {

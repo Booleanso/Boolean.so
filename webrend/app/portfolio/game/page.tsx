@@ -466,16 +466,16 @@ function GalleryModel() {
 }
 
 // Main Scene component
-function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData }: { 
+function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData, containerRef }: { 
   joystickData: JoystickData; 
   userId: string; 
   username: string;
   otherPlayers: Player[];
   updatePlayerData: (position: [number, number, number], rotation: [number, number, number, number]) => void;
+  containerRef: React.RefObject<HTMLDivElement>;
 }) {
   const isMobile = useIsMobile();
   const [pointerLockControls, setPointerLockControls] = useState<any>(null);
-  const [modelLoaded, setModelLoaded] = useState(false);
   
   // Handle pointer lock errors
   useEffect(() => {
@@ -497,8 +497,14 @@ function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData 
   useGLTF.preload('/game/vr-art-gallery.glb');
   
   return (
-    <Canvas shadows style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh' }}>
-      <fog attach="fog" args={['#f8f8f8', 20, 50]} />
+    <Canvas 
+      shadows 
+      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+      camera={{ position: [0, 2, 0], fov: 75 }}
+      gl={{ preserveDrawingBuffer: true, alpha: true }}
+    >
+      <color attach="background" args={['#111']} />
+      <fog attach="fog" args={['#111', 20, 50]} />
       <ambientLight intensity={0.5} />
       
       {/* Main directional light - coming from above */}
@@ -541,13 +547,12 @@ function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData 
         ))}
       </Physics>
       
-      <PerspectiveCamera makeDefault position={[0, 2, 0]} fov={75} />
       <PointerLockControls ref={setPointerLockControls} />
     </Canvas>
   );
 }
 
-// Main page component
+// Modified GamePage for embedding in portfolio
 export default function GamePage() {
   const [joystickData, setJoystickData] = useState<JoystickData>({ forward: 0, right: 0 });
   const isMobile = useIsMobile();
@@ -556,6 +561,7 @@ export default function GamePage() {
   const [username, setUsername] = useState<string>('Guest');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   // Handle joystick movement
   const handleJoystickMove = (data: JoystickData) => {
@@ -575,6 +581,25 @@ export default function GamePage() {
   const handleStartGame = () => {
     setGameStarted(true);
   };
+  
+  // Prevent pointer lock from causing issues with parent page
+  useEffect(() => {
+    // Release pointer lock when user presses escape or clicks away
+    const handlePointerLockChange = () => {
+      if (document.pointerLockElement === null && gameStarted) {
+        // Add a small delay before allowing interactions with parent page
+        setTimeout(() => {
+          console.log("Pointer lock released");
+        }, 100);
+      }
+    };
+
+    document.addEventListener('pointerlockchange', handlePointerLockChange);
+    
+    return () => {
+      document.removeEventListener('pointerlockchange', handlePointerLockChange);
+    };
+  }, [gameStarted]);
   
   // Check authentication status
   useEffect(() => {
@@ -596,27 +621,6 @@ export default function GamePage() {
         if (storedUsername) {
           setUsername(storedUsername);
         }
-        
-        // Fetch additional user data from Firestore
-        const fetchUserDetails = async () => {
-          try {
-            const response = await fetch('/api/user/get-current');
-            
-            if (response.ok) {
-              const userData = await response.json();
-              
-              if (userData.firestore && userData.firestore.username) {
-                setUsername(userData.firestore.username);
-              } else if (userData.auth.displayName) {
-                setUsername(userData.auth.displayName);
-              }
-            }
-          } catch (err) {
-            console.error('Error fetching user details:', err);
-          }
-        };
-        
-        fetchUserDetails();
       } else {
         // Generate a random guest ID if not authenticated
         setUserId(`guest-${Math.random().toString(36).substring(2, 9)}`);
@@ -632,46 +636,19 @@ export default function GamePage() {
   const { otherPlayers, playerCount, updatePlayerData } = usePlayerSync(userId, username);
   
   return (
-    <div className={styles.gameContainer}>
-      <div className={styles.gameHeader}>
-        <Link href="/portfolio" className={styles.backButton}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          Back to Portfolio
-        </Link>
-        <h1>Interactive White Gallery</h1>
-        <div className={styles.playerCount}>
-          <span>{playerCount} Player{playerCount !== 1 ? 's' : ''} Online</span>
-          {isAuthenticated ? (
-            <span className={styles.userTag}>Playing as: {username}</span>
-          ) : (
-            <Link href="/auth" className={styles.loginButton}>
-              Sign in
-            </Link>
-          )}
-        </div>
-      </div>
-      
+    <div className={styles.embeddedGameContainer} ref={containerRef}>
       {!gameStarted ? (
         <div className={styles.startScreen} onClick={handleStartGame}>
           <div className={styles.startPrompt}>
             <h2>Click to Enter Gallery</h2>
-            <p>Click here to explore the virtual gallery</p>
+            <p>Press ESC to exit the game mode</p>
           </div>
         </div>
       ) : (
         <>
           {showInstructions && (
-            <div className={styles.instructions}>
-              <p><strong>Controls:</strong></p>
-              <p>Mouse - Look around</p>
-              <p>W, A, S, D - Move</p>
-              <p>Space - Jump</p>
-              <p>Shift - Sprint</p>
-              <p>Click to lock mouse cursor. Press ESC to unlock.</p>
-              <p className={styles.multiplayerInfo}>Other visitors are shown with blue avatars and their usernames.</p>
+            <div className={styles.embedInstructions}>
+              <p><strong>Controls:</strong> WASD - Move | Mouse - Look | Space - Jump | ESC - Exit</p>
             </div>
           )}
           
@@ -682,6 +659,7 @@ export default function GamePage() {
               username={username}
               otherPlayers={otherPlayers}
               updatePlayerData={updatePlayerData}
+              containerRef={containerRef}
             />
           </div>
           

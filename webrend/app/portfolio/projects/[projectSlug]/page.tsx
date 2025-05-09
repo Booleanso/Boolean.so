@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './caseStudy.module.css';
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 import { Timestamp } from 'firebase-admin/firestore';
 import { isValidImageUrl } from '../../../utils/url-utils';
 
@@ -97,8 +97,7 @@ type Props = {
 }
 
 export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
+  { params }: Props
 ): Promise<Metadata> {
   const project = await getProjectBySlug(params.projectSlug);
 
@@ -207,19 +206,47 @@ export default async function ProjectPage({ params }: Props) {
         </div>
       </header>
 
-      {/* --- Main Content Sections --- */}
+      {/* --- Behance Style Main Content Sections --- */}
       <div className={styles.mainContent}>
         
-        {/* Project Goal */}
+        {/* Overview Section - Behance style with intro */}
         <section className={styles.contentSection}>
-          <h2 className={styles.sectionTitle}>Project Goal</h2>
-          <p className={styles.sectionText}>{project.projectGoal}</p>
+          <h2 className={styles.sectionTitle}>Overview</h2>
+          <div className={styles.sectionText}>
+            <p>{project.description}</p>
+            {project.clientName && <p><strong>Client:</strong> {project.clientName}</p>}
+            <p><strong>Timeline:</strong> Completed {formattedDate}</p>
+          </div>
         </section>
 
-        {/* Solution */}
+        {/* Project Goal - Full width with gray background */}
         <section className={styles.contentSection}>
-          <h2 className={styles.sectionTitle}>Solution</h2>
-          <p className={styles.sectionText}>{project.solution}</p>
+          <h2 className={styles.sectionTitle}>Project Goals</h2>
+          <div className={styles.sectionText}>
+            <p>{project.projectGoal}</p>
+          </div>
+        </section>
+
+        {/* Solution Section with large video and text on left */}
+        <section className={styles.solutionSection}>
+          <div className={styles.solutionText}>
+            <h2 className={styles.sectionTitle}>Our Solution</h2>
+            <div className={styles.sectionText}>
+              <p>{project.solution}</p>
+            </div>
+          </div>
+          <div className={styles.solutionVideo}>
+            <iframe 
+              src="https://player.vimeo.com/video/76979871?autoplay=0&loop=0&muted=0" 
+              width="100%" 
+              height="100%" 
+              frameBorder="0" 
+              allow="autoplay; fullscreen; picture-in-picture" 
+              allowFullScreen
+              title="Project Solution Video"
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            ></iframe>
+          </div>
         </section>
 
         {/* Key Features (Optional) */}
@@ -237,16 +264,20 @@ export default async function ProjectPage({ params }: Props) {
         {/* Challenges (Optional) */}
         {project.challenges && (
            <section className={styles.contentSection}>
-            <h2 className={styles.sectionTitle}>Challenges</h2>
-            <p className={styles.sectionText}>{project.challenges}</p>
+            <h2 className={styles.sectionTitle}>Challenges & Approach</h2>
+            <div className={styles.sectionText}>
+              <p>{project.challenges}</p>
+            </div>
           </section>
         )}
 
         {/* Results (Optional) */}
         {project.results && (
            <section className={styles.contentSection}>
-            <h2 className={styles.sectionTitle}>Results</h2>
-            <p className={styles.sectionText}>{project.results}</p>
+            <h2 className={styles.sectionTitle}>Results & Impact</h2>
+            <div className={styles.sectionText}>
+              <p>{project.results}</p>
+            </div>
           </section>
         )}
 
@@ -254,7 +285,7 @@ export default async function ProjectPage({ params }: Props) {
         {project.testimonialText && (
           <section className={`${styles.contentSection} ${styles.testimonialSection}`}>
             <blockquote className={styles.testimonialBlockquote}>
-              <p className={styles.testimonialText}>"{project.testimonialText}"</p>
+              <p className={styles.testimonialText}>{project.testimonialText}</p>
               {(project.testimonialAuthor || project.testimonialTitle) && (
                 <footer className={styles.testimonialFooter}>
                   {project.testimonialAuthor}
@@ -268,8 +299,8 @@ export default async function ProjectPage({ params }: Props) {
 
         {/* Gallery (Optional) */}
         {validGalleryImages.length > 0 && (
-          <section className={styles.gallerySection}>
-            <h2 className={styles.sectionTitle}>Gallery</h2>
+          <section className={`${styles.contentSection} ${styles.gallerySection}`}>
+            <h2 className={styles.sectionTitle}>Project Gallery</h2>
             <div className={styles.galleryGrid}>
               {validGalleryImages.map((img, index) => (
                 <div key={index} className={styles.galleryItem}>
@@ -279,7 +310,7 @@ export default async function ProjectPage({ params }: Props) {
                     width={800} 
                     height={600}
                     className={styles.galleryImage}
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </div>
               ))}

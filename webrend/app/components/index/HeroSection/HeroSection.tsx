@@ -121,7 +121,7 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
     
     // Navigate to the project page
     const slug = createSlug(location.repoName);
-    router.push(`/projects/${slug}`);
+    router.push(`/portfolio/projects/${slug}`);
   };
   
   // Reset all hover states (used when clicking on empty space)
