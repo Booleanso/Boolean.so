@@ -123,8 +123,8 @@
   grid-template-columns: 1fr 2fr; /* Make video area twice as large */
   gap: 40px;
   align-items: flex-start;
-  width: 100vw; /* Full width */
-  max-width: 100vw;
+  width: 90vw; /* Full width */
+  max-width: 90vw;
   margin-left: calc(-50vw + 50%); /* Extend to full width regardless of parent */
   margin-right: calc(-50vw + 50%);
   padding: 120px 5% 60px 5%; /* Reduced bottom padding */
