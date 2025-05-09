@@ -209,58 +209,62 @@ export default async function ProjectPage({ params }: Props) {
       {/* --- Behance Style Main Content Sections --- */}
       <div className={styles.mainContent}>
         
-        {/* Overview Section - Behance style with intro */}
-        <section className={styles.contentSection}>
-          <h2 className={styles.sectionTitle}>Overview</h2>
-          <div className={styles.sectionText}>
-            <p>{project.description}</p>
-            {project.clientName && <p><strong>Client:</strong> {project.clientName}</p>}
-            <p><strong>Timeline:</strong> Completed {formattedDate}</p>
-          </div>
-        </section>
+        {/* Two-column grid for Overview and Project Goals */}
+        <div className={styles.twoColumnGrid}>
+          {/* Overview Section */}
+          <section className={styles.contentSection}>
+            <h2 className={styles.sectionTitle}>Overview</h2>
+            <div className={styles.sectionText}>
+              <p>{project.description}</p>
+              {project.clientName && <p><strong>Client:</strong> {project.clientName}</p>}
+              <p><strong>Timeline:</strong> Completed {formattedDate}</p>
+            </div>
+          </section>
 
-        {/* Project Goal - Full width with gray background */}
-        <section className={styles.contentSection}>
-          <h2 className={styles.sectionTitle}>Project Goals</h2>
-          <div className={styles.sectionText}>
-            <p>{project.projectGoal}</p>
-          </div>
-        </section>
+          {/* Project Goal */}
+          <section className={styles.contentSection}>
+            <h2 className={styles.sectionTitle}>Project Goals</h2>
+            <div className={styles.sectionText}>
+              <p>{project.projectGoal}</p>
+            </div>
+          </section>
+        </div>
 
-        {/* Solution Section with large video and text on left */}
-        <section className={styles.solutionSection}>
+        {/* Solution Section with Features on right side */}
+        <section className={styles.solutionFeaturesSection}>
           <div className={styles.solutionText}>
             <h2 className={styles.sectionTitle}>Our Solution</h2>
             <div className={styles.sectionText}>
               <p>{project.solution}</p>
             </div>
           </div>
-          <div className={styles.solutionVideo}>
-            <iframe 
-              src="https://player.vimeo.com/video/76979871?autoplay=0&loop=0&muted=0" 
-              width="100%" 
-              height="100%" 
-              frameBorder="0" 
-              allow="autoplay; fullscreen; picture-in-picture" 
-              allowFullScreen
-              title="Project Solution Video"
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            ></iframe>
+          
+          <div className={styles.solutionFeatures}>
+            {/* Solution Video */}
+            <div className={styles.solutionVideo}>
+              <iframe 
+                src="https://player.vimeo.com/video/76979871?autoplay=0&loop=0&muted=0" 
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                allow="autoplay; fullscreen; picture-in-picture" 
+                allowFullScreen
+                title="Project Solution Video"
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              ></iframe>
+            </div>
+            
+            {/* Key Features without title, directly as badges */}
+            {project.keyFeatures && project.keyFeatures.length > 0 && (
+              <ul className={styles.featureList}>
+                {project.keyFeatures.map((feature, index) => (
+                  <li key={index} className={styles.featureItem}>{feature}</li>
+                ))}
+              </ul>
+            )}
           </div>
         </section>
 
-        {/* Key Features (Optional) */}
-        {project.keyFeatures && project.keyFeatures.length > 0 && (
-          <section className={styles.contentSection}>
-            <h2 className={styles.sectionTitle}>Key Features</h2>
-            <ul className={styles.featureList}>
-              {project.keyFeatures.map((feature, index) => (
-                <li key={index} className={styles.featureItem}>{feature}</li>
-              ))}
-            </ul>
-          </section>
-        )}
-        
         {/* Challenges (Optional) */}
         {project.challenges && (
            <section className={styles.contentSection}>
