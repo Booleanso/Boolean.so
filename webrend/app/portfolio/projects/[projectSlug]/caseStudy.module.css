@@ -128,7 +128,7 @@
   margin-left: calc(-50vw + 50%); /* Extend to full width regardless of parent */
   margin-right: calc(-50vw + 50%);
   padding: 120px 5%; /* Very generous padding */
-  background-color: #f7f7f7; /* Light background to set it apart */
+  background-color: #ffffff; /* White background */
   box-sizing: border-box;
 }
 
@@ -157,25 +157,36 @@
   min-height: 30vh; /* Minimum height of 30% viewport height */
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: none;
 }
 
+/* Right-side fade effect - default for light mode */
 .solutionVideo::after {
   content: '';
   position: absolute;
   top: 0;
   right: 0;
-  width: 30%; /* Wider gradient effect */
+  width: 40%; /* Wider fade effect */
   height: 100%;
-  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95)); /* Whiter fade */
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)); /* White fade for light mode */
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
-/* Dark mode support for the video shadow */
+/* Set before to null - we'll use just one element for the fade */
+.solutionVideo::before {
+  content: none;
+}
+
+/* Dark theme support for the video fade */
+:global(.dark-theme) .solutionVideo::after {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)); /* Black fade for dark mode */
+}
+
+/* For backwards compatibility, also keep the media query approach */
 @media (prefers-color-scheme: dark) {
-  .solutionVideo::after {
-    background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.95));
+  :global(.system-theme) .solutionVideo::after {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)); /* Black fade for system dark mode */
   }
 }
 
