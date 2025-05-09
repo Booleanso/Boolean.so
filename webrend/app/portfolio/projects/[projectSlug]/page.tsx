@@ -33,6 +33,7 @@ interface PortfolioProject {
   testimonialAuthor?: string | null;
   testimonialTitle?: string | null;
   galleryImages?: string[];
+  videoUrl?: string | null; // Add video URL field
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string[];
@@ -81,6 +82,7 @@ async function getProjectBySlug(slug: string): Promise<PortfolioProject | null> 
       testimonialAuthor: data.testimonialAuthor || null,
       testimonialTitle: data.testimonialTitle || null,
       galleryImages: data.galleryImages || [],
+      videoUrl: data.videoUrl || null, // Add the videoUrl field
       seoTitle: data.seoTitle || data.title || 'Project Case Study',
       seoDescription: data.seoDescription || data.description || '',
       seoKeywords: data.seoKeywords || data.tags || [],
@@ -154,6 +156,35 @@ export default async function ProjectPage({ params }: Props) {
     : PLACEHOLDER_IMAGE_URL;
   if (!isValidImageUrl(project.imageUrl)) {
      console.warn(`Invalid hero image URL, using placeholder: ${project.imageUrl}`);
+  }
+  
+  // Set fallback video URL
+  const FALLBACK_VIDEO_URL = "https://player.vimeo.com/video/76979871?autoplay=1&loop=1&muted=1&background=1";
+  
+  // Get video URL from project data and add autoplay parameters if needed
+  let videoUrl = project.videoUrl || FALLBACK_VIDEO_URL;
+  
+  // If videoUrl doesn't already have autoplay parameters, add them
+  if (videoUrl && !videoUrl.includes('autoplay=')) {
+    // Add appropriate parameters based on the video platform
+    if (videoUrl.includes('vimeo.com')) {
+      // For Vimeo links
+      videoUrl = videoUrl.includes('?') 
+        ? `${videoUrl}&autoplay=1&loop=1&muted=1&background=1` 
+        : `${videoUrl}?autoplay=1&loop=1&muted=1&background=1`;
+    } else if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+      // For YouTube links
+      videoUrl = videoUrl.includes('?') 
+        ? `${videoUrl}&autoplay=1&mute=1&loop=1&playlist=${getYouTubeID(videoUrl)}` 
+        : `${videoUrl}?autoplay=1&mute=1&loop=1&playlist=${getYouTubeID(videoUrl)}`;
+    }
+  }
+  
+  // Helper function to extract YouTube video ID
+  function getYouTubeID(url: string): string {
+    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[7].length === 11) ? match[7] : '';
   }
   
   // Validate gallery image URLs *before* mapping
@@ -243,11 +274,11 @@ export default async function ProjectPage({ params }: Props) {
             {/* Solution Video */}
             <div className={styles.solutionVideo}>
               <iframe 
-                src="https://player.vimeo.com/video/76979871?autoplay=0&loop=0&muted=0" 
+                src={videoUrl}
                 width="100%" 
                 height="100%" 
                 frameBorder="0" 
-                allow="autoplay; fullscreen; picture-in-picture" 
+                allow="autoplay; fullscreen; picture-in-picture; loop" 
                 allowFullScreen
                 title="Project Solution Video"
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}

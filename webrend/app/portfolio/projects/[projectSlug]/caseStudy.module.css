@@ -159,7 +159,7 @@
   gap: 20px;
 }
 
-/* Video styling - unchanged except for margin */
+/* Video styling with right-side fade effect */
 .solutionVideo {
   position: relative;
   width: 100%;
@@ -169,6 +169,31 @@
   overflow: hidden;
   box-shadow: none;
   margin-bottom: 20px; /* Add space between video and features */
+}
+
+/* Right-side fade effect */
+.solutionVideo::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40%; /* Width of the fade */
+  height: 100%;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)); /* White fade */
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Dark theme support for video fade */
+:global(.dark-theme) .solutionVideo::after {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)); /* Black fade for dark mode */
+}
+
+/* For system theme dark mode support */
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .solutionVideo::after {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)); /* Black fade for system dark mode */
+  }
 }
 
 /* Feature list styling */

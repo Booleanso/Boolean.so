@@ -22,6 +22,7 @@ interface FormData {
   testimonialAuthor: string;
   testimonialTitle: string;
   galleryImages: string; // Comma-separated URLs
+  videoUrl: string; // Video URL field for solution section
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string; // Comma-separated
@@ -46,6 +47,7 @@ export default function AddProjectForm() {
     testimonialAuthor: '',
     testimonialTitle: '',
     galleryImages: '',
+    videoUrl: '', // Initialize the video URL field
     seoTitle: '',
     seoDescription: '',
     seoKeywords: '',
@@ -114,14 +116,16 @@ export default function AddProjectForm() {
         testimonialAuthor: '',
         testimonialTitle: '',
         galleryImages: '',
+        videoUrl: '', // Reset the video URL field 
         seoTitle: '',
         seoDescription: '',
         seoKeywords: '',
       });
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to add project:", err);
-      setError(err.message || 'An unexpected error occurred.');
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -264,7 +268,21 @@ export default function AddProjectForm() {
         />
       </div>
 
-       <div className={styles.formGroup}>
+      <div className={styles.formGroup}>
+        <label htmlFor="videoUrl">Solution Video URL</label>
+        <input
+          type="url"
+          id="videoUrl"
+          name="videoUrl"
+          value={formData.videoUrl}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="e.g., https://player.vimeo.com/video/123456789"
+        />
+        <small className={styles.helpText}>Video to display in the solution section (Vimeo or YouTube embed URL)</small>
+      </div>
+
+      <div className={styles.formGroup}>
         <label htmlFor="keyFeatures">Key Features (comma-separated)</label>
         <textarea
           id="keyFeatures"

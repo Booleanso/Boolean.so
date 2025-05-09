@@ -35,6 +35,7 @@ interface AddProjectRequestBody {
   testimonialAuthor?: string;
   testimonialTitle?: string;
   galleryImages?: string[];
+  videoUrl?: string;   // Video URL for solution section
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string[];
@@ -105,6 +106,7 @@ export async function POST(request: NextRequest) {
       testimonialAuthor: body.testimonialAuthor || null,
       testimonialTitle: body.testimonialTitle || null,
       galleryImages: body.galleryImages || [],
+      videoUrl: body.videoUrl || null, // Add the video URL field
       seoTitle: body.seoTitle || body.title, // Default SEO title to project title
       seoDescription: body.seoDescription || body.description, // Default SEO desc to project desc
       seoKeywords: body.seoKeywords || body.tags, // Default SEO keywords to tags
@@ -136,13 +138,15 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error adding portfolio project:', error);
     if (error instanceof SyntaxError) {
       return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
     }
+    
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: 'Failed to add project.', details: error.message },
+      { error: 'Failed to add project.', details: errorMessage },
       { status: 500 }
     );
   }
