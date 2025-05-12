@@ -70,16 +70,53 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
     const checkDarkMode = () => {
       const isDark = document.documentElement.classList.contains('dark-theme');
       if (isDark !== isDarkMode) {
-        console.log(`Dark mode updated on visibility/mount: ${isDark}`);
+        console.log(`Dark mode updated on visibility/mount/route change: ${isDark}`);
         setIsDarkMode(isDark);
+        
+        // Force reload textures if dark mode changed
+        if (isDarkMode !== isDark && globeRef.current) {
+          // Clear existing textures to force reload
+          const material = globeRef.current.material as THREE.MeshStandardMaterial;
+          if (material.map) {
+            material.map.dispose();
+            material.map = null;
+          }
+          if (material.emissiveMap) {
+            material.emissiveMap.dispose();
+            material.emissiveMap = null;
+          }
+          material.needsUpdate = true;
+          console.log("Forced texture reload due to theme change");
+        }
       }
     };
     
     // Check immediately
     checkDarkMode();
     
+    // Create a routing check function
+    const handleRouteChange = () => {
+      setTimeout(checkDarkMode, 100);
+    };
+    
+    // Set up a more robust theme change detector
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          checkDarkMode();
+        }
+      });
+    });
+    
+    // Observe both document and html elements for class changes
+    observer.observe(document.documentElement, { 
+      attributes: true, 
+      attributeFilter: ['class'] 
+    });
+    
     // Check again after a short delay to ensure DOM is fully loaded
     const timeoutId = setTimeout(checkDarkMode, 100);
+    const secondTimeoutId = setTimeout(checkDarkMode, 500); // Extra check after 500ms
     
     // Listen for visibility changes (like returning to the tab or navigating back)
     document.addEventListener('visibilitychange', checkDarkMode);
@@ -87,31 +124,20 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
     // Handle focus events which can occur when returning to the page
     window.addEventListener('focus', checkDarkMode);
     
+    // Check periodically for the first few seconds
+    const intervalId = setInterval(checkDarkMode, 1000);
+    setTimeout(() => clearInterval(intervalId), 5000); // Stop checking after 5 seconds
+    
     // Clean up
     return () => {
       clearTimeout(timeoutId);
+      clearTimeout(secondTimeoutId);
+      clearInterval(intervalId);
       document.removeEventListener('visibilitychange', checkDarkMode);
-      window.addEventListener('focus', checkDarkMode);
+      window.removeEventListener('focus', checkDarkMode);
+      observer.disconnect();
     };
-  }, [isDarkMode]);
-  
-  // Check for dark mode class changes
-  useEffect(() => {
-    // Set up a mutation observer to detect theme changes
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          const isDarkUpdated = document.documentElement.classList.contains('dark-theme');
-          setIsDarkMode(isDarkUpdated);
-          console.log(`Dark mode changed via class mutation: ${isDarkUpdated}`);
-        }
-      });
-    });
-    
-    observer.observe(document.documentElement, { attributes: true });
-    
-    return () => observer.disconnect();
-  }, []);
+  }, [isDarkMode, globeRef]);
   
   // Spring animation for globe rotation slowdown
   const { rotationSpeedSpring } = useSpring({

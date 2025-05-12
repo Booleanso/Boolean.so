@@ -560,6 +560,9 @@
 .navbar-brand {
   .navbar-logo {
     transition: all 0.3s ease;
+    
+    // Invert the black logo to white in dark mode
+    filter: invert(1) brightness(1);
   }
   
   &:hover .navbar-logo {
@@ -573,6 +576,11 @@
   // Light mode logo animation
   .light-theme &.active .navbar-logo {
     animation: pulse-light 2s infinite;
+  }
+  
+  // Don't invert in light mode
+  .light-theme & .navbar-logo {
+    filter: none;
   }
 }
 
@@ -833,6 +841,8 @@
       
       .navbar-logo {
         object-fit: contain;
+        // Invert logo to white in dark mode
+        filter: invert(1) brightness(1);
       }
       
       // No filter or transform on focus/hover
@@ -841,5 +851,33 @@
         background-color: transparent;
       }
     }
+  }
+}
+
+// Light mode styles for logo island
+.light-mode, .light-theme {
+  .logo-island-container {
+    .logo-island {
+      .navbar-brand {
+        .navbar-logo {
+          // Don't invert in light mode
+          filter: none;
+        }
+      }
+    }
+  }
+}
+
+// Global logo inversion for dark mode
+:root:not(.light-theme):not(.light-mode) {
+  .navbar-logo {
+    filter: invert(1) brightness(1) !important;
+  }
+}
+
+// Reset for light mode
+:root.light-theme, :root.light-mode {
+  .navbar-logo {
+    filter: none !important;
   }
 } 
