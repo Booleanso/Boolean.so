@@ -20,6 +20,23 @@ export default function NavBar({ serverUser }: NavBarProps) {
   const scrolled = true;
   const router = useRouter();
   const pathname = usePathname();
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Check if user prefers dark mode
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDarkMode(darkModeMediaQuery.matches);
+
+    // Listen for changes in color scheme preference
+    const handleChange = (e: MediaQueryListEvent) => {
+      setIsDarkMode(e.matches);
+    };
+    
+    darkModeMediaQuery.addEventListener('change', handleChange);
+    return () => {
+      darkModeMediaQuery.removeEventListener('change', handleChange);
+    };
+  }, []);
 
   useEffect(() => {
     setUser(serverUser);
@@ -48,6 +65,22 @@ export default function NavBar({ serverUser }: NavBarProps) {
   };
   
   const isAdmin = user?.email === 'ceo@webrend.com';
+
+  // Dark mode styling variables
+  const bgColor = isDarkMode ? 'rgba(18, 18, 18, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+  const textColor = isDarkMode ? '#ffffff' : '#1d1d1f';
+  const borderColor = isDarkMode ? 'rgba(35, 35, 35, 0.95)' : 'rgba(230, 230, 230, 0.95)';
+  const buttonBgColor = isDarkMode ? 'rgba(30, 30, 30, 0.95)' : 'rgba(0, 0, 0, 0.08)';
+  const signOutBgColor = isDarkMode ? 'rgba(155, 32, 32, 0.7)' : 'rgba(255, 59, 48, 0.15)';
+  const signOutTextColor = isDarkMode ? '#ff8080' : '#ff3b30';
+  const signUpBgColor = isDarkMode ? '#0066cc' : '#0071e3';
+  const boxShadow = isDarkMode 
+    ? '0 4px 20px rgba(0, 0, 0, 0.7)' 
+    : '0 4px 20px rgba(0, 0, 0, 0.25)';
+  const buttonShadow = isDarkMode 
+    ? '0 2px 5px rgba(0, 0, 0, 0.5)' 
+    : '0 1px 3px rgba(0, 0, 0, 0.1)';
+  const logoFilter = isDarkMode ? 'invert(1) brightness(1.2)' : 'none';
 
   return (
     <>
@@ -110,48 +143,125 @@ export default function NavBar({ serverUser }: NavBarProps) {
         </div>
       </div>
       
-      <div className="navbar-container">
-        <div className="navbar">
-          <div className="navbar-menu">
-            <Link 
-              href="/marketplace" 
-              className={`nav-button marketplace-button ${pathname === '/marketplace' ? 'active' : ''}`}
-            >
-              Marketplace
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="logo-island-container">
-        <div className="logo-island">
-          <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
+      <div style={{
+        position: 'fixed',
+        bottom: '30px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '10px',
+        zIndex: 1000
+      }}>
+        {/* Logo */}
+        <div style={{
+          width: '60px',
+          height: '60px',
+          borderRadius: '60px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: bgColor,
+          boxShadow: boxShadow,
+          border: `2px solid ${borderColor}`
+        }}>
+          <Link href="/" style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
             <Image 
               src="/logo/logo_black.png" 
               alt="WebRend Logo" 
-              width={35} 
-              height={35} 
+              width={40} 
+              height={40} 
               className="navbar-logo"
+              style={{
+                objectFit: 'contain',
+                filter: logoFilter
+              }}
               priority
             />
           </Link>
         </div>
-      </div>
 
-      {!loading && (
-        <div className="auth-island-container">
-          <div className="auth-island">
+        {/* Marketplace Button */}
+        <div style={{
+          height: '60px',
+          minWidth: '180px',
+          borderRadius: '60px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: bgColor,
+          boxShadow: boxShadow,
+          border: `2px solid ${borderColor}`,
+          padding: '0 25px'
+        }}>
+          <Link 
+            href="/marketplace" 
+            style={{
+              backgroundColor: buttonBgColor,
+              color: textColor,
+              borderRadius: '30px',
+              padding: '9px 20px',
+              fontSize: '15px',
+              fontWeight: 600,
+              textDecoration: 'none',
+              boxShadow: buttonShadow
+            }}
+          >
+            Marketplace
+          </Link>
+        </div>
+
+        {/* Auth Buttons */}
+        {!loading && (
+          <div style={{
+            height: '60px',
+            minWidth: '220px',
+            borderRadius: '60px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: bgColor,
+            boxShadow: boxShadow,
+            border: `2px solid ${borderColor}`,
+            padding: '0 25px',
+            gap: '10px'
+          }}>
             {user ? (
               <>
                 <Link 
                   href="/profile" 
-                  className={`nav-button profile-button ${pathname === '/profile' ? 'active' : ''}`}
+                  style={{
+                    backgroundColor: buttonBgColor,
+                    color: textColor,
+                    borderRadius: '30px',
+                    padding: '9px 20px',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    boxShadow: buttonShadow
+                  }}
                 >
                   Profile
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="nav-button signout-button"
+                  style={{
+                    backgroundColor: signOutBgColor,
+                    color: signOutTextColor,
+                    borderRadius: '30px',
+                    padding: '9px 20px',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: 'pointer',
+                    boxShadow: buttonShadow
+                  }}
                 >
                   Sign Out
                 </button>
@@ -160,21 +270,39 @@ export default function NavBar({ serverUser }: NavBarProps) {
               <>
                 <Link
                   href="/auth?mode=signin"
-                  className={`nav-button login-button ${pathname === '/auth' && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'signin' ? 'active' : ''}`}
+                  style={{
+                    backgroundColor: buttonBgColor,
+                    color: textColor,
+                    borderRadius: '30px',
+                    padding: '9px 20px',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    boxShadow: buttonShadow
+                  }}
                 >
                   Login
                 </Link>
                 <Link
                   href="/auth?mode=signup"
-                  className={`nav-button signup-button ${pathname === '/auth' && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mode') === 'signup' ? 'active' : ''}`}
+                  style={{
+                    backgroundColor: signUpBgColor,
+                    color: 'white',
+                    borderRadius: '30px',
+                    padding: '9px 20px',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    boxShadow: buttonShadow
+                  }}
                 >
                   Sign Up
                 </Link>
               </>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 } 
