@@ -362,22 +362,6 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
             border: 1px solid rgba(0, 0, 0, 0.15);
           }
           
-          // Dark theme search form styles
-          .dark-theme & {
-            background-color: rgba(30, 30, 30, 0.7);
-            border: 1px solid rgba(50, 50, 50, 0.8);
-            
-            &:focus-within {
-              background-color: rgba(40, 40, 40, 0.8);
-              border: 1px solid $dark-primary-color;
-              box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
-            }
-            
-            &:hover:not(:focus-within) {
-              border: 1px solid rgba(60, 60, 60, 0.9);
-            }
-          }
-          
           .search-input {
             background-color: transparent;
             border: none;
@@ -390,15 +374,6 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
             
             &::placeholder {
               color: $text-light;
-            }
-            
-            // Dark theme input styles
-            .dark-theme & {
-              color: $dark-text-color;
-              
-              &::placeholder {
-                color: $dark-text-light;
-              }
             }
           }
           
@@ -416,14 +391,37 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
             &:hover {
               color: $primary-color;
             }
+          }
+        }
+        
+        // Dark theme search form styles - moved outside and fixed selector
+        :root.dark-theme & .search-form {
+          background-color: rgba(30, 30, 30, 0.7);
+          border: 1px solid rgba(50, 50, 50, 0.8);
+          
+          &:focus-within {
+            background-color: rgba(40, 40, 40, 0.8);
+            border: 1px solid $dark-primary-color;
+            box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
+          }
+          
+          &:hover:not(:focus-within) {
+            border: 1px solid rgba(60, 60, 60, 0.9);
+          }
+          
+          .search-input {
+            color: $dark-text-color;
             
-            // Dark theme button styles
-            .dark-theme & {
+            &::placeholder {
               color: $dark-text-light;
-              
-              &:hover {
-                color: $dark-primary-color;
-              }
+            }
+          }
+          
+          .search-button {
+            color: $dark-text-light;
+            
+            &:hover {
+              color: $dark-primary-color;
             }
           }
         }

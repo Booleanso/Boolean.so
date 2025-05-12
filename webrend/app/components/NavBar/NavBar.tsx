@@ -129,7 +129,19 @@ export default function NavBar({ serverUser }: NavBarProps) {
               )}
               
               <div className="search-container">
-                <form onSubmit={handleSearch} className="search-form">
+                <form 
+                  onSubmit={handleSearch} 
+                  className="search-form"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: isDarkMode ? 'rgba(30, 30, 30, 0.7)' : 'rgba(0, 0, 0, 0.03)',
+                    border: isDarkMode ? '1px solid rgba(50, 50, 50, 0.8)' : '1px solid rgba(0, 0, 0, 0.1)',
+                    borderRadius: '10px',
+                    padding: '0 15px',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
+                >
                   <input 
                     id="top-navbar-search-input"
                     type="text" 
@@ -137,8 +149,32 @@ export default function NavBar({ serverUser }: NavBarProps) {
                     className="search-input"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      outline: 'none',
+                      padding: '10px 0',
+                      fontSize: '14px',
+                      width: '220px',
+                      maxWidth: '220px',
+                      color: isDarkMode ? '#f5f5f7' : '#1d1d1f'
+                    }}
                   />
-                  <button type="submit" className="search-button">
+                  <button 
+                    type="submit" 
+                    className="search-button"
+                    style={{
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      color: isDarkMode ? '#98989d' : '#86868b',
+                      padding: 0,
+                      marginLeft: '5px'
+                    }}
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="11" cy="11" r="8"></circle>
                       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -193,7 +229,19 @@ export default function NavBar({ serverUser }: NavBarProps) {
             )}
             
             <div className="search-container">
-              <form onSubmit={handleSearch} className="search-form">
+              <form 
+                onSubmit={handleSearch} 
+                className="search-form"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: isDarkMode ? 'rgba(30, 30, 30, 0.7)' : 'rgba(0, 0, 0, 0.03)',
+                  border: isDarkMode ? '1px solid rgba(50, 50, 50, 0.8)' : '1px solid rgba(0, 0, 0, 0.1)',
+                  borderRadius: '10px',
+                  padding: '0 15px',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+              >
                 <input 
                   id="top-navbar-search-input"
                   type="text" 
@@ -201,8 +249,32 @@ export default function NavBar({ serverUser }: NavBarProps) {
                   className="search-input"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    padding: '10px 0',
+                    fontSize: '14px',
+                    width: '220px',
+                    maxWidth: '220px',
+                    color: isDarkMode ? '#f5f5f7' : '#1d1d1f'
+                  }}
                 />
-                <button type="submit" className="search-button">
+                <button 
+                  type="submit" 
+                  className="search-button"
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: isDarkMode ? '#98989d' : '#86868b',
+                    padding: 0,
+                    marginLeft: '5px'
+                  }}
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
