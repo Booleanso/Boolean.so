@@ -2,7 +2,7 @@
   width: 100%;
   padding: 0;
   margin: 0;
-  background-color: #f5f5f7;
+  background-color: var(--page-bg);
   min-height: 100vh;
 }
 
@@ -13,10 +13,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1.5rem;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: var(--topbar-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--border-color);
   z-index: 100;
 }
 
@@ -44,7 +44,7 @@
 .searchBar {
   display: flex;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--search-bg);
   border-radius: 8px;
   padding: 0.5rem 1rem;
   width: 300px;
@@ -53,13 +53,13 @@
 }
 
 .searchBar:focus-within {
-  background-color: rgba(0, 0, 0, 0.08);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  background-color: var(--search-bg-focus);
+  box-shadow: 0 0 0 2px var(--search-border-focus);
 }
 
 .searchIcon {
   margin-right: 0.5rem;
-  color: #666;
+  color: var(--text-tertiary);
 }
 
 .searchInput {
@@ -68,13 +68,13 @@
   outline: none;
   font-size: 0.9rem;
   width: 100%;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .clearSearch, .searchSubmitButton {
   background: none;
   border: none;
-  color: #888;
+  color: var(--text-tertiary);
   cursor: pointer;
   font-size: 0.8rem;
   width: 20px;
@@ -89,8 +89,8 @@
 }
 
 .clearSearch:hover, .searchSubmitButton:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #333;
+  background-color: var(--button-hover-bg);
+  color: var(--text-primary);
 }
 
 .searchSubmitButton {
@@ -107,19 +107,20 @@
   padding: 0.5rem 1rem;
   border-radius: 20px;
   transition: background-color 0.2s ease;
+  color: var(--text-primary);
 }
 
 .button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--button-hover-bg);
 }
 
 .buttonPrimary {
-  background-color: #000;
-  color: white;
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
 }
 
 .buttonPrimary:hover {
-  background-color: #333;
+  background-color: var(--button-primary-hover-bg);
 }
 
 .categoriesBar {
@@ -131,8 +132,8 @@
   white-space: nowrap;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  background-color: white;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--categories-bg);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .categoriesBar::-webkit-scrollbar {
@@ -141,7 +142,7 @@
 
 .categoryTab {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0.4rem 0.8rem;
   border-radius: 15px;
@@ -150,13 +151,13 @@
 }
 
 .categoryTab:hover, .categoryTabActive {
-  background-color: rgba(0, 0, 0, 0.07);
-  color: #000;
+  background-color: var(--category-hover-bg);
+  color: var(--text-primary);
 }
 
 .categoryTabActive {
   font-weight: 600;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--category-active-bg);
 }
 
 .content {
@@ -174,11 +175,12 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 0.5rem;
+  color: var(--text-primary);
 }
 
 .subtitle {
   font-size: 1.1rem;
-  color: #666;
+  color: var(--text-secondary);
   max-width: 600px;
 }
 
@@ -196,19 +198,20 @@
   grid-row: span 2;
   border-radius: 12px;
   overflow: hidden;
-  background-color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   height: 100%;
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--border-color);
 }
 
 .mainArticle:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--card-hover-shadow);
 }
 
 .mainArticleImage {
@@ -239,19 +242,20 @@
 .articleCard {
   border-radius: 12px;
   overflow: hidden;
-  background-color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   height: 100%;
   text-decoration: none;
-  color: inherit;
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--border-color);
 }
 
 .articleCard:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--card-hover-shadow);
 }
 
 .articleImage {
@@ -293,6 +297,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   letter-spacing: -0.01em;
+  color: var(--text-primary);
 }
 
 .mainArticle .articleTitle {
@@ -300,7 +305,7 @@
 }
 
 .articleDescription {
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 1rem;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -314,7 +319,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: #888;
+  color: var(--text-tertiary);
   margin-top: auto;
   align-items: center;
 }
@@ -334,19 +339,21 @@
 .emptyState {
   text-align: center;
   padding: 5rem 0;
-  background-color: white;
+  background-color: var(--empty-state-bg);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
 }
 
 .emptyState h2 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .emptyState p {
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 2rem;
   max-width: 500px;
   margin-left: auto;
@@ -388,22 +395,54 @@
 
 /* CSS Variables for light theme (default) */
 :root {
+  --page-bg: #f5f5f7;
   --card-bg: white;
+  --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   --border-color: rgba(0, 0, 0, 0.1);
-  --secondary-text: #666;
-  --tertiary-text: #888;
+  --text-primary: #000;
+  --text-secondary: #666;
+  --text-tertiary: #888;
   --surface-variant: #f5f5f5;
+  --search-bg: rgba(0, 0, 0, 0.05);
+  --search-bg-focus: rgba(0, 0, 0, 0.08);
+  --search-border-focus: rgba(0, 0, 0, 0.1);
+  --topbar-bg: rgba(255, 255, 255, 0.85);
+  --categories-bg: white;
+  --category-hover-bg: rgba(0, 0, 0, 0.07);
+  --category-active-bg: rgba(0, 0, 0, 0.1);
+  --empty-state-bg: white;
+  --button-primary-bg: #000;
+  --button-primary-text: white;
+  --button-primary-hover-bg: #333;
+  --button-hover-bg: rgba(0, 0, 0, 0.05);
   --placeholder-color: #eaeaea;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* CSS Variables for dark theme */
-.darkTheme {
-  --card-bg: #1e1e1e;
+:global(.dark-theme) {
+  --page-bg: #000;
+  --card-bg: #000;
+  --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   --border-color: rgba(255, 255, 255, 0.1);
-  --secondary-text: #aaa;
-  --tertiary-text: #888;
-  --surface-variant: #2a2a2a;
+  --text-primary: #fff;
+  --text-secondary: #aaa;
+  --text-tertiary: #888;
+  --surface-variant: #000;
+  --search-bg: rgba(255, 255, 255, 0.1);
+  --search-bg-focus: rgba(255, 255, 255, 0.15);
+  --search-border-focus: rgba(255, 255, 255, 0.2);
+  --topbar-bg: rgba(0, 0, 0, 0.85);
+  --categories-bg: #000;
+  --category-hover-bg: rgba(255, 255, 255, 0.1);
+  --category-active-bg: rgba(255, 255, 255, 0.15);
+  --empty-state-bg: #000;
+  --button-primary-bg: #fff;
+  --button-primary-text: #000;
+  --button-primary-hover-bg: #ddd;
+  --button-hover-bg: rgba(255, 255, 255, 0.1);
   --placeholder-color: #333;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Animation classes for content transitions */

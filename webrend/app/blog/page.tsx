@@ -195,7 +195,7 @@ export default async function BlogPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <main className="w-full min-h-screen bg-[#f5f5f7] p-0 m-0">
+      <main className="w-full min-h-screen bg-[var(--page-bg,#f5f5f7)] dark:bg-black p-0 m-0">
         <BlogPageClient articles={articles} uniqueCategories={uniqueCategories} />
       </main>
     </>

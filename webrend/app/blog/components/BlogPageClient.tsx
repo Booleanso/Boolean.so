@@ -156,6 +156,37 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
     setAnimationClass(styles.fadeIn);
   }, []);
   
+  // Update any styles to support dark mode
+  useEffect(() => {
+    // Add listener for theme changes - this ensures the UI updates appropriately
+    const checkDarkMode = () => {
+      const isDark = document.documentElement.classList.contains('dark-theme');
+      const searchInput = document.querySelector(`.${styles.searchInput}`) as HTMLInputElement;
+      
+      // Ensure input text color is properly set for dark mode
+      if (searchInput) {
+        searchInput.style.color = isDark ? '#fff' : '#333';
+        searchInput.style.caretColor = isDark ? '#fff' : '#333';
+      }
+    };
+    
+    // Check on mount
+    checkDarkMode();
+    
+    // Listen for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          checkDarkMode();
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    
+    return () => observer.disconnect();
+  }, []);
+  
   return (
     <>
       {/* Top Navigation Bar */}
