@@ -440,44 +440,21 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
       // Rotate the globe at the current animated speed
       globeGroupRef.current.rotation.y += currentSpeed;
       
-      // Add more complex cloud movement relative to the globe
+      // Add realistic counter-rotation for clouds
       if (cloudsRef.current) {
-        // Current time with a random offset for more natural movement
-        const time = Date.now() + timeOffsetRef.current;
+        // In reality, clouds move at a different rate than the earth's rotation
+        // Earth rotates once per day, while clouds typically move at varying speeds
+        // Approximate a more realistic counter-rotation with a slightly different rate
         
-        // Clouds rotate more when globe is moving, and less when it's stopping
-        const speedFactor = isGlobeRotating ? 1.0 : 0.2;
+        // Clouds rotate in the opposite direction at a slightly slower relative speed
+        // This creates the impression that clouds are moving against the earth's rotation
+        // but at their own natural pace
+        cloudsRef.current.rotation.y -= currentSpeed * 0.75;
         
-        // Vary cloud rotation speed with time
-        const rotationSpeed = speedFactor * (0.0003 + 0.0001 * Math.sin(time * 0.00005));
-        cloudRotationRef.current += rotationSpeed;
-        
-        // Add multi-layered drifting motion to clouds
-        // Primary slow drift - reduced when globe stops
-        cloudDriftXRef.current = speedFactor * 0.03 * Math.sin(time * 0.0001);
-        cloudDriftZRef.current = speedFactor * 0.03 * Math.cos(time * 0.00015);
-        
-        // Add a small secondary drift pattern for more complexity
-        cloudDriftXRef.current += speedFactor * 0.01 * Math.sin(time * 0.0003);
-        cloudDriftZRef.current += speedFactor * 0.01 * Math.cos(time * 0.00025);
-        
-        // Add occasional pulse effects to cloud size (subtle breathing)
-        cloudPulseRef.current = 1.0 + 0.02 * Math.sin(time * 0.0002);
-        
-        // Dynamic cloud properties - opacity and emission (keep minimum opacity high)
+        // Keep uniform cloud properties instead of animating them
         const material = cloudsRef.current.material as THREE.MeshStandardMaterial;
-        material.opacity = 0.8 + 0.1 * Math.sin(time * 0.0001); // Minimum 0.8 opacity
-        material.emissiveIntensity = 0.05 + 0.02 * Math.sin(time * 0.00025);
-        
-        // Apply all effects to the clouds mesh
-        cloudsRef.current.rotation.y = cloudRotationRef.current;
-        cloudsRef.current.position.x = cloudDriftXRef.current;
-        cloudsRef.current.position.z = cloudDriftZRef.current;
-        cloudsRef.current.scale.set(
-          cloudPulseRef.current, 
-          cloudPulseRef.current, 
-          cloudPulseRef.current
-        );
+        material.opacity = 0.8; // Fixed opacity
+        material.emissiveIntensity = 0.05; // Fixed emission
       }
     }
   });

@@ -166,7 +166,7 @@
       .nav-button {
         position: relative;
         border: none;
-        padding: 8px 0;
+        padding: 8px 12px;
         font-size: 15px;
         font-weight: 500;
         cursor: pointer;
@@ -175,9 +175,12 @@
         display: flex;
         align-items: center;
         color: rgba(255, 255, 255, 0.8);
+        background-color: #000;
+        border-radius: 10px;
         
         &:hover {
           color: white;
+          opacity: 0.9;
         }
         
         &.active {
@@ -187,8 +190,9 @@
             content: '';
             position: absolute;
             bottom: 0;
-            left: 0;
-            width: 100%;
+            left: 12px;
+            right: 12px;
+            width: calc(100% - 24px);
             height: 2px;
             background-color: white;
             border-radius: 2px;
@@ -199,8 +203,9 @@
           content: '';
           position: absolute;
           bottom: 0;
-          left: 0;
-          width: 100%;
+          left: 12px;
+          right: 12px;
+          width: calc(100% - 24px);
           height: 1px;
           background-color: rgba(255, 255, 255, 0.5);
           border-radius: 2px;
@@ -209,13 +214,16 @@
         // Light mode button styles
         .light-theme & {
           color: rgba(0, 0, 0, 0.7);
+          background-color: rgba(0, 0, 0, 0.05);
           
           &:hover {
             color: #000;
+            background-color: rgba(0, 0, 0, 0.08);
           }
           
           &.active {
             color: #000;
+            background-color: rgba(0, 0, 0, 0.12);
             
             &:after {
               background-color: #000;
