@@ -31,7 +31,7 @@ export default async function RootLayout({
   
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: 'var(--background)' }}>
         <ThemeProvider>
           <NavBar serverUser={simpleUser} />
           <PageTransition type="slide-up" duration={0.4}>

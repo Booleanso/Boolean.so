@@ -6,6 +6,7 @@ import Link from 'next/link';
 import styles from './portfolio.module.css'; // We'll create this CSS module next
 import { isValidImageUrl } from '../../utils/url-utils'; // Import the validator
 import SplineViewer from './SplineViewer';
+import AdminDeleteButton from './AdminDeleteButton';
 
 const PLACEHOLDER_IMAGE_URL = 'https://placehold.co/600x400/eee/ccc?text=Image+Not+Available';
 
@@ -77,6 +78,9 @@ export default function PortfolioClientPage({
       {/* Optional: Featured Project Hero Section */}
       {featuredProject && (
         <section className={styles.featuredSection}>
+          {/* Admin Delete Button for featured project */}
+          <AdminDeleteButton projectId={featuredProject.id} />
+          
           <div className={`${styles.featuredImageWrapper} ${featuredImageError ? styles.featuredImageErrorState : ''}`}>
             {!featuredImageError && (
               <Image 
@@ -162,6 +166,9 @@ export default function PortfolioClientPage({
               return (
                 // Use a div as the main clickable element for the card link
                 <div key={project.id} className={styles.projectCardContainer}>
+                  {/* Admin Delete Button */}
+                  <AdminDeleteButton projectId={project.id} />
+                  
                   {/* Link covers the image */}
                   <Link 
                     href={`/portfolio/projects/${project.slug}`}

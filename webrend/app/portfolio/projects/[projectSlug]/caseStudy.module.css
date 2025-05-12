@@ -1,7 +1,7 @@
 /* Overall container for the article */
 .caseStudyContainer {
-  background-color: #ffffff;
-  color: #1d1d1f; /* Apple's primary text color */
+  background-color: #000000; /* Changed to pure black */
+  color: #f5f5f7; /* Light text for dark background */
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   line-height: 1.6;
 }
@@ -136,29 +136,98 @@
 .tagsContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
+  background-color: transparent; /* Transparent background for light mode */
+  padding: 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode styles for tags container - with increased specificity */
+:global(.dark-theme) .caseStudyContainer .tagsContainer,
+:global(.dark-theme) .heroContent .tagsContainer,
+:global(.dark-theme) [class*="tagsContainer"] {
+  background-color: #000000 !important; /* Force pure black in dark mode */
+  border: none !important; /* Remove border */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  padding: 0 !important; /* Remove padding */
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .caseStudyContainer .tagsContainer,
+  :global(.system-theme) .heroContent .tagsContainer,
+  :global(.system-theme) [class*="tagsContainer"] {
+    background-color: #000000 !important; /* Force pure black in system dark mode */
+    border: none !important; /* Remove border */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    padding: 0 !important; /* Remove padding */
+  }
 }
 
 .tag {
-  background-color: rgba(0, 0, 0, 0.1); /* Dark background for light mode */
-  color: #000; /* Dark text */
-  padding: 0.3rem 0.8rem;
-  border-radius: 1rem;
-  font-size: 0.8rem;
+  background-color: #222222; /* Slightly lighter than pure black */
+  color: #ffffff; /* White text */
+  padding: 0.5rem 1.2rem;
+  border-radius: 100px; /* Full pill shape */
+  font-size: 0.85rem;
   font-weight: 500;
+  position: relative; /* Required for emoji positioning */
+  overflow: visible; /* Allow emoji to overflow */
+  transition: all 0.2s ease;
+  border: 1px solid #444;
 }
 
-/* Dark mode tag styling */
+.tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  background-color: #333333; /* Slightly lighter black on hover */
+}
+
+/* Emoji pop animation on hover */
+.tag:hover::after {
+  content: attr(data-emoji);
+  position: absolute;
+  top: -15px;
+  right: -5px;
+  font-size: 1.2rem;
+  animation: emojiPop 0.6s ease-out;
+  z-index: 10;
+}
+
+/* Each tag gets a different emoji based on its order */
+.tag:nth-child(1):hover::after { content: "🚀"; }
+.tag:nth-child(2):hover::after { content: "💻"; }
+.tag:nth-child(3):hover::after { content: "⚡"; }
+.tag:nth-child(4):hover::after { content: "🎨"; }
+.tag:nth-child(5):hover::after { content: "🔥"; }
+.tag:nth-child(6):hover::after { content: "✨"; }
+.tag:nth-child(7):hover::after { content: "🛠️"; }
+.tag:nth-child(8):hover::after { content: "📱"; }
+.tag:nth-child(9):hover::after { content: "🔍"; }
+.tag:nth-child(10):hover::after { content: "🌐"; }
+
+/* Dark mode tag styling - keep it black with white text */
 :global(.dark-theme) .tag {
-  background-color: rgba(255, 255, 255, 0.2); /* Light background for dark mode */
+  background-color: #000000; /* Black background */
   color: #fff; /* Light text */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-theme) .tag:hover {
+  background-color: #333333; /* Slightly lighter black on hover */
 }
 
 @media (prefers-color-scheme: dark) {
   :global(.system-theme) .tag {
-    background-color: rgba(255, 255, 255, 0.2); /* Light background for dark mode */
+    background-color: #000000; /* Black background */
     color: #fff; /* Light text */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  :global(.system-theme) .tag:hover {
+    background-color: #333333; /* Slightly lighter black on hover */
   }
 }
 
@@ -177,15 +246,58 @@
   background-color: #0077ed;
 }
 
+/* Social buttons styling */
+.linkedInButton, .instagramButton, .xButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.linkedInButton {
+  background-color: #0a66c2; /* LinkedIn blue */
+}
+
+.linkedInButton:hover {
+  background-color: #004182; /* Darker LinkedIn blue */
+}
+
+.instagramButton {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); 
+}
+
+.instagramButton:hover {
+  background: linear-gradient(45deg, #e0862e 0%, #d25e36 25%, #c9233c 50%, #b9205c 75%, #a9167a 100%);
+}
+
+.xButton {
+  background-color: #000000; /* X/Twitter black */
+}
+
+.xButton:hover {
+  background-color: #272727; /* Lighter black for hover */
+}
+
+.socialIcon {
+  width: 18px;
+  height: 18px;
+}
+
 /* --- Main Content Area --- */
 .mainContent {
   max-width: 850px; /* Original width */
   margin: 5rem auto; /* Increased top/bottom margin */
-  padding: 0 1.5rem; /* Original padding */
+  padding: 0 1rem; /* Original padding */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 4rem; /* Increased gap between major sections */
+  background-color: #000000; /* Added black background */
 }
 
 /* Solution Section - Special Full-Width Layout */
@@ -199,8 +311,24 @@
   margin-left: calc(-50vw + 50%); /* Extend to full width regardless of parent */
   margin-right: calc(-50vw + 50%);
   padding: 120px 5% 60px 5%; /* Reduced bottom padding */
-  background-color: #ffffff; /* White background */
+  background-color: #000000; /* Changed to black background */
   box-sizing: border-box;
+}
+
+/* Process Section - Full Width Layout */
+.processSection {
+  width: 100vw; /* Full viewport width */
+  max-width: 100vw;
+  margin-left: calc(-50vw + 50%); /* Center the section */
+  margin-right: calc(-50vw + 50%);
+  padding: 0 0 60px 0;
+  box-sizing: border-box;
+  background-color: #000000; /* Changed to black */
+}
+
+/* Dark mode support for process section */
+:global(.dark-theme) .processSection {
+  background-color: #000000;
 }
 
 .solutionText {
@@ -270,40 +398,42 @@
 /* Feature list styling */
 .featureList {
   list-style: none;
-  padding: 0;
+  padding: 1rem;
   margin: 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start; /* Align left to match video width */
   gap: 10px;
   width: 100%;
+  background-color: #000000; /* Added black background */
+  border-radius: 8px;
 }
 
 /* Badge-style feature items - simplified */
 .featureItem {
   font-size: 0.9rem;
   padding: 0.6rem 1.2rem;
-  background-color: #f5f5f7;
+  background-color: #000000; /* Changed to black */
   border-radius: 100px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
   font-weight: 500;
-  color: #333;
-  border: 1px solid #e0e0e0;
+  color: #ffffff; /* Changed to white text */
+  border: 1px solid #333333; /* Darker border */
   position: relative; /* Required for emoji positioning */
   overflow: visible; /* Allow emoji to overflow */
 }
 
 .featureItem:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #0071e3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #333333; /* Slightly lighter black on hover */
   color: white;
-  border-color: #0071e3;
+  border-color: #444444;
 }
 
 /* Emoji pop animation on hover */
@@ -397,14 +527,68 @@
 }
 
 .sectionTitle {
-  font-size: clamp(1.8rem, 3vw + 1rem, 3.5rem); /* Fluid sizing between 1.8rem and 3.5rem */
-  font-weight: 700; /* Bolder */
-  margin-bottom: 2rem;
-  color: #1d1d1f;
-  padding-bottom: 0.8rem;
-  border-bottom: 2px solid #d2d2d7; /* Thicker border */
-  letter-spacing: -0.02em;
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   line-height: 1.1;
+  padding-bottom: 1rem;
+  margin-bottom: 2.5rem;
+  text-align: left;
+  color: #000;
+  border-bottom: 2px solid #d2d2d7;
+}
+
+/* Dark mode support for section titles */
+:global(.dark-theme) .sectionTitle {
+  color: #fff;
+  border-bottom-color: #333;
+}
+
+/* Special styling for Process title */
+.processTitle {
+  background-color: #000;
+  color: #fff;
+  display: inline-block;
+  width: 100%;
+  padding: 1rem 2rem;
+  margin-bottom: 3rem;
+  text-align: left;
+  border-bottom: none;
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-sizing: border-box;
+}
+
+/* Special styling for Process title to maintain black background */
+.processTitle {
+  background-color: #000;
+  color: #fff !important;
+  display: block;
+  width: 100%;
+  padding: 1rem 2rem;
+  margin-bottom: 3rem;
+  text-align: left;
+  border-bottom: none !important;
+  font-size: 3.5rem;
+}
+
+/* Process title in full-width section */
+.processSection .processTitle {
+  margin: 0 0 3rem 0;
+  padding: 2rem 5%;
+  width: 100vw;
+  max-width: 100vw;
+}
+
+/* Dark mode support for Process title */
+:global(.dark-theme) .processTitle {
+  background-color: #000;
+  color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sectionText {
@@ -425,57 +609,73 @@
 
 /* Testimonial Section Styling */
 .testimonialSection {
-  background-color: transparent; /* Remove distinct background */
-  border: 1px solid #e0e0e0;
-  padding: 2.5rem;
-  border-radius: 12px;
-  margin-top: 1rem; /* Reduced margin */
-  text-align: center; /* Center align testimonial */
+  background-color: transparent;
+  border: none;
+  padding: 4rem 2rem;
+  margin: 3rem 0;
+  text-align: center;
+  width: 100%;
+  position: relative;
 }
 
 .testimonialBlockquote {
-  border-left: none; /* Remove side border */
+  border-left: none;
   padding-left: 0;
-  margin: 0 auto; /* Center blockquote */
-  max-width: 65ch;
+  padding-right: 0;
+  margin: 0 auto;
+  max-width: 80ch;
+  position: relative;
 }
 
 .testimonialText {
-  font-size: 1.4rem; /* Larger quote text */
-  font-style: normal; /* Remove italics if desired */
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   color: #1d1d1f;
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
+  margin-bottom: 2rem;
+  line-height: 1.4;
   position: relative;
-  padding: 0 1rem; /* Space for quote marks */
+  padding: 0 3rem;
+  text-align: center;
 }
 
 /* Add quote marks */
 .testimonialText::before,
 .testimonialText::after {
-  content: '\201C'; /* Left double quote */
-  font-size: 3rem;
-  color: #0071e3; /* Accent color */
+  content: '\201C';
+  font-size: 5rem;
+  color: #ffffff;
   position: absolute;
-  top: -0.5rem;
-  left: -0.5rem;
   line-height: 1;
-  opacity: 0.6;
+  opacity: 0.7;
+  text-shadow: 0 0 15px rgba(0, 113, 227, 0.3);
+}
+
+.testimonialText::before {
+  left: -0.5rem;
+  top: -1.5rem;
 }
 
 .testimonialText::after {
-  content: '\201D'; /* Right double quote */
-  left: auto;
+  content: '\201D';
   right: -0.5rem;
-  top: auto;
-  bottom: -1rem;
+  bottom: -2.5rem;
+}
+
+/* Dark mode adjustments for quote symbols */
+:global(.dark-theme) .testimonialText::before,
+:global(.dark-theme) .testimonialText::after {
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(10, 132, 255, 0.3);
 }
 
 .testimonialFooter {
-  font-size: 1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
   color: #555;
-  text-align: center; /* Center footer */
-  margin-top: 1rem;
+  text-align: center;
+  margin-top: 1.5rem;
 }
 
 /* Gallery Section Styling */
@@ -495,6 +695,79 @@
   border-radius: 12px; /* More pronounced rounding */
   aspect-ratio: 16 / 10; /* Adjust ratio if desired */
   border: 1px solid #eee; /* Subtle border */
+}
+
+/* Masonry Grid Styling for Process Section */
+.masonryGrid {
+  column-count: 3;
+  column-gap: 1.5rem;
+  width: 100%;
+}
+
+/* Adjust full-width masonry grid */
+.processSection .masonryGrid {
+  padding: 0 5%; /* Add horizontal padding */
+  width: 90%; /* Adjust width to match padding */
+  margin: 0 auto; /* Center the grid */
+}
+
+/* Dark mode support for masonry grid */
+:global(.dark-theme) .masonryGrid {
+  column-rule: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.masonryItem {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #eee; /* Light border in light mode */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Dark mode support for masonry items */
+:global(.dark-theme) .masonryItem {
+  border: 1px solid #333; /* Darker border in dark mode */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.masonryItem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+:global(.dark-theme) .masonryItem:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsive adjustments for masonry grid */
+@media (max-width: 1024px) {
+  .masonryGrid {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .masonryGrid {
+    column-count: 1;
+  }
+}
+
+/* Additional responsive adjustments for full-width masonry grid */
+@media (min-width: 1440px) {
+  .processSection .masonryGrid {
+    column-count: 4; /* More columns on very large screens */
+  }
+}
+
+@media (min-width: 2000px) {
+  .processSection .masonryGrid {
+    column-count: 5; /* Even more columns on ultra-wide screens */
+  }
 }
 
 .galleryImage {
@@ -545,78 +818,41 @@
   }
 }
 
-/* Responsive Adjustments */
+/* Updated responsive styles for section titles */
 @media (max-width: 768px) {
-  .heroSection {
-    padding: 3rem 5%;
-    min-height: 50vh;
-  }
-  .projectTitle {
-    font-size: 2.5rem;
-  }
-  .projectSubtitle {
-    font-size: 1.1rem;
-  }
-  .mainContent {
-    margin: 3rem auto;
-    padding: 0 1rem;
-  }
   .sectionTitle {
-    font-size: 1.8rem;
-  }
-  .sectionText, .featureItem {
-    font-size: 1rem;
-  }
-  .galleryGrid {
-    grid-template-columns: 1fr; /* Stack gallery items */
-  }
-}
-
-/* More responsive adjustments */
-@media (min-width: 1440px) {
-  .mainContent {
-    max-width: 1200px; /* Wider content area on large screens */
-    padding: 0 2rem;
+    font-size: 2.2rem;
+    letter-spacing: 0.03em;
+    padding-bottom: 0.8rem;
+    margin-bottom: 2rem;
   }
   
-  .solutionText {
-    padding-right: 40px;
-    padding-left: 10svw; /* More left padding on larger screens */
+  .processTitle {
+    font-size: 2.8rem;
+    padding: 0.8rem 1.5rem;
+  }
+  
+  .twoColumnGrid .sectionTitle {
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
   }
 }
 
-/* Medium screens */
-@media (max-width: 1024px) {
-  .featureItem {
-    margin: 0.3rem;
-  }
-}
-
-/* Mobile adjustments - prevent text from being too large */
 @media (max-width: 480px) {
   .sectionTitle {
-    font-size: 1.8rem; /* Fixed size for small screens */
+    font-size: 1.8rem;
+    letter-spacing: 0.02em;
   }
   
-  .sectionText {
-    font-size: 1.1rem; /* Fixed size for small screens */
+  .processTitle {
+    font-size: 2.2rem;
+    padding: 0.7rem 1.2rem;
   }
   
-  .featureItem {
-    font-size: 1rem; /* Fixed size for small screens */
-    padding: 0.6rem 1.2rem;
-    margin: 0.3rem;
+  .twoColumnGrid .sectionTitle {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
   }
-  
-  /* Remove these overrides - no longer needed since we're using original sizes */
-  /* .projectTitle {
-    font-size: 2.5rem;
-  }
-  
-  .projectSubtitle {
-    font-size: 1.2rem;
-    max-width: 100%;
-  } */
 }
 
 /* Two-column grid extends beyond mainContent to 80% viewport width */
@@ -645,6 +881,14 @@
   border-bottom-width: 1px;
 }
 
+/* Updated styles for grid section titles to be more consistent */
+.twoColumnGrid .sectionTitle {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom-width: 1px;
+}
+
 .twoColumnGrid .sectionText {
   font-size: 1rem; /* Smaller text */
 }
@@ -670,4 +914,307 @@
     margin-left: 0;
     margin-right: 0;
   }
+}
+
+/* Responsive Adjustments for Section Titles */
+@media (max-width: 768px) {
+  .sectionTitle {
+    font-size: 2.2rem;
+    letter-spacing: 0.03em;
+    padding-bottom: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  
+  .processTitle {
+    font-size: 2.8rem;
+    padding: 0.8rem 1.5rem;
+  }
+  
+  .twoColumnGrid .sectionTitle {
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  /* Restore other responsive adjustments */
+  .heroSection {
+    padding: 3rem 5%;
+    min-height: 50vh;
+  }
+  
+  .projectTitle {
+    font-size: 2.5rem;
+  }
+  
+  .projectSubtitle {
+    font-size: 1.1rem;
+  }
+  
+  .mainContent {
+    margin: 3rem auto;
+    padding: 0 1rem;
+  }
+  
+  .sectionText, .featureItem {
+    font-size: 1rem;
+  }
+  
+  .galleryGrid {
+    grid-template-columns: 1fr; /* Stack gallery items */
+  }
+}
+
+/* More responsive adjustments */
+@media (min-width: 1440px) {
+  .mainContent {
+    max-width: 1200px; /* Wider content area on large screens */
+    padding: 0 2rem;
+  }
+  
+  .solutionText {
+    padding-right: 40px;
+    padding-left: 10svw; /* More left padding on larger screens */
+  }
+}
+
+/* Medium screens */
+@media (max-width: 1024px) {
+  .featureItem {
+    margin: 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sectionTitle {
+    font-size: 1.8rem;
+    letter-spacing: 0.02em;
+  }
+  
+  .processTitle {
+    font-size: 2.2rem;
+    padding: 0.7rem 1.2rem;
+  }
+  
+  .twoColumnGrid .sectionTitle {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Restore other mobile adjustments */
+  .mainContent {
+    padding: 0 1rem;
+  }
+  
+  .featureItem {
+    font-size: 1rem; /* Fixed size for small screens */
+    padding: 0.6rem 1.2rem;
+    margin: 0.3rem;
+  }
+  
+  .sectionText {
+    font-size: 1.1rem; /* Fixed size for small screens */
+  }
+}
+
+/* Two-column grid extends beyond mainContent to 80% viewport width */
+.twoColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 60px; /* Increased gap */
+  width: 80vw; /* 80% of viewport width */
+  max-width: 80vw;
+  margin-left: calc(-40vw + 50%); /* Center the grid at 80vw width */
+  margin-right: calc(-40vw + 50%);
+  margin-bottom: 4rem;
+  padding: 0;
+}
+
+.twoColumnGrid .contentSection {
+  margin: 0;
+  padding: 0;
+}
+
+/* Smaller titles for the grid sections */
+.twoColumnGrid .sectionTitle {
+  font-size: 1.4rem; /* Smaller fixed size */
+  margin-bottom: 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom-width: 1px;
+}
+
+/* Updated styles for grid section titles to be more consistent */
+.twoColumnGrid .sectionTitle {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom-width: 1px;
+}
+
+.twoColumnGrid .sectionText {
+  font-size: 1rem; /* Smaller text */
+}
+
+/* No separator line - completely removed */
+
+/* Responsive adjustments for the grid */
+@media (max-width: 1024px) {
+  .twoColumnGrid {
+    width: 90vw;
+    max-width: 90vw;
+    margin-left: calc(-45vw + 50%);
+    margin-right: calc(-45vw + 50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .twoColumnGrid {
+    grid-template-columns: 1fr; /* Stack on mobile */
+    gap: 30px;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* Client info with LinkedIn */
+.clientInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.linkedInLink, .inlineLinkedIn {
+  display: inline-flex;
+  margin-left: 0.5rem;
+  color: #0a66c2; /* LinkedIn blue */
+  transition: color 0.2s;
+}
+
+.linkedInLink:hover, .inlineLinkedIn:hover {
+  color: #004182; /* Darker blue on hover */
+}
+
+.linkedInIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Hero buttons container */
+.heroButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Website Preview Section */
+.websitePreviewSection {
+  width: 100vw; /* Full viewport width */
+  margin: 0 0 5rem 0; /* Remove top margin */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background-color: #000000; /* Added black background */
+}
+
+.centeredSectionTitle {
+  text-align: center;
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  border-bottom: none;
+}
+
+.centeredDescription {
+  text-align: center;
+  max-width: 700px;
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: #666;
+  margin: 0 0 5rem 0;
+  font-weight: 400;
+}
+
+:global(.dark-theme) .centeredDescription {
+  color: #aaa;
+}
+
+.websitePreviewWrapper {
+  width: 90vw; /* 90% of viewport width */
+  max-width: 1600px; /* Maximum width */
+  height: 0;
+  padding-bottom: 65%; /* Taller aspect ratio */
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  margin-bottom: 3rem;
+  border: 1px solid #eee;
+}
+
+.websitePreview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.noPreview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f7;
+  color: #666;
+  font-size: 1.2rem;
+}
+
+:global(.dark-theme) .noPreview {
+  background-color: #2c2c2e;
+  color: #aaa;
+}
+
+/* Responsive styles for new elements */
+@media (max-width: 768px) {
+  .heroButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .processButton, .liveLinkButton {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .centeredSectionTitle {
+    font-size: 2rem;
+  }
+  
+  .centeredDescription {
+    font-size: 1rem;
+  }
+  
+  .websitePreviewWrapper {
+    padding-bottom: 75%; /* Adjust aspect ratio for mobile */
+  }
+}
+
+/* Make the two-column grid in the solution section into a full layout */
+
+/* Remove all modal-related styles and animation keyframes */
+:global(.dark-theme) .websitePreviewWrapper {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  border-color: #333;
 } 

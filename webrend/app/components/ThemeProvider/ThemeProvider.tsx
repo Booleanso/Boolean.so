@@ -28,11 +28,17 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     
     // Apply the appropriate theme class
     if (selectedTheme === 'system') {
-      root.classList.add(`${systemTheme}-theme`);
+      const themeToApply = `${systemTheme}-theme`;
+      root.classList.add(themeToApply);
       document.body.dataset.theme = systemTheme;
+      document.body.classList.remove('light-theme', 'dark-theme');
+      document.body.classList.add(themeToApply);
     } else {
-      root.classList.add(`${selectedTheme}-theme`);
+      const themeToApply = `${selectedTheme}-theme`;
+      root.classList.add(themeToApply);
       document.body.dataset.theme = selectedTheme;
+      document.body.classList.remove('light-theme', 'dark-theme');
+      document.body.classList.add(themeToApply);
     }
   };
 

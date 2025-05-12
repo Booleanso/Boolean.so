@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Metadata, ResolvingMetadata } from 'next';
 import ReactMarkdown from 'react-markdown';
 import styles from './page.module.css';
-import BlogSlugPage from './BlogSlugPage';
+import BlogSlugPage from '@/app/blog/[slug]/BlogSlugPage';
 
 // Types for our article
 interface Article {
@@ -143,6 +143,43 @@ async function getArticleBySlug(slug: string): Promise<Article | null> {
   }
 }
 
+// Get related articles (based on category or just recent ones)
+async function getRelatedArticles(currentSlug: string, category: string, limit: number = 3): Promise<Article[]> {
+  try {
+    // First try to get articles from the same category
+    let articlesQuery = await db
+      .collection('articles')
+      .where('category', '==', category)
+      .where('slug', '!=', currentSlug)
+      .orderBy('publishedAt', 'desc')
+      .limit(limit)
+      .get();
+    
+    // If not enough category-specific articles, get recent articles regardless of category
+    if (articlesQuery.docs.length < limit) {
+      // We need to use a different approach for the fallback query
+      // since we can't use != on slug and orderBy slug in the same query
+      const allArticlesQuery = await db
+        .collection('articles')
+        .orderBy('publishedAt', 'desc')
+        .limit(limit + 5) // Fetch a few extra to filter
+        .get();
+      
+      // Manually filter out the current article
+      const filteredArticles = allArticlesQuery.docs
+        .filter(doc => doc.data().slug !== currentSlug)
+        .slice(0, limit);
+      
+      return filteredArticles.map(doc => doc.data() as Article);
+    }
+    
+    return articlesQuery.docs.map(doc => doc.data() as Article);
+  } catch (error) {
+    console.error('Error fetching related articles:', error);
+    return [];
+  }
+}
+
 // Format the date for display
 function formatDate(date: Date | { toDate: () => Date }): string {
   const dateObj = date instanceof Date ? date : date.toDate();
@@ -173,6 +210,9 @@ export default async function BlogArticlePage({
       return notFound();
     }
     
+    // Get related articles
+    const relatedArticles = await getRelatedArticles(slug, article.category);
+    
     // Convert timestamp to Date if needed
     const publishDate = article.publishedAt instanceof Date 
       ? article.publishedAt 
@@ -183,6 +223,19 @@ export default async function BlogArticlePage({
       ...article,
       publishedAt: publishDate.toISOString(),
     };
+    
+    // Create serializable versions of the related articles
+    const serializedRelatedArticles = relatedArticles.map(relArticle => {
+      const relPublishDate = relArticle.publishedAt instanceof Date 
+        ? relArticle.publishedAt 
+        : relArticle.publishedAt.toDate();
+      
+      return {
+        ...relArticle,
+        publishedAt: relPublishDate.toISOString(),
+        formattedDate: formatDate(relPublishDate)
+      };
+    });
     
     // Structured data for SEO
     const structuredData = {
@@ -219,12 +272,11 @@ export default async function BlogArticlePage({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
-        <div className="w-full min-h-screen" style={{ backgroundColor: 'var(--page-bg, #000)' }}>
-          <BlogSlugPage 
-            article={serializedArticle} 
-            formattedDate={formatDate(publishDate)} 
-          />
-        </div>
+        <BlogSlugPage 
+          article={serializedArticle} 
+          formattedDate={formatDate(publishDate)}
+          relatedArticles={serializedRelatedArticles}
+        />
       </>
     );
   } catch (error) {

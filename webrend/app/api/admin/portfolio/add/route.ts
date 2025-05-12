@@ -26,6 +26,9 @@ interface AddProjectRequestBody {
   featured: boolean;
   // New fields
   clientName?: string;
+  clientLinkedIn?: string; // Client's LinkedIn URL
+  clientInstagram?: string; // Client's Instagram URL
+  clientX?: string; // Client's X/Twitter URL
   projectGoal: string; // Required
   solution: string;    // Required
   keyFeatures?: string[];
@@ -97,6 +100,9 @@ export async function POST(request: NextRequest) {
       createdAt: Timestamp.now(),
       // Add new fields, providing defaults or null for optional ones
       clientName: body.clientName || null,
+      clientLinkedIn: body.clientLinkedIn || null,
+      clientInstagram: body.clientInstagram || null,
+      clientX: body.clientX || null,
       projectGoal: body.projectGoal, // Required
       solution: body.solution,       // Required
       keyFeatures: body.keyFeatures || [],

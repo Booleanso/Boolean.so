@@ -13,6 +13,9 @@ interface FormData {
   featured: boolean;
   // New fields for case study
   clientName: string;
+  clientLinkedIn: string; // New field for client's LinkedIn URL
+  clientInstagram: string; // New field for client's Instagram URL
+  clientX: string; // New field for client's X/Twitter URL
   projectGoal: string;
   solution: string;
   keyFeatures: string; // Comma-separated
@@ -38,6 +41,9 @@ export default function AddProjectForm() {
     dateCompleted: '',
     featured: false,
     clientName: '',
+    clientLinkedIn: '',
+    clientInstagram: '',
+    clientX: '',
     projectGoal: '',
     solution: '',
     keyFeatures: '',
@@ -107,6 +113,9 @@ export default function AddProjectForm() {
         dateCompleted: '',
         featured: false,
         clientName: '',
+        clientLinkedIn: '',
+        clientInstagram: '',
+        clientX: '',
         projectGoal: '',
         solution: '',
         keyFeatures: '',
@@ -237,6 +246,42 @@ export default function AddProjectForm() {
           id="clientName"
           name="clientName"
           value={formData.clientName}
+          onChange={handleChange}
+          className={styles.input}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="clientLinkedIn">Client LinkedIn</label>
+        <input
+          type="url"
+          id="clientLinkedIn"
+          name="clientLinkedIn"
+          value={formData.clientLinkedIn}
+          onChange={handleChange}
+          className={styles.input}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="clientInstagram">Client Instagram</label>
+        <input
+          type="url"
+          id="clientInstagram"
+          name="clientInstagram"
+          value={formData.clientInstagram}
+          onChange={handleChange}
+          className={styles.input}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="clientX">Client X (Twitter)</label>
+        <input
+          type="url"
+          id="clientX"
+          name="clientX"
+          value={formData.clientX}
           onChange={handleChange}
           className={styles.input}
         />

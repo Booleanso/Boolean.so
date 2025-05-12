@@ -15,14 +15,16 @@ interface Article {
   readTime: number;
   sourceUrl: string;
   slug: string;
+  formattedDate?: string;
 }
 
 interface BlogSlugPageProps {
   article: Article;
   formattedDate: string;
+  relatedArticles?: Article[];
 }
 
-export default function BlogSlugPage({ article, formattedDate }: BlogSlugPageProps) {
+export default function BlogSlugPage({ article, formattedDate, relatedArticles = [] }: BlogSlugPageProps) {
   const [isMounted, setIsMounted] = useState(false);
   
   // Set mounted state when component mounts
@@ -45,6 +47,19 @@ export default function BlogSlugPage({ article, formattedDate }: BlogSlugPagePro
         } else {
           containerElement.classList.remove(styles.darkTheme);
         }
+      }
+      
+      // Ensure the theme is applied to both html and body for SSR pages
+      if (isDarkMode) {
+        document.body.classList.add('dark-theme');
+        document.body.classList.remove('light-theme');
+        document.documentElement.classList.add('dark-theme');
+        document.documentElement.classList.remove('light-theme');
+      } else {
+        document.body.classList.add('light-theme');
+        document.body.classList.remove('dark-theme');
+        document.documentElement.classList.add('light-theme');
+        document.documentElement.classList.remove('dark-theme');
       }
     };
     
@@ -76,7 +91,7 @@ export default function BlogSlugPage({ article, formattedDate }: BlogSlugPagePro
   // For SSR compatibility, render a simplified version initially
   if (!isMounted) {
     return (
-      <div className={styles.container} style={{ backgroundColor: 'var(--page-bg)' }}>
+      <div className={styles.container} style={{ backgroundColor: 'black' }}>
         <div className={styles.articleHeader}>
           <Link href="/blog" className={styles.backLink}>
             Back to Blog
@@ -98,10 +113,7 @@ export default function BlogSlugPage({ article, formattedDate }: BlogSlugPagePro
   }
 
   return (
-    <div 
-      className={`${styles.container} ${document.documentElement.classList.contains('dark-theme') ? styles.darkTheme : ''}`}
-      style={{ backgroundColor: 'var(--page-bg)' }}
-    >
+    <div className={`${styles.container} ${document.documentElement.classList.contains('dark-theme') ? styles.darkTheme : ''}`}>
       <div className={styles.articleHeader}>
         <Link href="/blog" className={styles.backLink}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -176,14 +188,47 @@ export default function BlogSlugPage({ article, formattedDate }: BlogSlugPagePro
       
       <div className={styles.relatedSection}>
         <h2>Continue Reading</h2>
-        <div className={styles.relatedLink}>
-          <Link href="/blog">
-            View all articles
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </Link>
-        </div>
+        
+        {relatedArticles && relatedArticles.length > 0 ? (
+          <div className={styles.relatedArticles}>
+            {relatedArticles.map((relatedArticle, index) => (
+              <Link href={`/blog/${relatedArticle.slug}`} key={index} className={styles.relatedArticleCard}>
+                {relatedArticle.imageUrl && (
+                  <div className={styles.relatedArticleImage}>
+                    <img 
+                      src={relatedArticle.imageUrl} 
+                      alt={relatedArticle.title}
+                      width={300}
+                      height={160}
+                    />
+                  </div>
+                )}
+                <div className={styles.relatedArticleContent}>
+                  <div className={styles.relatedArticleMeta}>
+                    <span className={styles.relatedArticleCategory}>{relatedArticle.category}</span>
+                    <span className={styles.dot}>•</span>
+                    <span>{relatedArticle.formattedDate || ''}</span>
+                  </div>
+                  <h3 className={styles.relatedArticleTitle}>{relatedArticle.title}</h3>
+                  <p className={styles.relatedArticleDescription}>
+                    {relatedArticle.description.length > 100 
+                      ? `${relatedArticle.description.substring(0, 100)}...` 
+                      : relatedArticle.description}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.relatedLink}>
+            <Link href="/blog">
+              View all articles
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
