@@ -45,30 +45,58 @@
   display: flex;
   align-items: center;
   background-color: var(--search-bg);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
   width: 300px;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.searchBar:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--search-border-focus);
 }
 
 .searchBar:focus-within {
   background-color: var(--search-bg-focus);
-  box-shadow: 0 0 0 2px var(--search-border-focus);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+  border-color: var(--search-border-focus);
+  transform: translateY(-2px);
 }
 
 .searchIcon {
-  margin-right: 0.5rem;
+  margin-right: 0.6rem;
   color: var(--text-tertiary);
+  transition: color 0.2s ease;
+  font-size: 1rem;
+}
+
+.searchBar:focus-within .searchIcon {
+  color: var(--text-primary);
 }
 
 .searchInput {
   border: none;
   background: transparent;
   outline: none;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   width: 100%;
   color: var(--text-primary);
+  caret-color: var(--accent-color);
+  padding: 0.2rem 0;
+}
+
+.searchInput::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.searchInput:focus::placeholder {
+  opacity: 0.5;
 }
 
 .clearSearch, .searchSubmitButton {
@@ -76,26 +104,26 @@
   border: none;
   color: var(--text-tertiary);
   cursor: pointer;
-  font-size: 0.8rem;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   padding: 0;
-  margin-left: 4px;
+  margin-left: 6px;
   transition: all 0.2s ease;
 }
 
 .clearSearch:hover, .searchSubmitButton:hover {
   background-color: var(--button-hover-bg);
   color: var(--text-primary);
+  transform: scale(1.1);
 }
 
 .searchSubmitButton {
-  color: #3a7bd5;
-  font-size: 1rem;
+  color: var(--accent-color);
+  font-size: 1.1rem;
   font-weight: bold;
 }
 
@@ -403,8 +431,8 @@
   --text-secondary: #666;
   --text-tertiary: #888;
   --surface-variant: #f5f5f5;
-  --search-bg: rgba(0, 0, 0, 0.05);
-  --search-bg-focus: rgba(0, 0, 0, 0.08);
+  --search-bg: rgba(0, 0, 0, 0.03);
+  --search-bg-focus: rgba(0, 0, 0, 0.04);
   --search-border-focus: rgba(0, 0, 0, 0.1);
   --topbar-bg: rgba(255, 255, 255, 0.85);
   --categories-bg: white;
@@ -417,6 +445,7 @@
   --button-hover-bg: rgba(0, 0, 0, 0.05);
   --placeholder-color: #eaeaea;
   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --accent-color: #0071e3;
 }
 
 /* CSS Variables for dark theme */
@@ -429,9 +458,9 @@
   --text-secondary: #aaa;
   --text-tertiary: #888;
   --surface-variant: #000;
-  --search-bg: rgba(255, 255, 255, 0.1);
-  --search-bg-focus: rgba(255, 255, 255, 0.15);
-  --search-border-focus: rgba(255, 255, 255, 0.2);
+  --search-bg: rgba(40, 40, 40, 0.95);
+  --search-bg-focus: rgba(50, 50, 50, 0.95);
+  --search-border-focus: rgba(60, 60, 60, 0.9);
   --topbar-bg: rgba(0, 0, 0, 0.85);
   --categories-bg: #000;
   --category-hover-bg: rgba(255, 255, 255, 0.1);
@@ -443,6 +472,7 @@
   --button-hover-bg: rgba(255, 255, 255, 0.1);
   --placeholder-color: #333;
   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --accent-color: #2997ff;
 }
 
 /* Animation classes for content transitions */
@@ -523,4 +553,26 @@
 
 .articleGrid > *:nth-child(6) {
   animation-delay: 0.4s;
+}
+
+/* Direct dark theme styling for search bar */
+:global(.dark-theme) .searchBar {
+  background-color: #1e1e1e !important;
+  border: 1px solid #333 !important;
+}
+
+:global(.dark-theme) .searchBar:focus-within {
+  background-color: #1e1e1e !important;
+  border-color: #444 !important;
+}
+
+:global(.dark-theme) .searchBar:hover {
+  background-color: #1e1e1e !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Make the input field match the search bar background */
+:global(.dark-theme) .searchInput {
+  color: #aaa !important;
+  background-color: #1e1e1e !important;
 } 

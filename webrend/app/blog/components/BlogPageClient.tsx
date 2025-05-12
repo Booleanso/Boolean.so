@@ -162,16 +162,31 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
     const checkDarkMode = () => {
       const isDark = document.documentElement.classList.contains('dark-theme');
       const searchInput = document.querySelector(`.${styles.searchInput}`) as HTMLInputElement;
+      const searchIcon = document.querySelector(`.${styles.searchIcon}`) as HTMLElement;
+      const clearBtn = document.querySelector(`.${styles.clearSearch}`) as HTMLButtonElement;
+      const submitBtn = document.querySelector(`.${styles.searchSubmitButton}`) as HTMLButtonElement;
       
       // Ensure input text color is properly set for dark mode
       if (searchInput) {
-        searchInput.style.color = isDark ? '#fff' : '#333';
-        searchInput.style.caretColor = isDark ? '#fff' : '#333';
+        searchInput.style.color = isDark ? 'var(--text-primary)' : 'var(--text-primary)';
+        searchInput.style.caretColor = isDark ? 'var(--accent-color)' : 'var(--accent-color)';
+      }
+      
+      // Update icon colors if needed
+      if (searchIcon) {
+        searchIcon.style.color = isDark ? 'var(--text-tertiary)' : 'var(--text-tertiary)';
+      }
+      
+      if (submitBtn) {
+        submitBtn.style.color = isDark ? 'var(--accent-color)' : 'var(--accent-color)';
       }
     };
     
     // Check on mount
     checkDarkMode();
+    
+    // Also check after a short delay to ensure DOM is fully loaded
+    const timeoutId = setTimeout(checkDarkMode, 100);
     
     // Listen for theme changes
     const observer = new MutationObserver((mutations) => {
@@ -184,8 +199,11 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
     
     observer.observe(document.documentElement, { attributes: true });
     
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      observer.disconnect();
+      clearTimeout(timeoutId);
+    };
+  }, [styles.searchInput, styles.searchIcon, styles.clearSearch, styles.searchSubmitButton]);
   
   return (
     <>
@@ -196,7 +214,12 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
             className={styles.searchBar} 
             onSubmit={handleSearchSubmit}
           >
-            <span className={styles.searchIcon}>🔍</span>
+            <span className={styles.searchIcon}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
             <input 
               type="text" 
               className={styles.searchInput} 
@@ -211,7 +234,10 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
                 onClick={clearSearch}
                 aria-label="Clear search"
               >
-                ✕
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
               </button>
             )}
             <button 
@@ -219,7 +245,9 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
               className={styles.searchSubmitButton}
               aria-label="Search"
             >
-              ↵
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
             </button>
           </form>
         </div>
