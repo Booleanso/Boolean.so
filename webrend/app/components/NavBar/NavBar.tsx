@@ -21,8 +21,12 @@ export default function NavBar({ serverUser }: NavBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
   useEffect(() => {
+    // Set mounted state to true once component is mounted
+    setIsMounted(true);
+    
     // Check if user prefers dark mode
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     setIsDarkMode(darkModeMediaQuery.matches);
@@ -67,10 +71,10 @@ export default function NavBar({ serverUser }: NavBarProps) {
   const isAdmin = user?.email === 'ceo@webrend.com';
 
   // Dark mode styling variables
-  const bgColor = isDarkMode ? 'rgba(18, 18, 18, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+  const bgColor = isDarkMode ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)';
   const textColor = isDarkMode ? '#ffffff' : '#1d1d1f';
-  const borderColor = isDarkMode ? 'rgba(35, 35, 35, 0.95)' : 'rgba(230, 230, 230, 0.95)';
-  const buttonBgColor = isDarkMode ? 'rgba(30, 30, 30, 0.95)' : 'rgba(0, 0, 0, 0.08)';
+  const borderColor = isDarkMode ? 'rgba(30, 30, 30, 0.95)' : 'rgba(230, 230, 230, 0.95)';
+  const buttonBgColor = isDarkMode ? 'rgba(40, 40, 40, 0.95)' : 'rgba(0, 0, 0, 0.08)';
   const signOutBgColor = isDarkMode ? 'rgba(155, 32, 32, 0.7)' : 'rgba(255, 59, 48, 0.15)';
   const signOutTextColor = isDarkMode ? '#ff8080' : '#ff3b30';
   const signUpBgColor = isDarkMode ? '#0066cc' : '#0071e3';
@@ -80,7 +84,74 @@ export default function NavBar({ serverUser }: NavBarProps) {
   const buttonShadow = isDarkMode 
     ? '0 2px 5px rgba(0, 0, 0, 0.5)' 
     : '0 1px 3px rgba(0, 0, 0, 0.1)';
-  const logoFilter = isDarkMode ? 'invert(1) brightness(1.2)' : 'none';
+  const logoFilter = isDarkMode ? 'invert(1) brightness(1.5)' : 'none';
+
+  // Only render client-specific content after component is mounted
+  // This prevents hydration mismatch between server and client
+  if (!isMounted) {
+    return (
+      <>
+        <div className={`top-navbar-container ${scrolled ? 'scrolled' : ''}`}>
+          <div className="top-navbar">
+            <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
+              <Image 
+                src="/logo/logo_black.png" 
+                alt="WebRend Logo" 
+                width={40} 
+                height={40} 
+                className="navbar-logo"
+                priority
+              />
+            </Link>
+            
+            <div className="top-navbar-menu">
+              <Link 
+                href="/portfolio" 
+                className={`nav-button portfolio-button ${pathname === '/portfolio' ? 'active' : ''}`}
+              >
+                Portfolio
+              </Link>
+              
+              <Link 
+                href="/blog" 
+                className={`nav-button portfolio-button ${pathname === '/blog' ? 'active' : ''}`}
+              >
+                AI Blog
+              </Link>
+              
+              {isAdmin && (
+                <Link 
+                  href="/admin/portfolio/add"
+                  className={`nav-button admin-button ${pathname.startsWith('/admin') ? 'active' : ''}`}
+                >
+                  Admin
+                </Link>
+              )}
+              
+              <div className="search-container">
+                <form onSubmit={handleSearch} className="search-form">
+                  <input 
+                    id="top-navbar-search-input"
+                    type="text" 
+                    placeholder="Search for designs, templates..."
+                    className="search-input"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <button type="submit" className="search-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

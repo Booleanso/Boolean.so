@@ -149,6 +149,18 @@ function getDefaultArticles(): Article[] {
 export default async function BlogPage() {
   const articles = await getArticles();
 
+  // Serialize articles to avoid hydration errors
+  const serializedArticles = articles.map(article => {
+    const publishDate = article.publishedAt instanceof Date 
+      ? article.publishedAt 
+      : new Date(article.publishedAt);
+    
+    return {
+      ...article,
+      publishedAt: publishDate.toISOString()
+    };
+  });
+
   // Extract unique categories from articles for the categories bar
   const uniqueCategories = Array.from(
     new Set(articles.map(article => article.category))
@@ -195,8 +207,8 @@ export default async function BlogPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <main className="w-full min-h-screen bg-[var(--page-bg,#f5f5f7)] dark:bg-black p-0 m-0">
-        <BlogPageClient articles={articles} uniqueCategories={uniqueCategories} />
+      <main className="w-full min-h-screen">
+        <BlogPageClient articles={serializedArticles} uniqueCategories={uniqueCategories} />
       </main>
     </>
   );

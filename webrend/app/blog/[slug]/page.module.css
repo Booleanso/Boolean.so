@@ -2,6 +2,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 3rem 1.5rem;
+  background-color: inherit;
 }
 
 .articleHeader {
@@ -274,6 +275,7 @@
   --card-bg: #ffffff;
   --hover-bg: #f9fafb;
   --code-bg: #f3f4f6;
+  --page-bg: #ffffff;
 }
 
 /* Dark mode - these are applied when the theme-provider sets data-theme="dark" */
@@ -287,6 +289,7 @@
   --card-bg: #1f2937;
   --hover-bg: #374151;
   --code-bg: #111827;
+  --page-bg: #000000;
 }
 
 /* Responsive adjustments */

@@ -23,6 +23,7 @@ $dark-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 $dark-component-bg: #1c1c1e; // Apple card background (dark)
 $dark-input-bg: #1c1c1e; // Apple dark input
 $dark-hover-bg: #2c2c2e; // Apple hover (dark)
+$dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
 
 .navbar-container {
   display: flex;
@@ -99,7 +100,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   // Dark theme styles
   .dark-theme & {
     .navbar {
-      background-color: rgba(28, 28, 30, 0.95);
+      background-color: $dark-navbar-bg;
       border: 1px solid rgba(255, 255, 255, 0.06);
       
       &:hover {
@@ -152,7 +153,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
     
     // Dark theme scrolled styles
     .dark-theme & {
-      background-color: rgba(28, 28, 30, 0.95);
+      background-color: $dark-navbar-bg;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
   }
@@ -363,17 +364,17 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
           
           // Dark theme search form styles
           .dark-theme & {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(30, 30, 30, 0.7);
+            border: 1px solid rgba(50, 50, 50, 0.8);
             
             &:focus-within {
-              background-color: rgba(255, 255, 255, 0.08);
+              background-color: rgba(40, 40, 40, 0.8);
               border: 1px solid $dark-primary-color;
               box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
             }
             
             &:hover:not(:focus-within) {
-              border: 1px solid rgba(255, 255, 255, 0.15);
+              border: 1px solid rgba(60, 60, 60, 0.9);
             }
           }
           

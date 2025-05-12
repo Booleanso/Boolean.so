@@ -8,7 +8,7 @@ interface Article {
   id: string;
   title: string;
   description: string;
-  publishedAt: number | Date;
+  publishedAt: string;
   imageUrl?: string;
   category: string;
   readTime: number;
@@ -27,6 +27,12 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
   const [filteredArticles, setFilteredArticles] = useState(articles);
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationClass, setAnimationClass] = useState(styles.fadeIn);
+  const [isMounted, setIsMounted] = useState(false);
+  
+  // Set the mounted state on initial render
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   // Filter articles based on selected category and search query
   const filterArticles = useCallback(() => {
@@ -158,6 +164,8 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
   
   // Update any styles to support dark mode
   useEffect(() => {
+    if (!isMounted) return;
+    
     // Add listener for theme changes - this ensures the UI updates appropriately
     const checkDarkMode = () => {
       const isDark = document.documentElement.classList.contains('dark-theme');
@@ -166,27 +174,15 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
       const clearBtn = document.querySelector(`.${styles.clearSearch}`) as HTMLButtonElement;
       const submitBtn = document.querySelector(`.${styles.searchSubmitButton}`) as HTMLButtonElement;
       
-      // Ensure input text color is properly set for dark mode
-      if (searchInput) {
-        searchInput.style.color = isDark ? 'var(--text-primary)' : 'var(--text-primary)';
-        searchInput.style.caretColor = isDark ? 'var(--accent-color)' : 'var(--accent-color)';
-      }
-      
-      // Update icon colors if needed
-      if (searchIcon) {
-        searchIcon.style.color = isDark ? 'var(--text-tertiary)' : 'var(--text-tertiary)';
-      }
-      
-      if (submitBtn) {
-        submitBtn.style.color = isDark ? 'var(--accent-color)' : 'var(--accent-color)';
+      // Add the right class to elements based on theme
+      const container = document.querySelector('main');
+      if (container) {
+        container.className = `w-full min-h-screen ${isDark ? 'dark-theme' : ''}`;
       }
     };
     
     // Check on mount
     checkDarkMode();
-    
-    // Also check after a short delay to ensure DOM is fully loaded
-    const timeoutId = setTimeout(checkDarkMode, 100);
     
     // Listen for theme changes
     const observer = new MutationObserver((mutations) => {
@@ -201,10 +197,23 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
     
     return () => {
       observer.disconnect();
-      clearTimeout(timeoutId);
     };
-  }, [styles.searchInput, styles.searchIcon, styles.clearSearch, styles.searchSubmitButton]);
+  }, [isMounted, styles]);
   
+  // For SSR compatibility, render a simplified version initially
+  if (!isMounted) {
+    return (
+      <div className={styles.content}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>WebRend Blog</h1>
+          <p className={styles.subtitle}>
+            Insights, tips, and inspiration for web developers and designers
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Top Navigation Bar */}
@@ -315,9 +324,7 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
                         <div className={styles.articleMeta}>
                           <div className={styles.publishDate}>
                             <span>📅</span>
-                            <span>{filteredArticles[0].publishedAt instanceof Date 
-                              ? filteredArticles[0].publishedAt.toLocaleDateString() 
-                              : new Date(filteredArticles[0].publishedAt).toLocaleDateString()}</span>
+                            <span>{new Date(filteredArticles[0].publishedAt).toLocaleDateString()}</span>
                           </div>
                           <div className={styles.readTime}>
                             <span>⏱️</span>
@@ -346,9 +353,7 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
                         <div className={styles.articleMeta}>
                           <div className={styles.publishDate}>
                             <span>📅</span>
-                            <span>{article.publishedAt instanceof Date 
-                              ? article.publishedAt.toLocaleDateString() 
-                              : new Date(article.publishedAt).toLocaleDateString()}</span>
+                            <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
                           </div>
                           <div className={styles.readTime}>
                             <span>⏱️</span>
@@ -386,9 +391,7 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
                           <div className={styles.articleMeta}>
                             <div className={styles.publishDate}>
                               <span>📅</span>
-                              <span>{article.publishedAt instanceof Date 
-                                ? article.publishedAt.toLocaleDateString() 
-                                : new Date(article.publishedAt).toLocaleDateString()}</span>
+                              <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
                             </div>
                             <div className={styles.readTime}>
                               <span>⏱️</span>

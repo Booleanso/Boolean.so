@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Metadata, ResolvingMetadata } from 'next';
 import ReactMarkdown from 'react-markdown';
 import styles from './page.module.css';
+import BlogSlugPage from './BlogSlugPage';
 
 // Types for our article
 interface Article {
@@ -177,6 +178,12 @@ export default async function BlogArticlePage({
       ? article.publishedAt 
       : article.publishedAt.toDate();
     
+    // Create a serializable version of the article (important for Firestore objects)
+    const serializedArticle = {
+      ...article,
+      publishedAt: publishDate.toISOString(),
+    };
+    
     // Structured data for SEO
     const structuredData = {
       '@context': 'https://schema.org',
@@ -212,90 +219,11 @@ export default async function BlogArticlePage({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
-        <div className={styles.container}>
-          <div className={styles.articleHeader}>
-            <Link href="/blog" className={styles.backLink}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 19L8 12L15 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              Back to Blog
-            </Link>
-            
-            <div className={styles.categoryAndDate}>
-              <span className={styles.category}>{article.category}</span>
-              <span className={styles.dot}>•</span>
-              <time dateTime={publishDate.toISOString()}>{formatDate(publishDate)}</time>
-              <span className={styles.dot}>•</span>
-              <span>{article.readTime} min read</span>
-            </div>
-            
-            <h1 className={styles.title}>{article.title}</h1>
-            <p className={styles.description}>{article.description}</p>
-          </div>
-          
-          {article.imageUrl && (
-            <div className={styles.imageContainer}>
-              <img 
-                src={article.imageUrl} 
-                alt={article.title} 
-                className={styles.featuredImage}
-                width={1200}
-                height={630}
-              />
-            </div>
-          )}
-          
-          <div className={styles.content}>
-            <ReactMarkdown>{article.content}</ReactMarkdown>
-          </div>
-          
-          <div className={styles.footer}>
-            <div className={styles.sourceLink}>
-              <p>Original Source: <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer">{new URL(article.sourceUrl).hostname}</a></p>
-            </div>
-            
-            <div className={styles.share}>
-              <p>Share this article:</p>
-              <div className={styles.shareButtons}>
-                <a 
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://webrend.com'}/blog/${article.slug}`)}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={styles.shareButton}
-                  aria-label="Share on Twitter"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M23 3.01s-2.018 1.192-3.14 1.53a4.48 4.48 0 00-7.86 3v1a10.66 10.66 0 01-9-4.53s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5 0-.278-.028-.556-.08-.83C21.94 5.674 23 3.01 23 3.01z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </a>
-                <a 
-                  href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://webrend.com'}/blog/${article.slug}`)}&title=${encodeURIComponent(article.title)}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={styles.shareButton}
-                  aria-label="Share on LinkedIn"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <rect x="2" y="9" width="4" height="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <circle cx="4" cy="4" r="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-          
-          <div className={styles.relatedSection}>
-            <h2>Continue Reading</h2>
-            <div className={styles.relatedLink}>
-              <Link href="/blog">
-                View all articles
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
-            </div>
-          </div>
+        <div className="w-full min-h-screen" style={{ backgroundColor: 'var(--page-bg, #000)' }}>
+          <BlogSlugPage 
+            article={serializedArticle} 
+            formattedDate={formatDate(publishDate)} 
+          />
         </div>
       </>
     );
