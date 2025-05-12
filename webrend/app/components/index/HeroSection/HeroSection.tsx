@@ -64,6 +64,143 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
   const iconsRef = useRef<THREE.Group[]>([]);
   const globeGroupRef = useRef<THREE.Group>(null);
   
+  // Direct access to the texture loader
+  const textureLoader = new THREE.TextureLoader();
+  const dayTexturePath = '/earth-blue-marble.jpg';
+  const nightTexturePath = '/earth-night.jpg';
+  const cityLightsPath = '/earth-city-lights.jpg';
+  const topologyPath = '/earth-topology.jpg';
+  const cloudsPath = '/earth-clouds.png';
+  const specularPath = '/earth-specular.jpg';
+
+  // This effect runs once on mount to load the correct texture based on theme
+  useEffect(() => {
+    // First-time setup for correct theme
+    const isDark = document.documentElement.classList.contains('dark-theme');
+    setIsDarkMode(isDark);
+    loadGlobeTextures(isDark);
+  }, []);
+
+  // Separate function to load globe textures
+  const loadGlobeTextures = (isDark: boolean) => {
+    console.log(`Loading ${isDark ? 'dark' : 'light'} mode textures...`);
+    
+    if (!globeRef.current) return;
+    
+    // Get the material
+    const material = globeRef.current.material as THREE.MeshStandardMaterial;
+    
+    // Reset material properties
+    if (material.map) material.map.dispose();
+    if (material.displacementMap) material.displacementMap.dispose();
+    if (material.bumpMap) material.bumpMap.dispose();
+    if (material.emissiveMap) material.emissiveMap.dispose();
+    if (material.roughnessMap) material.roughnessMap.dispose();
+    if (material.metalnessMap) material.metalnessMap.dispose();
+    
+    // Load the main texture based on theme
+    textureLoader.load(
+      isDark ? nightTexturePath : dayTexturePath,
+      (texture) => {
+        console.log(`Main texture loaded: ${isDark ? 'night' : 'day'}`);
+        if (!globeRef.current) return;
+        
+        const material = globeRef.current.material as THREE.MeshStandardMaterial;
+        material.map = texture;
+        
+        // No tint in light mode, very slight tint in dark mode
+        material.color.set(isDark ? 0x222222 : 0xffffff);
+        material.needsUpdate = true;
+        setTextureLoaded(true);
+        
+        // Load topology for terrain in both modes
+        textureLoader.load(
+          topologyPath,
+          (topoTexture) => {
+            console.log('Topology texture loaded');
+            if (!globeRef.current) return;
+            
+            const material = globeRef.current.material as THREE.MeshStandardMaterial;
+            material.displacementMap = topoTexture;
+            material.displacementScale = 0.2;
+            material.displacementBias = -0.05;
+            material.bumpMap = topoTexture;
+            material.bumpScale = 0.1;
+            material.needsUpdate = true;
+          }
+        );
+        
+        // Load specular map for both modes
+        textureLoader.load(
+          specularPath,
+          (specTexture) => {
+            console.log('Specular texture loaded');
+            if (!globeRef.current) return;
+            
+            const material = globeRef.current.material as THREE.MeshStandardMaterial;
+            material.roughnessMap = specTexture;
+            material.roughness = 0.6;
+            material.metalnessMap = specTexture;
+            material.metalness = 0.4;
+            material.needsUpdate = true;
+          }
+        );
+        
+        // Handle emissive properties differently based on theme
+        if (isDark) {
+          // Dark mode gets city lights
+          textureLoader.load(
+            cityLightsPath,
+            (lightsTexture) => {
+              console.log('City lights loaded');
+              if (!globeRef.current) return;
+              
+              const material = globeRef.current.material as THREE.MeshStandardMaterial;
+              material.emissiveMap = lightsTexture;
+              material.emissive.set(0xffcc77);
+              material.emissiveIntensity = 0.8;
+              material.needsUpdate = true;
+            }
+          );
+        } else {
+          // Light mode gets a subtle glow
+          if (globeRef.current) {
+            const material = globeRef.current.material as THREE.MeshStandardMaterial;
+            material.emissive.set(0x113355);
+            material.emissiveIntensity = 0.1;
+            material.needsUpdate = true;
+          }
+        }
+      },
+      undefined,
+      (error) => {
+        console.error('Error loading main texture:', error);
+        setTextureFailed(true);
+      }
+    );
+    
+    // Load clouds texture
+    if (cloudsRef.current) {
+      textureLoader.load(
+        cloudsPath,
+        (cloudsTexture) => {
+          console.log('Clouds texture loaded');
+          if (!cloudsRef.current) return;
+          
+          const cloudMaterial = cloudsRef.current.material as THREE.MeshStandardMaterial;
+          cloudMaterial.map = cloudsTexture;
+          cloudMaterial.transparent = true;
+          cloudMaterial.opacity = 0.8;
+          cloudMaterial.alphaTest = 0.1;
+          cloudMaterial.blending = THREE.AdditiveBlending;
+          cloudMaterial.depthWrite = false;
+          cloudMaterial.needsUpdate = true;
+          setCloudsTextureLoaded(true);
+        }
+      );
+    }
+  };
+
   // Check for dark mode on mount and theme changes
   useEffect(() => {
     // Helper function to check dark mode
@@ -74,135 +211,7 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
         setIsDarkMode(isDark);
         
         // Force texture reload when theme changes
-        reloadGlobeTextures(isDark);
-      }
-    };
-    
-    // Function to reload textures based on theme
-    const reloadGlobeTextures = (isDark: boolean) => {
-      if (globeRef.current) {
-        const material = globeRef.current.material as THREE.MeshStandardMaterial;
-        
-        // Clear existing textures to force reload
-        if (material.map) {
-          material.map.dispose();
-          material.map = null;
-        }
-        
-        if (material.emissiveMap) {
-          material.emissiveMap.dispose();
-          material.emissiveMap = null;
-        }
-        
-        material.needsUpdate = true;
-        
-        // Load appropriate textures based on theme
-        const textureLoader = new THREE.TextureLoader();
-        const dayTexturePath = '/earth-blue-marble.jpg';
-        const nightTexturePath = '/earth-night.jpg';
-        const cityLightsPath = '/earth-city-lights.jpg';
-        
-        // Load main texture based on theme
-        textureLoader.load(
-          isDark ? nightTexturePath : dayTexturePath,
-          (texture) => {
-            if (globeRef.current) {
-              const material = globeRef.current.material as THREE.MeshStandardMaterial;
-              material.map = texture;
-              setTextureLoaded(true);
-              
-              // Adjust color based on theme
-              if (isDark) {
-                material.color = new THREE.Color(0x222222);
-              } else {
-                material.color = new THREE.Color(0xeeeeee); 
-              }
-              
-              material.needsUpdate = true;
-              
-              // Now load the displacement/bump map for terrain elevation
-              textureLoader.load(
-                '/earth-topology.jpg',
-                (topoTexture) => {
-                  if (globeRef.current) {
-                    const material = globeRef.current.material as THREE.MeshStandardMaterial;
-                    // Use as displacement map to create physical terrain elevation
-                    material.displacementMap = topoTexture;
-                    material.displacementScale = 0.15; // For pronounced mountains
-                    material.displacementBias = -0.04; // Adjust base level
-                    material.bumpMap = topoTexture; // Also use as bump map for finer details
-                    material.bumpScale = 0.05; // For visible detail
-                    material.needsUpdate = true;
-                  }
-                },
-                undefined,
-                (topologyError) => {
-                  console.error('Error loading topology texture:', topologyError);
-                }
-              );
-              
-              // Load city lights only in dark mode
-              if (isDark) {
-                console.log('Loading city lights texture...');
-                textureLoader.load(
-                  cityLightsPath,
-                  (lightsTexture) => {
-                    console.log('City lights texture loaded successfully');
-                    if (globeRef.current) {
-                      const material = globeRef.current.material as THREE.MeshStandardMaterial;
-                      material.emissiveMap = lightsTexture;
-                      material.emissive = new THREE.Color(0xffcc77); // Warmer amber glow
-                      material.emissiveIntensity = 0.8; // Increased intensity
-                      material.needsUpdate = true;
-                      setLightsError(null);
-                    }
-                  },
-                  undefined,
-                  (error: unknown) => {
-                    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-                    console.error(`Error loading city lights texture: ${errorMessage}`);
-                    setLightsError(`Error loading city lights texture: ${errorMessage}`);
-                    
-                    // Add fallback for city lights - just create a subtle emissive effect
-                    if (globeRef.current) {
-                      const material = globeRef.current.material as THREE.MeshStandardMaterial;
-                      material.emissive = new THREE.Color(0x555555);
-                      material.emissiveIntensity = 0.2;
-                      material.needsUpdate = true;
-                    }
-                  }
-                );
-              }
-            }
-          },
-          undefined,
-          (error) => {
-            console.error('Error loading primary texture:', error);
-            
-            // Try fallback texture
-            textureLoader.load(
-              '/earth-topology.jpg',
-              (fallbackTexture) => {
-                setTextureLoaded(true);
-                if (globeRef.current) {
-                  const material = globeRef.current.material as THREE.MeshStandardMaterial;
-                  material.map = fallbackTexture;
-                  material.needsUpdate = true;
-                }
-              },
-              undefined,
-              (fallbackError) => {
-                console.error('Error loading fallback texture:', fallbackError);
-                setTextureFailed(true);
-                if (globeRef.current) {
-                  const material = globeRef.current.material as THREE.MeshStandardMaterial;
-                  material.color.set(0xffffff);
-                  material.needsUpdate = true;
-                }
-              }
-            );
-          }
-        );
+        loadGlobeTextures(isDark);
       }
     };
     
@@ -364,68 +373,6 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
     };
   }, [locations]);
   
-  // Try to load the clouds texture
-  useEffect(() => {
-    const textureLoader = new THREE.TextureLoader();
-    
-    textureLoader.load(
-      '/earth-clouds.png',
-      (texture) => {
-        setCloudsTextureLoaded(true);
-        if (cloudsRef.current) {
-          // Create a proper cloud material with alpha transparency
-          const cloudMaterial = cloudsRef.current.material as THREE.MeshStandardMaterial;
-          cloudMaterial.map = texture;
-          cloudMaterial.transparent = true;
-          cloudMaterial.opacity = 0.8; // Increase opacity for more visible clouds
-          cloudMaterial.alphaTest = 0.1; // Only render pixels with alpha > 0.1
-          cloudMaterial.blending = THREE.AdditiveBlending; // Use additive blending for a more realistic look
-          cloudMaterial.depthWrite = false; // Don't write to depth buffer (prevents z-fighting)
-          cloudMaterial.needsUpdate = true;
-        }
-      },
-      undefined,
-      (error) => {
-        console.error('Error loading clouds texture:', error);
-      }
-    );
-    
-    return () => {
-      // Cleanup
-    };
-  }, []);
-
-  // Try to load the specular texture
-  useEffect(() => {
-    const textureLoader = new THREE.TextureLoader();
-    
-    textureLoader.load(
-      '/earth-specular.jpg',
-      (texture) => {
-        setSpecularTextureLoaded(true);
-        if (globeRef.current) {
-          // Use the texture as a specular map
-          const material = globeRef.current.material as THREE.MeshStandardMaterial;
-          
-          // In MeshStandardMaterial we use roughnessMap and metalnessMap instead of specularMap
-          material.roughnessMap = texture;
-          material.roughness = 0.7;  // Base roughness
-          material.metalnessMap = texture;
-          material.metalness = 0.3;  // Base metalness
-          material.needsUpdate = true;
-        }
-      },
-      undefined,
-      (error) => {
-        console.error('Error loading specular texture:', error);
-      }
-    );
-    
-    return () => {
-      // Cleanup
-    };
-  }, []);
-
   // Load icon textures for locations
   useEffect(() => {
     const textureLoader = new THREE.TextureLoader();
@@ -615,12 +562,12 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
           castShadow
           onClick={resetHoverStates}
         >
-          <sphereGeometry args={[3, 128, 128]} /> {/* Increased segments for better terrain detail */}
+          <sphereGeometry args={[3, 128, 128]} /> 
           <meshStandardMaterial 
-            color={textureFailed ? 0xffffff : 0xeeeeee} 
-            roughness={0.7} 
-            metalness={0.3}
-            envMapIntensity={1.0}
+            color={0xffffff}  
+            roughness={0.6} 
+            metalness={0.4}
+            envMapIntensity={1.2}
           />
         </mesh>
         
@@ -1161,24 +1108,30 @@ export default function HeroSection() {
             <div className={styles.loading}>Loading globe...</div>
           ) : (
             <Canvas shadows camera={{ position: [0, 0, 5.5], fov: 70 }}>
-              <ambientLight intensity={0.4} /> {/* Reduced from 0.5 for better shadows */}
+              {/* Main ambient light */}
+              <ambientLight intensity={0.6} /> 
+              
+              {/* Key light (sun) */}
               <directionalLight 
                 position={[5, 5, 5]} 
-                intensity={0.8} 
+                intensity={1.2} 
                 castShadow 
-                shadow-mapSize-width={1024} 
-                shadow-mapSize-height={1024}
               />
-              {/* Add a spotlight to create stronger highlights on mountains */}
-              <spotLight
-                position={[-5, 5, 5]}
-                angle={0.5}
-                penumbra={0.5}
-                intensity={0.5}
-                castShadow
-                shadow-mapSize-width={1024}
-                shadow-mapSize-height={1024}
+              
+              {/* Fill light */}
+              <directionalLight 
+                position={[-5, 3, 5]} 
+                intensity={0.8} 
+                castShadow={false}
               />
+              
+              {/* Rim light */}
+              <directionalLight 
+                position={[0, -10, -5]} 
+                intensity={0.3} 
+                castShadow={false}
+              />
+              
               <Suspense fallback={null}>
                 <Globe locations={locations} />
               </Suspense>
