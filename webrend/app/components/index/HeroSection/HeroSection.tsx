@@ -64,42 +64,162 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
   const iconsRef = useRef<THREE.Group[]>([]);
   const globeGroupRef = useRef<THREE.Group>(null);
   
-  // Immediate dark mode check on mount and visibility change
+  // Check for dark mode on mount and theme changes
   useEffect(() => {
-    // Force check dark mode immediately on mount
+    // Helper function to check dark mode
     const checkDarkMode = () => {
       const isDark = document.documentElement.classList.contains('dark-theme');
       if (isDark !== isDarkMode) {
-        console.log(`Dark mode updated on visibility/mount/route change: ${isDark}`);
+        console.log(`Dark mode updated: ${isDark}`);
         setIsDarkMode(isDark);
         
-        // Force reload textures if dark mode changed
-        if (isDarkMode !== isDark && globeRef.current) {
-          // Clear existing textures to force reload
-          const material = globeRef.current.material as THREE.MeshStandardMaterial;
-          if (material.map) {
-            material.map.dispose();
-            material.map = null;
-          }
-          if (material.emissiveMap) {
-            material.emissiveMap.dispose();
-            material.emissiveMap = null;
-          }
-          material.needsUpdate = true;
-          console.log("Forced texture reload due to theme change");
-        }
+        // Force texture reload when theme changes
+        reloadGlobeTextures(isDark);
       }
     };
     
-    // Check immediately
-    checkDarkMode();
-    
-    // Create a routing check function
-    const handleRouteChange = () => {
-      setTimeout(checkDarkMode, 100);
+    // Function to reload textures based on theme
+    const reloadGlobeTextures = (isDark: boolean) => {
+      if (globeRef.current) {
+        const material = globeRef.current.material as THREE.MeshStandardMaterial;
+        
+        // Clear existing textures to force reload
+        if (material.map) {
+          material.map.dispose();
+          material.map = null;
+        }
+        
+        if (material.emissiveMap) {
+          material.emissiveMap.dispose();
+          material.emissiveMap = null;
+        }
+        
+        material.needsUpdate = true;
+        
+        // Load appropriate textures based on theme
+        const textureLoader = new THREE.TextureLoader();
+        const dayTexturePath = '/earth-blue-marble.jpg';
+        const nightTexturePath = '/earth-night.jpg';
+        const cityLightsPath = '/earth-city-lights.jpg';
+        
+        // Load main texture based on theme
+        textureLoader.load(
+          isDark ? nightTexturePath : dayTexturePath,
+          (texture) => {
+            if (globeRef.current) {
+              const material = globeRef.current.material as THREE.MeshStandardMaterial;
+              material.map = texture;
+              setTextureLoaded(true);
+              
+              // Adjust color based on theme
+              if (isDark) {
+                material.color = new THREE.Color(0x222222);
+              } else {
+                material.color = new THREE.Color(0xeeeeee); 
+              }
+              
+              material.needsUpdate = true;
+              
+              // Now load the displacement/bump map for terrain elevation
+              textureLoader.load(
+                '/earth-topology.jpg',
+                (topoTexture) => {
+                  if (globeRef.current) {
+                    const material = globeRef.current.material as THREE.MeshStandardMaterial;
+                    // Use as displacement map to create physical terrain elevation
+                    material.displacementMap = topoTexture;
+                    material.displacementScale = 0.15; // For pronounced mountains
+                    material.displacementBias = -0.04; // Adjust base level
+                    material.bumpMap = topoTexture; // Also use as bump map for finer details
+                    material.bumpScale = 0.05; // For visible detail
+                    material.needsUpdate = true;
+                  }
+                },
+                undefined,
+                (topologyError) => {
+                  console.error('Error loading topology texture:', topologyError);
+                }
+              );
+              
+              // Load city lights only in dark mode
+              if (isDark) {
+                console.log('Loading city lights texture...');
+                textureLoader.load(
+                  cityLightsPath,
+                  (lightsTexture) => {
+                    console.log('City lights texture loaded successfully');
+                    if (globeRef.current) {
+                      const material = globeRef.current.material as THREE.MeshStandardMaterial;
+                      material.emissiveMap = lightsTexture;
+                      material.emissive = new THREE.Color(0xffcc77); // Warmer amber glow
+                      material.emissiveIntensity = 0.8; // Increased intensity
+                      material.needsUpdate = true;
+                      setLightsError(null);
+                    }
+                  },
+                  undefined,
+                  (error: unknown) => {
+                    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                    console.error(`Error loading city lights texture: ${errorMessage}`);
+                    setLightsError(`Error loading city lights texture: ${errorMessage}`);
+                    
+                    // Add fallback for city lights - just create a subtle emissive effect
+                    if (globeRef.current) {
+                      const material = globeRef.current.material as THREE.MeshStandardMaterial;
+                      material.emissive = new THREE.Color(0x555555);
+                      material.emissiveIntensity = 0.2;
+                      material.needsUpdate = true;
+                    }
+                  }
+                );
+              }
+            }
+          },
+          undefined,
+          (error) => {
+            console.error('Error loading primary texture:', error);
+            
+            // Try fallback texture
+            textureLoader.load(
+              '/earth-topology.jpg',
+              (fallbackTexture) => {
+                setTextureLoaded(true);
+                if (globeRef.current) {
+                  const material = globeRef.current.material as THREE.MeshStandardMaterial;
+                  material.map = fallbackTexture;
+                  material.needsUpdate = true;
+                }
+              },
+              undefined,
+              (fallbackError) => {
+                console.error('Error loading fallback texture:', fallbackError);
+                setTextureFailed(true);
+                if (globeRef.current) {
+                  const material = globeRef.current.material as THREE.MeshStandardMaterial;
+                  material.color.set(0xffffff);
+                  material.needsUpdate = true;
+                }
+              }
+            );
+          }
+        );
+      }
     };
     
-    // Set up a more robust theme change detector
+    // Check immediately on mount
+    checkDarkMode();
+    
+    // Custom event handler for theme checking from parent component
+    const handleThemeCheck = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      console.log('Received theme-check event:', customEvent?.detail);
+      checkDarkMode();
+    };
+    
+    // Listen for our custom theme-check event
+    document.documentElement.addEventListener('theme-check', handleThemeCheck);
+    
+    // Set up a MutationObserver to detect theme class changes
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
@@ -108,36 +228,26 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
       });
     });
     
-    // Observe both document and html elements for class changes
+    // Observe document.documentElement for class changes
     observer.observe(document.documentElement, { 
       attributes: true, 
       attributeFilter: ['class'] 
     });
     
-    // Check again after a short delay to ensure DOM is fully loaded
-    const timeoutId = setTimeout(checkDarkMode, 100);
-    const secondTimeoutId = setTimeout(checkDarkMode, 500); // Extra check after 500ms
-    
-    // Listen for visibility changes (like returning to the tab or navigating back)
+    // Check on visibility changes (tab focus, etc.)
     document.addEventListener('visibilitychange', checkDarkMode);
     
-    // Handle focus events which can occur when returning to the page
+    // Handle focus events when returning to the page
     window.addEventListener('focus', checkDarkMode);
-    
-    // Check periodically for the first few seconds
-    const intervalId = setInterval(checkDarkMode, 1000);
-    setTimeout(() => clearInterval(intervalId), 5000); // Stop checking after 5 seconds
     
     // Clean up
     return () => {
-      clearTimeout(timeoutId);
-      clearTimeout(secondTimeoutId);
-      clearInterval(intervalId);
       document.removeEventListener('visibilitychange', checkDarkMode);
       window.removeEventListener('focus', checkDarkMode);
+      document.documentElement.removeEventListener('theme-check', handleThemeCheck);
       observer.disconnect();
     };
-  }, [isDarkMode, globeRef]);
+  }, [isDarkMode]);
   
   // Spring animation for globe rotation slowdown
   const { rotationSpeedSpring } = useSpring({
@@ -254,131 +364,6 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
     };
   }, [locations]);
   
-  // Try to load a texture but use white if it fails
-  useEffect(() => {
-    const textureLoader = new THREE.TextureLoader();
-    
-    // Define texture paths based on theme
-    const dayTexturePath = '/earth-blue-marble.jpg';
-    const nightTexturePath = '/earth-night.jpg';
-    const cityLightsPath = '/earth-city-lights.jpg';
-    
-    console.log(`Loading globe textures for ${isDarkMode ? 'dark' : 'light'} mode:`);
-    console.log(`- Main texture: ${isDarkMode ? nightTexturePath : dayTexturePath}`);
-    if (isDarkMode) console.log(`- City lights: ${cityLightsPath}`);
-    
-    // Try to load the primary earth texture based on theme
-    textureLoader.load(
-      isDarkMode ? nightTexturePath : dayTexturePath,
-      (texture) => {
-        setTextureLoaded(true);
-        if (globeRef.current) {
-          const material = globeRef.current.material as THREE.MeshStandardMaterial;
-          material.map = texture;
-
-          // If in dark mode, adjust the color to make the texture darker and less blue
-          if (isDarkMode) {
-            // Apply a dark overlay to reduce blue tint and make it darker
-            material.color = new THREE.Color(0x222222); // Dark gray overlay
-          } else {
-            material.color = new THREE.Color(0xeeeeee); // Default light color
-          }
-          
-          material.needsUpdate = true;
-          
-          // Now load the displacement/bump map for terrain elevation
-          textureLoader.load(
-            '/earth-topology.jpg',
-            (topoTexture) => {
-              if (globeRef.current) {
-                const material = globeRef.current.material as THREE.MeshStandardMaterial;
-                // Use as displacement map to create physical terrain elevation
-                material.displacementMap = topoTexture;
-                material.displacementScale = 0.15; // Increased from 0.08 for more pronounced mountains
-                material.displacementBias = -0.04; // Adjust base level
-                material.bumpMap = topoTexture; // Also use as bump map for finer details
-                material.bumpScale = 0.05; // Increased from 0.02 for more visible detail
-                material.needsUpdate = true;
-              }
-            },
-            undefined,
-            (topologyError) => {
-              console.error('Error loading topology texture:', topologyError);
-            }
-          );
-          
-          // If dark mode, try to load city lights texture as emissive map
-          if (isDarkMode) {
-            console.log('Loading city lights texture...');
-            textureLoader.load(
-              cityLightsPath,
-              (lightsTexture) => {
-                console.log('City lights texture loaded successfully');
-                if (globeRef.current) {
-                  const material = globeRef.current.material as THREE.MeshStandardMaterial;
-                  material.emissiveMap = lightsTexture;
-                  material.emissive = new THREE.Color(0xffcc77); // Warmer amber glow for city lights
-                  material.emissiveIntensity = 0.8; // Increased intensity
-                  material.needsUpdate = true;
-                  setLightsError(null);
-                }
-              },
-              (progress) => {
-                // Optional progress callback
-                if (progress.loaded && progress.total) {
-                  const percent = Math.round((progress.loaded / progress.total) * 100);
-                  if (percent % 25 === 0) console.log(`City lights loading: ${percent}%`);
-                }
-              },
-              (error: unknown) => {
-                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-                console.error(`Error loading city lights texture: ${errorMessage}`);
-                setLightsError(`Error loading city lights texture: ${errorMessage}`);
-                
-                // Add fallback for city lights - just create a subtle emissive effect
-                if (globeRef.current) {
-                  const material = globeRef.current.material as THREE.MeshStandardMaterial;
-                  material.emissive = new THREE.Color(0x555555);
-                  material.emissiveIntensity = 0.2;
-                  material.needsUpdate = true;
-                }
-              }
-            );
-          }
-        }
-      },
-      undefined,
-      (error) => {
-        console.error('Error loading primary texture:', error);
-        
-        // Try fallback texture
-        textureLoader.load(
-          '/earth-topology.jpg',
-          (fallbackTexture) => {
-            setTextureLoaded(true);
-            if (globeRef.current) {
-              (globeRef.current.material as THREE.MeshStandardMaterial).map = fallbackTexture;
-              (globeRef.current.material as THREE.MeshStandardMaterial).needsUpdate = true;
-            }
-          },
-          undefined,
-          (fallbackError) => {
-            console.error('Error loading fallback texture:', fallbackError);
-            setTextureFailed(true);
-            if (globeRef.current) {
-              (globeRef.current.material as THREE.MeshStandardMaterial).color.set(0xffffff);
-              (globeRef.current.material as THREE.MeshStandardMaterial).needsUpdate = true;
-            }
-          }
-        );
-      }
-    );
-    
-    return () => {
-      // Cleanup
-    };
-  }, [isDarkMode]);
-
   // Try to load the clouds texture
   useEffect(() => {
     const textureLoader = new THREE.TextureLoader();
@@ -890,6 +875,17 @@ export default function HeroSection() {
   const [globeOpacity, setGlobeOpacity] = useState<number>(0);
   const [globePosition, setGlobePosition] = useState<number>(100); // Start 100px lower for more dramatic rise
   const globeContainerRef = useRef<HTMLDivElement>(null);
+
+  // Immediately check dark mode when HeroSection mounts (during navigation or initial load)
+  useEffect(() => {
+    // Force a check of dark mode when HeroSection is mounted
+    const isDarkMode = document.documentElement.classList.contains('dark-theme');
+    console.log(`HeroSection mounted, current dark mode status: ${isDarkMode}`);
+    
+    // Dispatch a synthetic class change event to trigger theme detection in the Globe component
+    const event = new CustomEvent('theme-check', { detail: { isDarkMode } });
+    document.documentElement.dispatchEvent(event);
+  }, []);
 
   useEffect(() => {
     async function fetchLocations() {
