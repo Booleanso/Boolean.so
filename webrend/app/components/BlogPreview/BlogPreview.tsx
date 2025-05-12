@@ -57,6 +57,15 @@ export default function BlogPreview() {
     });
   };
 
+  // Truncate description to 100 words
+  const truncateDescription = (description: string) => {
+    const words = description.split(' ');
+    if (words.length > 100) {
+      return words.slice(0, 100).join(' ') + '...';
+    }
+    return description;
+  };
+
   return (
     <section className={styles.blogPreviewSection}>
       <div className={styles.sectionHeader}>
@@ -97,7 +106,7 @@ export default function BlogPreview() {
                   <span className={styles.blogDate}>{formatDate(post.publishedAt)}</span>
                 </div>
                 <h3 className={styles.blogTitle}>{post.title}</h3>
-                <p className={styles.blogDescription}>{post.description}</p>
+                <p className={styles.blogDescription}>{truncateDescription(post.description)}</p>
                 <div className={styles.blogFooter}>
                   <span className={styles.readTime}>{post.readTime} min read</span>
                 </div>
