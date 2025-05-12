@@ -51,6 +51,7 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
   const [alarmIntensity, setAlarmIntensity] = useState<number>(1.0); // For pulsating effect
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [lightsError, setLightsError] = useState<string | null>(null);
+  const isInitialMount = useRef(true);
   
   // State to track which icons are in the central view
   const [centeredIcons, setCenteredIcons] = useState<Record<number, number>>({});
@@ -63,20 +64,46 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
   const iconsRef = useRef<THREE.Group[]>([]);
   const globeGroupRef = useRef<THREE.Group>(null);
   
-  // Check for dark mode
+  // Immediate dark mode check on mount and visibility change
   useEffect(() => {
-    // Check if dark-theme class exists on html element
-    const isDark = document.documentElement.classList.contains('dark-theme');
-    setIsDarkMode(isDark);
-    console.log(`Dark mode detected: ${isDark}`);
+    // Force check dark mode immediately on mount
+    const checkDarkMode = () => {
+      const isDark = document.documentElement.classList.contains('dark-theme');
+      if (isDark !== isDarkMode) {
+        console.log(`Dark mode updated on visibility/mount: ${isDark}`);
+        setIsDarkMode(isDark);
+      }
+    };
     
+    // Check immediately
+    checkDarkMode();
+    
+    // Check again after a short delay to ensure DOM is fully loaded
+    const timeoutId = setTimeout(checkDarkMode, 100);
+    
+    // Listen for visibility changes (like returning to the tab or navigating back)
+    document.addEventListener('visibilitychange', checkDarkMode);
+    
+    // Handle focus events which can occur when returning to the page
+    window.addEventListener('focus', checkDarkMode);
+    
+    // Clean up
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('visibilitychange', checkDarkMode);
+      window.addEventListener('focus', checkDarkMode);
+    };
+  }, [isDarkMode]);
+  
+  // Check for dark mode class changes
+  useEffect(() => {
     // Set up a mutation observer to detect theme changes
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
           const isDarkUpdated = document.documentElement.classList.contains('dark-theme');
           setIsDarkMode(isDarkUpdated);
-          console.log(`Dark mode changed to: ${isDarkUpdated}`);
+          console.log(`Dark mode changed via class mutation: ${isDarkUpdated}`);
         }
       });
     });
