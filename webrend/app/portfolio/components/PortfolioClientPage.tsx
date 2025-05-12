@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from './portfolio.module.css'; // We'll create this CSS module next
 import { isValidImageUrl } from '../../utils/url-utils'; // Import the validator
+import SplineViewer from './SplineViewer';
 
 const PLACEHOLDER_IMAGE_URL = 'https://placehold.co/600x400/eee/ccc?text=Image+Not+Available';
 
@@ -143,6 +144,9 @@ export default function PortfolioClientPage({
           </div>
         </div>
 
+        {/* 3D Model Viewer */}
+        <SplineViewer />
+
         {/* Project Grid */}
         {filteredProjects.length > 0 ? (
           <div className={styles.projectGrid}>
@@ -209,7 +213,7 @@ export default function PortfolioClientPage({
           </div>
         ) : (
           <div className={styles.emptyGridState}>
-            <p>No projects found matching "{activeFilter}".</p>
+            <p>No projects found matching &quot;{activeFilter}&quot;.</p>
             <button onClick={() => setActiveFilter('All')} className={styles.resetFilterButton}>
               Show All Projects
             </button>

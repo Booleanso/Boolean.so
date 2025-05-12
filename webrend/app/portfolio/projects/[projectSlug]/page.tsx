@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './caseStudy.module.css';
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 import { Timestamp } from 'firebase-admin/firestore';
 import { isValidImageUrl } from '../../../utils/url-utils';
 
@@ -33,6 +33,7 @@ interface PortfolioProject {
   testimonialAuthor?: string | null;
   testimonialTitle?: string | null;
   galleryImages?: string[];
+  videoUrl?: string | null; // Add video URL field
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string[];
@@ -81,6 +82,7 @@ async function getProjectBySlug(slug: string): Promise<PortfolioProject | null> 
       testimonialAuthor: data.testimonialAuthor || null,
       testimonialTitle: data.testimonialTitle || null,
       galleryImages: data.galleryImages || [],
+      videoUrl: data.videoUrl || null, // Add the videoUrl field
       seoTitle: data.seoTitle || data.title || 'Project Case Study',
       seoDescription: data.seoDescription || data.description || '',
       seoKeywords: data.seoKeywords || data.tags || [],
@@ -97,8 +99,7 @@ type Props = {
 }
 
 export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
+  { params }: Props
 ): Promise<Metadata> {
   const project = await getProjectBySlug(params.projectSlug);
 
@@ -157,6 +158,35 @@ export default async function ProjectPage({ params }: Props) {
      console.warn(`Invalid hero image URL, using placeholder: ${project.imageUrl}`);
   }
   
+  // Set fallback video URL
+  const FALLBACK_VIDEO_URL = "https://player.vimeo.com/video/76979871?autoplay=1&loop=1&muted=1&background=1";
+  
+  // Get video URL from project data and add autoplay parameters if needed
+  let videoUrl = project.videoUrl || FALLBACK_VIDEO_URL;
+  
+  // If videoUrl doesn't already have autoplay parameters, add them
+  if (videoUrl && !videoUrl.includes('autoplay=')) {
+    // Add appropriate parameters based on the video platform
+    if (videoUrl.includes('vimeo.com')) {
+      // For Vimeo links
+      videoUrl = videoUrl.includes('?') 
+        ? `${videoUrl}&autoplay=1&loop=1&muted=1&background=1` 
+        : `${videoUrl}?autoplay=1&loop=1&muted=1&background=1`;
+    } else if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+      // For YouTube links
+      videoUrl = videoUrl.includes('?') 
+        ? `${videoUrl}&autoplay=1&mute=1&loop=1&playlist=${getYouTubeID(videoUrl)}` 
+        : `${videoUrl}?autoplay=1&mute=1&loop=1&playlist=${getYouTubeID(videoUrl)}`;
+    }
+  }
+  
+  // Helper function to extract YouTube video ID
+  function getYouTubeID(url: string): string {
+    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[7].length === 11) ? match[7] : '';
+  }
+  
   // Validate gallery image URLs *before* mapping
   const validGalleryImages = (project.galleryImages || []).map(url => ({
     original: url,
@@ -207,46 +237,82 @@ export default async function ProjectPage({ params }: Props) {
         </div>
       </header>
 
-      {/* --- Main Content Sections --- */}
+      {/* --- Behance Style Main Content Sections --- */}
       <div className={styles.mainContent}>
         
-        {/* Project Goal */}
-        <section className={styles.contentSection}>
-          <h2 className={styles.sectionTitle}>Project Goal</h2>
-          <p className={styles.sectionText}>{project.projectGoal}</p>
-        </section>
-
-        {/* Solution */}
-        <section className={styles.contentSection}>
-          <h2 className={styles.sectionTitle}>Solution</h2>
-          <p className={styles.sectionText}>{project.solution}</p>
-        </section>
-
-        {/* Key Features (Optional) */}
-        {project.keyFeatures && project.keyFeatures.length > 0 && (
+        {/* Two-column grid for Overview and Project Goals */}
+        <div className={styles.twoColumnGrid}>
+          {/* Overview Section */}
           <section className={styles.contentSection}>
-            <h2 className={styles.sectionTitle}>Key Features</h2>
-            <ul className={styles.featureList}>
-              {project.keyFeatures.map((feature, index) => (
-                <li key={index} className={styles.featureItem}>{feature}</li>
-              ))}
-            </ul>
+            <h2 className={styles.sectionTitle}>Overview</h2>
+            <div className={styles.sectionText}>
+              <p>{project.description}</p>
+              {project.clientName && <p><strong>Client:</strong> {project.clientName}</p>}
+              <p><strong>Timeline:</strong> Completed {formattedDate}</p>
+            </div>
           </section>
-        )}
-        
+
+          {/* Project Goal */}
+          <section className={styles.contentSection}>
+            <h2 className={styles.sectionTitle}>Project Goals</h2>
+            <div className={styles.sectionText}>
+              <p>{project.projectGoal}</p>
+            </div>
+          </section>
+        </div>
+
+        {/* Solution Section with Features on right side */}
+        <section className={styles.solutionFeaturesSection}>
+          <div className={styles.solutionText}>
+            <h2 className={styles.sectionTitle}>Our Solution</h2>
+            <div className={styles.sectionText}>
+              <p>{project.solution}</p>
+            </div>
+          </div>
+          
+          <div className={styles.solutionFeatures}>
+            {/* Solution Video */}
+            <div className={styles.solutionVideo}>
+              <iframe 
+                src={videoUrl}
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                allow="autoplay; fullscreen; picture-in-picture; loop" 
+                allowFullScreen
+                title="Project Solution Video"
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              ></iframe>
+            </div>
+            
+            {/* Key Features without title, directly as badges */}
+            {project.keyFeatures && project.keyFeatures.length > 0 && (
+              <ul className={styles.featureList}>
+                {project.keyFeatures.map((feature, index) => (
+                  <li key={index} className={styles.featureItem}>{feature}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+
         {/* Challenges (Optional) */}
         {project.challenges && (
            <section className={styles.contentSection}>
-            <h2 className={styles.sectionTitle}>Challenges</h2>
-            <p className={styles.sectionText}>{project.challenges}</p>
+            <h2 className={styles.sectionTitle}>Challenges & Approach</h2>
+            <div className={styles.sectionText}>
+              <p>{project.challenges}</p>
+            </div>
           </section>
         )}
 
         {/* Results (Optional) */}
         {project.results && (
            <section className={styles.contentSection}>
-            <h2 className={styles.sectionTitle}>Results</h2>
-            <p className={styles.sectionText}>{project.results}</p>
+            <h2 className={styles.sectionTitle}>Results & Impact</h2>
+            <div className={styles.sectionText}>
+              <p>{project.results}</p>
+            </div>
           </section>
         )}
 
@@ -254,7 +320,7 @@ export default async function ProjectPage({ params }: Props) {
         {project.testimonialText && (
           <section className={`${styles.contentSection} ${styles.testimonialSection}`}>
             <blockquote className={styles.testimonialBlockquote}>
-              <p className={styles.testimonialText}>"{project.testimonialText}"</p>
+              <p className={styles.testimonialText}>{project.testimonialText}</p>
               {(project.testimonialAuthor || project.testimonialTitle) && (
                 <footer className={styles.testimonialFooter}>
                   {project.testimonialAuthor}
@@ -268,8 +334,8 @@ export default async function ProjectPage({ params }: Props) {
 
         {/* Gallery (Optional) */}
         {validGalleryImages.length > 0 && (
-          <section className={styles.gallerySection}>
-            <h2 className={styles.sectionTitle}>Gallery</h2>
+          <section className={`${styles.contentSection} ${styles.gallerySection}`}>
+            <h2 className={styles.sectionTitle}>Project Gallery</h2>
             <div className={styles.galleryGrid}>
               {validGalleryImages.map((img, index) => (
                 <div key={index} className={styles.galleryItem}>
@@ -279,7 +345,7 @@ export default async function ProjectPage({ params }: Props) {
                     width={800} 
                     height={600}
                     className={styles.galleryImage}
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </div>
               ))}

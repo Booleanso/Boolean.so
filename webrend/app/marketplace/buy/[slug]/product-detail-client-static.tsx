@@ -1,16 +1,36 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../buy.module.scss';
 import { auth } from '@/app/lib/firebase-client';
 import { onAuthStateChanged } from 'firebase/auth';
-import { MarketplaceListing } from '@/app/api/marketplace/list-repo/route';
+import { useEffect } from 'react';
 
-// Update the type to include all needed properties
-interface ExtendedMarketplaceListing extends MarketplaceListing {
+// Types from the server component
+interface ExtendedMarketplaceListing {
+  id: string | number;
+  name: string;
+  description: string;
+  price?: number;
+  subscriptionPrice?: number;
+  isSubscription: boolean;
+  imageUrl: string;
+  seller: {
+    id: string;
+    username: string;
+    avatarUrl?: string;
+  };
+  repoUrl: string;
+  stars: number;
+  forks: number;
+  stripeProductId?: string;
+  stripePriceId?: string;
+  sold?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   slug: string;
   docId: string;
   tags?: string[];
@@ -20,7 +40,6 @@ interface ExtendedMarketplaceListing extends MarketplaceListing {
   repoId?: string | number;
 }
 
-// Type for GitHub repo details
 interface GitHubRepoDetails {
   languages: Record<string, number>;
   license?: {
@@ -34,7 +53,6 @@ interface GitHubRepoDetails {
   updated_at: string;
 }
 
-// Type for related repos and more from developer
 interface RelatedRepo {
   id: string | number;
   name: string;
@@ -48,7 +66,6 @@ interface RelatedRepo {
   slug: string;
 }
 
-// Type for the developer's info
 interface DeveloperInfo {
   username: string;
   avatarUrl?: string;
@@ -56,31 +73,94 @@ interface DeveloperInfo {
   createdAt?: string;
 }
 
-interface BuyPageClientProps {
-  initialListing: ExtendedMarketplaceListing;
+interface Review {
+  id: string;
+  userId: string;
+  username: string;
+  avatarUrl?: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
 }
 
-export default function ProductDetailClient({ initialListing }: BuyPageClientProps) {
+interface ProductDetailClientProps {
+  listing: ExtendedMarketplaceListing;
+  repoDetails: GitHubRepoDetails | null;
+  developerInfo: DeveloperInfo | null;
+  moreFromDeveloper: RelatedRepo[];
+  relatedRepos: RelatedRepo[];
+}
+
+export default function ProductDetailClient({ 
+  listing, 
+  repoDetails, 
+  developerInfo,
+  moreFromDeveloper,
+  relatedRepos
+}: ProductDetailClientProps) {
   const router = useRouter();
-  const [listing] = useState<ExtendedMarketplaceListing>(initialListing);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [showGithubTransferInfo, setShowGithubTransferInfo] = useState(false);
-  const [moreFromDeveloper, setMoreFromDeveloper] = useState<RelatedRepo[]>([]);
-  const [relatedRepos, setRelatedRepos] = useState<RelatedRepo[]>([]);
   
-  // Add state for GitHub repo details
-  const [repoDetails, setRepoDetails] = useState<GitHubRepoDetails | null>(null);
-  
-  // Add state for developer info
-  const [developerInfo, setDeveloperInfo] = useState<DeveloperInfo>({
-    username: listing.seller.username,
-    avatarUrl: listing.seller.avatarUrl
-  });
+  // Add sample reviews for demonstration
+  const [reviews] = useState<Review[]>([
+    {
+      id: '1',
+      userId: 'user1',
+      username: 'developer123',
+      avatarUrl: '/logo/logo.png',
+      rating: 5,
+      comment: 'Excellent repository! Well-organized code and very easy to use. Documentation is thorough and the implementation is clean.',
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: '2',
+      userId: 'user2',
+      username: 'webmaster',
+      avatarUrl: '/logo/logo_inverted.png',
+      rating: 4,
+      comment: 'Great code quality and implementation. Would have preferred more comments in some complex areas, but overall very satisfied with the purchase.',
+      createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: '3',
+      userId: 'user3',
+      username: 'codeExplorer',
+      avatarUrl: undefined,
+      rating: 5,
+      comment: 'Saved me countless hours of development time. This repository has exactly what I needed and was easy to integrate into my existing project.',
+      createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+    }
+  ]);
 
-  // First effect: Check if user is authenticated
+  // Frequently asked questions
+  const faqItems = [
+    {
+      question: 'How does WebRend\'s repository marketplace work?',
+      answer: 'WebRend allows developers to buy and sell code repositories. Sellers list their repositories with pricing details, and buyers can purchase either a one-time transfer of ownership or a subscription for access. All transactions are secured through Stripe.'
+    },
+    {
+      question: 'What happens after I purchase a repository?',
+      answer: 'For one-time purchases, the repository ownership will be transferred to your GitHub account. For subscriptions, you\'ll get access to the repository for the subscription period. All purchased repositories appear in your profile.'
+    },
+    {
+      question: 'Are there any guarantees on purchased code?',
+      answer: 'Yes! WebRend verifies all repositories for code quality and security before listing. If you encounter any issues with a purchased repository, our support team will assist you promptly.'
+    },
+    {
+      question: 'Can I request customizations to a repository?',
+      answer: 'Yes, you can contact the developer directly using the "Contact Developer" button. Many developers offer customization services in addition to their repository sales.'
+    },
+    {
+      question: 'What payment methods are accepted?',
+      answer: 'We accept all major credit cards through our secure payment processor, Stripe. All transactions are encrypted and secure.'
+    }
+  ];
+
+  // Only use useEffect for authentication, not data fetching
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsAuthenticated(!!user);
@@ -88,67 +168,6 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
     
     return () => unsubscribe();
   }, []);
-
-  // Second effect: Fetch GitHub repo details and developer info
-  useEffect(() => {
-    const fetchRepoDetails = async () => {
-      if (!listing) return;
-      
-      try {
-        // Fetch GitHub repo details
-        const response = await fetch(`/api/github/repo-details?repoId=${listing.repoId || listing.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setRepoDetails(data.repoDetails);
-        }
-        
-        // Fetch developer info from Firebase
-        const sellerResponse = await fetch(`/api/user/profile?userId=${listing.seller.id}`);
-        if (sellerResponse.ok) {
-          const sellerData = await sellerResponse.json();
-          if (sellerData.user) {
-            setDeveloperInfo({
-              ...developerInfo,
-              email: sellerData.user.email,
-              createdAt: sellerData.user.createdAt
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching repo details:', error);
-      }
-    };
-    
-    fetchRepoDetails();
-  }, [listing, developerInfo]);
-
-  // Third effect: Fetch more repos from the same developer and related repos
-  useEffect(() => {
-    const fetchRelatedData = async () => {
-      if (!listing || !listing.seller || !listing.seller.id) return;
-      
-      try {
-        // Fetch more from this developer
-        const developerResponse = await fetch(`/api/marketplace/developer-listings?sellerId=${listing.seller.id}&exclude=${listing.id}`);
-        if (developerResponse.ok) {
-          const developerData = await developerResponse.json();
-          setMoreFromDeveloper(developerData.listings || []);
-        }
-        
-        // Fetch related repos - could be based on tags, if available
-        const tagsParam = listing.tags ? `&tags=${listing.tags.join(',')}` : '';
-        const relatedResponse = await fetch(`/api/marketplace/related-listings?id=${listing.id}${tagsParam}`);
-        if (relatedResponse.ok) {
-          const relatedData = await relatedResponse.json();
-          setRelatedRepos(relatedData.listings || []);
-        }
-      } catch (error) {
-        console.error('Error fetching related data:', error);
-      }
-    };
-    
-    fetchRelatedData();
-  }, [listing]);
 
   const handlePurchase = async () => {
     if (!isAuthenticated) {
@@ -200,8 +219,6 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
   };
   
   const handleSuccessfulPurchase = async () => {
-    if (!listing) return;
-    
     try {
       // Simulate the post-purchase actions
       setPurchaseLoading(true);
@@ -240,8 +257,6 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
   };
   
   const completeGithubTransfer = async () => {
-    if (!listing) return;
-    
     try {
       setPurchaseLoading(true);
       
@@ -301,7 +316,7 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
   
   // Get developer account creation year
   const getDeveloperSinceYear = () => {
-    if (developerInfo.createdAt) {
+    if (developerInfo?.createdAt) {
       return new Date(developerInfo.createdAt).getFullYear();
     }
     return new Date().getFullYear(); // Fallback to current year
@@ -309,7 +324,7 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
   
   // Handle contact developer
   const handleContactDeveloper = () => {
-    if (developerInfo.email) {
+    if (developerInfo?.email) {
       const subject = encodeURIComponent(`Inquiry about "${listing.name}" repository`);
       const body = encodeURIComponent(
         `Hello ${listing.seller.username},\n\nI'm interested in your "${listing.name}" repository on WebRend Marketplace. I have a question regarding...\n\nBest regards,\n[Your Name]`
@@ -486,74 +501,111 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
           </div>
         </div>
         
-        <div className={styles.purchaseCard}>
-          <div className={styles.purchaseType}>
-            {listing.isSubscription ? 'Subscription' : 'One-time Purchase'}
+        <div className={styles.sidebarColumn}>
+          {/* Purchase Card */}
+          <div className={styles.purchaseCard}>
+            <div className={styles.purchaseType}>
+              {listing.isSubscription ? 'Subscription' : 'One-time Purchase'}
+            </div>
+            <div className={styles.price}>
+              {listing.isSubscription
+                ? `$${listing.subscriptionPrice}/mo`
+                : `$${listing.price}`
+              }
+            </div>
+            {listing.isSubscription && (
+              <div className={styles.subscriptionInfo}>
+                Ongoing monthly subscription. Cancel anytime.
+              </div>
+            )}
+            {!listing.isSubscription && (
+              <div className={styles.oneTimeInfo}>
+                One-time purchase. Full repository transfer to your GitHub account.
+              </div>
+            )}
+            
+            {!isAuthenticated && (
+              <div className={styles.purchaseError}>
+                You need to log in to purchase this repository
+              </div>
+            )}
+            
+            {purchaseError && (
+              <div className={styles.purchaseError}>
+                {purchaseError}
+              </div>
+            )}
+            
+            <button
+              className={styles.buyButton}
+              onClick={handlePurchase}
+              disabled={purchaseLoading}
+            >
+              {purchaseLoading 
+                ? 'Processing...' 
+                : listing.isSubscription 
+                  ? 'Subscribe Now' 
+                  : 'Buy Now'
+              }
+            </button>
+            
+            <div className={styles.secureInfo}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span>Secure payment via Stripe</span>
+            </div>
+            
+            <div className={styles.purchaseDetails}>
+              <div className={styles.purchaseDetail}>
+                <span>You get:</span>
+                <ul>
+                  <li>Full source code access</li>
+                  {listing.isSubscription ? (
+                    <li>Monthly access renewal</li>
+                  ) : (
+                    <li>Repository ownership transfer</li>
+                  )}
+                  <li>Developer support</li>
+                  <li>Access to WebRend community</li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div className={styles.price}>
-            {listing.isSubscription
-              ? `$${listing.subscriptionPrice}/mo`
-              : `$${listing.price}`
-            }
-          </div>
-          {listing.isSubscription && (
-            <div className={styles.subscriptionInfo}>
-              Ongoing monthly subscription. Cancel anytime.
-            </div>
-          )}
-          {!listing.isSubscription && (
-            <div className={styles.oneTimeInfo}>
-              One-time purchase. Full repository transfer to your GitHub account.
-            </div>
-          )}
           
-          {!isAuthenticated && (
-            <div className={styles.purchaseError}>
-              You need to log in to purchase this repository
-            </div>
-          )}
-          
-          {purchaseError && (
-            <div className={styles.purchaseError}>
-              {purchaseError}
-            </div>
-          )}
-          
-          <button
-            className={styles.buyButton}
-            onClick={handlePurchase}
-            disabled={purchaseLoading}
-          >
-            {purchaseLoading 
-              ? 'Processing...' 
-              : listing.isSubscription 
-                ? 'Subscribe Now' 
-                : 'Buy Now'
-            }
-          </button>
-          
-          <div className={styles.secureInfo}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            <span>Secure payment via Stripe</span>
-          </div>
-          
-          <div className={styles.purchaseDetails}>
-            <div className={styles.purchaseDetail}>
-              <span>You get:</span>
-              <ul>
-                <li>Full source code access</li>
-                {listing.isSubscription ? (
-                  <li>Monthly access renewal</li>
+          {/* Contact Developer Card - moved here under purchase card */}
+          <div className={styles.contactDeveloperCard}>
+            <h3>Contact the Developer</h3>
+            <div className={styles.developerInfo}>
+              <div className={styles.developerAvatar}>
+                {developerInfo?.avatarUrl || listing.seller.avatarUrl ? (
+                  <Image
+                    src={developerInfo?.avatarUrl || listing.seller.avatarUrl || ''}
+                    alt={listing.seller.username}
+                    width={50}
+                    height={50}
+                  />
                 ) : (
-                  <li>Repository ownership transfer</li>
+                  <div className={styles.defaultAvatarMedium}>
+                    {listing.seller.username.charAt(0).toUpperCase()}
+                  </div>
                 )}
-                <li>Developer support</li>
-                <li>Access to WebRend community</li>
-              </ul>
+              </div>
+              <div>
+                <h4 className={styles.developerName}>{listing.seller.username}</h4>
+                <p className={styles.developerUsername}>Developer since {getDeveloperSinceYear()}</p>
+              </div>
             </div>
+            <p className={styles.contactDescription}>
+              Have questions about this repository? Need customizations or help?
+            </p>
+            <button 
+              onClick={handleContactDeveloper}
+              className={styles.contactButton}
+            >
+              Contact Developer
+            </button>
           </div>
         </div>
       </div>
@@ -611,11 +663,11 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
             </tr>
             <tr>
               <th>Code Size</th>
-              <td>{formatFileSize(listing.size)}</td>
+              <td>{formatFileSize(repoDetails?.size || listing.size)}</td>
             </tr>
             <tr>
               <th>Last Update</th>
-              <td>{formatDate(listing.updatedAt || listing.lastUpdated)}</td>
+              <td>{formatDate(repoDetails?.updated_at || listing.updatedAt || listing.lastUpdated)}</td>
             </tr>
             <tr>
               <th>License</th>
@@ -623,6 +675,85 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      {/* Reviews Section - New */}
+      <div className={styles.reviewsSection}>
+        <h2>Customer Reviews</h2>
+        <div className={styles.reviewStats}>
+          <div className={styles.averageRating}>
+            <div className={styles.ratingNumber}>
+              {(reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1)}
+            </div>
+            <div className={styles.ratingStars}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span key={star} className={styles.ratingStar}>
+                  ★
+                </span>
+              ))}
+            </div>
+            <div className={styles.ratingCount}>
+              Based on {reviews.length} reviews
+            </div>
+          </div>
+          <div className={styles.ratingBreakdown}>
+            {[5, 4, 3, 2, 1].map((rating) => {
+              const count = reviews.filter(r => r.rating === rating).length;
+              const percentage = (count / reviews.length) * 100;
+              return (
+                <div key={rating} className={styles.ratingBar}>
+                  <span className={styles.ratingLabel}>{rating} stars</span>
+                  <div className={styles.ratingBarContainer}>
+                    <div 
+                      className={styles.ratingBarFill} 
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                  <span className={styles.ratingCount}>{count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        
+        <div className={styles.reviewsList}>
+          {reviews.map((review) => (
+            <div key={review.id} className={styles.reviewItem}>
+              <div className={styles.reviewHeader}>
+                <div className={styles.reviewerInfo}>
+                  <div className={styles.reviewerAvatar}>
+                    {review.avatarUrl ? (
+                      <Image
+                        src={review.avatarUrl}
+                        alt={review.username}
+                        width={40}
+                        height={40}
+                      />
+                    ) : (
+                      <div className={styles.defaultAvatarSmall}>
+                        {review.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <div className={styles.reviewerName}>{review.username}</div>
+                    <div className={styles.reviewDate}>{formatDate(review.createdAt)}</div>
+                  </div>
+                </div>
+                <div className={styles.reviewRating}>
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className={i < review.rating ? styles.starFilled : styles.starEmpty}>
+                      ★
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.reviewBody}>
+                <p>{review.comment}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       
       {/* More from this Developer */}
@@ -659,39 +790,6 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
         </div>
       )}
       
-      {/* Contact Developer */}
-      <div className={styles.contactDeveloperSection}>
-        <h2>Contact the Developer</h2>
-        <div className={styles.developerInfo}>
-          <div className={styles.developerAvatar}>
-            {listing.seller.avatarUrl ? (
-              <Image
-                src={listing.seller.avatarUrl}
-                alt={listing.seller.username}
-                width={80}
-                height={80}
-              />
-            ) : (
-              <div className={styles.defaultAvatarLarge}>
-                {listing.seller.username.charAt(0).toUpperCase()}
-              </div>
-            )}
-          </div>
-          <h3 className={styles.developerName}>{listing.seller.username}</h3>
-          <p className={styles.developerUsername}>Developer since {getDeveloperSinceYear()}</p>
-        </div>
-        <p className={styles.contactDescription}>
-          Have questions about this repository? Need customizations or implementation help?
-          Contact the developer directly to discuss your requirements.
-        </p>
-        <button 
-          onClick={handleContactDeveloper}
-          className={styles.contactButton}
-        >
-          Contact Developer
-        </button>
-      </div>
-      
       {/* Related Repos People Also Bought */}
       {relatedRepos.length > 0 && (
         <div className={styles.relatedPurchasesSection}>
@@ -714,7 +812,7 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
                   <div className={styles.repoSeller}>
                     <div className={styles.sellerAvatar}>
                       <Image
-                        src={repo.seller.avatarUrl}
+                        src={repo.seller.avatarUrl || '/default-avatar.png'}
                         alt={repo.seller.username}
                         width={20}
                         height={20}
@@ -728,6 +826,19 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
           </div>
         </div>
       )}
+      
+      {/* FAQ Section - New */}
+      <div className={styles.faqSection}>
+        <h2>Frequently Asked Questions</h2>
+        <div className={styles.faqList}>
+          {faqItems.map((item, index) => (
+            <div key={index} className={styles.faqItem}>
+              <h3 className={styles.faqQuestion}>{item.question}</h3>
+              <p className={styles.faqAnswer}>{item.answer}</p>
+            </div>
+          ))}
+        </div>
+      </div>
       
       {/* Footer */}
       <div className={styles.footer}>

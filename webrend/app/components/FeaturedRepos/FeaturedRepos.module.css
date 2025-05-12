@@ -149,9 +149,10 @@
 
 :global(.dark-theme) .error,
 :global(.dark-theme) .emptyState {
-  border: 1px solid #2c2c2e;
-  background-color: #1c1c1e;
+  border: 1px solid #333;
+  background-color: #000;
   color: #f5f5f7;
+  box-shadow: none;
 }
 
 .repoGrid {
@@ -181,7 +182,7 @@
 
 :global(.dark-theme) .repoCard {
   color: #f5f5f7;
-  background-color: #1c1c1e;
+  background-color: #000;
   border: none;
 }
 

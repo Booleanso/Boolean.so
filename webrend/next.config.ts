@@ -9,7 +9,8 @@ const nextConfig: NextConfig = {
       'raw.githubusercontent.com',
       'user-images.githubusercontent.com',
       'placehold.co',
-      'images.unsplash.com'
+      'images.unsplash.com',
+      'randomuser.me'
     ],
   },
 };

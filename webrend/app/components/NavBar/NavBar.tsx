@@ -15,29 +15,15 @@ interface NavBarProps {
 
 export default function NavBar({ serverUser }: NavBarProps) {
   const [user, setUser] = React.useState<SimpleUser>(serverUser);
-  const [loading, setLoading] = React.useState(false);
+  const loading = false;
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [scrolled, setScrolled] = useState<boolean>(false);
+  const scrolled = true;
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     setUser(serverUser);
   }, [serverUser]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 20;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [scrolled]);
 
   const handleSignOut = async () => {
     try {

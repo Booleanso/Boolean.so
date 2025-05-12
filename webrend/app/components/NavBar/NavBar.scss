@@ -1,3 +1,29 @@
+// Variables - Apple-inspired design 
+$primary-color: #0071e3; // Apple blue
+$secondary-color: #86868b; // Apple secondary text
+$accent-color: #06c; // Apple accent blue
+$light-bg: #f5f5f7; // Apple light background
+$border-color: #d2d2d7; // Apple borders
+$text-color: #1d1d1f; // Apple dark text
+$text-light: #86868b; // Apple medium text
+$radius: 12px; // Increased rounded corners
+$card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); // Subtle shadow
+$card-hover-shadow: 0 4px 24px rgba(0, 0, 0, 0.12); // Hover shadow
+$transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1); // Smooth transitions
+
+// Dark mode variables
+$dark-primary-color: #0a84ff; // Apple blue (dark mode)
+$dark-secondary-color: #98989d; // Apple secondary (dark mode)
+$dark-accent-color: #0a84ff; // Apple accent (dark mode)
+$dark-bg: #000000; // Pure black background
+$dark-border-color: #1d1d1f; // Dark mode borders
+$dark-text-color: #f5f5f7; // Light text color
+$dark-text-light: #98989d; // Medium gray text
+$dark-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+$dark-component-bg: #1c1c1e; // Apple card background (dark)
+$dark-input-bg: #1c1c1e; // Apple dark input
+$dark-hover-bg: #2c2c2e; // Apple hover (dark)
+
 .navbar-container {
   display: flex;
   width: 65%;
@@ -8,26 +34,25 @@
   transform: translateX(-50%);
   margin: 0;
   z-index: 1000;
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  border-radius: $radius;
+  box-shadow: $card-shadow;
   
   .navbar {
-    background-color: rgba(15, 15, 15, 0.9);
+    background-color: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     width: 100%;
     height: 60px;
-    border-radius: 16px;
+    border-radius: $radius;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 0 25px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: $transition;
     
     &:hover {
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.24);
+      border: 1px solid rgba(0, 0, 0, 0.1);
     }
     
     .navbar-menu {
@@ -39,32 +64,62 @@
       
       .nav-button {
         border: none;
-        border-radius: 10px;
+        border-radius: 20px;
         padding: 9px 18px;
         font-size: 14px;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: $transition;
         text-decoration: none;
         display: flex;
         align-items: center;
         position: relative;
         overflow: hidden;
-        color: rgba(255, 255, 255, 0.8);
+        color: $text-color;
         letter-spacing: 0.2px;
         
         &.marketplace-button {
           background-color: transparent;
           
           &:hover {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.08);
+            color: $primary-color;
+            background-color: rgba(0, 0, 0, 0.04);
             transform: translateY(-1px);
           }
           
           &.active {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.12);
+            color: $primary-color;
+            background-color: rgba(0, 0, 0, 0.06);
+          }
+        }
+      }
+    }
+  }
+  
+  // Dark theme styles
+  .dark-theme & {
+    .navbar {
+      background-color: rgba(28, 28, 30, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      
+      &:hover {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .navbar-menu {
+        .nav-button {
+          color: $dark-text-color;
+          
+          &.marketplace-button {
+            &:hover {
+              color: $dark-primary-color;
+              background-color: rgba(255, 255, 255, 0.08);
+            }
+            
+            &.active {
+              color: $dark-primary-color;
+              background-color: rgba(255, 255, 255, 0.12);
+            }
           }
         }
       }
@@ -80,26 +135,25 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  transition: all 0.4s ease;
+  transition: none;
   
   &.scrolled {
-    background-color: rgba(10, 10, 10, 0.95);
+    background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     
     .top-navbar {
       height: 60px;
       padding-top: 0;
       border-bottom: none;
+      transition: none;
     }
     
-    // Light mode scrolled styles
-    .light-theme & {
-      background-color: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    // Dark theme scrolled styles
+    .dark-theme & {
+      background-color: rgba(28, 28, 30, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
   }
   
@@ -114,19 +168,19 @@
     justify-content: space-between;
     align-items: center;
     padding: 15px 50px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-    transition: all 0.4s ease;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    transition: none;
     
     &:hover {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     }
     
-    // Light mode hover styles
-    .light-theme & {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    // Dark theme hover styles
+    .dark-theme & {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
       
       &:hover {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
     }
     
@@ -148,12 +202,16 @@
       }
       
       &.active .navbar-logo {
-        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+        filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.2));
       }
       
-      // Light mode logo styles
-      .light-theme &.active .navbar-logo {
-        filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.2));
+      // Dark theme logo styles - load a white logo for dark mode
+      .dark-theme & {
+        filter: invert(1);
+        
+        &.active .navbar-logo {
+          filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
+        }
       }
     }
     
@@ -161,7 +219,7 @@
       display: flex;
       align-items: center;
       gap: 30px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: none;
       
       .nav-button {
         position: relative;
@@ -170,21 +228,26 @@
         font-size: 15px;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: color 0.2s ease;
         text-decoration: none;
         display: flex;
         align-items: center;
+        color: $text-color;
+        background-color: transparent;
         color: rgba(255, 255, 255, 0.8);
         background-color: #000;
         border-radius: 10px;
         
         &:hover {
+          color: $primary-color;
+          background-color: transparent;
           color: white;
           opacity: 0.9;
         }
         
         &.active {
-          color: white;
+          color: $primary-color;
+          background-color: transparent;
           
           &:after {
             content: '';
@@ -194,7 +257,7 @@
             right: 12px;
             width: calc(100% - 24px);
             height: 2px;
-            background-color: white;
+            background-color: $primary-color;
             border-radius: 2px;
           }
         }
@@ -207,31 +270,69 @@
           right: 12px;
           width: calc(100% - 24px);
           height: 1px;
-          background-color: rgba(255, 255, 255, 0.5);
+          background-color: rgba(0, 113, 227, 0.3);
           border-radius: 2px;
         }
         
+        // Dark theme button styles
+        .dark-theme & {
+          color: $dark-text-color;
+          background-color: transparent;
         // Light mode button styles
         .light-theme & {
           color: rgba(0, 0, 0, 0.7);
           background-color: rgba(0, 0, 0, 0.05);
           
           &:hover {
+            color: $dark-primary-color;
+            background-color: transparent;
             color: #000;
             background-color: rgba(0, 0, 0, 0.08);
           }
           
           &.active {
+            color: $dark-primary-color;
+            background-color: transparent;
             color: #000;
             background-color: rgba(0, 0, 0, 0.12);
             
             &:after {
-              background-color: #000;
+              background-color: $dark-primary-color;
             }
           }
           
           &:hover:not(.active):after {
-            background-color: rgba(0, 0, 0, 0.3);
+            background-color: rgba(10, 132, 255, 0.3);
+          }
+        }
+        
+        &.portfolio-button, &.admin-button {
+          background-color: transparent;
+          
+          &:hover {
+            color: $primary-color;
+            background-color: transparent;
+            transform: none;
+          }
+          
+          &.active {
+            color: $primary-color;
+            background-color: transparent;
+          }
+          
+          // Dark theme styles
+          .dark-theme & {
+            background-color: transparent;
+            
+            &:hover {
+              color: $dark-primary-color;
+              background-color: transparent;
+            }
+            
+            &.active {
+              color: $dark-primary-color;
+              background-color: transparent;
+            }
           }
         }
       }
@@ -244,92 +345,84 @@
         .search-form {
           display: flex;
           align-items: center;
-          background-color: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 8px;
+          background-color: rgba(0, 0, 0, 0.03);
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          border-radius: 10px;
           padding: 0 15px;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           
           &:focus-within {
-            background-color: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(0, 0, 0, 0.05);
+            border: 1px solid $primary-color;
+            box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
           }
           
           &:hover:not(:focus-within) {
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.15);
           }
           
-          // Light mode search form styles
-          .light-theme & {
-            background-color: rgba(0, 0, 0, 0.03);
-            border: 1px solid rgba(0, 0, 0, 0.08);
+          // Dark theme search form styles
+          .dark-theme & {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             
             &:focus-within {
-              background-color: rgba(0, 0, 0, 0.05);
-              border: 1px solid rgba(0, 0, 0, 0.15);
+              background-color: rgba(255, 255, 255, 0.08);
+              border: 1px solid $dark-primary-color;
+              box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
             }
             
             &:hover:not(:focus-within) {
-              border: 1px solid rgba(0, 0, 0, 0.12);
+              border: 1px solid rgba(255, 255, 255, 0.15);
             }
           }
-        }
-        
-        .search-input {
-          background-color: transparent;
-          border: none;
-          color: white;
-          padding: 10px 0;
-          font-size: 14px;
-          width: 220px;
-          max-width: 220px;
-          outline: none;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           
-          &::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 300;
-          }
-          
-          // Light mode search input styles
-          .light-theme & {
-            color: #000;
+          .search-input {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            padding: 10px 0;
+            font-size: 14px;
+            width: 220px;
+            max-width: 220px;
+            color: $text-color;
             
             &::placeholder {
-              color: rgba(0, 0, 0, 0.4);
+              color: $text-light;
+            }
+            
+            // Dark theme input styles
+            .dark-theme & {
+              color: $dark-text-color;
+              
+              &::placeholder {
+                color: $dark-text-light;
+              }
             }
           }
-        }
-        
-        .search-button {
-          background-color: transparent;
-          border: none;
-          color: rgba(255, 255, 255, 0.6);
-          padding: 8px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: color 0.15s ease;
           
-          &:hover {
-            color: white;
-          }
-          
-          &.active {
-            color: white;
-          }
-          
-          // Light mode search button styles
-          .light-theme & {
-            color: rgba(0, 0, 0, 0.5);
+          .search-button {
+            background-color: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: $text-light;
+            padding: 0;
+            margin-left: 5px;
             
             &:hover {
-              color: #000;
+              color: $primary-color;
             }
             
-            &.active {
-              color: #000;
+            // Dark theme button styles
+            .dark-theme & {
+              color: $dark-text-light;
+              
+              &:hover {
+                color: $dark-primary-color;
+              }
             }
           }
         }
@@ -338,6 +431,235 @@
   }
 }
 
+// Logo Island
+.logo-island-container {
+  display: flex;
+  width: 60px;
+  position: fixed;
+  bottom: 30px;
+  left: calc(50% - 40px - 320px - 50px);
+  z-index: 1000;
+  border-radius: $radius;
+  box-shadow: $card-shadow;
+  
+  .logo-island {
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    width: 100%;
+    height: 60px;
+    border-radius: $radius;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: $transition;
+    
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 35px;
+      width: 35px;
+      transition: all 0.2s ease;
+      
+      .navbar-logo {
+        object-fit: contain;
+      }
+      
+      // No filter or transform on focus/hover
+      &:hover, &:focus, &.active {
+        transform: none;
+        background-color: transparent;
+      }
+      
+      // Dark theme logo styles
+      .dark-theme & {
+        filter: invert(1);
+      }
+    }
+  }
+  
+  // Dark theme styles
+  .dark-theme & {
+    .logo-island {
+      background-color: rgba(28, 28, 30, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      
+      &:hover {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
+
+// Auth Island
+.auth-island-container {
+  display: flex;
+  width: 190px;
+  position: fixed;
+  bottom: 30px;
+  left: calc(50% - 40px + 320px + 50px - 70px);
+  z-index: 1000;
+  border-radius: $radius;
+  box-shadow: $card-shadow;
+  
+  .auth-island {
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    width: 100%;
+    height: 60px;
+    border-radius: $radius;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 0 15px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: $transition;
+    
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-button {
+      border: none;
+      border-radius: 20px;
+      padding: 9px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: $transition;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.2px;
+      
+      &.profile-button {
+        background-color: transparent;
+        color: $text-color;
+        
+        &:hover {
+          color: $primary-color;
+          background-color: rgba(0, 0, 0, 0.04);
+          transform: translateY(-1px);
+        }
+        
+        &.active {
+          color: $primary-color;
+          background-color: rgba(0, 0, 0, 0.06);
+        }
+      }
+      
+      &.login-button {
+        background-color: transparent;
+        color: $text-color;
+        
+        &:hover {
+          color: $primary-color;
+          background-color: rgba(0, 0, 0, 0.04);
+          transform: translateY(-1px);
+        }
+        
+        &.active {
+          color: $primary-color;
+          background-color: rgba(0, 0, 0, 0.06);
+        }
+      }
+      
+      &.signup-button {
+        background-color: $primary-color;
+        color: white;
+        font-weight: 600;
+        padding: 9px 14px;
+        border-radius: 20px;
+        
+        &:hover {
+          background-color: darken($primary-color, 5%);
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(0, 113, 227, 0.3);
+        }
+        
+        &.active {
+          background-color: darken($primary-color, 8%);
+          color: white;
+        }
+      }
+      
+      &.signout-button {
+        background-color: transparent;
+        color: #ff3b30;
+        
+        &:hover {
+          color: #ff3b30;
+          background-color: rgba(255, 59, 48, 0.1);
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+  
+  // Dark theme styles
+  .dark-theme & {
+    .auth-island {
+      background-color: rgba(28, 28, 30, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      
+      &:hover {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .nav-button {
+        &.profile-button, &.login-button {
+          color: $dark-text-color;
+          
+          &:hover {
+            color: $dark-primary-color;
+            background-color: rgba(255, 255, 255, 0.08);
+          }
+          
+          &.active {
+            color: $dark-primary-color;
+            background-color: rgba(255, 255, 255, 0.12);
+          }
+        }
+        
+        &.signup-button {
+          background-color: $dark-primary-color;
+          color: white;
+          
+          &:hover {
+            background-color: lighten($dark-primary-color, 5%);
+            box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
+          }
+          
+          &.active {
+            background-color: lighten($dark-primary-color, 10%);
+          }
+        }
+        
+        &.signout-button {
+          color: #ff453a;
+          
+          &:hover {
+            color: #ff453a;
+            background-color: rgba(255, 69, 58, 0.15);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive styles
 @media (max-width: 1024px) {
   .navbar-container {
     width: 90%;
@@ -549,6 +871,7 @@
   }
 }
 
+// Animations
 // Add some nice hover effects to buttons
 .nav-button {
   &:hover {
@@ -586,24 +909,25 @@
 
 @keyframes pulse-dark {
   0% {
-    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
+    filter: drop-shadow(0 0 3px rgba(10, 132, 255, 0.3));
   }
   50% {
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+    filter: drop-shadow(0 0 5px rgba(10, 132, 255, 0.5));
   }
   100% {
-    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
+    filter: drop-shadow(0 0 3px rgba(10, 132, 255, 0.3));
   }
 }
 
 @keyframes pulse-light {
   0% {
-    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15));
+    filter: drop-shadow(0 0 3px rgba(0, 113, 227, 0.3));
   }
   50% {
-    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.25));
+    filter: drop-shadow(0 0 5px rgba(0, 113, 227, 0.5));
   }
   100% {
+    filter: drop-shadow(0 0 3px rgba(0, 113, 227, 0.3));
     filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15));
   }
 }

@@ -13,7 +13,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end; /* Align content to bottom */
-  color: #ffffff; /* Text color on hero */
+  color: #000000; /* Dark text for light overlay */
   padding: 4rem 5%; /* Generous padding */
   box-sizing: border-box;
   overflow: hidden;
@@ -33,14 +33,14 @@
   object-position: center; 
 }
 
-/* Dark overlay for text contrast */
+/* WHITE overlay - NO DARK MODE TOGGLE */
 .heroOverlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1));
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.5));
   z-index: 2;
 }
 
@@ -52,19 +52,19 @@
 }
 
 .projectTitle {
-  font-size: 3rem; /* Large title */
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  line-height: 1.1;
-  color: #fff;
+  font-size: 3rem; /* Large title - reverted to original size */
+  font-weight: 600; /* Original weight */
+  margin-bottom: 0.5rem; /* Original margin */
+  line-height: 1.1; /* Original line height */
+  color: #000; /* Dark text for light overlay */
 }
 
 .projectSubtitle {
-  font-size: 1.25rem;
+  font-size: 1.25rem; /* Original size */
   font-weight: 400;
-  margin-bottom: 1.5rem;
-  max-width: 600px;
-  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1.5rem; /* Original margin */
+  max-width: 600px; /* Original width */
+  color: rgba(0, 0, 0, 0.9); /* Dark text for light overlay */
 }
 
 .metaInfo {
@@ -72,7 +72,7 @@
   gap: 1.5rem;
   margin-bottom: 1rem;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(0, 0, 0, 0.8); /* Dark text for light overlay */
 }
 
 .tagsContainer {
@@ -83,8 +83,8 @@
 }
 
 .tag {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  background-color: rgba(0, 0, 0, 0.1); /* Dark background for light mode */
+  color: #000; /* Dark text */
   padding: 0.3rem 0.8rem;
   border-radius: 1rem;
   font-size: 0.8rem;
@@ -108,13 +108,217 @@
 
 /* --- Main Content Area --- */
 .mainContent {
-  max-width: 850px; /* Slightly wider */
+  max-width: 850px; /* Original width */
   margin: 5rem auto; /* Increased top/bottom margin */
-  padding: 0 1.5rem; /* Adjusted padding */
+  padding: 0 1.5rem; /* Original padding */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 4rem; /* Increased gap between major sections */
+}
+
+/* Solution Section - Special Full-Width Layout */
+.solutionFeaturesSection {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* Make video area twice as large */
+  gap: 40px;
+  align-items: flex-start;
+  width: 90vw; /* Full width */
+  max-width: 90vw;
+  margin-left: calc(-50vw + 50%); /* Extend to full width regardless of parent */
+  margin-right: calc(-50vw + 50%);
+  padding: 120px 5% 60px 5%; /* Reduced bottom padding */
+  background-color: #ffffff; /* White background */
+  box-sizing: border-box;
+}
+
+.solutionText {
+  text-align: left;
+  max-width: 100%;
+  padding-right: 20px;
+  padding-left: 8svw; /* Add left padding to move text away from the edge */
+}
+
+.solutionText h2 {
+  text-align: left; /* Override default center alignment */
+  border-bottom: none; /* Remove bottom border */
+  margin-bottom: 2rem;
+}
+
+.solutionText .sectionText {
+  text-align: left; /* Override default center text */
+  max-width: 100%;
+  margin-left: 0;
+}
+
+/* Container for video and features */
+.solutionFeatures {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 20px;
+}
+
+/* Video styling with right-side fade effect */
+.solutionVideo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 30vh; /* Minimum height of 30% viewport height */
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: none;
+  margin-bottom: 20px; /* Add space between video and features */
+}
+
+/* Right-side fade effect */
+.solutionVideo::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40%; /* Width of the fade */
+  height: 100%;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)); /* White fade */
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Dark theme support for video fade */
+:global(.dark-theme) .solutionVideo::after {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)); /* Black fade for dark mode */
+}
+
+/* For system theme dark mode support */
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .solutionVideo::after {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)); /* Black fade for system dark mode */
+  }
+}
+
+/* Feature list styling */
+.featureList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* Align left to match video width */
+  gap: 10px;
+  width: 100%;
+}
+
+/* Badge-style feature items - simplified */
+.featureItem {
+  font-size: 0.9rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #f5f5f7;
+  border-radius: 100px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  position: relative; /* Required for emoji positioning */
+  overflow: visible; /* Allow emoji to overflow */
+}
+
+.featureItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #0071e3;
+  color: white;
+  border-color: #0071e3;
+}
+
+/* Emoji pop animation on hover */
+.featureItem:hover::after {
+  content: attr(data-emoji);
+  position: absolute;
+  top: -20px;
+  right: -10px;
+  font-size: 1.5rem;
+  animation: emojiPop 0.6s ease-out;
+  z-index: 10;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Each feature item gets a different emoji based on its order */
+.featureItem:nth-child(1):hover::after { content: "✨"; }
+.featureItem:nth-child(2):hover::after { content: "🚀"; }
+.featureItem:nth-child(3):hover::after { content: "💡"; }
+.featureItem:nth-child(4):hover::after { content: "🔥"; }
+.featureItem:nth-child(5):hover::after { content: "⚡"; }
+.featureItem:nth-child(6):hover::after { content: "🎯"; }
+.featureItem:nth-child(7):hover::after { content: "🎨"; }
+.featureItem:nth-child(8):hover::after { content: "🔍"; }
+.featureItem:nth-child(9):hover::after { content: "📱"; }
+.featureItem:nth-child(10):hover::after { content: "💪"; }
+.featureItem:nth-child(11):hover::after { content: "🧠"; }
+.featureItem:nth-child(12):hover::after { content: "🛠️"; }
+.featureItem:nth-child(13):hover::after { content: "📊"; }
+.featureItem:nth-child(14):hover::after { content: "🔒"; }
+.featureItem:nth-child(15):hover::after { content: "🌐"; }
+
+/* Animation for emoji pop effect */
+@keyframes emojiPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(10px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Dark theme support for feature badges */
+:global(.dark-theme) .featureItem {
+  background-color: #2c2c2e;
+  color: #f5f5f7;
+  border-color: #3a3a3c;
+}
+
+:global(.dark-theme) .featureItem:hover {
+  background-color: #0071e3;
+  border-color: #0071e3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .solutionFeaturesSection {
+    grid-template-columns: 1fr 1.5fr; /* Less extreme on medium screens */
+    padding: 80px 5% 40px 5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .solutionFeaturesSection {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 60px 20px 30px 20px;
+  }
+  
+  .solutionText {
+    padding-right: 0;
+    padding-left: 0;
+  }
+  
+  .solutionVideo {
+    min-height: 40vh; /* Smaller on mobile */
+  }
+  
+  .featureList {
+    justify-content: center;
+  }
 }
 
 .contentSection {
@@ -122,68 +326,31 @@
 }
 
 .sectionTitle {
-  font-size: 1.8rem; /* Slightly smaller, more refined */
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+  font-size: clamp(1.8rem, 3vw + 1rem, 3.5rem); /* Fluid sizing between 1.8rem and 3.5rem */
+  font-weight: 700; /* Bolder */
+  margin-bottom: 2rem;
   color: #1d1d1f;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #d2d2d7; /* Lighter border */
-  letter-spacing: -0.01em;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid #d2d2d7; /* Thicker border */
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .sectionText {
-  font-size: 1.1rem; /* Base text size */
-  color: #333333; /* Slightly softer black */
-  line-height: 1.7; /* Improve readability */
-  max-width: 75ch; /* Limit line length for readability */
+  font-size: clamp(1.1rem, 1.5vw + 0.5rem, 1.8rem); /* Fluid sizing between 1.1rem and 1.8rem */
+  color: #333333;
+  line-height: 1.5;
+  max-width: 75ch;
 }
 
 .sectionText p {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.8rem; /* More spacing between paragraphs */
 }
 
 .sectionText strong {
   font-weight: 600;
   color: #1d1d1f;
 }
-
-/* Key Features Styling */
-.featureList {
-  list-style: none;
-  padding-left: 0;
-  margin-top: 1.5rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
-  gap: 1.5rem;
-}
-
-.featureItem {
-  font-size: 1rem;
-  padding: 1rem 1.25rem;
-  background-color: #f5f5f7; /* Subtle background */
-  border-radius: 8px;
-  display: flex;
-  align-items: flex-start; /* Align icon and text */
-  gap: 0.75rem;
-  position: relative; /* Keep for pseudo-elements if needed */
-  margin-bottom: 0; /* Remove default list item margin */
-}
-
-/* Replace ::before with a background icon or similar */
-.featureItem::before {
-  /* Remove the old checkmark */
-  content: none; 
-}
-
-/* Example: Add an SVG icon - you would need actual SVG code or a component */
-/* .featureItem::before {
-  content: url('data:image/svg+xml,...'); 
-  display: inline-block;
-  width: 1.2em;
-  height: 1.2em;
-  margin-right: 0.5em;
-  color: #0071e3;
-} */
 
 /* Testimonial Section Styling */
 .testimonialSection {
@@ -331,5 +498,105 @@
   }
   .galleryGrid {
     grid-template-columns: 1fr; /* Stack gallery items */
+  }
+}
+
+/* More responsive adjustments */
+@media (min-width: 1440px) {
+  .mainContent {
+    max-width: 1200px; /* Wider content area on large screens */
+    padding: 0 2rem;
+  }
+  
+  .solutionText {
+    padding-right: 40px;
+    padding-left: 10svw; /* More left padding on larger screens */
+  }
+}
+
+/* Medium screens */
+@media (max-width: 1024px) {
+  .featureItem {
+    margin: 0.3rem;
+  }
+}
+
+/* Mobile adjustments - prevent text from being too large */
+@media (max-width: 480px) {
+  .sectionTitle {
+    font-size: 1.8rem; /* Fixed size for small screens */
+  }
+  
+  .sectionText {
+    font-size: 1.1rem; /* Fixed size for small screens */
+  }
+  
+  .featureItem {
+    font-size: 1rem; /* Fixed size for small screens */
+    padding: 0.6rem 1.2rem;
+    margin: 0.3rem;
+  }
+  
+  /* Remove these overrides - no longer needed since we're using original sizes */
+  /* .projectTitle {
+    font-size: 2.5rem;
+  }
+  
+  .projectSubtitle {
+    font-size: 1.2rem;
+    max-width: 100%;
+  } */
+}
+
+/* Two-column grid extends beyond mainContent to 80% viewport width */
+.twoColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 60px; /* Increased gap */
+  width: 80vw; /* 80% of viewport width */
+  max-width: 80vw;
+  margin-left: calc(-40vw + 50%); /* Center the grid at 80vw width */
+  margin-right: calc(-40vw + 50%);
+  margin-bottom: 4rem;
+  padding: 0;
+}
+
+.twoColumnGrid .contentSection {
+  margin: 0;
+  padding: 0;
+}
+
+/* Smaller titles for the grid sections */
+.twoColumnGrid .sectionTitle {
+  font-size: 1.4rem; /* Smaller fixed size */
+  margin-bottom: 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom-width: 1px;
+}
+
+.twoColumnGrid .sectionText {
+  font-size: 1rem; /* Smaller text */
+}
+
+/* No separator line - completely removed */
+
+/* Responsive adjustments for the grid */
+@media (max-width: 1024px) {
+  .twoColumnGrid {
+    width: 90vw;
+    max-width: 90vw;
+    margin-left: calc(-45vw + 50%);
+    margin-right: calc(-45vw + 50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .twoColumnGrid {
+    grid-template-columns: 1fr; /* Stack on mobile */
+    gap: 30px;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
   }
 } 

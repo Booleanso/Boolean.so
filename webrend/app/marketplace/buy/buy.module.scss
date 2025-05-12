@@ -1,15 +1,32 @@
-// Apple-inspired design for the Buy page
-$primary-color: #0071e3;
-$secondary-color: #1d1d1f;
-$background-color: #f5f5f7;
-$card-background: #ffffff;
-$text-color: #1d1d1f;
-$light-gray: #86868b;
-$success-green: #4cd964;
-$error-red: #ff3b30;
-$border-radius: 12px;
-$box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-$transition: all 0.3s ease;
+// Variables - Apple-inspired design 
+$primary-color: #0071e3; // Apple blue
+$secondary-color: #86868b; // Apple secondary text
+$accent-color: #06c; // Apple accent blue
+$light-bg: #f5f5f7; // Apple light background
+$border-color: #d2d2d7; // Apple borders
+$text-color: #1d1d1f; // Apple dark text
+$text-light: #86868b; // Apple medium text
+$radius: 12px; // Increased rounded corners
+$card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); // Subtle shadow
+$card-hover-shadow: 0 4px 24px rgba(0, 0, 0, 0.12); // Hover shadow
+$transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1); // Smooth transitions
+$success-green: #2fd158; // Apple green
+$error-red: #ff3b30; // Apple red
+
+// Dark mode variables
+$dark-primary-color: #0a84ff; // Apple blue (dark mode)
+$dark-secondary-color: #98989d; // Apple secondary (dark mode)
+$dark-accent-color: #0a84ff; // Apple accent (dark mode)
+$dark-bg: #000000; // Pure black background
+$dark-border-color: #1d1d1f; // Dark mode borders
+$dark-text-color: #f5f5f7; // Light text color
+$dark-text-light: #98989d; // Medium gray text
+$dark-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+$dark-component-bg: #1c1c1e; // Apple card background (dark)
+$dark-input-bg: #1c1c1e; // Apple dark input
+$dark-hover-bg: #2c2c2e; // Apple hover (dark)
+$dark-success-green: #30d158; // Apple green (dark mode)
+$dark-error-red: #ff453a; // Apple red (dark mode)
 
 // Common mixins
 @mixin flex-center {
@@ -31,15 +48,81 @@ $transition: all 0.3s ease;
   font-family: inherit;
 }
 
+@mixin apple-button {
+  @include button-reset;
+  background-color: $primary-color;
+  color: white;
+  padding: 0.85rem 1.8rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 15px;
+  text-align: center;
+  transition: $transition;
+  
+  &:hover {
+    background-color: darken($primary-color, 5%);
+    transform: scale(1.02);
+  }
+  
+  &:disabled {
+    background-color: rgba(0, 113, 227, 0.5);
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-primary-color;
+    
+    &:hover {
+      background-color: lighten($dark-primary-color, 5%);
+    }
+    
+    &:disabled {
+      background-color: rgba(10, 132, 255, 0.5);
+    }
+  }
+}
+
+@mixin apple-card {
+  background-color: white;
+  border-radius: $radius;
+  box-shadow: $card-shadow;
+  transition: $transition;
+  
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    box-shadow: $dark-card-shadow;
+  }
+}
+
+@mixin section-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+  color: $text-color;
+  letter-spacing: -0.02em;
+  
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
+}
+
 // Container
 .container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 4rem 5%;
   @include flex-column;
-  gap: 40px;
-  background-color: $background-color;
+  gap: 4rem;
+  background-color: $light-bg;
   min-height: calc(100vh - 80px);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
 }
 
 // Layout
@@ -47,18 +130,23 @@ $transition: all 0.3s ease;
   display: grid;
   grid-template-columns: 1fr 380px;
   gap: 40px;
+  margin-bottom: 3rem;
   
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
   }
 }
 
+// Rename to sidebarColumn for clarity
+.sidebarColumn {
+  @include flex-column;
+  gap: 1.5rem;
+}
+
 // Product info section
 .productInfo {
-  background-color: $card-background;
-  border-radius: $border-radius;
+  @include apple-card;
   overflow: hidden;
-  box-shadow: $box-shadow;
   @include flex-column;
 }
 
@@ -71,6 +159,8 @@ $transition: all 0.3s ease;
   img {
     object-fit: cover;
     transition: transform 0.5s ease;
+    width: 100%;
+    height: 100%;
     
     &:hover {
       transform: scale(1.02);
@@ -79,9 +169,9 @@ $transition: all 0.3s ease;
 }
 
 .productDetails {
-  padding: 32px;
+  padding: 2.5rem;
   @include flex-column;
-  gap: 24px;
+  gap: 1.5rem;
 }
 
 .productTitle {
@@ -90,15 +180,20 @@ $transition: all 0.3s ease;
   margin: 0;
   color: $text-color;
   line-height: 1.1;
+  letter-spacing: -0.02em;
+  
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
 }
 
 .sellerInfo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: -8px;
+  gap: 0.5rem;
+  margin-top: -0.5rem;
   font-size: 15px;
-  color: $light-gray;
+  color: $text-light;
   
   .sellerAvatar {
     width: 24px;
@@ -106,155 +201,216 @@ $transition: all 0.3s ease;
     border-radius: 50%;
     overflow: hidden;
   }
+  
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
 }
 
 .productStats {
   display: flex;
-  gap: 20px;
-  margin-top: 8px;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
   
   .stat {
     display: flex;
     align-items: center;
-    gap: 6px;
-    color: $light-gray;
+    gap: 0.4rem;
+    color: $text-light;
     font-size: 14px;
     
     svg {
       width: 16px;
       height: 16px;
     }
+    
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
   }
 }
 
 .productDescription {
   @include flex-column;
-  gap: 12px;
+  gap: 1rem;
   
   h2 {
     font-size: 18px;
     font-weight: 600;
     margin: 0;
+    color: $text-color;
+    
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
   }
   
   p {
     margin: 0;
     font-size: 16px;
     line-height: 1.5;
+    color: $text-light;
+    
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
+  }
+}
+
+// Tags
+.productTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  
+  .tag {
+    display: inline-block;
+    background-color: rgba(0, 0, 0, 0.03);
     color: $text-color;
+    padding: 0.4rem 0.9rem;
+    border-radius: 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: $transition;
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    :global(.dark-theme) & {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: $dark-text-color;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.12);
+      }
+    }
   }
 }
 
 // Purchase card section
 .purchaseCard {
-  background-color: $card-background;
-  border-radius: $border-radius;
-  box-shadow: $box-shadow;
-  padding: 32px;
+  @include apple-card;
+  padding: 2.5rem;
   position: sticky;
   top: 40px;
   @include flex-column;
-  gap: 20px;
+  gap: 1.25rem;
   height: fit-content;
+  align-self: start;
 }
 
 .purchaseType {
   font-size: 14px;
   font-weight: 500;
-  color: $light-gray;
+  color: $text-light;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
 }
 
 .price {
-  font-size: 40px;
+  font-size: 2.5rem;
   font-weight: 600;
   color: $text-color;
-  margin: 8px 0 16px;
+  margin: 0.5rem 0 1rem;
+  
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
 }
 
 .subscriptionInfo, .oneTimeInfo {
   font-size: 14px;
-  color: $light-gray;
-  margin-bottom: 8px;
+  color: $text-light;
+  margin-bottom: 0.5rem;
   line-height: 1.4;
+  
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
 }
 
 .purchaseError {
-  padding: 12px;
+  padding: 0.75rem;
   background-color: rgba($error-red, 0.1);
   color: $error-red;
   border-radius: 8px;
   font-size: 14px;
-  margin: 8px 0;
+  margin: 0.5rem 0;
+  
+  :global(.dark-theme) & {
+    background-color: rgba($dark-error-red, 0.15);
+    color: $dark-error-red;
+  }
 }
 
 .buyButton {
-  @include button-reset;
-  background-color: $primary-color;
-  color: white;
-  padding: 16px;
-  border-radius: 8px;
+  @include apple-button;
+  width: 100%;
+  padding: 1rem;
   font-size: 16px;
   font-weight: 600;
-  width: 100%;
-  text-align: center;
-  margin: 8px 0;
-  transition: $transition;
-  
-  &:hover {
-    background-color: darken($primary-color, 5%);
-    transform: translateY(-1px);
-  }
-  
-  &:active {
-    transform: translateY(1px);
-  }
-  
-  &:disabled {
-    background-color: lighten($primary-color, 20%);
-    cursor: not-allowed;
-    transform: none;
-  }
+  margin: 0.5rem 0;
 }
 
 .secureInfo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: $light-gray;
+  gap: 0.5rem;
+  color: $text-light;
   font-size: 13px;
-  margin: 8px 0;
+  margin: 0.5rem 0;
   
   svg {
     width: 16px;
     height: 16px;
   }
+  
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
 }
 
 .purchaseDetails {
-  margin-top: 16px;
-  border-top: 1px solid rgba($light-gray, 0.2);
-  padding-top: 16px;
+  margin-top: 1rem;
+  border-top: 1px solid rgba($border-color, 0.5);
+  padding-top: 1rem;
+  
+  :global(.dark-theme) & {
+    border-top: 1px solid rgba($dark-border-color, 0.5);
+  }
   
   .purchaseDetail {
     @include flex-column;
-    gap: 8px;
+    gap: 0.5rem;
     
     span {
       font-size: 15px;
       font-weight: 500;
       color: $text-color;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-color;
+      }
     }
     
     ul {
       margin: 0;
-      padding-left: 20px;
+      padding-left: 1.25rem;
       
       li {
         font-size: 14px;
-        margin-bottom: 8px;
-        color: $light-gray;
+        margin-bottom: 0.5rem;
+        color: $text-light;
+        
+        :global(.dark-theme) & {
+          color: $dark-text-light;
+        }
       }
     }
   }
@@ -264,13 +420,13 @@ $transition: all 0.3s ease;
 .actions {
   display: flex;
   justify-content: flex-start;
-  margin-top: 16px;
+  margin-top: 1rem;
 }
 
 .backButton {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   font-size: 15px;
   color: $primary-color;
   text-decoration: none;
@@ -280,33 +436,47 @@ $transition: all 0.3s ease;
     color: darken($primary-color, 10%);
     text-decoration: underline;
   }
+  
+  :global(.dark-theme) & {
+    color: $dark-primary-color;
+    
+    &:hover {
+      color: lighten($dark-primary-color, 10%);
+    }
+  }
 }
 
 // Success message
 .successMessage {
-  background-color: $card-background;
-  border-radius: $border-radius;
-  box-shadow: $box-shadow;
-  padding: 48px;
+  @include apple-card;
+  padding: 3rem;
   text-align: center;
   @include flex-column;
   align-items: center;
-  gap: 24px;
+  gap: 1.5rem;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 2rem auto;
   
   h1 {
     font-size: 32px;
     font-weight: 600;
     margin: 0;
     color: $text-color;
+    
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
   }
   
   p {
     font-size: 18px;
-    color: $light-gray;
+    color: $text-light;
     margin: 0;
     line-height: 1.5;
+    
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
   }
   
   .successIcon {
@@ -321,19 +491,27 @@ $transition: all 0.3s ease;
       height: 40px;
       color: $success-green;
     }
+    
+    :global(.dark-theme) & {
+      background-color: rgba($dark-success-green, 0.15);
+      
+      svg {
+        color: $dark-success-green;
+      }
+    }
   }
   
   .successActions {
     display: flex;
-    gap: 16px;
-    margin-top: 16px;
+    gap: 1rem;
+    margin-top: 1rem;
     
     a {
       @include button-reset;
-      padding: 12px 24px;
+      padding: 0.75rem 1.5rem;
       font-size: 16px;
       font-weight: 500;
-      border-radius: 8px;
+      border-radius: 20px;
       text-decoration: none;
     }
     
@@ -344,18 +522,35 @@ $transition: all 0.3s ease;
       
       &:hover {
         background-color: darken($primary-color, 5%);
-        transform: translateY(-1px);
+        transform: scale(1.02);
+      }
+      
+      :global(.dark-theme) & {
+        background-color: $dark-primary-color;
+        
+        &:hover {
+          background-color: lighten($dark-primary-color, 5%);
+        }
       }
     }
     
     .backToMarketplaceButton {
-      background-color: rgba($light-gray, 0.1);
+      background-color: rgba(0,0,0,0.05);
       color: $text-color;
       transition: $transition;
       
       &:hover {
-        background-color: rgba($light-gray, 0.2);
-        transform: translateY(-1px);
+        background-color: rgba(0,0,0,0.08);
+        transform: scale(1.02);
+      }
+      
+      :global(.dark-theme) & {
+        background-color: rgba(255,255,255,0.08);
+        color: $dark-text-color;
+        
+        &:hover {
+          background-color: rgba(255,255,255,0.12);
+        }
       }
     }
   }
@@ -363,20 +558,22 @@ $transition: all 0.3s ease;
 
 // GitHub Transfer Info
 .transferInfo {
-  background-color: $card-background;
-  border-radius: $border-radius;
-  box-shadow: $box-shadow;
-  padding: 48px;
+  @include apple-card;
+  padding: 3rem;
   @include flex-column;
-  gap: 24px;
+  gap: 1.5rem;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 2rem auto;
   
   h1 {
     font-size: 28px;
     font-weight: 600;
     color: $text-color;
     margin: 0;
+    
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
   }
   
   p {
@@ -388,64 +585,66 @@ $transition: all 0.3s ease;
     strong {
       font-weight: 600;
     }
+    
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
   }
   
   .transferInstructions {
     @include flex-column;
-    gap: 16px;
-    margin-top: 8px;
+    gap: 1rem;
+    margin-top: 0.5rem;
     
     h2 {
       font-size: 18px;
       font-weight: 600;
       margin: 0;
+      color: $text-color;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-color;
+      }
     }
     
     ol {
       margin: 0;
-      padding-left: 20px;
+      padding-left: 1.25rem;
       
       li {
-        margin-bottom: 12px;
+        margin-bottom: 0.75rem;
         font-size: 15px;
         line-height: 1.5;
-        color: $light-gray;
+        color: $text-light;
+        
+        :global(.dark-theme) & {
+          color: $dark-text-light;
+        }
       }
     }
   }
   
   .transferActions {
     @include flex-column;
-    gap: 16px;
-    margin-top: 16px;
+    gap: 1rem;
+    margin-top: 1rem;
     
     .completeTransferButton {
-      @include button-reset;
-      background-color: $primary-color;
-      color: white;
-      padding: 16px;
-      border-radius: 8px;
+      @include apple-button;
+      padding: 1rem;
       font-size: 16px;
       font-weight: 600;
-      text-align: center;
-      transition: $transition;
-      
-      &:hover {
-        background-color: darken($primary-color, 5%);
-        transform: translateY(-1px);
-      }
-      
-      &:disabled {
-        background-color: lighten($primary-color, 20%);
-        cursor: not-allowed;
-      }
     }
     
     .transferNote {
       font-size: 13px;
-      color: $light-gray;
+      color: $text-light;
       text-align: center;
       margin: 0;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-light;
+      }
     }
   }
 }
@@ -453,10 +652,10 @@ $transition: all 0.3s ease;
 // Loading
 .loading {
   @include flex-center;
-  padding: 100px 0;
+  padding: 6rem 0;
   font-size: 18px;
-  color: $light-gray;
-  gap: 12px;
+  color: $text-light;
+  gap: 0.75rem;
   
   @keyframes spin {
     0% { transform: rotate(0deg); }
@@ -465,5 +664,752 @@ $transition: all 0.3s ease;
   
   svg {
     animation: spin 1s linear infinite;
+  }
+  
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+// Additional sections
+.benefitsSection, .moreFromDeveloperSection, .contactDeveloperSection, .relatedPurchasesSection {
+  margin-top: 3rem;
+  
+  h2 {
+    @include section-title;
+  }
+}
+
+// Benefits section
+.benefitsSection {
+  margin: 4rem auto;
+  text-align: center;
+  max-width: 1200px;
+  
+  h2 {
+    @include section-title;
+    margin-bottom: 2.5rem;
+  }
+  
+  .benefitsList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1.5rem;
+  }
+  
+  .benefitItem {
+    @include flex-column;
+    align-items: center;
+    flex: 1;
+    min-width: 220px;
+    max-width: 260px;
+    gap: 1.25rem;
+    
+    .benefitIcon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background-color: rgba($primary-color, 0.08);
+      @include flex-center;
+      transition: $transition;
+      
+      svg {
+        width: 30px;
+        height: 30px;
+        color: $primary-color;
+      }
+      
+      :global(.dark-theme) & {
+        background-color: rgba($dark-primary-color, 0.12);
+        
+        svg {
+          color: $dark-primary-color;
+        }
+      }
+    }
+    
+    .benefitTitle {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      color: $text-color;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-color;
+      }
+    }
+    
+    .benefitDescription {
+      font-size: 15px;
+      line-height: 1.5;
+      color: $text-light;
+      margin: 0;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-light;
+      }
+    }
+    
+    .benefitEmoji {
+      font-size: 32px;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+// More from developer section
+.moreFromDeveloperSection {
+  .developerRepos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  
+  .developerRepoCard {
+    @include apple-card;
+    overflow: hidden;
+    transition: $transition;
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: $card-hover-shadow;
+      
+      :global(.dark-theme) & {
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      }
+    }
+    
+    .repoImage {
+      height: 160px;
+      position: relative;
+      overflow: hidden;
+      
+      img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.5s ease;
+      }
+      
+      &:hover img {
+        transform: scale(1.05);
+      }
+    }
+    
+    .repoContent {
+      padding: 1.5rem;
+      @include flex-column;
+      gap: 0.75rem;
+      
+      .repoTitle {
+        font-size: 17px;
+        font-weight: 600;
+        margin: 0;
+        color: $text-color;
+        
+        :global(.dark-theme) & {
+          color: $dark-text-color;
+        }
+      }
+      
+      .repoDescription {
+        font-size: 14px;
+        color: $text-light;
+        margin: 0;
+        line-height: 1.4;
+        height: 3em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        
+        :global(.dark-theme) & {
+          color: $dark-text-light;
+        }
+      }
+      
+      .repoPrice {
+        font-size: 16px;
+        font-weight: 600;
+        color: $primary-color;
+        
+        :global(.dark-theme) & {
+          color: $dark-primary-color;
+        }
+      }
+    }
+  }
+  
+  .viewAllDeveloperRepos {
+    display: block;
+    text-align: center;
+    margin-top: 2rem;
+    color: $primary-color;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 15px;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+    
+    :global(.dark-theme) & {
+      color: $dark-primary-color;
+    }
+  }
+}
+
+// Contact Developer Card
+.contactDeveloperCard {
+  @include apple-card;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  @include flex-column;
+  gap: 1rem;
+  
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: $text-color;
+    
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+  
+  .developerInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    .developerAvatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+    
+    .defaultAvatarMedium {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: $primary-color;
+      color: white;
+      @include flex-center;
+      font-size: 20px;
+      font-weight: 600;
+      
+      :global(.dark-theme) & {
+        background-color: $dark-primary-color;
+      }
+    }
+    
+    .developerName {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+      color: $text-color;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-color;
+      }
+    }
+    
+    .developerUsername {
+      font-size: 14px;
+      color: $text-light;
+      margin: 0.25rem 0 0;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-light;
+      }
+    }
+  }
+  
+  .contactDescription {
+    font-size: 14px;
+    color: $text-light;
+    margin: 0;
+    
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
+  }
+  
+  .contactButton {
+    @include apple-button;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+
+// Related purchases section
+.relatedPurchasesSection {
+  .relatedRepos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  
+  .relatedRepoCard {
+    @include apple-card;
+    overflow: hidden;
+    height: 100%;
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: $card-hover-shadow;
+      
+      :global(.dark-theme) & {
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      }
+    }
+    
+    .repoImage {
+      height: 160px;
+      position: relative;
+      overflow: hidden;
+      
+      img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.5s ease;
+      }
+      
+      &:hover img {
+        transform: scale(1.05);
+      }
+    }
+    
+    .repoContent {
+      padding: 1.5rem;
+      @include flex-column;
+      gap: 0.75rem;
+      
+      .repoTitle {
+        font-size: 17px;
+        font-weight: 600;
+        margin: 0;
+        color: $text-color;
+        
+        :global(.dark-theme) & {
+          color: $dark-text-color;
+        }
+      }
+      
+      .repoDescription {
+        font-size: 14px;
+        color: $text-light;
+        margin: 0;
+        line-height: 1.4;
+        flex-grow: 1;
+        
+        :global(.dark-theme) & {
+          color: $dark-text-light;
+        }
+      }
+      
+      .repoPrice {
+        font-size: 16px;
+        font-weight: 600;
+        color: $primary-color;
+        
+        :global(.dark-theme) & {
+          color: $dark-primary-color;
+        }
+      }
+      
+      .repoSeller {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 13px;
+        color: $text-light;
+        
+        .sellerAvatar {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          overflow: hidden;
+        }
+        
+        :global(.dark-theme) & {
+          color: $dark-text-light;
+        }
+      }
+    }
+  }
+}
+
+// Technical specs section
+.technicalSpecsSection {
+  @include apple-card;
+  padding: 2.5rem;
+  margin-top: 3rem;
+  
+  h2 {
+    @include section-title;
+  }
+  
+  .specsTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1.5rem;
+    
+    tr {
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba($border-color, 0.3);
+        
+        :global(.dark-theme) & {
+          border-bottom: 1px solid rgba($dark-border-color, 0.3);
+        }
+      }
+    }
+    
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      
+      &:first-child {
+        padding-left: 0;
+      }
+      
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+    
+    th {
+      font-size: 15px;
+      font-weight: 600;
+      color: $text-color;
+      width: 30%;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-color;
+      }
+    }
+    
+    td {
+      font-size: 15px;
+      color: $text-light;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-light;
+      }
+    }
+  }
+}
+
+// Footer section
+.footer {
+  margin-top: 3rem;
+  text-align: center;
+  padding: 2rem 0;
+  border-top: 1px solid rgba($border-color, 0.3);
+  color: $text-light;
+  font-size: 14px;
+  
+  :global(.dark-theme) & {
+    border-top: 1px solid rgba($dark-border-color, 0.3);
+    color: $dark-text-light;
+  }
+}
+
+// Reviews Section
+.reviewsSection {
+  @include apple-card;
+  padding: 2.5rem;
+  margin: 3rem 0;
+  
+  h2 {
+    @include section-title;
+    margin-bottom: 2rem;
+  }
+  
+  .reviewStats {
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba($border-color, 0.3);
+    padding-bottom: 2rem;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    :global(.dark-theme) & {
+      border-bottom: 1px solid rgba($dark-border-color, 0.3);
+    }
+  }
+  
+  .averageRating {
+    min-width: 180px;
+    text-align: center;
+    
+    .ratingNumber {
+      font-size: 48px;
+      font-weight: 600;
+      color: $text-color;
+      line-height: 1;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-color;
+      }
+    }
+    
+    .ratingStars {
+      color: $primary-color;
+      font-size: 24px;
+      margin: 0.5rem 0;
+      
+      :global(.dark-theme) & {
+        color: $dark-primary-color;
+      }
+    }
+    
+    .ratingCount {
+      font-size: 14px;
+      color: $text-light;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-light;
+      }
+    }
+  }
+  
+  .ratingBreakdown {
+    flex-grow: 1;
+    
+    .ratingBar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      
+      .ratingLabel {
+        font-size: 14px;
+        color: $text-light;
+        width: 60px;
+        
+        :global(.dark-theme) & {
+          color: $dark-text-light;
+        }
+      }
+      
+      .ratingBarContainer {
+        flex-grow: 1;
+        height: 8px;
+        background-color: rgba($border-color, 0.3);
+        border-radius: 4px;
+        overflow: hidden;
+        
+        :global(.dark-theme) & {
+          background-color: rgba($dark-border-color, 0.3);
+        }
+      }
+      
+      .ratingBarFill {
+        height: 100%;
+        background-color: $primary-color;
+        
+        :global(.dark-theme) & {
+          background-color: $dark-primary-color;
+        }
+      }
+      
+      .ratingCount {
+        font-size: 14px;
+        color: $text-light;
+        width: 30px;
+        text-align: right;
+        
+        :global(.dark-theme) & {
+          color: $dark-text-light;
+        }
+      }
+    }
+  }
+  
+  .reviewsList {
+    @include flex-column;
+    gap: 2rem;
+  }
+  
+  .reviewItem {
+    @include flex-column;
+    gap: 1rem;
+    
+    &:not(:last-child) {
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba($border-color, 0.3);
+      
+      :global(.dark-theme) & {
+        border-bottom: 1px solid rgba($dark-border-color, 0.3);
+      }
+    }
+  }
+  
+  .reviewHeader {
+    display: flex;
+    justify-content: space-between;
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+  
+  .reviewerInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    
+    .reviewerAvatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+    
+    .defaultAvatarSmall {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: $primary-color;
+      color: white;
+      @include flex-center;
+      font-size: 16px;
+      font-weight: 600;
+      
+      :global(.dark-theme) & {
+        background-color: $dark-primary-color;
+      }
+    }
+    
+    .reviewerName {
+      font-size: 16px;
+      font-weight: 600;
+      color: $text-color;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-color;
+      }
+    }
+    
+    .reviewDate {
+      font-size: 14px;
+      color: $text-light;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-light;
+      }
+    }
+  }
+  
+  .reviewRating {
+    font-size: 18px;
+    
+    .starFilled {
+      color: $primary-color;
+      
+      :global(.dark-theme) & {
+        color: $dark-primary-color;
+      }
+    }
+    
+    .starEmpty {
+      color: rgba($border-color, 0.5);
+      
+      :global(.dark-theme) & {
+        color: rgba($dark-border-color, 0.5);
+      }
+    }
+  }
+  
+  .reviewBody {
+    p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: $text-color;
+      
+      :global(.dark-theme) & {
+        color: $dark-text-color;
+      }
+    }
+  }
+}
+
+// FAQ Section
+.faqSection {
+  @include apple-card;
+  padding: 2.5rem;
+  margin: 3rem 0;
+  
+  h2 {
+    @include section-title;
+    margin-bottom: 2rem;
+  }
+  
+  .faqList {
+    @include flex-column;
+    gap: 1.5rem;
+  }
+  
+  .faqItem {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba($border-color, 0.3);
+    
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    
+    :global(.dark-theme) & {
+      border-bottom: 1px solid rgba($dark-border-color, 0.3);
+    }
+  }
+  
+  .faqQuestion {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    color: $text-color;
+    
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+  
+  .faqAnswer {
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+    color: $text-light;
+    
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
   }
 }
