@@ -202,7 +202,7 @@
 
 /* Dark Mode Styles */
 :global(.dark-theme) .portfolioSection {
-  background-color: #111;
+  background-color: #000;
 }
 
 :global(.dark-theme) .heading {
