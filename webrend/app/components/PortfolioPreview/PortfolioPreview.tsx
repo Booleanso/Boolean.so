@@ -1,93 +1,81 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './PortfolioPreview.module.css';
 
-// Match the interface from the API route
+// Match the interface from the portfolio page
 interface PortfolioProject {
   id: string;
+  slug: string;
   title: string;
   description: string;
   imageUrl: string;
   tags: string[];
   projectUrl?: string;
-  dateCompleted: number | Date;
+  dateCompleted: Date;
   featured: boolean;
 }
 
-export default function PortfolioPreview() {
-  const [projects, setProjects] = useState<PortfolioProject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface PortfolioPreviewProps {
+  projects: PortfolioProject[];
+}
 
-  useEffect(() => {
-    const fetchFeaturedProjects = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch('/api/portfolio/featured');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setProjects(data.projects || []);
-      } catch (err) {
-        console.error('Error fetching featured projects:', err);
-        setError('Failed to load featured projects.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchFeaturedProjects();
-  }, []);
+export default function PortfolioPreview({ projects }: PortfolioPreviewProps) {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.warn('Image failed to load:', e.currentTarget.src);
+    e.currentTarget.src = '/images/placeholder.png';
+  };
 
   const renderContent = () => {
-    if (loading) {
-      return (
-        <div className={styles.loadingContainer}>
-          <div className={styles.loadingSpinner}></div>
-          <span>Loading projects...</span>
-        </div>
-      );
-    }
-    if (error) {
-      return <div className={styles.errorState}>{error}</div>;
-    }
     if (projects.length === 0) {
       return <div className={styles.emptyState}>No featured projects to display yet.</div>;
     }
+    
     return (
       <div className={styles.gridContainer}>
         {projects.map((project) => (
-          <Link 
-            href={project.projectUrl || `/portfolio/projects/${project.id}`} // Link to project URL or a detail page 
-            key={project.id} 
-            className={styles.projectCard}
-            target={project.projectUrl ? '_blank' : '_self'}
-            rel={project.projectUrl ? 'noopener noreferrer' : ''}
-          >
-            <div className={styles.imageWrapper}>
-              <Image
-                src={project.imageUrl}
-                alt={project.title}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className={styles.projectImage}
-              />
-              <div className={styles.overlay}></div>
-            </div>
+          <div key={project.id} className={styles.projectCard}>
+            <Link 
+              href={`/portfolio/projects/${project.slug}`}
+              className={styles.imageLink}
+            >
+              <div className={styles.imageWrapper}>
+                <Image
+                  src={project.imageUrl}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className={styles.projectImage}
+                  onError={handleImageError}
+                />
+                <div className={styles.overlay}></div>
+              </div>
+            </Link>
             <div className={styles.contentWrapper}>
-              <h3 className={styles.projectTitle}>{project.title}</h3>
+              <Link href={`/portfolio/projects/${project.slug}`} className={styles.titleLink}>
+                <h3 className={styles.projectTitle}>{project.title}</h3>
+              </Link>
               <p className={styles.projectDescription}>{project.description}</p>
               <div className={styles.tagsContainer}>
                 {project.tags.slice(0, 3).map((tag) => (
                   <span key={tag} className={styles.tag}>{tag}</span>
                 ))}
               </div>
+              {project.projectUrl && (
+                <div className={styles.liveSiteContainer}>
+                  <a 
+                    href={project.projectUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className={styles.liveSiteLink}
+                  >
+                    View Live Site
+                  </a>
+                </div>
+              )}
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     );
@@ -96,9 +84,9 @@ export default function PortfolioPreview() {
   return (
     <section className={styles.portfolioSection}>
       <div className={styles.headerContent}>
-        <h2 className={styles.heading}>Featured Work</h2>
+        <h2 className={styles.heading}>Recent Work</h2>
         <p className={styles.subheading}>
-A selection of projects showcasing our expertise and results.
+          Our latest projects showcasing cutting-edge solutions and results.
         </p>
         <Link href="/portfolio" className={styles.viewAllLink}>
           View All Projects

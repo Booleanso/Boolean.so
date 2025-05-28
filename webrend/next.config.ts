@@ -10,7 +10,12 @@ const nextConfig: NextConfig = {
       'user-images.githubusercontent.com',
       'placehold.co',
       'images.unsplash.com',
-      'randomuser.me'
+      'randomuser.me',
+      'www.google.com',
+      'google.com',
+      'lh3.googleusercontent.com',
+      'storage.googleapis.com',
+      'firebasestorage.googleapis.com'
     ],
   },
 };
