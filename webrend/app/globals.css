@@ -99,6 +99,11 @@ body {
   overflow-x: hidden;
 }
 
+/* Add smooth scrolling to the entire site */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

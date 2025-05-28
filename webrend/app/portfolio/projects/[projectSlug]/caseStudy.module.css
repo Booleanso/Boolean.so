@@ -1,9 +1,10 @@
 /* Overall container for the article */
 .caseStudyContainer {
-  background-color: #000000; /* Changed to pure black */
-  color: #f5f5f7; /* Light text for dark background */
+  background-color: #ffffff; /* Light mode: white background */
+  color: #1d1d1f; /* Light mode: dark text */
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Dark mode support for the container */
@@ -46,15 +47,16 @@
   object-position: center; 
 }
 
-/* WHITE overlay - NO DARK MODE TOGGLE */
+/* WHITE overlay for light mode, BLACK overlay for dark mode */
 .heroOverlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to top, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.5));
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.5)); /* Light mode: white overlay */
   z-index: 2;
+  transition: background 0.3s ease;
 }
 
 /* Add dark mode support for the hero overlay */
@@ -81,7 +83,8 @@
   font-weight: 600; /* Original weight */
   margin-bottom: 0.5rem; /* Original margin */
   line-height: 1.1; /* Original line height */
-  color: #000; /* Dark text for light overlay */
+  color: #1d1d1f; /* Light mode: dark text for light overlay */
+  transition: color 0.3s ease;
 }
 
 /* Dark mode text color for hero content */
@@ -100,7 +103,8 @@
   font-weight: 400;
   margin-bottom: 1.5rem; /* Original margin */
   max-width: 600px; /* Original width */
-  color: rgba(0, 0, 0, 0.9); /* Dark text for light overlay */
+  color: rgba(29, 29, 31, 0.9); /* Light mode: dark text for light overlay */
+  transition: color 0.3s ease;
 }
 
 /* Dark mode subtitle color */
@@ -119,7 +123,8 @@
   gap: 1.5rem;
   margin-bottom: 1rem;
   font-size: 0.9rem;
-  color: rgba(0, 0, 0, 0.8); /* Dark text for light overlay */
+  color: rgba(29, 29, 31, 0.8); /* Light mode: dark text for light overlay */
+  transition: color 0.3s ease;
 }
 
 /* Dark mode metaInfo color */
@@ -138,37 +143,39 @@
   flex-wrap: wrap;
   gap: 0.8rem;
   margin-bottom: 2.5rem;
-  background-color: transparent; /* Transparent background for light mode */
+  background-color: rgba(255, 255, 255, 0.8); /* Light mode: semi-transparent white background */
   padding: 1.2rem;
   border-radius: 12px;
-  border: 1px solid #eaeaea;
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Light mode: subtle dark border */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 /* Dark mode styles for tags container - with increased specificity */
 :global(.dark-theme) .caseStudyContainer .tagsContainer,
 :global(.dark-theme) .heroContent .tagsContainer,
 :global(.dark-theme) [class*="tagsContainer"] {
-  background-color: #000000 !important; /* Force pure black in dark mode */
-  border: none !important; /* Remove border */
+  background-color: rgba(0, 0, 0, 0.8) !important; /* Semi-transparent black in dark mode */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Light border in dark mode */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-  padding: 0 !important; /* Remove padding */
+  padding: 1.2rem !important; /* Restore padding in dark mode */
 }
 
 @media (prefers-color-scheme: dark) {
   :global(.system-theme) .caseStudyContainer .tagsContainer,
   :global(.system-theme) .heroContent .tagsContainer,
   :global(.system-theme) [class*="tagsContainer"] {
-    background-color: #000000 !important; /* Force pure black in system dark mode */
-    border: none !important; /* Remove border */
+    background-color: rgba(0, 0, 0, 0.8) !important; /* Semi-transparent black in system dark mode */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Light border in dark mode */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-    padding: 0 !important; /* Remove padding */
+    padding: 1.2rem !important; /* Restore padding in dark mode */
   }
 }
 
 .tag {
-  background-color: #222222; /* Slightly lighter than pure black */
-  color: #ffffff; /* White text */
+  background-color: #f5f5f7; /* Light mode: light gray background */
+  color: #1d1d1f; /* Light mode: dark text */
   padding: 0.5rem 1.2rem;
   border-radius: 100px; /* Full pill shape */
   font-size: 0.85rem;
@@ -176,13 +183,13 @@
   position: relative; /* Required for emoji positioning */
   overflow: visible; /* Allow emoji to overflow */
   transition: all 0.2s ease;
-  border: 1px solid #444;
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Light mode: subtle border */
 }
 
 .tag:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-  background-color: #333333; /* Slightly lighter black on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Light mode: subtle shadow */
+  background-color: #e8e8ed; /* Light mode: slightly darker gray on hover */
 }
 
 /* Emoji pop animation on hover */
@@ -208,26 +215,30 @@
 .tag:nth-child(9):hover::after { content: "🔍"; }
 .tag:nth-child(10):hover::after { content: "🌐"; }
 
-/* Dark mode tag styling - keep it black with white text */
+/* Dark mode tag styling */
 :global(.dark-theme) .tag {
-  background-color: #000000; /* Black background */
-  color: #fff; /* Light text */
+  background-color: #2c2c2e; /* Dark mode: dark gray background */
+  color: #f5f5f7; /* Dark mode: light text */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Dark mode: subtle light border */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 :global(.dark-theme) .tag:hover {
-  background-color: #333333; /* Slightly lighter black on hover */
+  background-color: #3a3a3c; /* Dark mode: lighter gray on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 @media (prefers-color-scheme: dark) {
   :global(.system-theme) .tag {
-    background-color: #000000; /* Black background */
-    color: #fff; /* Light text */
+    background-color: #2c2c2e; /* Dark mode: dark gray background */
+    color: #f5f5f7; /* Dark mode: light text */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Dark mode: subtle light border */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
   
   :global(.system-theme) .tag:hover {
-    background-color: #333333; /* Slightly lighter black on hover */
+    background-color: #3a3a3c; /* Dark mode: lighter gray on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -297,7 +308,19 @@
   display: flex;
   flex-direction: column;
   gap: 4rem; /* Increased gap between major sections */
-  background-color: #000000; /* Added black background */
+  background-color: #ffffff; /* Light mode: white background */
+  transition: background-color 0.3s ease;
+}
+
+/* Dark mode support for main content */
+:global(.dark-theme) .mainContent {
+  background-color: #000000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .mainContent {
+    background-color: #000000;
+  }
 }
 
 /* Solution Section - Special Full-Width Layout */
@@ -311,8 +334,20 @@
   margin-left: calc(-50vw + 50%); /* Extend to full width regardless of parent */
   margin-right: calc(-50vw + 50%);
   padding: 120px 5% 60px 5%; /* Reduced bottom padding */
-  background-color: #000000; /* Changed to black background */
+  background-color: #ffffff; /* Light mode: white background */
   box-sizing: border-box;
+  transition: background-color 0.3s ease;
+}
+
+/* Dark mode support for solution features section */
+:global(.dark-theme) .solutionFeaturesSection {
+  background-color: #000000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .solutionFeaturesSection {
+    background-color: #000000;
+  }
 }
 
 /* Process Section - Full Width Layout */
@@ -323,12 +358,19 @@
   margin-right: calc(-50vw + 50%);
   padding: 0 0 60px 0;
   box-sizing: border-box;
-  background-color: #000000; /* Changed to black */
+  background-color: #ffffff; /* Light mode: white background */
+  transition: background-color 0.3s ease;
 }
 
 /* Dark mode support for process section */
 :global(.dark-theme) .processSection {
   background-color: #000000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .processSection {
+    background-color: #000000;
+  }
 }
 
 .solutionText {
@@ -378,9 +420,10 @@
   right: 0;
   width: 40%; /* Width of the fade */
   height: 100%;
-  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)); /* White fade */
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)); /* Light mode: white fade */
   pointer-events: none;
   z-index: 2;
+  transition: background 0.3s ease;
 }
 
 /* Dark theme support for video fade */
@@ -405,15 +448,27 @@
   justify-content: flex-start; /* Align left to match video width */
   gap: 10px;
   width: 100%;
-  background-color: #000000; /* Added black background */
+  background-color: #ffffff; /* Light mode: white background */
   border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+/* Dark mode support for feature list */
+:global(.dark-theme) .featureList {
+  background-color: #000000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .featureList {
+    background-color: #000000;
+  }
 }
 
 /* Badge-style feature items - simplified */
 .featureItem {
   font-size: 0.9rem;
   padding: 0.6rem 1.2rem;
-  background-color: #000000; /* Changed to black */
+  background-color: #ffffff; /* Light mode: white background */
   border-radius: 100px;
   display: inline-flex;
   align-items: center;
@@ -422,8 +477,8 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
   font-weight: 500;
-  color: #ffffff; /* Changed to white text */
-  border: 1px solid #333333; /* Darker border */
+  color: #1d1d1f; /* Light mode: dark text */
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Light mode: subtle border */
   position: relative; /* Required for emoji positioning */
   overflow: visible; /* Allow emoji to overflow */
 }
@@ -431,9 +486,9 @@
 .featureItem:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  background-color: #333333; /* Slightly lighter black on hover */
-  color: white;
-  border-color: #444444;
+  background-color: #f5f5f7; /* Light mode: light gray on hover */
+  color: #1d1d1f;
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 /* Emoji pop animation on hover */
@@ -493,6 +548,19 @@
   border-color: #0071e3;
 }
 
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .featureItem {
+    background-color: #2c2c2e;
+    color: #f5f5f7;
+    border-color: #3a3a3c;
+  }
+  
+  :global(.system-theme) .featureItem:hover {
+    background-color: #0071e3;
+    border-color: #0071e3;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .solutionFeaturesSection {
@@ -535,20 +603,28 @@
   padding-bottom: 1rem;
   margin-bottom: 2.5rem;
   text-align: left;
-  color: #000;
-  border-bottom: 2px solid #d2d2d7;
+  color: #1d1d1f; /* Light mode: dark text */
+  border-bottom: 2px solid #d2d2d7; /* Light mode: light gray border */
+  transition: color 0.3s ease, border-bottom-color 0.3s ease;
 }
 
 /* Dark mode support for section titles */
 :global(.dark-theme) .sectionTitle {
-  color: #fff;
-  border-bottom-color: #333;
+  color: #f5f5f7; /* Dark mode: light text */
+  border-bottom-color: #3a3a3c; /* Dark mode: darker border */
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .sectionTitle {
+    color: #f5f5f7;
+    border-bottom-color: #3a3a3c;
+  }
 }
 
 /* Special styling for Process title */
 .processTitle {
-  background-color: #000;
-  color: #fff;
+  background-color: #ffffff; /* Light mode: white background */
+  color: #1d1d1f; /* Light mode: dark text */
   display: inline-block;
   width: 100%;
   padding: 1rem 2rem;
@@ -560,12 +636,13 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   box-sizing: border-box;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Special styling for Process title to maintain black background */
+/* Special styling for Process title to maintain consistency */
 .processTitle {
-  background-color: #000;
-  color: #fff !important;
+  background-color: #ffffff; /* Light mode: white background */
+  color: #1d1d1f !important; /* Light mode: dark text */
   display: block;
   width: 100%;
   padding: 1rem 2rem;
@@ -585,17 +662,27 @@
 
 /* Dark mode support for Process title */
 :global(.dark-theme) .processTitle {
-  background-color: #000;
-  color: #fff;
+  background-color: #000000; /* Dark mode: black background */
+  color: #ffffff;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .processTitle {
+    background-color: #000000;
+    color: #ffffff;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
 .sectionText {
   font-size: clamp(1.1rem, 1.5vw + 0.5rem, 1.8rem); /* Fluid sizing between 1.1rem and 1.8rem */
-  color: #333333;
+  color: #1d1d1f; /* Light mode: dark text */
   line-height: 1.5;
   max-width: 75ch;
+  transition: color 0.3s ease;
 }
 
 .sectionText p {
@@ -604,7 +691,27 @@
 
 .sectionText strong {
   font-weight: 600;
-  color: #1d1d1f;
+  color: #1d1d1f; /* Light mode: dark text for emphasis */
+  transition: color 0.3s ease;
+}
+
+/* Dark mode support for section text */
+:global(.dark-theme) .sectionText {
+  color: #f5f5f7; /* Dark mode: light text */
+}
+
+:global(.dark-theme) .sectionText strong {
+  color: #ffffff; /* Dark mode: white text for emphasis */
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .sectionText {
+    color: #f5f5f7;
+  }
+  
+  :global(.system-theme) .sectionText strong {
+    color: #ffffff;
+  }
 }
 
 /* Testimonial Section Styling */
@@ -632,12 +739,13 @@
   font-style: normal;
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: #1d1d1f;
+  color: #1d1d1f; /* Light mode: dark text */
   margin-bottom: 2rem;
   line-height: 1.4;
   position: relative;
   padding: 0 3rem;
   text-align: center;
+  transition: color 0.3s ease;
 }
 
 /* Add quote marks */
@@ -645,11 +753,12 @@
 .testimonialText::after {
   content: '\201C';
   font-size: 5rem;
-  color: #ffffff;
+  color: #d2d2d7; /* Light mode: light gray quotes */
   position: absolute;
   line-height: 1;
   opacity: 0.7;
   text-shadow: 0 0 15px rgba(0, 113, 227, 0.3);
+  transition: color 0.3s ease;
 }
 
 .testimonialText::before {
@@ -663,19 +772,47 @@
   bottom: -2.5rem;
 }
 
-/* Dark mode adjustments for quote symbols */
+/* Dark mode adjustments for testimonial text and quote symbols */
+:global(.dark-theme) .testimonialText {
+  color: #f5f5f7; /* Dark mode: light text */
+}
+
 :global(.dark-theme) .testimonialText::before,
 :global(.dark-theme) .testimonialText::after {
-  color: #ffffff;
+  color: #3a3a3c; /* Dark mode: darker gray quotes */
   text-shadow: 0 0 15px rgba(10, 132, 255, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .testimonialText {
+    color: #f5f5f7;
+  }
+  
+  :global(.system-theme) .testimonialText::before,
+  :global(.system-theme) .testimonialText::after {
+    color: #3a3a3c;
+    text-shadow: 0 0 15px rgba(10, 132, 255, 0.3);
+  }
 }
 
 .testimonialFooter {
   font-size: 1.2rem;
   font-weight: 500;
-  color: #555;
+  color: #86868b; /* Light mode: medium gray text */
   text-align: center;
   margin-top: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+/* Dark mode support for testimonial footer */
+:global(.dark-theme) .testimonialFooter {
+  color: #a1a1a6; /* Dark mode: lighter gray text */
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .testimonialFooter {
+    color: #a1a1a6;
+  }
 }
 
 /* Gallery Section Styling */
@@ -1118,7 +1255,19 @@
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
-  background-color: #000000; /* Added black background */
+  background-color: #f5f5f7; /* Light mode: light gray background */
+  transition: background-color 0.3s ease;
+}
+
+/* Dark mode support for website preview section */
+:global(.dark-theme) .websitePreviewSection {
+  background-color: #000000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .websitePreviewSection {
+    background-color: #000000;
+  }
 }
 
 .centeredSectionTitle {
@@ -1129,6 +1278,19 @@
   text-transform: uppercase;
   margin-bottom: 1rem;
   border-bottom: none;
+  color: #1d1d1f; /* Light mode: dark text */
+  transition: color 0.3s ease;
+}
+
+/* Dark mode support for centered section title */
+:global(.dark-theme) .centeredSectionTitle {
+  color: #f5f5f7; /* Dark mode: light text */
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .centeredSectionTitle {
+    color: #f5f5f7;
+  }
 }
 
 .centeredDescription {
@@ -1136,13 +1298,20 @@
   max-width: 700px;
   font-size: 1.3rem;
   line-height: 1.6;
-  color: #666;
+  color: #86868b; /* Light mode: medium gray text */
   margin: 0 0 5rem 0;
   font-weight: 400;
+  transition: color 0.3s ease;
 }
 
 :global(.dark-theme) .centeredDescription {
-  color: #aaa;
+  color: #a1a1a6; /* Dark mode: lighter gray text */
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .centeredDescription {
+    color: #a1a1a6;
+  }
 }
 
 .websitePreviewWrapper {
@@ -1153,9 +1322,23 @@
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); /* Light mode: subtle shadow */
   margin-bottom: 3rem;
-  border: 1px solid #eee;
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Light mode: subtle border */
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Dark mode support for website preview wrapper */
+:global(.dark-theme) .websitePreviewWrapper {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.1); /* Dark mode: subtle light border */
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .websitePreviewWrapper {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .websitePreview {
@@ -1176,14 +1359,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5f5f7;
-  color: #666;
+  background-color: #f5f5f7; /* Light mode: light gray background */
+  color: #86868b; /* Light mode: medium gray text */
   font-size: 1.2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 :global(.dark-theme) .noPreview {
-  background-color: #2c2c2e;
-  color: #aaa;
+  background-color: #2c2c2e; /* Dark mode: dark gray background */
+  color: #a1a1a6; /* Dark mode: lighter gray text */
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(.system-theme) .noPreview {
+    background-color: #2c2c2e;
+    color: #a1a1a6;
+  }
 }
 
 /* Responsive styles for new elements */

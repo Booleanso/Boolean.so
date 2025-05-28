@@ -33,6 +33,7 @@
     "firebase-admin": "^13.2.0",
     "fs": "^0.0.1-security",
     "gsap": "^3.12.7",
+    "luxy.js": "^0.1.0",
     "next": "^15.2.4",
     "next-auth": "^4.24.11",
     "nipplejs": "^0.10.2",

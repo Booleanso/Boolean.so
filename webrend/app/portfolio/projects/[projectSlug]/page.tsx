@@ -47,58 +47,107 @@ interface PortfolioProject {
 async function getProjectBySlug(slug: string): Promise<PortfolioProject | null> {
   console.log(`Fetching project with slug: ${slug}`);
   try {
-    // Query Firestore using the slug field
-    // NOTE: Requires a single-field index on 'slug' in Firestore!
+    // First, try to find by exact slug match
     const projectsRef = db.collection('portfolioProjects');
-    const querySnapshot = await projectsRef.where('slug', '==', slug).limit(1).get();
+    let querySnapshot = await projectsRef.where('slug', '==', slug).limit(1).get();
 
-    if (querySnapshot.empty) {
-      console.log(`No project found with slug: ${slug}`);
+    if (!querySnapshot.empty) {
+      console.log(`Found project by exact slug match: ${slug}`);
+      const docSnap = querySnapshot.docs[0];
+      const data = docSnap.data();
+      if (data) {
+        return convertFirestoreDataToProject(docSnap.id, data);
+      }
+    }
+
+    // If no exact slug match, try to find by repository name matching
+    console.log(`No exact slug match found for: ${slug}. Trying repository name matching...`);
+    
+    // Get all projects to search through
+    const allProjectsSnapshot = await projectsRef.get();
+    
+    if (allProjectsSnapshot.empty) {
+      console.log('No projects found in database');
       return null;
     }
 
-    const docSnap = querySnapshot.docs[0]; // Get the first document
-    const data = docSnap.data();
-    if (!data) return null;
+    // Convert slug back to potential repository name for matching
+    const potentialRepoName = slug.replace(/-/g, ' ').toLowerCase();
+    
+    // Try to find a project that matches the repository name
+    for (const doc of allProjectsSnapshot.docs) {
+      const data = doc.data();
+      const projectTitle = (data.title || '').toLowerCase();
+      
+      // Try exact title match (case insensitive, normalized)
+      const normalizedTitle = projectTitle.replace(/[^\w\s]/g, '').replace(/\s+/g, '');
+      const normalizedRepoName = potentialRepoName.replace(/[^\w\s]/g, '').replace(/\s+/g, '');
+      
+      if (normalizedTitle === normalizedRepoName) {
+        console.log(`Found exact title match for repo name ${slug}: ${data.title}`);
+        return convertFirestoreDataToProject(doc.id, data);
+      }
+      
+      // Try keyword matching
+      const repoWords = potentialRepoName.split(/[-_\s]+/).filter(word => word.length > 2);
+      const titleWords = projectTitle.split(/\s+/);
+      
+      const hasKeywordMatch = repoWords.some(repoWord => 
+        titleWords.some((titleWord: string) => titleWord.includes(repoWord) || repoWord.includes(titleWord))
+      );
+      
+      if (hasKeywordMatch) {
+        console.log(`Found keyword match for repo name ${slug}: ${data.title}`);
+        return convertFirestoreDataToProject(doc.id, data);
+      }
+    }
 
-    // Convert Timestamps
-    const dateCompleted = (data.dateCompleted as Timestamp)?.toDate();
-    const createdAt = (data.createdAt as Timestamp)?.toDate();
+    // If still no match, return null to trigger 404
+    console.log(`No project found matching slug: ${slug}`);
+    return null;
 
-    return {
-      id: docSnap.id, // Keep the document ID
-      slug: data.slug, // Include the slug
-      title: data.title || 'Untitled Project',
-      description: data.description || '',
-      imageUrl: data.imageUrl || '/images/placeholder.png',
-      projectUrl: data.projectUrl || null,
-      tags: data.tags || [],
-      dateCompleted: dateCompleted || new Date(),
-      featured: data.featured || false,
-      createdAt: createdAt || new Date(),
-      clientName: data.clientName || null,
-      clientLinkedIn: data.clientLinkedIn || null, // Pull LinkedIn URL from data
-      clientInstagram: data.clientInstagram || null, // Pull Instagram URL from data
-      clientX: data.clientX || null, // Pull X/Twitter URL from data
-      projectLength: data.projectLength || null, // Pull project length from data
-      projectGoal: data.projectGoal || 'No goal specified.',
-      solution: data.solution || 'No solution specified.',
-      keyFeatures: data.keyFeatures || [],
-      challenges: data.challenges || null,
-      results: data.results || null,
-      testimonialText: data.testimonialText || null,
-      testimonialAuthor: data.testimonialAuthor || null,
-      testimonialTitle: data.testimonialTitle || null,
-      galleryImages: data.galleryImages || [],
-      videoUrl: data.videoUrl || null, // Add the videoUrl field
-      seoTitle: data.seoTitle || data.title || 'Project Case Study',
-      seoDescription: data.seoDescription || data.description || '',
-      seoKeywords: data.seoKeywords || data.tags || [],
-    } as PortfolioProject;
   } catch (error) {
     console.error(`Error fetching project with slug ${slug}:`, error);
     return null;
   }
+}
+
+// Helper function to convert Firestore data to PortfolioProject
+function convertFirestoreDataToProject(docId: string, data: any): PortfolioProject {
+  // Convert Timestamps
+  const dateCompleted = (data.dateCompleted as Timestamp)?.toDate();
+  const createdAt = (data.createdAt as Timestamp)?.toDate();
+
+  return {
+    id: docId,
+    slug: data.slug || docId,
+    title: data.title || 'Untitled Project',
+    description: data.description || '',
+    imageUrl: data.imageUrl || '/images/placeholder.png',
+    projectUrl: data.projectUrl || null,
+    tags: data.tags || [],
+    dateCompleted: dateCompleted || new Date(),
+    featured: data.featured || false,
+    createdAt: createdAt || new Date(),
+    clientName: data.clientName || null,
+    clientLinkedIn: data.clientLinkedIn || null,
+    clientInstagram: data.clientInstagram || null,
+    clientX: data.clientX || null,
+    projectLength: data.projectLength || null,
+    projectGoal: data.projectGoal || 'No goal specified.',
+    solution: data.solution || 'No solution specified.',
+    keyFeatures: data.keyFeatures || [],
+    challenges: data.challenges || null,
+    results: data.results || null,
+    testimonialText: data.testimonialText || null,
+    testimonialAuthor: data.testimonialAuthor || null,
+    testimonialTitle: data.testimonialTitle || null,
+    galleryImages: data.galleryImages || [],
+    videoUrl: data.videoUrl || null,
+    seoTitle: data.seoTitle || data.title || 'Project Case Study',
+    seoDescription: data.seoDescription || data.description || '',
+    seoKeywords: data.seoKeywords || data.tags || [],
+  } as PortfolioProject;
 }
 
 // --- Dynamic Metadata Generation ---

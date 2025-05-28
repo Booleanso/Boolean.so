@@ -38,8 +38,21 @@ interface EnhancedLocation {
   isPrivate?: boolean;  // Flag to identify private repos
 }
 
+// Portfolio project interface for matching
+interface PortfolioProject {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  tags: string[];
+  projectUrl?: string;
+  dateCompleted: Date;
+  featured: boolean;
+}
+
 // Component for the Globe
-function Globe({ locations }: { locations: EnhancedLocation[] }) {
+function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation[], findMatchingProject: (repoName: string) => PortfolioProject | null }) {
   const globeRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
   const [textureLoaded, setTextureLoaded] = useState(false);
@@ -291,9 +304,31 @@ function Globe({ locations }: { locations: EnhancedLocation[] }) {
     // Debug log to confirm which icon was clicked
     console.log(`Clicked icon ${index}: ${location.repoName} at ${location.name}`);
     
-    // Navigate to the project page
-    const slug = createSlug(location.repoName);
-    router.push(`/portfolio/projects/${slug}`);
+    // Create a slug directly from the repository name
+    const repoSlug = createSlug(location.repoName);
+    
+    // Find the matching portfolio project for better user experience
+    const matchingProject = findMatchingProject(location.repoName);
+    
+    if (matchingProject && matchingProject.slug) {
+      console.log(`Found matching project: ${matchingProject.title} (${matchingProject.slug})`);
+      console.log(`Navigating to project page with repo slug: ${repoSlug}`);
+      // Navigate to the project page using the repo slug
+      router.push(`/portfolio/projects/${repoSlug}`);
+    } else {
+      console.log(`No matching project found for ${location.repoName}`);
+      // Show a confirmation before navigating to a non-existent project
+      const shouldNavigate = confirm(
+        `No portfolio case study found for "${location.repoName}". Would you like to view our portfolio page instead?`
+      );
+      
+      if (shouldNavigate) {
+        router.push('/portfolio');
+      } else {
+        // User chose not to navigate, try the project page anyway (will show 404)
+        router.push(`/portfolio/projects/${repoSlug}`);
+      }
+    }
   };
   
   // Reset all hover states (used when clicking on empty space)
@@ -821,6 +856,7 @@ export default function HeroSection() {
   const [privateLocationsFound, setPrivateLocationsFound] = useState<number>(0);
   const [globeOpacity, setGlobeOpacity] = useState<number>(0);
   const [globePosition, setGlobePosition] = useState<number>(100); // Start 100px lower for more dramatic rise
+  const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
   const globeContainerRef = useRef<HTMLDivElement>(null);
 
   // Immediately check dark mode when HeroSection mounts (during navigation or initial load)
@@ -1077,6 +1113,62 @@ export default function HeroSection() {
     fetchLocations();
   }, []);
 
+  // Fetch portfolio projects for mapping
+  useEffect(() => {
+    const fetchPortfolioProjects = async () => {
+      try {
+        const response = await fetch('/api/portfolio/projects');
+        if (response.ok) {
+          const data = await response.json();
+          setPortfolioProjects(data.projects || []);
+          console.log(`Loaded ${data.projects?.length || 0} portfolio projects for mapping`);
+        }
+      } catch (error) {
+        console.error('Error fetching portfolio projects:', error);
+      }
+    };
+
+    fetchPortfolioProjects();
+  }, []);
+
+  // Function to find the best matching portfolio project for a repository
+  const findMatchingProject = (repoName: string) => {
+    if (portfolioProjects.length === 0) {
+      console.log('No portfolio projects loaded yet');
+      return null;
+    }
+
+    // Try to find a project that matches the repository name
+    // First, try exact title match (case insensitive)
+    let match = portfolioProjects.find((project: PortfolioProject) => 
+      project.title.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '') === 
+      repoName.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '')
+    );
+
+    if (match) {
+      console.log(`Found exact match for ${repoName}: ${match.title}`);
+      return match;
+    }
+
+    // Try to find by keywords in the title
+    const repoWords = repoName.toLowerCase().split(/[-_\s]+/).filter(word => word.length > 2);
+    match = portfolioProjects.find((project: PortfolioProject) => {
+      const titleWords = project.title.toLowerCase().split(/\s+/);
+      return repoWords.some(repoWord => 
+        titleWords.some((titleWord: string) => titleWord.includes(repoWord) || repoWord.includes(titleWord))
+      );
+    });
+
+    if (match) {
+      console.log(`Found keyword match for ${repoName}: ${match.title}`);
+      return match;
+    }
+
+    // If no match found, return the first project as fallback
+    console.log(`No specific match found for ${repoName}, using first project as fallback`);
+    return portfolioProjects[0] || null;
+  };
+
   // Configure the animation for the globe opacity and position
   const globeStyle = {
     opacity: globeOpacity,
@@ -1133,7 +1225,7 @@ export default function HeroSection() {
               />
               
               <Suspense fallback={null}>
-                <Globe locations={locations} />
+                <Globe locations={locations} findMatchingProject={findMatchingProject} />
               </Suspense>
             </Canvas>
           )}
