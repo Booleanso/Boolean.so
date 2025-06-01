@@ -1190,7 +1190,7 @@ export default function HeroSection() {
           {error && <div className={styles.errorMessage}>{error}</div>}
 
           <div className={styles.ctas}>
-            <a href="#contact" className={styles.primaryBtn}>Let's Build</a>
+            <a href="https://calendly.com/webrend/discovery" className={styles.primaryBtn}>Let's Build</a>
             <a href="/marketplace" className={styles.secondaryBtn}>Sell Your Repo</a>
           </div>
         </div>
