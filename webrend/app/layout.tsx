@@ -5,6 +5,7 @@ import NavBar from "./components/NavBar/NavBar";
 import PageTransition from "./components/PageTransition/PageTransition";
 import { ThemeProvider } from "./components/ThemeProvider/ThemeProvider";
 import { verifyUser, simplifyUser } from "./utils/auth-utils";
+import ServiceStatus from "./components/ServiceStatus/ServiceStatus";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: 'var(--background)' }}>
         <ThemeProvider>
           <NavBar serverUser={simpleUser} />
+          <ServiceStatus />
           <PageTransition type="slide-up" duration={0.4}>
             {children}
           </PageTransition>

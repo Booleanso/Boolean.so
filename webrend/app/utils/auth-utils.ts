@@ -1,4 +1,4 @@
-import { auth } from '../lib/firebase-admin';
+import { auth, hasValidFirebaseConfig } from '../lib/firebase-admin';
 import { cookies } from 'next/headers';
 
 // Define a type for the simplified user data needed by the client
@@ -15,6 +15,12 @@ export type SimpleUser = {
  */
 export async function verifyUser() {
   try {
+    // Check if Firebase is properly configured
+    if (!hasValidFirebaseConfig) {
+      console.warn('Firebase is not configured. Authentication disabled.');
+      return null;
+    }
+
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('session')?.value;
     
@@ -30,7 +36,8 @@ export async function verifyUser() {
     
     return user;
   } catch (error) {
-    console.error('Error verifying user authentication:', error);
+    // Log the error but don't throw - allow the app to continue loading
+    console.warn('Error verifying user authentication:', error);
     return null;
   }
 }
@@ -46,4 +53,9 @@ export function simplifyUser(user: import('firebase-admin/auth').UserRecord | nu
     displayName: user.displayName || null,
     photoURL: user.photoURL || null,
   };
+}
+
+// Helper function to check if authentication is available
+export function isAuthenticationAvailable(): boolean {
+  return hasValidFirebaseConfig;
 } 

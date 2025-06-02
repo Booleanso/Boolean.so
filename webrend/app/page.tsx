@@ -12,6 +12,10 @@ import Footer from "./components/Footer/Footer";
 import TrustedBy from "./components/TrustedBy/TrustedBy";
 import { db } from './lib/firebase-admin';
 import { DocumentData, Timestamp } from 'firebase-admin/firestore';
+import { logEnvironmentStatus } from './utils/env-check';
+
+// Log environment status on server startup (development only)
+logEnvironmentStatus();
 
 // Define the type for portfolio projects
 interface PortfolioProject {

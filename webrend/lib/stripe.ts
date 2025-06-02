@@ -1,9 +1,14 @@
 import Stripe from 'stripe';
 
-// Initialize Stripe with API version
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
-  apiVersion: '2024-06-20',  // Use the latest API version
-});
+// Check if Stripe is properly configured
+const hasValidStripeConfig = !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_PUBLISHABLE_KEY);
+
+// Initialize Stripe with API version - use fallback if not configured
+export const stripe = hasValidStripeConfig 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: '2025-02-24.acacia',  // Use the latest API version
+    })
+  : null;
 
 // Platform fee percentage
 export const PLATFORM_FEE_PERCENT = Number(process.env.PLATFORM_FEE_PERCENT || '5');
@@ -27,10 +32,28 @@ export const calculatePlatformFee = (amount: number): number => {
 export const getStripePublicKey = (): string => {
   const key = process.env.STRIPE_PUBLISHABLE_KEY;
   if (!key) {
-    throw new Error('Stripe publishable key is not set in environment variables');
+    console.warn('Stripe publishable key is not set in environment variables. Stripe functionality disabled.');
+    return '';
   }
   return key;
 };
+
+// Helper function to check if Stripe is configured
+export function isStripeConfigured(): boolean {
+  return hasValidStripeConfig;
+}
+
+// Wrapper function for Stripe operations that checks configuration first
+async function withStripeCheck<T>(operation: () => Promise<T>, fallbackValue?: T): Promise<T> {
+  if (!stripe || !hasValidStripeConfig) {
+    console.warn('Stripe is not configured. Operation skipped.');
+    if (fallbackValue !== undefined) {
+      return fallbackValue;
+    }
+    throw new Error('Stripe is not configured');
+  }
+  return operation();
+}
 
 /**
  * Create a Stripe Connect account
@@ -39,23 +62,25 @@ export const getStripePublicKey = (): string => {
  * @returns Stripe account object
  */
 export const createConnectAccount = async (email: string, country: string = 'US') => {
-  try {
-    const account = await stripe.accounts.create({
-      type: 'express',
-      country,
-      email,
-      capabilities: {
-        card_payments: { requested: true },
-        transfers: { requested: true },
-      },
-      business_type: 'individual',
-    });
+  return withStripeCheck(async () => {
+    try {
+      const account = await stripe!.accounts.create({
+        type: 'express',
+        country,
+        email,
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
+        },
+        business_type: 'individual',
+      });
 
-    return account;
-  } catch (error) {
-    console.error('Error creating Connect account:', error);
-    throw error;
-  }
+      return account;
+    } catch (error) {
+      console.error('Error creating Connect account:', error);
+      throw error;
+    }
+  });
 };
 
 /**
@@ -70,19 +95,21 @@ export const createAccountLink = async (
   refreshUrl: string,
   returnUrl: string
 ) => {
-  try {
-    const accountLink = await stripe.accountLinks.create({
-      account: accountId,
-      refresh_url: refreshUrl,
-      return_url: returnUrl,
-      type: 'account_onboarding',
-    });
+  return withStripeCheck(async () => {
+    try {
+      const accountLink = await stripe!.accountLinks.create({
+        account: accountId,
+        refresh_url: refreshUrl,
+        return_url: returnUrl,
+        type: 'account_onboarding',
+      });
 
-    return accountLink;
-  } catch (error) {
-    console.error('Error creating account link:', error);
-    throw error;
-  }
+      return accountLink;
+    } catch (error) {
+      console.error('Error creating account link:', error);
+      throw error;
+    }
+  });
 };
 
 /**
@@ -91,15 +118,17 @@ export const createAccountLink = async (
  * @returns Boolean indicating if onboarding is complete
  */
 export const isAccountOnboardingComplete = async (accountId: string): Promise<boolean> => {
-  try {
-    const account = await stripe.accounts.retrieve(accountId);
-    
-    // Check if charges are enabled (indicates account is ready)
-    return account.charges_enabled === true;
-  } catch (error) {
-    console.error('Error checking account status:', error);
-    return false;
-  }
+  return withStripeCheck(async () => {
+    try {
+      const account = await stripe!.accounts.retrieve(accountId);
+      
+      // Check if charges are enabled (indicates account is ready)
+      return account.charges_enabled === true;
+    } catch (error) {
+      console.error('Error checking account status:', error);
+      return false;
+    }
+  }, false);
 };
 
 /**
@@ -108,13 +137,15 @@ export const isAccountOnboardingComplete = async (accountId: string): Promise<bo
  * @returns Login link URL
  */
 export const createLoginLink = async (accountId: string) => {
-  try {
-    const loginLink = await stripe.accounts.createLoginLink(accountId);
-    return loginLink.url;
-  } catch (error) {
-    console.error('Error creating login link:', error);
-    throw error;
-  }
+  return withStripeCheck(async () => {
+    try {
+      const loginLink = await stripe!.accounts.createLoginLink(accountId);
+      return loginLink.url;
+    } catch (error) {
+      console.error('Error creating login link:', error);
+      throw error;
+    }
+  });
 };
 
 /**
@@ -131,17 +162,19 @@ export const createProduct = async (
   images: string[] = [],
   metadata: Record<string, string> = {}
 ) => {
-  try {
-    return await stripe.products.create({
-      name,
-      description,
-      images,
-      metadata,
-    });
-  } catch (error) {
-    console.error('Error creating product:', error);
-    throw error;
-  }
+  return withStripeCheck(async () => {
+    try {
+      return await stripe!.products.create({
+        name,
+        description,
+        images,
+        metadata,
+      });
+    } catch (error) {
+      console.error('Error creating product:', error);
+      throw error;
+    }
+  });
 };
 
 /**
@@ -158,17 +191,19 @@ export const createOneTimePrice = async (
   currency: string = 'usd',
   metadata: Record<string, string> = {}
 ) => {
-  try {
-    return await stripe.prices.create({
-      product: productId,
-      unit_amount: unitAmount,
-      currency,
-      metadata,
-    });
-  } catch (error) {
-    console.error('Error creating one-time price:', error);
-    throw error;
-  }
+  return withStripeCheck(async () => {
+    try {
+      return await stripe!.prices.create({
+        product: productId,
+        unit_amount: unitAmount,
+        currency,
+        metadata,
+      });
+    } catch (error) {
+      console.error('Error creating one-time price:', error);
+      throw error;
+    }
+  });
 };
 
 /**
@@ -189,21 +224,23 @@ export const createRecurringPrice = async (
   currency: string = 'usd',
   metadata: Record<string, string> = {}
 ) => {
-  try {
-    return await stripe.prices.create({
-      product: productId,
-      unit_amount: unitAmount,
-      currency,
-      recurring: {
-        interval,
-        interval_count: intervalCount,
-      },
-      metadata,
-    });
-  } catch (error) {
-    console.error('Error creating recurring price:', error);
-    throw error;
-  }
+  return withStripeCheck(async () => {
+    try {
+      return await stripe!.prices.create({
+        product: productId,
+        unit_amount: unitAmount,
+        currency,
+        recurring: {
+          interval,
+          interval_count: intervalCount,
+        },
+        metadata,
+      });
+    } catch (error) {
+      console.error('Error creating recurring price:', error);
+      throw error;
+    }
+  });
 };
 
 /**
@@ -222,54 +259,56 @@ export const createCheckoutSession = async (params: {
   applicationFeeAmount?: number;
   connectedAccountId?: string;
 }) => {
-  try {
-    const {
-      priceId,
-      successUrl,
-      cancelUrl,
-      customerId,
-      clientReferenceId,
-      metadata,
-      mode,
-      applicationFeeAmount,
-      connectedAccountId,
-    } = params;
-    
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
-      mode,
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      client_reference_id: clientReferenceId,
-      metadata,
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-    };
-    
-    // Add customer ID if provided
-    if (customerId) {
-      sessionParams.customer = customerId;
-    }
-    
-    // Add application fee if provided (for Connected accounts)
-    if (applicationFeeAmount && connectedAccountId) {
-      sessionParams.payment_intent_data = {
-        application_fee_amount: applicationFeeAmount,
+  return withStripeCheck(async () => {
+    try {
+      const {
+        priceId,
+        successUrl,
+        cancelUrl,
+        customerId,
+        clientReferenceId,
+        metadata,
+        mode,
+        applicationFeeAmount,
+        connectedAccountId,
+      } = params;
+      
+      const sessionParams: Stripe.Checkout.SessionCreateParams = {
+        mode,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        client_reference_id: clientReferenceId,
+        metadata,
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
       };
       
-      // Create session on the connected account
-      return await stripe.checkout.sessions.create(sessionParams, {
-        stripeAccount: connectedAccountId,
-      });
+      // Add customer ID if provided
+      if (customerId) {
+        sessionParams.customer = customerId;
+      }
+      
+      // Add application fee if provided (for Connected accounts)
+      if (applicationFeeAmount && connectedAccountId) {
+        sessionParams.payment_intent_data = {
+          application_fee_amount: applicationFeeAmount,
+        };
+        
+        // Create session on the connected account
+        return await stripe!.checkout.sessions.create(sessionParams, {
+          stripeAccount: connectedAccountId,
+        });
+      }
+      
+      // Create regular session
+      return await stripe!.checkout.sessions.create(sessionParams);
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      throw error;
     }
-    
-    // Create regular session
-    return await stripe.checkout.sessions.create(sessionParams);
-  } catch (error) {
-    console.error('Error creating checkout session:', error);
-    throw error;
-  }
+  });
 }; 
