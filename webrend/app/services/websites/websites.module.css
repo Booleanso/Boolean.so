@@ -1,0 +1,448 @@
+.container {
+  min-height: 100vh;
+  background-color: #ffffff;
+  transition: background-color 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container.dark-theme {
+  background-color: #000000;
+}
+
+/* Hero Section */
+.heroSection {
+  padding: 10rem 2rem 8rem;
+  text-align: center;
+  background: linear-gradient(135deg, #f5f5f7 0%, #ffffff 100%);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.heroSection.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dark-theme .heroSection {
+  background: linear-gradient(135deg, #1c1c1e 0%, #000000 100%);
+}
+
+.heroContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.badge {
+  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+.badgeText {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 20px rgba(240, 147, 251, 0.3);
+}
+
+.heroTitle {
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
+  color: #1d1d1f;
+}
+
+.dark-theme .heroTitle {
+  color: #f5f5f7;
+}
+
+.titleLine {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.gradientText {
+  background: linear-gradient(90deg, #f093fb 0%, #f5576c 50%, #ff9a56 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientMove 6s ease-in-out infinite;
+}
+
+@keyframes gradientMove {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.heroDescription {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: #6e6e73;
+  margin-bottom: 3rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dark-theme .heroDescription {
+  color: #a1a1a6;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(240, 147, 251, 0.3);
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(240, 147, 251, 0.4);
+}
+
+.secondaryButton {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1d1d1f;
+}
+
+.secondaryButton:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.dark-theme .secondaryButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f5f5f7;
+}
+
+.dark-theme .secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Sections */
+.featuresSection,
+.techSection,
+.processSection {
+  padding: 6rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ctaSection {
+  padding: 8rem 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #f5f5f7 0%, #ffffff 100%);
+}
+
+.dark-theme .ctaSection {
+  background: linear-gradient(135deg, #1c1c1e 0%, #000000 100%);
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.sectionTitle {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.dark-theme .sectionTitle {
+  color: #f5f5f7;
+}
+
+.sectionDescription {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: #6e6e73;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.dark-theme .sectionDescription {
+  color: #a1a1a6;
+}
+
+/* Features Grid */
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+}
+
+.featureCard {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2.5rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.6s ease-out forwards;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.featureCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.dark-theme .featureCard {
+  background: #1c1c1e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme .featureCard:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.featureIcon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.featureTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.dark-theme .featureTitle {
+  color: #f5f5f7;
+}
+
+.featureDescription {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #6e6e73;
+  margin: 0;
+}
+
+.dark-theme .featureDescription {
+  color: #a1a1a6;
+}
+
+/* Tech Grid */
+.techGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.techCard {
+  background: #f5f5f7;
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: #1d1d1f;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.techCard:hover {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  transform: translateY(-5px);
+}
+
+.dark-theme .techCard {
+  background: #2c2c2e;
+  color: #f5f5f7;
+}
+
+.dark-theme .techCard:hover {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+/* Process Steps */
+.processSteps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 3rem;
+}
+
+.processStep {
+  text-align: center;
+}
+
+.stepNumber {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 4px 20px rgba(240, 147, 251, 0.3);
+}
+
+.stepTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 1rem;
+}
+
+.dark-theme .stepTitle {
+  color: #f5f5f7;
+}
+
+.stepDescription {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #6e6e73;
+  margin: 0;
+}
+
+.dark-theme .stepDescription {
+  color: #a1a1a6;
+}
+
+/* CTA Section */
+.ctaContent {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ctaTitle {
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.dark-theme .ctaTitle {
+  color: #f5f5f7;
+}
+
+.ctaDescription {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: #6e6e73;
+  margin-bottom: 3rem;
+}
+
+.dark-theme .ctaDescription {
+  color: #a1a1a6;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 1.25rem 3rem;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border-radius: 50px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 30px rgba(240, 147, 251, 0.3);
+}
+
+.ctaButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(240, 147, 251, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .heroSection {
+    padding: 6rem 1rem 4rem;
+  }
+
+  .featuresSection,
+  .techSection,
+  .processSection {
+    padding: 4rem 1rem;
+  }
+
+  .ctaSection {
+    padding: 6rem 1rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .techGrid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+
+  .processSteps {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .ctaButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+} 

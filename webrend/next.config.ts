@@ -11,8 +11,7 @@ const nextConfig: NextConfig = {
       'placehold.co',
       'images.unsplash.com',
       'randomuser.me',
-      'www.google.com',
-      'google.com',
+      'source.unsplash.com',
       'lh3.googleusercontent.com',
       'storage.googleapis.com',
       'firebasestorage.googleapis.com'

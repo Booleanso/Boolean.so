@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 // Variables - Apple-inspired design 
 $primary-color: #0071e3; // Apple blue
 $secondary-color: #86868b; // Apple secondary text
@@ -60,7 +62,7 @@ $dark-error-red: #ff453a; // Apple red (dark mode)
   transition: $transition;
   
   &:hover {
-    background-color: darken($primary-color, 5%);
+    background-color: color.scale($primary-color, $lightness: -5%);
     transform: scale(1.02);
   }
   
@@ -75,7 +77,7 @@ $dark-error-red: #ff453a; // Apple red (dark mode)
     background-color: $dark-primary-color;
     
     &:hover {
-      background-color: lighten($dark-primary-color, 5%);
+      background-color: color.scale($dark-primary-color, $lightness: 5%);
     }
     
     &:disabled {
@@ -433,7 +435,7 @@ $dark-error-red: #ff453a; // Apple red (dark mode)
   transition: $transition;
   
   &:hover {
-    color: darken($primary-color, 10%);
+    color: color.scale($primary-color, $lightness: -10%);
     text-decoration: underline;
   }
   
@@ -441,7 +443,7 @@ $dark-error-red: #ff453a; // Apple red (dark mode)
     color: $dark-primary-color;
     
     &:hover {
-      color: lighten($dark-primary-color, 10%);
+      color: color.scale($dark-primary-color, $lightness: 10%);
     }
   }
 }
@@ -521,7 +523,7 @@ $dark-error-red: #ff453a; // Apple red (dark mode)
       transition: $transition;
       
       &:hover {
-        background-color: darken($primary-color, 5%);
+        background-color: color.scale($primary-color, $lightness: -5%);
         transform: scale(1.02);
       }
       
@@ -529,7 +531,7 @@ $dark-error-red: #ff453a; // Apple red (dark mode)
         background-color: $dark-primary-color;
         
         &:hover {
-          background-color: lighten($dark-primary-color, 5%);
+          background-color: color.scale($dark-primary-color, $lightness: 5%);
         }
       }
     }

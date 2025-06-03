@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 // Variables
 $primary-color: #0070c9; // Apple blue
 $secondary-color: #333333;
@@ -276,7 +278,7 @@ $dark-light-bg: #111111;
       color: white;
       
       :global(.dark-theme) & {
-        background-color: lighten($dark-accent, 10%);
+        background-color: color.scale($dark-accent, $lightness: 10%);
       }
     }
     

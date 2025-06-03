@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 // Variables - Apple-inspired design 
 $primary-color: #0071e3; // Apple blue
 $secondary-color: #86868b; // Apple secondary text
@@ -538,7 +540,7 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
         background-color: rgba(0, 0, 0, 0.04) !important;
         
         &:hover {
-          color: darken(#ff3b30, 5%);
+          color: color.scale(#ff3b30, $lightness: -5%);
           background-color: rgba(255, 59, 48, 0.1) !important;
         }
       }
@@ -553,7 +555,7 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
         color: white;
         
         &:hover {
-          background-color: darken($primary-color, 5%) !important;
+          background-color: color.scale($primary-color, $lightness: -5%) !important;
           color: white;
         }
       }
@@ -588,7 +590,7 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
           color: #ff453a;
           
           &:hover {
-            color: lighten(#ff453a, 5%);
+            color: color.scale(#ff453a, $lightness: 5%);
             background-color: rgba(255, 69, 58, 0.2);
           }
         }
@@ -598,7 +600,7 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
           color: white;
           
           &:hover {
-            background-color: lighten($dark-primary-color, 5%);
+            background-color: color.scale($dark-primary-color, $lightness: 5%);
           }
         }
       }
@@ -675,7 +677,7 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
           color: #ff3b30;
           
           &:hover {
-            color: darken(#ff3b30, 5%);
+            color: color.scale(#ff3b30, $lightness: -5%);
             background-color: rgba(255, 59, 48, 0.1);
           }
         }
@@ -685,7 +687,7 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
           color: white;
           
           &:hover {
-            background-color: darken($primary-color, 5%);
+            background-color: color.scale($primary-color, $lightness: -5%);
           }
         }
       }

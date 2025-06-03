@@ -71,6 +71,28 @@ interface GeneratedArticle {
   slug: string;
 }
 
+interface GNewsResponse {
+  articles: {
+    title: string;
+    description: string;
+    url: string;
+    source: { name: string };
+    publishedAt: string;
+    content?: string;
+  }[];
+}
+
+interface NewsDataResponse {
+  results?: {
+    title: string;
+    description?: string;
+    content?: string;
+    link: string;
+    source_id?: string;
+    pubDate?: string;
+  }[];
+}
+
 /**
  * Fetches recent tech news articles from News API
  */
@@ -118,7 +140,7 @@ async function fetchNewsFromGNews(topic = 'technology', country = 'us', max = 5)
       throw new Error(`GNews API returned status: ${response.status}`);
     }
     
-    const data = await response.json() as { articles: any[] };
+    const data = await response.json() as GNewsResponse;
     
     // Convert GNews format to our standard NewsArticle format
     const standardizedArticles: NewsArticle[] = data.articles.map(article => ({
@@ -159,7 +181,7 @@ async function fetchNewsFromNewsData(category = 'technology', country = 'us', si
       throw new Error(`NewsData.io API returned status: ${response.status}`);
     }
     
-    const data = await response.json() as { results?: any[] };
+    const data = await response.json() as NewsDataResponse;
     
     if (!data.results || data.results.length === 0) {
       console.warn('No results returned from NewsData.io');
@@ -199,37 +221,76 @@ function generateSlug(title: string): string {
 }
 
 /**
+ * Validates and sanitizes image URLs to ensure they are direct image URLs, not Google search results
+ */
+function validateAndSanitizeImageUrl(url: string): string | null {
+  if (!url) return null;
+  
+  // Reject Google search result URLs
+  if (url.includes('google.com/url') || url.includes('google.com/search') || url.includes('googleapis.com/proxy')) {
+    console.warn(`Rejecting Google search URL: ${url}`);
+    return null;
+  }
+  
+  // Reject other redirect URLs
+  if (url.includes('redirect') || url.includes('proxy') || url.includes('t.co/')) {
+    console.warn(`Rejecting redirect URL: ${url}`);
+    return null;
+  }
+  
+  // Only allow direct image URLs from trusted domains
+  const trustedDomains = [
+    'images.unsplash.com',
+    'source.unsplash.com',
+    'cdn.pixabay.com',
+    'images.pexels.com',
+    'upload.wikimedia.org',
+    'raw.githubusercontent.com'
+  ];
+  
+  try {
+    const urlObj = new URL(url);
+    const domain = urlObj.hostname.toLowerCase();
+    
+    // Check if it's from a trusted domain
+    const isTrusted = trustedDomains.some(trustedDomain => domain.includes(trustedDomain));
+    
+    if (!isTrusted) {
+      console.warn(`Rejecting untrusted domain: ${domain}`);
+      return null;
+    }
+    
+    // Check if it looks like an image URL
+    const path = urlObj.pathname.toLowerCase();
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg'];
+    const hasImageExtension = imageExtensions.some(ext => path.includes(ext));
+    
+    // For Unsplash, allow their special URLs even without extensions
+    const isUnsplash = domain.includes('unsplash.com');
+    
+    if (!hasImageExtension && !isUnsplash) {
+      console.warn(`URL doesn't appear to be an image: ${url}`);
+      return null;
+    }
+    
+    console.log(`Validated image URL: ${url}`);
+    return url;
+    
+  } catch {
+    console.warn(`Invalid URL format: ${url}`);
+    return null;
+  }
+}
+
+/**
  * Fetches a relevant image for the article from reliable sources
  */
 async function fetchRelevantImage(title: string, category: string): Promise<string> {
   try {
-    // Extract keywords from title and category
-    const titleWords = title.toLowerCase().split(/\s+/);
-    const keywords = titleWords
-      .filter((word: string) => word.length > 3) // Only use words longer than 3 chars
-      .filter((word: string) => !['with', 'that', 'this', 'from', 'your', 'will', 'have', 'what', 'when', 'where', 'which'].includes(word))
-      .slice(0, 3); // Take first 3 significant words
-    
-    // Add category as a keyword if it's not already included
-    if (category && !keywords.includes(category.toLowerCase())) {
-      keywords.unshift(category.toLowerCase().replace(/^category:\s*/i, ''));
-    }
-    
-    // Add 'technology' as a fallback keyword if we don't have enough
-    if (keywords.length < 2) {
-      keywords.push('technology');
-    }
-    
-    // Clean up keywords to remove any special characters
-    const cleanKeywords = keywords.map((word: string) => word.replace(/[^\w\s]/g, ''));
-    
-    console.log(`Finding image for keywords: ${cleanKeywords.join(', ')}`);
-    
     // Use reliable pre-selected Unsplash collections based on category
-    // These are popular tech-related collections on Unsplash
     const techCollections = {
       'technology': '8771938',
-      'tech': '4587603',
+      'tech': '4587603', 
       'development': '8117318',
       'coding': '8117318',
       'design': '4740053',
@@ -246,7 +307,7 @@ async function fetchRelevantImage(title: string, category: string): Promise<stri
     
     // Determine which collection to use based on category
     const lowerCategory = category.toLowerCase();
-    let collectionId = techCollections['technology']; // Default tech collection
+    let collectionId = techCollections['technology'];
     
     // Try to match category to a specific collection
     for (const [key, id] of Object.entries(techCollections)) {
@@ -258,50 +319,39 @@ async function fetchRelevantImage(title: string, category: string): Promise<stri
     }
     
     // Use a specific Unsplash collection based on the category
-    // This is more reliable than random searches as these images actually exist
     const imageUrl = `https://source.unsplash.com/collection/${collectionId}/1200x630`;
     
-    try {
-      // Fetch the image URL to ensure it resolves
-      const response = await fetch(imageUrl, { 
-        method: 'GET', 
-        redirect: 'follow',
-        headers: { 'User-Agent': 'Mozilla/5.0 WebRend Article Generator' }
-      });
-      
-      if (response.ok) {
-        const finalUrl = response.url;
-        console.log(`Found image from Unsplash collection: ${finalUrl}`);
-        return finalUrl;
-      }
-    } catch (error) {
-      console.warn(`Error fetching from Unsplash collection: ${error}`);
+    // Validate the URL before using it
+    const validatedUrl = validateAndSanitizeImageUrl(imageUrl);
+    if (validatedUrl) {
+      console.log(`Using Unsplash collection image: ${validatedUrl}`);
+      return validatedUrl;
     }
     
-    // Fallback to static reliable tech images
+    // Fallback to static reliable tech images if collection fails
     const reliableImages = [
-      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f',
-      'https://images.unsplash.com/photo-1518770660439-4636190af475',
-      'https://images.unsplash.com/photo-1562408590-e32931084e23',
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa',
-      'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
-      'https://images.unsplash.com/photo-1531297484001-80022131f5a1',
-      'https://images.unsplash.com/photo-1535378620166-273708d44e4c',
-      'https://images.unsplash.com/photo-1624953587687-daf255b6b80a'
+      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&h=630&fit=crop',
+      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=630&fit=crop',
+      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=630&fit=crop',
+      'https://images.unsplash.com/photo-1562408590-e32931084e23?w=1200&h=630&fit=crop',
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=630&fit=crop',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=630&fit=crop',
+      'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=1200&h=630&fit=crop',
+      'https://images.unsplash.com/photo-1535378620166-273708d44e4c?w=1200&h=630&fit=crop',
+      'https://images.unsplash.com/photo-1624953587687-daf255b6b80a?w=1200&h=630&fit=crop'
     ];
     
     // Pick a reliable image based on some aspect of the article to ensure consistency
     const hash = title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const index = hash % reliableImages.length;
-    const fallbackImage = reliableImages[index];
+    const selectedImage = reliableImages[hash % reliableImages.length];
     
-    console.log(`Using reliable fallback image: ${fallbackImage}`);
-    return fallbackImage;
+    console.log(`Using fallback image: ${selectedImage}`);
+    return selectedImage;
+    
   } catch (error) {
-    console.error('Error in fetchRelevantImage:', error);
-    // Absolute fallback to a known working image
-    return 'https://images.unsplash.com/photo-1550745165-9bc0b252726f';
+    console.error('Error fetching relevant image:', error);
+    // Ultimate fallback to a single reliable image
+    return 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&h=630&fit=crop';
   }
 }
 

@@ -98,6 +98,13 @@ export default function BlogPreview() {
                   style={{ objectFit: 'cover' }}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className={styles.blogImage}
+                  onError={(e) => {
+                    // Fallback to placeholder if image fails to load
+                    const img = e.target as HTMLImageElement;
+                    if (img.src !== '/images/blog-placeholder.jpg') {
+                      img.src = '/images/blog-placeholder.jpg';
+                    }
+                  }}
                 />
               </div>
               <div className={styles.blogContent}>

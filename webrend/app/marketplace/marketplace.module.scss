@@ -283,7 +283,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   }
   
   &:hover {
-    background-color: darken($primary-color, 5%);
+    background-color: color.scale($primary-color, $lightness: -5%);
     transform: scale(1.02);
   }
   
@@ -292,7 +292,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
     background-color: $dark-primary-color;
     
     &:hover {
-      background-color: lighten($dark-primary-color, 5%);
+      background-color: color.scale($dark-primary-color, $lightness: 5%);
     }
   }
 }
@@ -515,7 +515,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
     box-shadow: 0 2px 8px rgba(0, 113, 227, 0.3);
     
     &:hover {
-      background-color: darken($primary-color, 5%);
+      background-color: color.scale($primary-color, $lightness: -5%);
       transform: translate(-50%, -50%) scale(1.02);
     }
     
@@ -531,7 +531,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
       background-color: $dark-primary-color;
       
       &:hover {
-        background-color: lighten($dark-primary-color, 5%);
+        background-color: color.scale($dark-primary-color, $lightness: 5%);
       }
       
       &:disabled {
@@ -784,7 +784,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   text-align: center;
   
   &:hover {
-    background-color: darken($primary-color, 5%);
+    background-color: color.scale($primary-color, $lightness: -5%);
     transform: scale(1.02);
   }
   
@@ -793,7 +793,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
     background-color: $dark-primary-color;
     
     &:hover {
-      background-color: lighten($dark-primary-color, 5%);
+      background-color: color.scale($dark-primary-color, $lightness: 5%);
     }
   }
 }
@@ -939,7 +939,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   transition: $transition;
   
   &:hover {
-    background-color: darken($primary-color, 5%);
+    background-color: color.scale($primary-color, $lightness: -5%);
   }
   
   // Dark mode styles
@@ -947,7 +947,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
     background-color: $dark-primary-color;
     
     &:hover {
-      background-color: lighten($dark-primary-color, 5%);
+      background-color: color.scale($dark-primary-color, $lightness: 5%);
     }
   }
   
@@ -1047,7 +1047,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   transition: $transition;
   
   &:hover {
-    color: darken($primary-color, 10%);
+    color: color.scale($primary-color, $lightness: -10%);
     text-decoration: underline;
   }
   
@@ -1056,7 +1056,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
     color: $dark-primary-color;
     
     &:hover {
-      color: lighten($dark-primary-color, 10%);
+      color: color.scale($dark-primary-color, $lightness: 10%);
     }
   }
 }
