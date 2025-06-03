@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from './portfolio.module.css'; // We'll create this CSS module next
 import { isValidImageUrl } from '../../utils/url-utils'; // Import the validator
-import SplineViewer from './SplineViewer';
+// import SplineViewer from './SplineViewer'; // Commented out - Spline scene removed
 import AdminDeleteButton from './AdminDeleteButton';
 
 const PLACEHOLDER_IMAGE_URL = 'https://placehold.co/600x400/eee/ccc?text=Image+Not+Available';
@@ -149,7 +149,7 @@ export default function PortfolioClientPage({
         </div>
 
         {/* 3D Model Viewer */}
-        <SplineViewer />
+        {/* <SplineViewer /> */} {/* Commented out - Spline scene removed */}
 
         {/* Project Grid */}
         {filteredProjects.length > 0 ? (
