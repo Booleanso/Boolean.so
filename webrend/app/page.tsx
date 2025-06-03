@@ -7,7 +7,8 @@ import MarketplaceShowcase from "./components/MarketplaceShowcase/MarketplaceSho
 import MarketplaceFeatures from "./components/MarketplaceFeatures/MarketplaceFeatures";
 import ServicesCardsSection from "./components/ServicesCardsSection/ServicesCardsSection";
 import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
-import ContactUs from "./components/ContactUs/ContactUs";
+import FAQ from "./components/FAQ/FAQ";
+// import ContactUs from "./components/ContactUs/ContactUs"; // Commented out - "Let's work together" section removed
 import Footer from "./components/Footer/Footer";
 import TrustedBy from "./components/TrustedBy/TrustedBy";
 import { db } from './lib/firebase-admin';
@@ -102,7 +103,8 @@ export default async function Home() {
         <ServicesCardsSection />
         <PortfolioPreview projects={featuredProjects} />
         <BlogPreview />
-        <ContactUs />
+        <FAQ />
+        {/* <ContactUs /> */} {/* Commented out - "Let's work together" section removed */}
       </main>
       <Footer />
     </div>
