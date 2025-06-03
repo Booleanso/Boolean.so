@@ -7,6 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { auth } from '../../lib/firebase-client';
 import { signOut } from 'firebase/auth';
 import type { SimpleUser } from '../../utils/auth-utils';
+import { useTheme } from '../ThemeProvider/ThemeProvider';
 import './NavBar.scss';
 
 interface NavBarProps {
@@ -22,25 +23,26 @@ export default function NavBar({ serverUser }: NavBarProps) {
   const pathname = usePathname();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     // Set mounted state to true once component is mounted
     setIsMounted(true);
-    
-    // Check if user prefers dark mode
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDarkMode(darkModeMediaQuery.matches);
-
-    // Listen for changes in color scheme preference
-    const handleChange = (e: MediaQueryListEvent) => {
-      setIsDarkMode(e.matches);
-    };
-    
-    darkModeMediaQuery.addEventListener('change', handleChange);
-    return () => {
-      darkModeMediaQuery.removeEventListener('change', handleChange);
-    };
   }, []);
+
+  useEffect(() => {
+    // Update dark mode based on theme context
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let shouldBeDark = false;
+    
+    if (theme === 'system') {
+      shouldBeDark = systemDark;
+    } else {
+      shouldBeDark = theme === 'dark';
+    }
+    
+    setIsDarkMode(shouldBeDark);
+  }, [theme]);
 
   useEffect(() => {
     setUser(serverUser);
@@ -330,10 +332,9 @@ export default function NavBar({ serverUser }: NavBarProps) {
           </Link>
         </div>
 
-        {/* Marketplace Button */}
+        {/* Portfolio & Marketplace Buttons */}
         <div style={{
           height: '60px',
-          minWidth: '180px',
           borderRadius: '60px',
           display: 'flex',
           justifyContent: 'center',
@@ -341,8 +342,24 @@ export default function NavBar({ serverUser }: NavBarProps) {
           backgroundColor: bgColor,
           boxShadow: boxShadow,
           border: `2px solid ${borderColor}`,
-          padding: '0 25px'
+          padding: '0 8px',
+          gap: '10px'
         }}>
+          <Link 
+            href="/portfolio" 
+            style={{
+              backgroundColor: buttonBgColor,
+              color: textColor,
+              borderRadius: '30px',
+              padding: '9px 20px',
+              fontSize: '15px',
+              fontWeight: 600,
+              textDecoration: 'none',
+              boxShadow: buttonShadow
+            }}
+          >
+            Portfolio
+          </Link>
           <Link 
             href="/marketplace" 
             style={{
@@ -364,7 +381,6 @@ export default function NavBar({ serverUser }: NavBarProps) {
         {!loading && (
           <div style={{
             height: '60px',
-            minWidth: '220px',
             borderRadius: '60px',
             display: 'flex',
             justifyContent: 'center',
@@ -372,7 +388,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
             backgroundColor: bgColor,
             boxShadow: boxShadow,
             border: `2px solid ${borderColor}`,
-            padding: '0 25px',
+            padding: '0 8px',
             gap: '10px'
           }}>
             {user ? (
