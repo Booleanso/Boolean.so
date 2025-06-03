@@ -10,6 +10,17 @@
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   font-feature-settings: 'kern' 1;
+  transition: background-color 0.3s ease;
+
+  // Dark theme styles
+  &.dark-theme {
+    background-color: #000000;
+  }
+
+  // Light theme styles (explicit)
+  &.light-theme {
+    background-color: #ffffff;
+  }
 }
 
 .auth-wrapper {
@@ -23,6 +34,13 @@
   border-radius: 18px;
   padding: 48px 40px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  // Dark theme styles
+  .dark-theme & {
+    background: #1d1d1f;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
 }
 
 .auth-title {
@@ -34,6 +52,12 @@
   letter-spacing: -0.021em;
   line-height: 1.14286;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Icons', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  transition: color 0.3s ease;
+
+  // Dark theme styles
+  .dark-theme & {
+    color: #f5f5f7;
+  }
 }
 
 .auth-form {
@@ -80,6 +104,26 @@
       border-color: #0071e3;
       box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
     }
+
+    // Dark theme styles
+    .dark-theme & {
+      color: #f5f5f7;
+      background-color: #2d2d30;
+      
+      &::placeholder {
+        color: #86868b;
+      }
+      
+      &:hover {
+        background-color: #3a3a3c;
+      }
+      
+      &:focus {
+        background-color: #1d1d1f;
+        border-color: #0a84ff;
+        box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.1);
+      }
+    }
   }
   
   .error-message {
@@ -90,6 +134,12 @@
     font-weight: 400;
     letter-spacing: -0.016em;
     line-height: 1.42859;
+    transition: color 0.3s ease;
+
+    // Dark theme styles
+    .dark-theme & {
+      color: #ff453a;
+    }
   }
   
   .submit-button {
@@ -119,6 +169,15 @@
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+
+    // Dark theme styles
+    .dark-theme & {
+      background-color: #0a84ff;
+      
+      &:hover:not(:disabled) {
+        background-color: #0077ed;
+      }
     }
     
     .loading-spinner {
@@ -152,6 +211,12 @@
       flex: 1;
       height: 1px;
       background-color: #d2d2d7;
+      transition: background-color 0.3s ease;
+
+      // Dark theme styles
+      .dark-theme & {
+        background-color: #424245;
+      }
     }
     
     .divider-text {
@@ -161,6 +226,12 @@
       font-weight: 400;
       letter-spacing: -0.016em;
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+      transition: color 0.3s ease;
+
+      // Dark theme styles
+      .dark-theme & {
+        color: #86868b;
+      }
     }
   }
   
@@ -195,6 +266,18 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
+
+    // Dark theme styles
+    .dark-theme & {
+      color: #f5f5f7;
+      background-color: #1d1d1f;
+      border-color: #424245;
+      
+      &:hover:not(:disabled) {
+        background-color: #2d2d30;
+        border-color: #86868b;
+      }
+    }
     
     .google-icon {
       width: 20px;
@@ -222,6 +305,15 @@
         color: #0077ed;
         text-decoration: underline;
       }
+
+      // Dark theme styles
+      .dark-theme & {
+        color: #0a84ff;
+        
+        &:hover {
+          color: #0077ed;
+        }
+      }
     }
   }
 }
@@ -231,6 +323,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s ease;
+
+  // Dark theme styles
+  .dark-theme & {
+    background-color: #1d1d1f;
+    color: #f5f5f7;
+  }
 }
 
 @keyframes spin {
@@ -239,80 +338,6 @@
   }
   to {
     transform: rotate(360deg);
-  }
-}
-
-// Dark mode support
-@media (prefers-color-scheme: dark) {
-  .auth-container {
-    background-color: #000000;
-  }
-  
-  .auth-card {
-    background: #1d1d1f;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-  }
-  
-  .auth-title {
-    color: #f5f5f7;
-  }
-  
-  .auth-form {
-    .form-input {
-      color: #f5f5f7;
-      background-color: #2d2d30;
-      
-      &::placeholder {
-        color: #86868b;
-      }
-      
-      &:hover {
-        background-color: #3a3a3c;
-      }
-      
-      &:focus {
-        background-color: #1d1d1f;
-        border-color: #0a84ff;
-        box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.1);
-      }
-    }
-    
-    .submit-button {
-      background-color: #0a84ff;
-      
-      &:hover:not(:disabled) {
-        background-color: #0077ed;
-      }
-    }
-    
-    .divider-container {
-      .divider-line {
-        background-color: #424245;
-      }
-      
-      .divider-text {
-        color: #86868b;
-      }
-    }
-    
-    .google-button {
-      color: #f5f5f7;
-      background-color: #1d1d1f;
-      border-color: #424245;
-      
-      &:hover:not(:disabled) {
-        background-color: #2d2d30;
-        border-color: #86868b;
-      }
-    }
-    
-    .auth-footer .toggle-link {
-      color: #0a84ff;
-      
-      &:hover {
-        color: #0077ed;
-      }
-    }
   }
 }
 

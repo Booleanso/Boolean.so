@@ -10,6 +10,7 @@ import {
   AuthError 
 } from 'firebase/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTheme } from '../components/ThemeProvider/ThemeProvider';
 import './auth.scss';
 
 // Add SF Pro font
@@ -146,6 +147,7 @@ export default function AuthPage(): React.ReactElement {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
+  const { theme } = useTheme();
   
   const [isSignUp, setIsSignUp] = useState<boolean>(mode === 'signup');
   const [formData, setFormData] = useState<FormData>({
@@ -158,6 +160,9 @@ export default function AuthPage(): React.ReactElement {
   useEffect(() => {
     setIsSignUp(mode === 'signup');
   }, [mode]);
+
+  // Determine if dark mode should be applied
+  const isDarkMode = theme === 'dark' || (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   const handleFormSubmit = async (redirectTo: string): Promise<void> => {
     setError('');
@@ -249,7 +254,7 @@ export default function AuthPage(): React.ReactElement {
   };
 
   return (
-    <div className="auth-container">
+    <div className={`auth-container ${isDarkMode ? 'dark-theme' : 'light-theme'}`}>
       <div className="auth-wrapper">
         <div className="auth-card">
           <h2 className="auth-title">
