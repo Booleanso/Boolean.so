@@ -1,0 +1,625 @@
+/* Benefits Section - Apple-inspired design */
+.benefitsSection {
+  position: relative;
+  background: #ffffff;
+  padding: 8rem 0;
+  overflow: hidden;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+:global(.dark-theme) .benefitsSection {
+  background: #000000;
+}
+
+.container {
+  width: 100%;
+  padding: 0;
+  position: relative;
+}
+
+/* Header Styles */
+.headerContent {
+  text-align: center;
+  margin-bottom: 6rem;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2rem;
+}
+
+.headerContent.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+:global(.dark-theme) .badge {
+  background: rgba(10, 132, 255, 0.15);
+  border-color: rgba(10, 132, 255, 0.3);
+}
+
+.badgeText {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #007AFF;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+:global(.dark-theme) .badgeText {
+  color: #0A84FF;
+}
+
+.heading {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 1.5rem;
+  color: #1d1d1f;
+  letter-spacing: -0.02em;
+}
+
+:global(.dark-theme) .heading {
+  color: #f5f5f7;
+}
+
+.headingLine {
+  display: block;
+}
+
+.gradientText {
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 50%, #FF2D92 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.description {
+  font-size: 1.25rem;
+  color: #86868b;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+:global(.dark-theme) .description {
+  color: #98989d;
+}
+
+/* Benefits Marquee Layout */
+.benefitsMarquee {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 6rem;
+  overflow: hidden;
+  width: 100%;
+}
+
+.marqueeRow {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+}
+
+.marqueeContent {
+  display: flex;
+  gap: 2rem;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  width: max-content;
+  will-change: transform;
+}
+
+.leftToRight .marqueeContent {
+  animation-name: scrollLeftInfinite;
+  animation-duration: 60s;
+}
+
+.rightToLeft .marqueeContent {
+  animation-name: scrollRightInfinite;
+  animation-duration: 60s;
+}
+
+/* Truly Infinite Marquee Animations */
+@keyframes scrollLeftInfinite {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollRightInfinite {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Grey Card Styling */
+.greyCard {
+  min-width: 320px;
+  flex-shrink: 0;
+}
+
+.greyCard .iconBackground {
+  background: rgba(128, 128, 128, 0.15) !important;
+}
+
+.greyCard:hover {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.15) 0%, rgba(88, 86, 214, 0.12) 100%) !important;
+  border-color: rgba(0, 122, 255, 0.3) !important;
+  box-shadow: 
+    0 0 0 1px rgba(0, 122, 255, 0.1),
+    0 0 30px rgba(0, 122, 255, 0.15),
+    0 4px 20px rgba(0, 122, 255, 0.1) !important;
+}
+
+:global(.dark-theme) .greyCard:hover {
+  background: linear-gradient(135deg, rgba(10, 132, 255, 0.18) 0%, rgba(88, 86, 214, 0.15) 100%) !important;
+  border-color: rgba(10, 132, 255, 0.35) !important;
+  box-shadow: 
+    0 0 0 1px rgba(10, 132, 255, 0.15),
+    0 0 30px rgba(10, 132, 255, 0.2),
+    0 4px 20px rgba(10, 132, 255, 0.12) !important;
+}
+
+.greyCard:hover .iconBackground {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.25) 0%, rgba(88, 86, 214, 0.2) 100%) !important;
+}
+
+.greyCard .iconGlow.active {
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.3) 0%, transparent 70%) !important;
+}
+
+.greyCard .cardGlow.active {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(88, 86, 214, 0.05) 100%) !important;
+}
+
+/* Pause animation on hover */
+.marqueeRow:hover .marqueeContent {
+  animation-play-state: paused;
+}
+
+/* Call to Action - Keep centered */
+.ctaSection {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 0.2s;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2rem;
+}
+
+.ctaSection.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ctaText {
+  font-size: 1.5rem;
+  color: #1d1d1f;
+  margin: 0 0 2rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+:global(.dark-theme) .ctaText {
+  color: #f5f5f7;
+}
+
+.ctaButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+  color: white;
+  text-decoration: none;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.01em;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 122, 255, 0.4);
+}
+
+.ctaButton:active {
+  transform: translateY(0);
+}
+
+.ctaGlow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.ctaButton:hover .ctaGlow {
+  left: 100%;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+  
+  .headerContent {
+    margin-bottom: 4rem;
+  }
+  
+  .benefitsMarquee {
+    margin-bottom: 4rem;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .benefitsSection {
+    padding: 6rem 0;
+  }
+  
+  .headerContent {
+    margin-bottom: 4rem;
+    padding: 0 1rem;
+  }
+  
+  .benefitsMarquee {
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+  
+  .marqueeContent {
+    gap: 1.5rem;
+  }
+  
+  .leftToRight .marqueeContent {
+    animation-duration: 40s;
+  }
+  
+  .rightToLeft .marqueeContent {
+    animation-duration: 40s;
+  }
+  
+  .greyCard {
+    min-width: 280px;
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+  
+  .iconContainer {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .icon {
+    font-size: 1.25rem;
+  }
+  
+  .benefitTitle {
+    font-size: 1rem;
+  }
+  
+  .benefitDescription {
+    font-size: 0.8rem;
+  }
+  
+  .ctaSection {
+    padding: 0 1rem;
+  }
+  
+  .heading {
+    font-size: 2.5rem;
+  }
+  
+  .description {
+    font-size: 1.125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .benefitsSection {
+    padding: 4rem 0;
+  }
+  
+  .headerContent {
+    margin-bottom: 3rem;
+  }
+  
+  .leftToRight .marqueeContent {
+    animation-duration: 30s;
+  }
+  
+  .rightToLeft .marqueeContent {
+    animation-duration: 30s;
+  }
+  
+  .greyCard {
+    min-width: 250px;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+  
+  .iconContainer {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .icon {
+    font-size: 1.125rem;
+  }
+  
+  .benefitTitle {
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .benefitDescription {
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+  
+  .heading {
+    font-size: 2rem;
+  }
+  
+  .description {
+    font-size: 1rem;
+  }
+  
+  .ctaButton {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* Animation keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .benefitCard,
+  .headerContent,
+  .ctaSection {
+    transition: none;
+    animation: none;
+  }
+  
+  .benefitCard.visible,
+  .headerContent.visible,
+  .ctaSection.visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Benefit Cards */
+.benefitCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: rgba(128, 128, 128, 0.08);
+  border: 1px solid rgba(128, 128, 128, 0.15);
+  border-radius: 20px;
+  padding: 1.5rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  cursor: pointer;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: translateY(30px);
+  overflow: hidden;
+  min-height: auto;
+}
+
+:global(.dark-theme) .benefitCard {
+  background: rgba(128, 128, 128, 0.12);
+  border-color: rgba(128, 128, 128, 0.2);
+}
+
+.benefitCard.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.benefitCard:hover {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.15) 0%, rgba(88, 86, 214, 0.12) 100%);
+  border-color: rgba(0, 122, 255, 0.3);
+  box-shadow: 
+    0 0 0 1px rgba(0, 122, 255, 0.1),
+    0 0 30px rgba(0, 122, 255, 0.15),
+    0 4px 20px rgba(0, 122, 255, 0.1);
+}
+
+:global(.dark-theme) .benefitCard:hover {
+  background: linear-gradient(135deg, rgba(10, 132, 255, 0.18) 0%, rgba(88, 86, 214, 0.15) 100%);
+  border-color: rgba(10, 132, 255, 0.35);
+  box-shadow: 
+    0 0 0 1px rgba(10, 132, 255, 0.15),
+    0 0 30px rgba(10, 132, 255, 0.2),
+    0 4px 20px rgba(10, 132, 255, 0.12);
+}
+
+/* Icon Container */
+.iconContainer {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(128, 128, 128, 0.15);
+  border-radius: 50%;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.icon {
+  font-size: 1.5rem;
+  z-index: 2;
+  filter: grayscale(1) brightness(0.7);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.iconGlow {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: calc(100% + 20px);
+  height: calc(100% + 20px);
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.3) 0%, transparent 70%);
+}
+
+.iconGlow.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.benefitCard:hover .iconBackground {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.25) 0%, rgba(88, 86, 214, 0.2) 100%);
+  transform: scale(1.05);
+}
+
+.benefitCard:hover .icon {
+  filter: grayscale(0) brightness(1);
+  transform: scale(1.1);
+}
+
+/* Card Content */
+.cardContent {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-width: 0;
+}
+
+.benefitTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgba(128, 128, 128, 0.9);
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:global(.dark-theme) .benefitTitle {
+  color: rgba(128, 128, 128, 0.95);
+}
+
+.benefitCard:hover .benefitTitle {
+  color: #1d1d1f;
+  text-shadow: 0 0 20px rgba(0, 122, 255, 0.3);
+}
+
+:global(.dark-theme) .benefitCard:hover .benefitTitle {
+  color: #f5f5f7;
+  text-shadow: 0 0 20px rgba(10, 132, 255, 0.4);
+}
+
+.benefitDescription {
+  font-size: 0.875rem;
+  color: rgba(128, 128, 128, 0.7);
+  line-height: 1.4;
+  margin: 0;
+  font-weight: 400;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:global(.dark-theme) .benefitDescription {
+  color: rgba(128, 128, 128, 0.8);
+}
+
+.benefitCard:hover .benefitDescription {
+  color: #86868b;
+}
+
+:global(.dark-theme) .benefitCard:hover .benefitDescription {
+  color: #98989d;
+}
+
+/* Card Glow Effect */
+.cardGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  opacity: 0;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(88, 86, 214, 0.05) 100%);
+}
+
+.cardGlow.active {
+  opacity: 1;
+} 

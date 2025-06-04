@@ -1,0 +1,412 @@
+/* Review Ballpit Section - Apple-inspired design with physics */
+.ballpitSection {
+  position: relative;
+  background: #ffffff;
+  padding: 0;
+  overflow: hidden;
+}
+
+:global(.dark-theme) .ballpitSection {
+  background: #000000;
+}
+
+.container {
+  position: relative;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  height: 100vh;
+  min-height: 600px;
+}
+
+/* Header Styles */
+.headerContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.headerContent.visible {
+  opacity: 1;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+:global(.dark-theme) .badge {
+  background: rgba(10, 132, 255, 0.15);
+  border-color: rgba(10, 132, 255, 0.3);
+}
+
+.badgeText {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #007AFF;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+:global(.dark-theme) .badgeText {
+  color: #0A84FF;
+}
+
+.heading {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 1.5rem;
+  color: #1d1d1f;
+  letter-spacing: -0.02em;
+}
+
+:global(.dark-theme) .heading {
+  color: #f5f5f7;
+}
+
+.headingLine {
+  display: block;
+}
+
+.gradientText {
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 50%, #FF2D92 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.description {
+  font-size: 1.25rem;
+  color: #86868b;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+:global(.dark-theme) .description {
+  color: #98989d;
+}
+
+/* Ballpit Container */
+.ballpitContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ballpitContainer.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Review Balls */
+.reviewBall {
+  position: absolute;
+  border-radius: 50%;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  user-select: none;
+  will-change: transform;
+}
+
+:global(.dark-theme) .reviewBall {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.reviewBall:hover {
+  transform: scale(1.05);
+  border-color: rgba(0, 122, 255, 0.5);
+  box-shadow: 
+    0 12px 48px rgba(0, 122, 255, 0.2),
+    0 0 0 4px rgba(0, 122, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+:global(.dark-theme) .reviewBall:hover {
+  border-color: rgba(10, 132, 255, 0.6);
+  box-shadow: 
+    0 12px 48px rgba(10, 132, 255, 0.25),
+    0 0 0 4px rgba(10, 132, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: glowPulseDark 2s ease-in-out infinite;
+}
+
+/* Glow pulse animations */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 
+      0 12px 48px rgba(0, 122, 255, 0.2),
+      0 0 0 4px rgba(0, 122, 255, 0.1),
+      0 0 30px rgba(0, 122, 255, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 12px 48px rgba(0, 122, 255, 0.4),
+      0 0 0 8px rgba(0, 122, 255, 0.2),
+      0 0 60px rgba(0, 122, 255, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+}
+
+@keyframes glowPulseDark {
+  0%, 100% {
+    box-shadow: 
+      0 12px 48px rgba(10, 132, 255, 0.25),
+      0 0 0 4px rgba(10, 132, 255, 0.15),
+      0 0 30px rgba(10, 132, 255, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 12px 48px rgba(10, 132, 255, 0.45),
+      0 0 0 8px rgba(10, 132, 255, 0.25),
+      0 0 60px rgba(10, 132, 255, 0.7),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Ball Overlay - darkens the background image */
+.ballOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.8) 100%);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.reviewBall:hover .ballOverlay {
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+/* Ball Content */
+.ballContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  padding: 1rem;
+  width: 90%;
+  z-index: 2;
+}
+
+.quote {
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.3;
+  margin: 0 0 0.5rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.reviewer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.name {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.role {
+  font-size: 0.6rem;
+  font-weight: 400;
+  opacity: 0.9;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* LinkedIn Hint */
+.linkedinHint {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: rgba(0, 119, 181, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 3;
+}
+
+.reviewBall:hover .linkedinHint {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Instruction Text */
+.instructionText {
+  text-align: center;
+  margin-top: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 0.5s;
+}
+
+.instructionText.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.instructionText p {
+  font-size: 1rem;
+  color: #86868b;
+  margin: 0;
+  font-style: italic;
+}
+
+:global(.dark-theme) .instructionText p {
+  color: #98989d;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .container {
+    height: 80vh;
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    height: 70vh;
+    min-height: 400px;
+  }
+  
+  .headerContent {
+    padding: 0 2rem;
+  }
+  
+  .quote {
+    font-size: 0.7rem;
+  }
+  
+  .name {
+    font-size: 0.65rem;
+  }
+  
+  .role {
+    font-size: 0.55rem;
+  }
+  
+  .heading {
+    font-size: 2.5rem;
+  }
+  
+  .description {
+    font-size: 1.125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    height: 60vh;
+    min-height: 350px;
+  }
+  
+  .headerContent {
+    padding: 0 1rem;
+  }
+  
+  .quote {
+    font-size: 0.65rem;
+    -webkit-line-clamp: 2;
+  }
+  
+  .name {
+    font-size: 0.6rem;
+  }
+  
+  .role {
+    font-size: 0.5rem;
+  }
+  
+  .heading {
+    font-size: 2rem;
+  }
+  
+  .description {
+    font-size: 1rem;
+  }
+  
+  .instructionText p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animation keyframes for subtle effects */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .reviewBall,
+  .headerContent,
+  .ballpitContainer,
+  .instructionText {
+    transition: none;
+    animation: none;
+  }
+  
+  .ballpitContainer.visible,
+  .headerContent.visible,
+  .instructionText.visible {
+    opacity: 1;
+    transform: none;
+  }
+} 
