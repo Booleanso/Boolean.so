@@ -8,7 +8,7 @@ import MarketplaceFeatures from "./components/MarketplaceFeatures/MarketplaceFea
 import ServicesCardsSection from "./components/ServicesCardsSection/ServicesCardsSection";
 import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
 import BenefitsSection from "./components/BenefitsSection/BenefitsSection";
-import ReviewBallpit from "./components/ReviewBallpit/ReviewBallpit";
+import ReviewCrowd from "./components/ReviewCrowd/ReviewCrowd";
 import FAQ from "./components/FAQ/FAQ";
 // import ContactUs from "./components/ContactUs/ContactUs"; // Commented out - "Let's work together" section removed
 import Footer from "./components/Footer/Footer";
@@ -105,7 +105,7 @@ export default async function Home() {
         <ServicesCardsSection />
         <PortfolioPreview projects={featuredProjects} />
         <BenefitsSection />
-        <ReviewBallpit />
+        <ReviewCrowd />
         <BlogPreview />
         <FAQ />
         {/* <ContactUs /> */} {/* Commented out - "Let's work together" section removed */}
