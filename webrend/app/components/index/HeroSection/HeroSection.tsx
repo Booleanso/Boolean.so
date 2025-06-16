@@ -2,22 +2,15 @@
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, useTexture, Billboard, Text, Html } from '@react-three/drei';
+import { OrbitControls, Billboard, Text, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import axios from 'axios';
 import styles from './HeroSection.module.css';
-import path from 'path';
-import fs from 'fs/promises';
+
 import { useRouter } from 'next/navigation';
 import { useSpring, animated } from '@react-spring/three';
 
-// Type for location data from repositories
-interface LocationData {
-  location: string;
-  latitude: number;
-  longitude: number;
-  iconUrl?: string;  // URL to an S3 icon image
-}
+
 
 // Type for private repository location data
 interface PrivateRepoLocationData {
@@ -126,22 +119,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
         material.needsUpdate = true;
         setTextureLoaded(true);
         
-        // Load topology for terrain in both modes
-        textureLoader.load(
-          topologyPath,
-          (topoTexture) => {
-            console.log('Topology texture loaded');
-            if (!globeRef.current) return;
-            
-            const material = globeRef.current.material as THREE.MeshStandardMaterial;
-            material.displacementMap = topoTexture;
-            material.displacementScale = 0.2;
-            material.displacementBias = -0.05;
-            material.bumpMap = topoTexture;
-            material.bumpScale = 0.1;
-            material.needsUpdate = true;
-          }
-        );
+
         
         // Load specular map for both modes
         textureLoader.load(
