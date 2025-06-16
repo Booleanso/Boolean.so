@@ -4,10 +4,15 @@
   background: #ffffff;
   padding: 8rem 0;
   overflow: hidden;
+  min-height: 100vh;
 }
 
 :global(.dark-theme) .section {
   background: #000000;
+}
+
+:global(.dark-theme) .splineContainer::after {
+  background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0) 100%);
 }
 
 .container {
@@ -15,6 +20,7 @@
   margin: 0 auto;
   padding: 0 2rem;
   position: relative;
+  z-index: 1;
 }
 
 /* Header Styles */
@@ -28,6 +34,13 @@
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 6rem;
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
 }
 
 .headerContent.visible {
@@ -101,14 +114,29 @@
   color: #98989d;
 }
 
-/* Spline 3D Element */
+/* Spline 3D Background */
 .splineContainer {
-  margin-top: 4rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   opacity: 0;
   transform: translateY(30px);
   transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 0;
+}
+
+.splineContainer::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
   width: 100%;
-  height: 100vh;
+  height: 150px;
+  background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 30%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .splineContainer.visible {
@@ -121,6 +149,9 @@
   background: transparent;
   width: 100%;
   height: 100%;
+  outline: none;
+  pointer-events: auto;
+  display: block;
 }
 
 /* Crowd Silhouette */
