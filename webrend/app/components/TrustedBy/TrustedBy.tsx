@@ -15,6 +15,8 @@ const TrustedBy = () => {
     { name: 'Beta Accelerator', id: 'beta', logoSrc: '/logos/beta_logo.png' }
   ];
 
+
+
   return (
     <section className={styles.trustedBySection}>
       <div className={styles.container}>

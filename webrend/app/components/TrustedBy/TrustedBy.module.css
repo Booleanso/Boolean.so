@@ -167,6 +167,8 @@
   top: 10px;
 }
 
+
+
 @media (max-width: 768px) {
   .partnersContainer {
     gap: 40px;

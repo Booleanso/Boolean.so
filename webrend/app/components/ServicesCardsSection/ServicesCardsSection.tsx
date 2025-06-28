@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './ServicesCardsSection.module.css';
 
 const services = [
@@ -11,6 +12,11 @@ const services = [
     icon: '💻',
     gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     color: '#f093fb',
+    images: [
+      '/images/services/website-dev-1.png',
+      '/images/services/website-dev-2.png',
+      '/images/services/website-dev-3.png'
+    ],
     href: '/services/websites'
   },
   {
@@ -19,6 +25,11 @@ const services = [
     icon: '📱',
     gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     color: '#4facfe',
+    images: [
+      '/images/services/mobile-app-1.png',
+      '/images/services/mobile-app-2.png',
+      '/images/services/mobile-app-3.png'
+    ],
     href: '/services/apps'
   },
   {
@@ -27,6 +38,11 @@ const services = [
     icon: '⚙️',
     gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
     color: '#43e97b',
+    images: [
+      '/images/services/software-dev-1.png',
+      '/images/services/software-dev-2.png',
+      '/images/services/software-dev-3.png'
+    ],
     href: '/services/software'
   },
   {
@@ -35,6 +51,11 @@ const services = [
     icon: '🔩',
     gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
     color: '#fa709a',
+    images: [
+      '/images/services/firmware-dev-1.png',
+      '/images/services/firmware-dev-2.png',
+      '/images/services/firmware-dev-3.png'
+    ],
     href: '/services/firmware'
   }
 ];
@@ -64,6 +85,11 @@ export default function ServicesCardsSection() {
       }
     };
   }, []);
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    // If image fails to load, hide the image element
+    e.currentTarget.style.display = 'none';
+  };
 
   return (
     <section ref={sectionRef} className={styles.servicesSection}>
@@ -116,24 +142,21 @@ export default function ServicesCardsSection() {
                 
                 {/* Images that appear on hover */}
                 <div className={`${styles.imageReveal} ${hoveredIndex === index ? styles.active : ''}`}>
-                  {/* Static placeholder divs with gradients */}
-                  <div className={styles.floatingImage}>
-                    <div className={styles.imagePlaceholder} style={{
-                      background: service.gradient
-                    }} />
-                  </div>
-                  <div className={styles.floatingImage}>
-                    <div className={styles.imagePlaceholder} style={{
-                      background: service.gradient
-                    }} />
-                  </div>
-                  <div className={styles.floatingImage}>
-                    <div className={styles.imagePlaceholder} style={{
-                      background: service.gradient
-                    }} />
-                  </div>
-                  {/* White blur gradient at bottom */}
-                  <div className={styles.imageBlur} />
+                  {/* PNG Images */}
+                  {service.images.map((imagePath, imgIndex) => (
+                    <div key={imgIndex} className={styles.floatingImage}>
+                      <Image
+                        src={imagePath}
+                        alt={`${service.title} preview ${imgIndex + 1}`}
+                        fill
+                        className={styles.serviceImage}
+                        onError={handleImageError}
+                        sizes="200px"
+                      />
+                    </div>
+                  ))}
+                  {/* Single shadow overlay covering all cards */}
+                  <div className={styles.shadowOverlay} />
                 </div>
               </div>
               

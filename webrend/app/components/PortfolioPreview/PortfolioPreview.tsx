@@ -27,55 +27,55 @@ export default function PortfolioPreview({ projects }: PortfolioPreviewProps) {
     e.currentTarget.src = '/images/placeholder.png';
   };
 
+  // Get only the 3 most recent projects
+  const recentProjects = projects
+    .sort((a, b) => new Date(b.dateCompleted).getTime() - new Date(a.dateCompleted).getTime())
+    .slice(0, 3);
+
   const renderContent = () => {
-    if (projects.length === 0) {
+    if (recentProjects.length === 0) {
       return <div className={styles.emptyState}>No featured projects to display yet.</div>;
     }
     
     return (
       <div className={styles.gridContainer}>
-        {projects.map((project) => (
-          <div key={project.id} className={styles.projectCard}>
-            <Link 
-              href={`/portfolio/projects/${project.slug}`}
-              className={styles.imageLink}
-            >
-              <div className={styles.imageWrapper}>
-                <Image
-                  src={project.imageUrl}
-                  alt={project.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className={styles.projectImage}
-                  onError={handleImageError}
-                />
-                <div className={styles.overlay}></div>
-              </div>
-            </Link>
-            <div className={styles.contentWrapper}>
-              <Link href={`/portfolio/projects/${project.slug}`} className={styles.titleLink}>
-                <h3 className={styles.projectTitle}>{project.title}</h3>
-              </Link>
-              <p className={styles.projectDescription}>{project.description}</p>
-              <div className={styles.tagsContainer}>
-                {project.tags.slice(0, 3).map((tag) => (
-                  <span key={tag} className={styles.tag}>{tag}</span>
-                ))}
-              </div>
-              {project.projectUrl && (
-                <div className={styles.liveSiteContainer}>
-                  <a 
-                    href={project.projectUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className={styles.liveSiteLink}
-                  >
-                    View Live Site
-                  </a>
-                </div>
-              )}
+        {recentProjects.map((project) => (
+          <Link 
+            href={`/portfolio/projects/${project.slug}`}
+            key={project.id} 
+            className={styles.projectCard}
+          >
+            <div className={styles.imageWrapper}>
+              <Image
+                src={project.imageUrl}
+                alt={project.title}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className={styles.projectImage}
+                onError={handleImageError}
+              />
             </div>
-          </div>
+            <div className={styles.contentWrapper}>
+              <h3 className={styles.projectTitle}>{project.title}</h3>
+              <div className={styles.projectDetails}>
+                <p className={styles.projectDescription}>{project.description}</p>
+                <div className={styles.projectMeta}>
+                  <div className={styles.tagsContainer}>
+                    {project.tags.slice(0, 3).map((tag) => (
+                      <span key={tag} className={styles.tag}>{tag}</span>
+                    ))}
+                  </div>
+                  {project.projectUrl && (
+                    <div className={styles.liveSiteContainer}>
+                      <span className={styles.liveSiteLink}>
+                        View Live
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Link>
         ))}
       </div>
     );
@@ -88,12 +88,16 @@ export default function PortfolioPreview({ projects }: PortfolioPreviewProps) {
         <p className={styles.subheading}>
           Our latest projects showcasing cutting-edge solutions and results.
         </p>
-        <Link href="/portfolio" className={styles.viewAllLink}>
-          View All Projects
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 0L4.9425 1.0575L9.1275 5.25H0V6.75H9.1275L4.9425 10.9425L6 12L12 6L6 0Z" fill="currentColor"/></svg>
-        </Link>
       </div>
       {renderContent()}
+      <div className={styles.viewAllContainer}>
+        <Link href="/portfolio" className={styles.viewAllButton}>
+          View All Projects
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 0L5.645 1.355L10.09 5.8H0V7.8H10.09L5.645 12.245L7 13.6L14 6.6L7 0Z" fill="currentColor"/>
+          </svg>
+        </Link>
+      </div>
     </section>
   );
 } 

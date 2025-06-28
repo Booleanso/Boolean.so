@@ -262,12 +262,26 @@
   position: absolute;
   width: 200px;
   height: 250px;
-  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  background: transparent;
+  border: none;
+  outline: none;
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.8);
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Overall shadow overlay covering all cards */
+.shadowOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  box-shadow: inset 0 -250px 80px 0px rgb(255, 255, 255);
+  pointer-events: none;
+  z-index: 50;
 }
 
 .imageReveal.active .floatingImage {
@@ -308,26 +322,18 @@
   transform: translate(-50%, -50%) scale(0.9) rotate(10deg);
 }
 
-/* Image Placeholder */
-.imagePlaceholder {
+/* Service Image */
+.serviceImage {
   width: 100%;
   height: 100%;
-  background-size: cover;
-  background-position: center;
+  object-fit: cover;
+  object-position: center;
+  background: transparent;
+  border: none;
+  outline: none;
 }
 
-/* White Blur at Bottom */
-.imageBlur {
-  position: absolute;
-  bottom: -50px;
-  left: -50%;
-  right: -50%;
-  height: 200px;
-  background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 50%, transparent 100%);
-  filter: blur(40px);
-  pointer-events: none;
-  z-index: 4;
-}
+/* Removed blur overlay for transparent effect */
 
 /* Card Title */
 .cardTitle {
@@ -458,9 +464,7 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
-:global(.dark-theme) .imageBlur {
-  background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.8) 50%, transparent 100%);
-}
+/* Removed dark theme blur overlay for transparent effect */
 
 :global(.dark-theme) .ctaText {
   color: rgba(255, 255, 255, 0.7);

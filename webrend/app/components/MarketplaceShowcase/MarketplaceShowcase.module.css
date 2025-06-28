@@ -120,7 +120,6 @@
   border-radius: 24px;
   overflow: visible;
   margin: 0 auto;
-  padding-bottom: 100px; /* Space for the features grid */
 }
 
 .imageWrapper {
@@ -200,44 +199,7 @@
   line-height: 1.5;
 }
 
-.featuresGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  position: absolute;
-  bottom: 0;
-  left: 10%;
-  right: 10%;
-  z-index: 2;
-}
 
-.featureItem {
-  background: white;
-  border-radius: 12px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid #f0f0f0; /* Added subtle border */
-}
-
-.featureItem:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-}
-
-.featureTitle {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #1d1d1f;
-  margin-bottom: 0.3rem;
-}
-
-.featureDescription {
-  font-size: 0.8rem;
-  color: #6e6e73;
-}
 
 /* Dark mode styles */
 :global(.dark-theme) .showcaseSection {
@@ -260,8 +222,7 @@
   color: #a1a1a6;
 }
 
-:global(.dark-theme) .showcaseCard,
-:global(.dark-theme) .featureItem {
+:global(.dark-theme) .showcaseCard {
   background-color: #1c1c1e;
   border: none;
 }
@@ -271,13 +232,11 @@
   color: #2997ff;
 }
 
-:global(.dark-theme) .cardTitle,
-:global(.dark-theme) .featureTitle {
+:global(.dark-theme) .cardTitle {
   color: #f5f5f7;
 }
 
-:global(.dark-theme) .cardDescription,
-:global(.dark-theme) .featureDescription {
+:global(.dark-theme) .cardDescription {
   color: #a1a1a6;
 }
 
@@ -303,11 +262,6 @@
   .showcaseCard {
     right: 0;
     width: 280px;
-  }
-  
-  .featuresGrid {
-    left: 5%;
-    right: 5%;
   }
   
   .description {
@@ -340,19 +294,6 @@
     margin: -30px auto 0;
     z-index: 3;
     max-width: 500px;
-  }
-  
-  .featuresGrid {
-    position: relative;
-    grid-template-columns: 1fr;
-    bottom: auto;
-    margin-top: 1.5rem;
-    left: 0;
-    right: 0;
-  }
-  
-  .showcaseImageContainer {
-    padding-bottom: 0;
   }
   
   .ctaContainer {

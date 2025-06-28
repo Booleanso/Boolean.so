@@ -99,8 +99,8 @@ export default async function Home() {
         <HeroSection />
         <TrustedBy />
         <MarketplaceShowcase />
-        <MarketplaceFeatures />
         <FeaturedRepos />
+        <MarketplaceFeatures />
         <VideoSection />
         <ServicesCardsSection />
         <PortfolioPreview projects={featuredProjects} />
