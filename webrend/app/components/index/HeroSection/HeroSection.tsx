@@ -1159,9 +1159,9 @@ export default function HeroSection() {
       <div className={styles.container}>
         <div className={styles.content}>
           <div className={styles.heading}>
-            <h1>Build. Share. Sell. Explore a World of Code.</h1>
+            <h1>Transform Ideas Into Code. Turn Code Into Profit.</h1>
             <p className={styles.subtitle}>
-              We build cutting-edge software — and help you profit from your GitHub projects.
+              We build cutting-edge software from your concepts and provide a marketplace where developers can monetize their GitHub repositories.
             </p>
           </div>
 

@@ -49,7 +49,7 @@
 }
 
 .heading h1 {
-  font-size: 3.5rem;
+  font-size: 4.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
   line-height: 1.2;
@@ -65,7 +65,7 @@
 }
 
 .subtitle {
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   color: var(--subtitle-color, #666);
   max-width: 700px;
   margin: 0 auto 2rem auto;
@@ -83,7 +83,7 @@
   width: 130vw;
   height: 130vh;
   position: absolute;
-  bottom: -60vh;
+  bottom: -70vh;
   left: -15vw;
   right: -15vw;
   overflow: visible;
@@ -93,7 +93,7 @@
 .globeContainer::after {
   content: '';
   position: absolute;
-  bottom: 30vh;
+  bottom: 50vh;
   left: 0;
   right: 0;
   height: 50vh;
@@ -477,11 +477,11 @@
   }
 
   .heading h1 {
-    font-size: 2.5rem;
+    font-size: 3.2rem;
   }
   
   .subtitle {
-    font-size: 1rem;
+    font-size: 1.3rem;
     margin-bottom: 1.5rem;
   }
   
@@ -525,7 +525,7 @@
   
   .globeContainer {
     height: 60vh;
-    bottom: -35vh;
+    bottom: -45vh;
   }
 }
 
@@ -535,7 +535,7 @@
   }
   
   .heading h1 {
-    font-size: 2.5rem;
+    font-size: 3.2rem;
     margin-bottom: 0.5rem;
   }
   
