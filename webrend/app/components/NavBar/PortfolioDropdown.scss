@@ -1,0 +1,68 @@
+.portfolio-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.portfolio-dropdown {
+  animation: dropdownFadeIn 0.2s ease-out;
+  transform-origin: top center;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+  
+  &.dark::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.portfolio-dropdown-item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .portfolio-dropdown {
+    min-width: 280px;
+    max-height: 300px;
+    left: -20px;
+    right: -20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .portfolio-dropdown {
+    min-width: 240px;
+    max-height: 250px;
+    left: -40px;
+    right: -40px;
+  }
+} 

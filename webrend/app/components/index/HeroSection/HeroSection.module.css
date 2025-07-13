@@ -9,16 +9,67 @@
   justify-content: center;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 100px 200px rgba(255, 255, 255, 0.8), 
+              0 150px 300px rgba(255, 255, 255, 0.6),
+              0 200px 400px rgba(255, 255, 255, 0.4);
+}
+
+/* Add a fade overlay for the globe area */
+.heroSection::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40vh;
+  background: linear-gradient(to top, 
+    var(--background, rgba(255, 255, 255, 1)) 0%, 
+    var(--background, rgba(255, 255, 255, 0.9)) 20%, 
+    var(--background, rgba(255, 255, 255, 0.7)) 40%, 
+    var(--background, rgba(255, 255, 255, 0.5)) 60%, 
+    var(--background, rgba(255, 255, 255, 0.3)) 80%, 
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 8;
+}
+
+:global(.dark-theme) .heroSection::before {
+  background: linear-gradient(to top, 
+    rgba(0, 0, 0, 1) 0%, 
+    rgba(0, 0, 0, 0.9) 20%, 
+    rgba(0, 0, 0, 0.7) 40%, 
+    rgba(0, 0, 0, 0.5) 60%, 
+    rgba(0, 0, 0, 0.3) 80%, 
+    transparent 100%
+  );
+}
+
+:global(.light-theme) .heroSection::before {
+  background: linear-gradient(to top, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(255, 255, 255, 0.9) 20%, 
+    rgba(255, 255, 255, 0.7) 40%, 
+    rgba(255, 255, 255, 0.5) 60%, 
+    rgba(255, 255, 255, 0.3) 80%, 
+    transparent 100%
+  );
 }
 
 :global(.dark-theme) .heroSection {
   background-color: #000000;
   color: #ffffff;
+  box-shadow: 0 100px 200px rgba(0, 0, 0, 0.8), 
+              0 150px 300px rgba(0, 0, 0, 0.6),
+              0 200px 400px rgba(0, 0, 0, 0.4);
 }
 
 :global(.light-theme) .heroSection {
   background-color: #ffffff;
   color: #333333;
+  box-shadow: 0 100px 200px rgba(255, 255, 255, 0.8), 
+              0 150px 300px rgba(255, 255, 255, 0.6),
+              0 200px 400px rgba(255, 255, 255, 0.4);
 }
 
 .container {

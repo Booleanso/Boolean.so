@@ -7,7 +7,7 @@ import MarketplaceShowcase from "./components/MarketplaceShowcase/MarketplaceSho
 import MarketplaceFeatures from "./components/MarketplaceFeatures/MarketplaceFeatures";
 import ServicesCardsSection from "./components/ServicesCardsSection/ServicesCardsSection";
 import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
-import BenefitsSection from "./components/BenefitsSection/BenefitsSection";
+import InstagramFeed from "./components/InstagramFeed/InstagramFeed";
 import ReviewCrowd from "./components/ReviewCrowd/ReviewCrowd";
 import FAQ from "./components/FAQ/FAQ";
 // import ContactUs from "./components/ContactUs/ContactUs"; // Commented out - "Let's work together" section removed
@@ -104,8 +104,8 @@ export default async function Home() {
         <VideoSection />
         <ServicesCardsSection />
         <PortfolioPreview projects={featuredProjects} />
-        <BenefitsSection />
         <ReviewCrowd />
+        <InstagramFeed />
         <BlogPreview />
         <FAQ />
         {/* <ContactUs /> */} {/* Commented out - "Let's work together" section removed */}

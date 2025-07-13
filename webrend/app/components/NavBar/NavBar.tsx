@@ -8,6 +8,7 @@ import { auth } from '../../lib/firebase-client';
 import { signOut } from 'firebase/auth';
 import type { SimpleUser } from '../../utils/auth-utils';
 import { useTheme } from '../ThemeProvider/ThemeProvider';
+import PortfolioDropdown from './PortfolioDropdown';
 import './NavBar.scss';
 
 interface NavBarProps {
@@ -107,12 +108,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
             </Link>
             
             <div className="top-navbar-menu">
-              <Link 
-                href="/portfolio" 
-                className={`nav-button portfolio-button ${pathname === '/portfolio' ? 'active' : ''}`}
-              >
-                Portfolio
-              </Link>
+              <PortfolioDropdown isDarkMode={isDarkMode} pathname={pathname} />
               
               <Link 
                 href="/blog" 
@@ -206,20 +202,15 @@ export default function NavBar({ serverUser }: NavBarProps) {
             />
           </Link>
           
-          <div className="top-navbar-menu">
-            <Link 
-              href="/portfolio" 
-              className={`nav-button portfolio-button ${pathname === '/portfolio' ? 'active' : ''}`}
-            >
-              Portfolio
-            </Link>
-            
-            <Link 
-              href="/blog" 
-              className={`nav-button portfolio-button ${pathname === '/blog' ? 'active' : ''}`}
-            >
-              AI Blog
-            </Link>
+                      <div className="top-navbar-menu">
+              <PortfolioDropdown isDarkMode={isDarkMode} pathname={pathname} />
+              
+              <Link 
+                href="/blog" 
+                className={`nav-button portfolio-button ${pathname === '/blog' ? 'active' : ''}`}
+              >
+                AI Blog
+              </Link>
             
             {isAdmin && (
               <Link 
@@ -345,21 +336,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
           padding: '0 8px',
           gap: '10px'
         }}>
-          <Link 
-            href="/portfolio" 
-            style={{
-              backgroundColor: buttonBgColor,
-              color: textColor,
-              borderRadius: '30px',
-              padding: '9px 20px',
-              fontSize: '15px',
-              fontWeight: 600,
-              textDecoration: 'none',
-              boxShadow: buttonShadow
-            }}
-          >
-            Portfolio
-          </Link>
+          <PortfolioDropdown isDarkMode={isDarkMode} pathname={pathname} />
           <Link 
             href="/marketplace" 
             style={{

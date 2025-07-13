@@ -1,0 +1,596 @@
+/* Instagram Feed Section - Apple-inspired design */
+.instagramSection {
+  position: relative;
+  background: #ffffff;
+  padding: 8rem 0;
+  overflow: hidden;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+:global(.dark-theme) .instagramSection {
+  background: #000000;
+}
+
+.container {
+  width: 100%;
+  padding: 0;
+  position: relative;
+}
+
+/* Header Styles */
+.headerContent {
+  text-align: center;
+  margin-bottom: 6rem;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2rem;
+}
+
+.headerContent.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+:global(.dark-theme) .badge {
+  background: rgba(10, 132, 255, 0.15);
+  border-color: rgba(10, 132, 255, 0.3);
+}
+
+.badgeText {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #007AFF;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+:global(.dark-theme) .badgeText {
+  color: #0A84FF;
+}
+
+.heading {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 1.5rem;
+  color: #1d1d1f;
+  letter-spacing: -0.02em;
+}
+
+:global(.dark-theme) .heading {
+  color: #f5f5f7;
+}
+
+.headingLine {
+  display: block;
+}
+
+.gradientText {
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 50%, #FF2D92 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.description {
+  font-size: 1.25rem;
+  color: #86868b;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+:global(.dark-theme) .description {
+  color: #98989d;
+}
+
+/* Loading and Error States */
+.loadingState, .errorState {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #86868b;
+}
+
+:global(.dark-theme) .loadingState, 
+:global(.dark-theme) .errorState {
+  color: #98989d;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 122, 255, 0.1);
+  border-top: 3px solid #007AFF;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.followLinks {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.followLinks a {
+  color: #007AFF;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: rgba(0, 122, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.followLinks a:hover {
+  background: rgba(0, 122, 255, 0.2);
+}
+
+/* Instagram Posts Marquee */
+.postsMarquee {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 6rem;
+  overflow: hidden;
+  width: 100%;
+}
+
+.marqueeRow {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+}
+
+.marqueeContent {
+  display: flex;
+  gap: 2rem;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  width: max-content;
+  will-change: transform;
+}
+
+.leftToRight .marqueeContent {
+  animation-name: scrollLeftInfinite;
+  animation-duration: 80s;
+}
+
+.rightToLeft .marqueeContent {
+  animation-name: scrollRightInfinite;
+  animation-duration: 80s;
+}
+
+/* Marquee Animations */
+@keyframes scrollLeftInfinite {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollRightInfinite {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Pause animation on hover */
+.marqueeRow:hover .marqueeContent {
+  animation-play-state: paused;
+}
+
+/* Post Card Styles */
+.postCard {
+  position: relative;
+  min-width: 320px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  transform: translateY(30px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+:global(.dark-theme) .postCard {
+  background: rgba(28, 28, 30, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.postCard.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.postCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 122, 255, 0.2);
+  border-color: rgba(0, 122, 255, 0.3);
+}
+
+/* Account Badge */
+.accountBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 2;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.accountIcon {
+  font-size: 0.875rem;
+}
+
+.accountName {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Media Container */
+.mediaContainer {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+}
+
+.postImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.postCard:hover .postImage {
+  transform: scale(1.05);
+}
+
+.videoOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.playIcon {
+  color: white;
+  font-size: 1.5rem;
+  margin-left: 4px;
+}
+
+/* Post Content */
+.postContent {
+  padding: 1.5rem;
+}
+
+.postCaption {
+  font-size: 0.95rem;
+  color: #1d1d1f;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+  font-weight: 400;
+}
+
+:global(.dark-theme) .postCaption {
+  color: #f5f5f7;
+}
+
+.postMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.postDate {
+  color: #86868b;
+  font-weight: 500;
+}
+
+:global(.dark-theme) .postDate {
+  color: #98989d;
+}
+
+.viewOnInstagram {
+  color: #007AFF;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.viewOnInstagram:hover {
+  color: #0056CC;
+}
+
+/* Hover Glow Effect */
+.cardGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  border-radius: 16px;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cardGlow.active {
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(88, 86, 214, 0.05) 100%);
+}
+
+/* Call to Action */
+.ctaSection {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 0.2s;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2rem;
+}
+
+.ctaSection.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ctaText {
+  font-size: 1.5rem;
+  color: #1d1d1f;
+  margin: 0 0 2rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+:global(.dark-theme) .ctaText {
+  color: #f5f5f7;
+}
+
+.followButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ctaButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+  color: white;
+  text-decoration: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 122, 255, 0.4);
+}
+
+.ctaButton:active {
+  transform: translateY(0);
+}
+
+.ctaGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.ctaButton:hover .ctaGlow {
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .headerContent {
+    margin-bottom: 4rem;
+  }
+
+  .postsMarquee {
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .instagramSection {
+    padding: 6rem 0;
+  }
+
+  .headerContent {
+    margin-bottom: 3rem;
+    padding: 0 1rem;
+  }
+
+  .postsMarquee {
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .marqueeContent {
+    gap: 1rem;
+  }
+
+  .leftToRight .marqueeContent {
+    animation-duration: 40s;
+  }
+
+  .rightToLeft .marqueeContent {
+    animation-duration: 40s;
+  }
+
+  .postCard {
+    min-width: 280px;
+  }
+
+  .mediaContainer {
+    height: 250px;
+  }
+
+  .postContent {
+    padding: 1rem;
+  }
+
+  .ctaSection {
+    padding: 0 1rem;
+  }
+
+  .followButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ctaButton {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .heading {
+    font-size: clamp(2rem, 4vw, 2.5rem);
+  }
+
+  .description {
+    font-size: 1.125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .instagramSection {
+    padding: 4rem 0;
+  }
+
+  .headerContent {
+    margin-bottom: 2rem;
+  }
+
+  .leftToRight .marqueeContent {
+    animation-duration: 30s;
+  }
+
+  .rightToLeft .marqueeContent {
+    animation-duration: 30s;
+  }
+
+  .postCard {
+    min-width: 250px;
+  }
+
+  .mediaContainer {
+    height: 200px;
+  }
+
+  .postContent {
+    padding: 0.75rem;
+  }
+
+  .postCaption {
+    font-size: 0.875rem;
+  }
+
+  .postMeta {
+    font-size: 0.75rem;
+  }
+
+  .heading {
+    font-size: 1.75rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .ctaButton {
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .postCard,
+  .postCard.visible,
+  .headerContent.visible,
+  .ctaSection.visible {
+    animation: none;
+    transition: none;
+  }
+
+  .marqueeContent {
+    animation: none;
+  }
+} 

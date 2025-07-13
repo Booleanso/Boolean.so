@@ -834,6 +834,7 @@ export default function HeroSection() {
   const [privateLocationsFound, setPrivateLocationsFound] = useState<number>(0);
   const [globeOpacity, setGlobeOpacity] = useState<number>(0);
   const [globePosition, setGlobePosition] = useState<number>(100); // Start 100px lower for more dramatic rise
+  const [scrollY, setScrollY] = useState<number>(0);
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
   const globeContainerRef = useRef<HTMLDivElement>(null);
 
@@ -846,6 +847,21 @@ export default function HeroSection() {
     // Dispatch a synthetic class change event to trigger theme detection in the Globe component
     const event = new CustomEvent('theme-check', { detail: { isDarkMode } });
     document.documentElement.dispatchEvent(event);
+  }, []);
+
+  // Add scroll event listener for parallax effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -1147,11 +1163,11 @@ export default function HeroSection() {
     return portfolioProjects[0] || null;
   };
 
-  // Configure the animation for the globe opacity and position
+  // Configure the animation for the globe opacity and position with parallax scrolling
   const globeStyle = {
     opacity: globeOpacity,
-    transform: `translateY(${globePosition}px)`,
-    transition: 'opacity 1.5s ease-in-out, transform 3.5s cubic-bezier(0.19, 1, 0.22, 1)' // Slower rise-up with longer duration
+    transform: `translateY(${globePosition + scrollY * 0.5}px)`, // Parallax effect: globe moves down at 50% of scroll speed
+    transition: globePosition > 0 ? 'opacity 1.5s ease-in-out, transform 3.5s cubic-bezier(0.19, 1, 0.22, 1)' : 'opacity 1.5s ease-in-out' // Only apply transform transition during initial load
   };
 
   return (
