@@ -18,13 +18,16 @@ interface NavBarProps {
 export default function NavBar({ serverUser }: NavBarProps) {
   const [user, setUser] = React.useState<SimpleUser>(serverUser);
   const loading = false;
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const scrolled = true;
   const router = useRouter();
   const pathname = usePathname();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const { theme } = useTheme();
+  
+  // Scroll-based navbar visibility
+  const [isNavbarVisible, setIsNavbarVisible] = useState<boolean>(true);
+  const [lastScrollY, setLastScrollY] = useState<number>(0);
 
   useEffect(() => {
     // Set mounted state to true once component is mounted
@@ -49,6 +52,33 @@ export default function NavBar({ serverUser }: NavBarProps) {
     setUser(serverUser);
   }, [serverUser]);
 
+  // Scroll direction detection for navbar visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Show navbar at top of page or when scrolling up
+      if (currentScrollY === 0) {
+        setIsNavbarVisible(true);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up
+        setIsNavbarVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down and past 100px
+        setIsNavbarVisible(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    // Add scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY]);
+
   const handleSignOut = async () => {
     try {
       await signOut(auth);
@@ -62,39 +92,17 @@ export default function NavBar({ serverUser }: NavBarProps) {
       console.error('Error signing out:', error);
     }
   };
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-    }
-  };
   
   const isAdmin = user?.email === 'ceo@webrend.com';
 
-  // Dark mode styling variables
-  const bgColor = isDarkMode ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)';
-  const textColor = isDarkMode ? '#ffffff' : '#1d1d1f';
-  const borderColor = isDarkMode ? 'rgba(30, 30, 30, 0.95)' : 'rgba(230, 230, 230, 0.95)';
-  const buttonBgColor = isDarkMode ? 'rgba(40, 40, 40, 0.95)' : 'rgba(0, 0, 0, 0.08)';
-  const signOutBgColor = isDarkMode ? 'rgba(155, 32, 32, 0.7)' : 'rgba(255, 59, 48, 0.15)';
-  const signOutTextColor = isDarkMode ? '#ff8080' : '#ff3b30';
-  const signUpBgColor = isDarkMode ? '#0066cc' : '#0071e3';
-  const boxShadow = isDarkMode 
-    ? '0 4px 20px rgba(0, 0, 0, 0.7)' 
-    : '0 4px 20px rgba(0, 0, 0, 0.25)';
-  const buttonShadow = isDarkMode 
-    ? '0 2px 5px rgba(0, 0, 0, 0.5)' 
-    : '0 1px 3px rgba(0, 0, 0, 0.1)';
-  const logoFilter = isDarkMode ? 'invert(1) brightness(1.5)' : 'none';
+
 
   // Only render client-specific content after component is mounted
   // This prevents hydration mismatch between server and client
   if (!isMounted) {
     return (
       <>
-        <div className={`top-navbar-container ${scrolled ? 'scrolled' : ''}`}>
+        <div className={`top-navbar-container ${scrolled ? 'scrolled' : ''} ${!isNavbarVisible ? 'hidden' : ''}`}>
           <div className="top-navbar">
             <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
               <Image 
@@ -109,6 +117,13 @@ export default function NavBar({ serverUser }: NavBarProps) {
             
             <div className="top-navbar-menu">
               <PortfolioDropdown isDarkMode={isDarkMode} pathname={pathname} />
+              
+              <Link 
+                href="/marketplace" 
+                className={`nav-button marketplace-button ${pathname === '/marketplace' ? 'active' : ''}`}
+              >
+                Marketplace
+              </Link>
               
               <Link 
                 href="/blog" 
@@ -126,60 +141,50 @@ export default function NavBar({ serverUser }: NavBarProps) {
                 </Link>
               )}
               
-              <div className="search-container">
-                <form 
-                  onSubmit={handleSearch} 
-                  className="search-form"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    backgroundColor: isDarkMode ? 'rgba(30, 30, 30, 0.7)' : 'rgba(0, 0, 0, 0.03)',
-                    border: isDarkMode ? '1px solid rgba(50, 50, 50, 0.8)' : '1px solid rgba(0, 0, 0, 0.1)',
-                    borderRadius: '10px',
-                    padding: '0 15px',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  <input 
-                    id="top-navbar-search-input"
-                    type="text" 
-                    placeholder="Search for designs, templates..."
-                    className="search-input"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      outline: 'none',
-                      padding: '10px 0',
-                      fontSize: '14px',
-                      width: '220px',
-                      maxWidth: '220px',
-                      color: isDarkMode ? '#f5f5f7' : '#1d1d1f'
-                    }}
-                  />
-                  <button 
-                    type="submit" 
-                    className="search-button"
-                    style={{
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      color: isDarkMode ? '#98989d' : '#86868b',
-                      padding: 0,
-                      marginLeft: '5px'
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                  </button>
-                </form>
-              </div>
+              {/* Auth Buttons */}
+              {!loading && (
+                <>
+                  {user ? (
+                    <>
+                      <Link 
+                        href="/profile" 
+                        className="nav-button profile-button"
+                      >
+                        Profile
+                      </Link>
+                      <button
+                        onClick={handleSignOut}
+                        className="nav-button signout-button"
+                        style={{
+                          backgroundColor: isDarkMode ? 'rgba(155, 32, 32, 0.7)' : 'rgba(255, 59, 48, 0.15)',
+                          color: isDarkMode ? '#ff8080' : '#ff3b30'
+                        }}
+                      >
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/auth?mode=signin"
+                        className="nav-button login-button"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/auth?mode=signup"
+                        className="nav-button signup-button"
+                        style={{
+                          backgroundColor: isDarkMode ? '#0066cc' : '#0071e3',
+                          color: 'white'
+                        }}
+                      >
+                        Sign Up
+                      </Link>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -187,10 +192,10 @@ export default function NavBar({ serverUser }: NavBarProps) {
     );
   }
 
-  return (
-    <>
-      <div className={`top-navbar-container ${scrolled ? 'scrolled' : ''}`}>
-        <div className="top-navbar">
+      return (
+      <>
+        <div className={`top-navbar-container ${scrolled ? 'scrolled' : ''} ${!isNavbarVisible ? 'hidden' : ''}`}>
+          <div className="top-navbar">
           <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
             <Image 
               src="/logo/logo_black.png" 
@@ -204,6 +209,13 @@ export default function NavBar({ serverUser }: NavBarProps) {
           
                       <div className="top-navbar-menu">
               <PortfolioDropdown isDarkMode={isDarkMode} pathname={pathname} />
+              
+              <Link 
+                href="/marketplace" 
+                className={`nav-button marketplace-button ${pathname === '/marketplace' ? 'active' : ''}`}
+              >
+                Marketplace
+              </Link>
               
               <Link 
                 href="/blog" 
@@ -221,224 +233,54 @@ export default function NavBar({ serverUser }: NavBarProps) {
               </Link>
             )}
             
-            <div className="search-container">
-              <form 
-                onSubmit={handleSearch} 
-                className="search-form"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  backgroundColor: isDarkMode ? 'rgba(30, 30, 30, 0.7)' : 'rgba(0, 0, 0, 0.03)',
-                  border: isDarkMode ? '1px solid rgba(50, 50, 50, 0.8)' : '1px solid rgba(0, 0, 0, 0.1)',
-                  borderRadius: '10px',
-                  padding: '0 15px',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                }}
-              >
-                <input 
-                  id="top-navbar-search-input"
-                  type="text" 
-                  placeholder="Search for designs, templates..."
-                  className="search-input"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    padding: '10px 0',
-                    fontSize: '14px',
-                    width: '220px',
-                    maxWidth: '220px',
-                    color: isDarkMode ? '#f5f5f7' : '#1d1d1f'
-                  }}
-                />
-                <button 
-                  type="submit" 
-                  className="search-button"
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    color: isDarkMode ? '#98989d' : '#86868b',
-                    padding: 0,
-                    marginLeft: '5px'
-                  }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div style={{
-        position: 'fixed',
-        bottom: '30px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '10px',
-        zIndex: 1000
-      }}>
-        {/* Logo */}
-        <div style={{
-          width: '60px',
-          height: '60px',
-          borderRadius: '60px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: bgColor,
-          boxShadow: boxShadow,
-          border: `2px solid ${borderColor}`
-        }}>
-          <Link href="/" style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <Image 
-              src="/logo/logo_black.png" 
-              alt="WebRend Logo" 
-              width={40} 
-              height={40} 
-              className="navbar-logo"
-              style={{
-                objectFit: 'contain',
-                filter: logoFilter
-              }}
-              priority
-            />
-          </Link>
-        </div>
-
-        {/* Portfolio & Marketplace Buttons */}
-        <div style={{
-          height: '60px',
-          borderRadius: '60px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: bgColor,
-          boxShadow: boxShadow,
-          border: `2px solid ${borderColor}`,
-          padding: '0 8px',
-          gap: '10px'
-        }}>
-          <PortfolioDropdown isDarkMode={isDarkMode} pathname={pathname} />
-          <Link 
-            href="/marketplace" 
-            style={{
-              backgroundColor: buttonBgColor,
-              color: textColor,
-              borderRadius: '30px',
-              padding: '9px 20px',
-              fontSize: '15px',
-              fontWeight: 600,
-              textDecoration: 'none',
-              boxShadow: buttonShadow
-            }}
-          >
-            Marketplace
-          </Link>
-        </div>
-
-        {/* Auth Buttons */}
-        {!loading && (
-          <div style={{
-            height: '60px',
-            borderRadius: '60px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: bgColor,
-            boxShadow: boxShadow,
-            border: `2px solid ${borderColor}`,
-            padding: '0 8px',
-            gap: '10px'
-          }}>
-            {user ? (
+            {/* Auth Buttons */}
+            {!loading && (
               <>
-                <Link 
-                  href="/profile" 
-                  style={{
-                    backgroundColor: buttonBgColor,
-                    color: textColor,
-                    borderRadius: '30px',
-                    padding: '9px 20px',
-                    fontSize: '15px',
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                    boxShadow: buttonShadow
-                  }}
-                >
-                  Profile
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  style={{
-                    backgroundColor: signOutBgColor,
-                    color: signOutTextColor,
-                    borderRadius: '30px',
-                    padding: '9px 20px',
-                    fontSize: '15px',
-                    fontWeight: 600,
-                    border: 'none',
-                    cursor: 'pointer',
-                    boxShadow: buttonShadow
-                  }}
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/auth?mode=signin"
-                  style={{
-                    backgroundColor: buttonBgColor,
-                    color: textColor,
-                    borderRadius: '30px',
-                    padding: '9px 20px',
-                    fontSize: '15px',
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                    boxShadow: buttonShadow
-                  }}
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/auth?mode=signup"
-                  style={{
-                    backgroundColor: signUpBgColor,
-                    color: 'white',
-                    borderRadius: '30px',
-                    padding: '9px 20px',
-                    fontSize: '15px',
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                    boxShadow: buttonShadow
-                  }}
-                >
-                  Sign Up
-                </Link>
+                {user ? (
+                  <>
+                    <Link 
+                      href="/profile" 
+                      className="nav-button profile-button"
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="nav-button signout-button"
+                      style={{
+                        backgroundColor: isDarkMode ? 'rgba(155, 32, 32, 0.7)' : 'rgba(255, 59, 48, 0.15)',
+                        color: isDarkMode ? '#ff8080' : '#ff3b30'
+                      }}
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth?mode=signin"
+                      className="nav-button login-button"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/auth?mode=signup"
+                      className="nav-button signup-button"
+                      style={{
+                        backgroundColor: isDarkMode ? '#0066cc' : '#0071e3',
+                        color: 'white'
+                      }}
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </>
             )}
           </div>
-        )}
+        </div>
       </div>
+
     </>
   );
 } 

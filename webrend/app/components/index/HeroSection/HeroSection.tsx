@@ -836,6 +836,10 @@ export default function HeroSection() {
   const [globePosition, setGlobePosition] = useState<number>(100); // Start 100px lower for more dramatic rise
   const [scrollY, setScrollY] = useState<number>(0);
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
+  
+  // Search functionality
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const router = useRouter();
   const globeContainerRef = useRef<HTMLDivElement>(null);
 
   // Immediately check dark mode when HeroSection mounts (during navigation or initial load)
@@ -863,6 +867,15 @@ export default function HeroSection() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // Search handler function
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+    }
+  };
 
   useEffect(() => {
     async function fetchLocations() {
@@ -1175,7 +1188,7 @@ export default function HeroSection() {
       <div className={styles.container}>
         <div className={styles.content}>
           <div className={styles.heading}>
-            <h1>Transform Ideas Into Code. Turn Code Into Profit.</h1>
+            <h1>Turn Code Into Profit.</h1>
             <p className={styles.subtitle}>
               We build cutting-edge software from your concepts and provide a marketplace where developers can monetize their GitHub repositories.
             </p>
@@ -1184,8 +1197,23 @@ export default function HeroSection() {
           {error && <div className={styles.errorMessage}>{error}</div>}
 
           <div className={styles.ctas}>
+            <form onSubmit={handleSearch} className={styles.searchForm}>
+              <input 
+                type="text" 
+                placeholder="Find your next project..." 
+                className={styles.searchInput}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button type="submit" className={styles.searchButton}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Search
+              </button>
+            </form>
             <a href="/discovery" className={styles.primaryBtn}>Discovery Call</a>
-            <a href="/marketplace" className={styles.secondaryBtn}>Sell Your Repo</a>
           </div>
         </div>
 

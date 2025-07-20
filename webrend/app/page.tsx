@@ -96,18 +96,42 @@ export default async function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <HeroSection />
-        <TrustedBy />
-        <MarketplaceShowcase />
-        <FeaturedRepos />
-        <MarketplaceFeatures />
-        <VideoSection />
-        <ServicesCardsSection />
-        <PortfolioPreview projects={featuredProjects} />
-        <ReviewCrowd />
-        <InstagramFeed />
-        <BlogPreview />
-        <FAQ />
+        <section id="hero">
+          <HeroSection />
+        </section>
+        <section id="trusted-by">
+          <TrustedBy />
+        </section>
+        <section id="marketplace">
+          <MarketplaceShowcase />
+        </section>
+        <section id="featured-repos">
+          <FeaturedRepos />
+        </section>
+        <section id="marketplace-features">
+          <MarketplaceFeatures />
+        </section>
+        <section id="video">
+          <VideoSection />
+        </section>
+        <section id="services">
+          <ServicesCardsSection />
+        </section>
+        <section id="portfolio">
+          <PortfolioPreview projects={featuredProjects} />
+        </section>
+        <section id="reviews">
+          <ReviewCrowd />
+        </section>
+        <section id="instagram">
+          <InstagramFeed />
+        </section>
+        <section id="blog">
+          <BlogPreview />
+        </section>
+        <section id="faq">
+          <FAQ />
+        </section>
         {/* <ContactUs /> */} {/* Commented out - "Let's work together" section removed */}
       </main>
       <Footer />

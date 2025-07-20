@@ -99,59 +99,34 @@ export default function SearchPage() {
         const marketplaceData = await marketplaceResponse.json();
         const marketplaceListings = marketplaceData.listings || [];
         
-        // Mock fetching portfolio projects (in a real app, this would be an API call)
-        // This is sample data similar to what we saw in the portfolio page
-        const portfolioProjects = [
-          {
-            id: 1,
-            name: "3D Game Experience",
-            description: "Interactive 3D environment built with Three.js and React, featuring realistic physics and immersive gameplay.",
-            imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-            projectUrl: "/portfolio/game",
-            technologies: ["React", "Three.js", "WebGL"],
-            featured: true
-          },
-          {
-            id: 2,
-            name: "E-Commerce Platform",
-            description: "Full-featured online store with product management, cart functionality, and secure payment processing.",
-            imageUrl: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-            projectUrl: "https://ecommerce-example.com",
-            technologies: ["Next.js", "Stripe", "TailwindCSS"]
-          },
-          {
-            id: 3,
-            name: "AI Content Generator",
-            description: "Machine learning application that creates unique content based on user input and preferences.",
-            imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=80",
-            projectUrl: "https://ai-generator-example.com",
-            technologies: ["Python", "TensorFlow", "React"]
-          },
-          {
-            id: 4,
-            name: "Social Media Dashboard",
-            description: "Analytics platform that tracks engagement across multiple social media channels in real-time.",
-            imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2426&q=80",
-            projectUrl: "https://dashboard-example.com",
-            technologies: ["Vue.js", "D3.js", "Firebase"]
-          },
-          {
-            id: 5,
-            name: "Fitness Tracking App",
-            description: "Mobile application for tracking workouts, nutrition, and personal fitness goals with data visualization.",
-            imageUrl: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-            projectUrl: "https://fitness-app-example.com",
-            technologies: ["React Native", "GraphQL", "Node.js"]
-          },
-          {
-            id: 6,
-            name: "Blockchain Explorer",
-            description: "Web application for exploring blockchain transactions, addresses, and smart contracts with visualizations.",
-            imageUrl: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=80",
-            projectUrl: "https://blockchain-example.com",
-            technologies: ["JavaScript", "Web3.js", "Express"]
+        // Fetch real portfolio projects from API
+        let portfolioProjects: any[] = [];
+        try {
+          const portfolioResponse = await fetch('/api/portfolio/projects');
+          if (portfolioResponse.ok) {
+            const portfolioData = await portfolioResponse.json();
+            portfolioProjects = portfolioData.map((project: {
+              id: string;
+              title: string;
+              description: string;
+              imageUrl: string;
+              slug: string;
+              tags: string[];
+              featured: boolean;
+            }) => ({
+              id: project.id,
+              name: project.title, // Map title to name for consistency
+              description: project.description,
+              imageUrl: project.imageUrl,
+              projectUrl: `/portfolio/projects/${project.slug}`, // Use proper project URL
+              technologies: project.tags || [], // Use tags as technologies
+              featured: project.featured
+            }));
           }
-        ];
+        } catch (error) {
+          console.error('Error fetching portfolio projects:', error);
+          portfolioProjects = []; // Empty array if fetch fails
+        }
         
         // Filter marketplace listings based on search query
         const filteredMarketplaceListings = marketplaceListings
@@ -169,7 +144,7 @@ export default function SearchPage() {
           .filter(project => 
             project.name.toLowerCase().includes(query.toLowerCase()) || 
             project.description.toLowerCase().includes(query.toLowerCase()) ||
-            project.technologies.some(tech => tech.toLowerCase().includes(query.toLowerCase()))
+            project.technologies.some((tech: string) => tech.toLowerCase().includes(query.toLowerCase()))
           )
           .map(project => ({
             ...project,

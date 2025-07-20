@@ -133,17 +133,22 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
 .top-navbar-container {
   display: flex;
   width: 100%;
-  position: relative;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  transition: none;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+  transform: translateY(0);
+  
+  &.hidden {
+    transform: translateY(-100%);
+  }
   
   &.scrolled {
-    background-color: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     
     .top-navbar {
@@ -155,15 +160,17 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
     
     // Dark theme scrolled styles
     .dark-theme & {
-      background-color: $dark-navbar-bg;
+      background-color: rgba(10, 10, 10, 0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
   }
   
   .top-navbar {
-    background-color: transparent;
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     width: 75%;
     margin: 0 auto;
     height: 80px;
@@ -180,6 +187,9 @@ $dark-navbar-bg: rgba(10, 10, 10, 0.95); // Darker navbar background
     
     // Dark theme hover styles
     .dark-theme & {
+      background-color: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.03);
       
       &:hover {

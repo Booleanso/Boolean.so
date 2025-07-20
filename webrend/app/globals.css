@@ -99,9 +99,40 @@ body {
   overflow-x: hidden;
 }
 
-/* Add smooth scrolling to the entire site */
+/* Enhanced smooth scrolling for the entire site */
 html {
   scroll-behavior: smooth;
+  /* Improve scroll performance on mobile */
+  -webkit-overflow-scrolling: touch;
+  /* Better text rendering during scroll */
+  text-rendering: optimizeSpeed;
+}
+
+/* Enhanced smooth scrolling with better performance */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px; /* Account for fixed navbar */
+  }
+  
+  /* Smooth scrolling for all elements */
+  * {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  * {
+    scroll-behavior: auto;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
@@ -113,6 +144,7 @@ body {
   transition: background-color var(--transition-speed) ease-in-out, color var(--transition-speed) ease-in-out;
   min-height: 100vh;
   width: 100%;
+  padding-top: 80px; /* Account for fixed navbar */
 }
 
 /* Explicit styles for light theme */

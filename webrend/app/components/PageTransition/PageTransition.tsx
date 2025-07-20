@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
+import { smoothScrollTo } from '../../utils/smooth-scroll';
 import styles from './PageTransition.module.css';
 
 type TransitionType = 'fade' | 'slide-up' | 'slide-down';
@@ -21,6 +22,7 @@ export default function PageTransition({
   const pageRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const [isFirstRender, setIsFirstRender] = useState(true);
+  const previousPathnameRef = useRef<string>('');
   
   // Transition configurations
   const getTransitionProps = (direction: 'in' | 'out') => {
@@ -79,11 +81,20 @@ export default function PageTransition({
   useEffect(() => {
     if (isFirstRender) {
       setIsFirstRender(false);
+      previousPathnameRef.current = pathname;
+      return;
+    }
+    
+    // Only animate if the path actually changed
+    if (previousPathnameRef.current === pathname) {
       return;
     }
     
     const outTransition = getTransitionProps('out');
     const inTransition = getTransitionProps('in');
+    
+    // Smooth scroll to top for new pages
+    const shouldScrollToTop = !pathname.includes('#');
     
     // When the path changes, animate out then in
     const ctx = gsap.context(() => {
@@ -93,6 +104,11 @@ export default function PageTransition({
         duration: outTransition.duration,
         ease: outTransition.ease,
         onComplete: () => {
+          // Scroll to top if needed before animating in
+          if (shouldScrollToTop) {
+            smoothScrollTo(0, 400);
+          }
+          
           // Then animate back in
           gsap.fromTo(
             pageRef.current,
@@ -106,6 +122,9 @@ export default function PageTransition({
         }
       });
     });
+    
+    // Update previous pathname
+    previousPathnameRef.current = pathname;
     
     return () => ctx.revert();
   }, [pathname, isFirstRender, type, duration]);

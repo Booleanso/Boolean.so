@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavBar from "./components/NavBar/NavBar";
 import PageTransition from "./components/PageTransition/PageTransition";
+import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 import { ThemeProvider } from "./components/ThemeProvider/ThemeProvider";
 import { verifyUser, simplifyUser } from "./utils/auth-utils";
 import ServiceStatus from "./components/ServiceStatus/ServiceStatus";
@@ -39,6 +40,7 @@ export default async function RootLayout({
           <PageTransition type="slide-up" duration={0.4}>
             {children}
           </PageTransition>
+          <ScrollToTop />
         </ThemeProvider>
       </body>
     </html>

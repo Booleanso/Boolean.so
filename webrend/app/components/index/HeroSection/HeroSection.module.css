@@ -263,8 +263,9 @@
 
 .ctas {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem; /* Slightly smaller gap for sleeker look */
   justify-content: center;
+  align-items: center; /* Ensure perfect vertical alignment */
   margin-top: 1rem;
   margin-bottom: 2rem;
   position: relative;
@@ -272,22 +273,35 @@
 }
 
 .primaryBtn, .secondaryBtn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 30px;
+  padding: 0 1.5rem; /* Removed vertical padding for height control */
+  border-radius: 25px; /* Consistent border radius */
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease; /* Removed transform from transition */
+  height: 44px; /* Explicit height for sleek look */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px; /* Consistent font size */
 }
 
 .primaryBtn {
-  background-color: #0066ff;
+  background-color: #333333; /* Dark grey color */
   color: white;
   border: none;
+  padding: 0 1.5rem; /* Removed vertical padding for precise height control */
+  height: 44px; /* Match search form height exactly */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px; /* Ensure consistent minimum height */
+  border-radius: 25px; /* Match search form border radius for consistency */
+  font-size: 15px; /* Slightly smaller font for sleeker look */
 }
 
 .primaryBtn:hover {
-  background-color: #0055cc;
-  transform: translateY(-2px);
+  background-color: #555555; /* Lighter grey on hover */
+  /* Removed transform: translateY(-2px); */
 }
 
 .secondaryBtn {
@@ -298,7 +312,107 @@
 
 .secondaryBtn:hover {
   background-color: #eaeaea;
-  transform: translateY(-2px);
+  /* Removed transform: translateY(-2px); */
+}
+
+/* Search form styles */
+.searchForm {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 25px; /* Slightly more rounded for sleek look */
+  overflow: hidden;
+  transition: all 0.2s ease;
+  max-width: 400px;
+  width: 100%;
+  height: 44px; /* Reduced height for sleeker look */
+  min-height: 44px;
+}
+
+.searchForm:focus-within {
+  background-color: #ffffff;
+  border-color: #0066ff;
+  box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.2);
+  /* Removed transform: translateY(-2px); */
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0 1.5rem; /* Removed vertical padding for better fit */
+  font-size: 15px; /* Slightly smaller font for sleeker look */
+  background-color: transparent;
+  color: #333;
+  height: 100%; /* Fill the search form container */
+  line-height: 1; /* Better text alignment */
+}
+
+.searchInput::placeholder {
+  color: #888;
+}
+
+.searchButton {
+  border: none;
+  background-color: #0066ff;
+  color: white;
+  padding: 0 1.5rem; /* Removed vertical padding for precise height control */
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem; /* Slightly smaller gap for sleeker look */
+  transition: background-color 0.2s ease;
+  border-radius: 50px; /* Keep it pill-shaped */
+  height: 100%; /* Fill the search form container height */
+  font-size: 15px; /* Match the input font size */
+}
+
+.searchButton:hover {
+  background-color: #0055cc;
+}
+
+.searchButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Dark theme styles for search */
+:global(.dark-theme) .searchForm {
+  background-color: #1a1a1a;
+  border-color: #333;
+}
+
+:global(.dark-theme) .searchForm:focus-within {
+  background-color: #222;
+  border-color: #0088ff;
+  box-shadow: 0 0 0 2px rgba(0, 136, 255, 0.3);
+}
+
+:global(.dark-theme) .searchInput {
+  color: #fff;
+}
+
+:global(.dark-theme) .searchInput::placeholder {
+  color: #aaa;
+}
+
+:global(.dark-theme) .searchButton {
+  background-color: #0088ff;
+}
+
+:global(.dark-theme) .searchButton:hover {
+  background-color: #0066cc;
+}
+
+/* Dark theme styles for discovery call button */
+:global(.dark-theme) .primaryBtn {
+  background-color: #666666; /* Lighter grey for dark theme */
+}
+
+:global(.dark-theme) .primaryBtn:hover {
+  background-color: #777777; /* Even lighter grey on hover in dark theme */
 }
 
 /* Apple Watch app grid styles */
@@ -567,6 +681,22 @@
   .primaryBtn, .secondaryBtn {
     width: 100%;
     text-align: center;
+  }
+  
+  .searchForm {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .searchInput {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0 1rem; /* Consistent with desktop, no vertical padding */
+  }
+  
+  .searchButton {
+    padding: 0 1rem; /* Consistent with desktop, no vertical padding */
+    font-size: 14px;
+    gap: 0.3rem; /* Smaller gap on mobile */
   }
   
   .locationsLegend ul {
