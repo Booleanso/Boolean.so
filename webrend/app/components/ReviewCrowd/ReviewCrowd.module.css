@@ -11,7 +11,7 @@
   background: #000000;
 }
 
-:global(.dark-theme) .splineContainer::after {
+:global(.dark-theme) .backgroundImage::after {
   background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0) 100%);
 }
 
@@ -114,8 +114,8 @@
   color: #98989d;
 }
 
-/* Spline 3D Background */
-.splineContainer {
+/* Background Image */
+.backgroundImage {
   position: absolute;
   top: 0;
   left: 0;
@@ -127,7 +127,12 @@
   z-index: 0;
 }
 
-.splineContainer::after {
+.backgroundImg {
+  object-fit: cover;
+  object-position: center;
+}
+
+.backgroundImage::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -139,19 +144,9 @@
   z-index: 1;
 }
 
-.splineContainer.visible {
+.backgroundImage.visible {
   opacity: 1;
   transform: translateY(0);
-}
-
-.splineFrame {
-  border: none;
-  background: transparent;
-  width: 100%;
-  height: 100%;
-  outline: none;
-  pointer-events: auto;
-  display: block;
 }
 
 /* Crowd Silhouette */

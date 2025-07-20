@@ -1,197 +1,84 @@
 .trustedBySection {
-  width: 100%;
-  padding: 60px 0;
-  background-color: #ffffff;
-  border-top: none;
-  border-bottom: none;
-}
-
-:global(.dark-theme) .trustedBySection {
-  border-top-color: transparent;
-  border-bottom-color: transparent;
+  padding: 5rem 0;
+  background-color: var(--background);
+  overflow: hidden;
+  position: relative;
 }
 
 .container {
-  max-width: 1300px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 1rem;
   text-align: center;
 }
 
 .title {
-  font-size: 1.125rem;
-  margin-bottom: 40px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.partnersContainer {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-around;
-  align-items: center;
-  gap: 40px;
-  width: 100%;
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 0 15px;
-  overflow-x: auto;
-}
-
-.partner {
-  padding: 0;
-  /* Text styles will apply if no logoSrc - though all should have logos now */
   font-size: 1.25rem;
   font-weight: 500;
   color: var(--text-secondary);
-  border: none;
-  background-color: transparent;
-  transition: color 0.3s ease, opacity 0.3s ease; /* Kept for potential future text fallback */
-  opacity: 0.7; /* Kept for potential future text fallback */
+  margin-bottom: 3rem;
+  letter-spacing: 0.5px;
+}
+
+.scroller {
+  -webkit-mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+  mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+  position: relative;
+  overflow: hidden;
+}
+
+.scrollerInner {
+  display: flex;
+  gap: 3rem;
+  width: max-content;
+  animation: scroll 30s linear infinite;
+}
+
+@keyframes scroll {
+  to {
+    transform: translateX(calc(-50% - 1.5rem)); /* Half the width minus half the gap */
+  }
+}
+
+.partner {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 70px;
+  height: 60px;
 }
 
 .partnerLogo {
-  max-height: 100px;
-  width: auto;
-  max-width: 200px;
   object-fit: contain;
-  filter: grayscale(100%);
+  width: auto;
+  height: 40px; /* All logos same height */
+  max-width: 160px;
   opacity: 0.6;
-  transition: filter 0.3s ease, opacity 0.3s ease;
-}
-
-/* Specific larger sizes for Vital Element and PLC Ultima */
-.vital .partnerLogo {
-  max-height: 90px;
-  max-width: 260px;
-}
-
-.plc .partnerLogo {
-  height: 10rem;
-  max-height: 110px;
-  max-width: 300px;
-}
-
-.launch .partnerLogo {
-  max-height: 90px;
-  max-width: 220px;
-  filter: invert(1); /* Invert in light mode to make it black */
-}
-
-/* Don't invert in dark mode */
-:global(.dark-theme) .launch .partnerLogo {
-  filter: none;
+  transition: opacity 0.3s ease;
+  filter: grayscale(100%);
 }
 
 .partner:hover .partnerLogo {
+  opacity: 1;
   filter: grayscale(0%);
-  opacity: 1;
 }
 
-/* Override for LAUNCH logo to keep it black when hovered in light mode */
-.launch:hover .partnerLogo {
-  filter: invert(1);
-  opacity: 1;
-}
-
-/* Keep original hover behavior in dark mode for LAUNCH logo */
-:global(.dark-theme) .launch:hover .partnerLogo {
-  filter: none;
-  opacity: 1;
-}
-
-:global(.dark-theme) .partner {
-  color: var(--text-secondary-dark, #a1a1a6);
-}
-
+/* Dark theme adjustments */
 :global(.dark-theme) .partnerLogo {
-  filter: grayscale(50%) invert(10%) brightness(150%);
-  opacity: 0.7;
+  filter: grayscale(100%) invert(100%) brightness(2);
 }
 
 :global(.dark-theme) .partner:hover .partnerLogo {
-  filter: none;
-  opacity: 1;
+  filter: grayscale(0%) invert(0%) brightness(1);
 }
-
-.partner:hover {
-  /* For text-only partners - kept for potential future fallback */
-  color: var(--text-primary);
-  opacity: 1.0;
-  transform: none;
-  box-shadow: none;
-}
-
-:global(.dark-theme) .partner:hover {
-  /* For text-only partners in dark mode - kept for potential future fallback */
-  color: var(--text-primary-dark, #f5f5f7);
-}
-
-/* Partner-specific font styles - Removed as all partners now use logos */
-.tata, .vital, .blenderbin, .webflow, .plc {
-  /* No specific font needed as they use logos */
-}
-
-.blenderbinText {
-  font-family: Helvetica, Arial, sans-serif;
-  font-weight: bold;
-  font-size: 1rem;
-  margin: 0;
-  padding: 0;
-  color: #333;
-  display: inline-block;
-  line-height: 1;
-  position: relative;
-  top: 2.5px;
-}
-
-:global(.dark-theme) .blenderbinText {
-  color: #f5f5f7;
-}
-
-.beta .partnerLogo {
-  max-height: 20px;
-  max-width: 170px;
-}
-
-.webflow .partnerLogo {
-  max-height: 70px;
-  max-width: 220px;
-  position: relative;
-  top: 10px;
-}
-
-
 
 @media (max-width: 768px) {
-  .partnersContainer {
-    gap: 40px;
-  }
-  
-  .partner {
-    min-height: 60px;
-  }
-
-  .partnerLogo {
-    max-height: 50px;
-    max-width: 170px;
-  }
-
-  /* Specific larger sizes for Vital Element and PLC Ultima on mobile */
-  .vital .partnerLogo,
-  .plc .partnerLogo {
-    max-height: 65px;
-    max-width: 190px;
-  }
-  
   .title {
     font-size: 1rem;
-    margin-bottom: 30px;
+    margin-bottom: 2rem;
+  }
+
+  .scrollerInner {
+    animation-duration: 25s;
+    gap: 2rem;
   }
 } 
