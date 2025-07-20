@@ -5,12 +5,13 @@ import Image from 'next/image';
 import styles from './TrustedBy.module.css';
 
 const partners = [
-  { name: 'Tata Technologies', id: 'tata', logoSrc: '/logos/tata_technologies_logo.png' },
-  { name: 'Webflow', id: 'webflow', logoSrc: '/logos/webflow_partner.png' },
-  { name: 'BlenderBin', id: 'blenderbin', logoSrc: '/logos/blenderbin_logo.png' },
-  { name: 'PLC Ultima', id: 'plc', logoSrc: '/logos/plcu_logo.png' },
-  { name: 'LAUNCH Startup Accelerator', id: 'launch', logoSrc: '/logos/launch_accelorator.png' },
-  { name: 'Beta Accelerator', id: 'beta', logoSrc: '/logos/beta_logo.png' }
+  { name: 'Tata Technologies', id: 'tata', logoSrc: '/testimonials/tatatechnologies_testimonial_logo.png' },
+  { name: 'Webflow', id: 'webflow', logoSrc: '/testimonials/webflow_testimonial_logo.png' },
+  { name: 'BlenderBin', id: 'blenderbin', logoSrc: '/testimonials/blenderbin__testimonial_logo.png' },
+  { name: 'Beta Accelerator', id: 'beta', logoSrc: '/testimonials/beta_testimonial_logo.png' },
+  { name: 'Antler', id: 'antler', logoSrc: '/testimonials/antler_testimonial_logo.png' },
+  { name: 'RMC', id: 'rmc', logoSrc: '/testimonials/rmc_testimonial_logo.png' },
+  { name: 'La Creme', id: 'lacreme', logoSrc: '/testimonials/lacreme_testimonial_logo.png' }
 ];
 
 const TrustedBy = () => {
