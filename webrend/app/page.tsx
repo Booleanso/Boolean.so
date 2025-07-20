@@ -12,6 +12,7 @@ import ReviewCrowd from "./components/ReviewCrowd/ReviewCrowd";
 import FAQ from "./components/FAQ/FAQ";
 // import ContactUs from "./components/ContactUs/ContactUs"; // Commented out - "Let's work together" section removed
 import Footer from "./components/Footer/Footer";
+import ScrollCodeSection from "./components/ScrollCodeSection/ScrollCodeSection";
 
 import { db } from './lib/firebase-admin';
 import { DocumentData, Timestamp } from 'firebase-admin/firestore';
@@ -98,6 +99,9 @@ export default async function Home() {
       <main className={styles.main}>
         <section id="hero">
           <HeroSection />
+        </section>
+        <section id="scroll-code">
+          <ScrollCodeSection />
         </section>
         <section id="marketplace">
           <MarketplaceShowcase />
