@@ -5,6 +5,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Billboard, Text, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import axios from 'axios';
+import Image from 'next/image';
 import styles from './HeroSection.module.css';
 
 import { useRouter } from 'next/navigation';
@@ -20,6 +21,17 @@ interface PrivateRepoLocationData {
   longitude: number;
   iconUrl?: string;
 }
+
+// Partners data for trusted by section
+const partners = [
+  { name: 'Tata Technologies', id: 'tata', logoSrc: '/testimonials/tatatechnologies_testimonial_logo.png' },
+  { name: 'Webflow', id: 'webflow', logoSrc: '/testimonials/webflow_testimonial_logo.png' },
+  { name: 'BlenderBin', id: 'blenderbin', logoSrc: '/testimonials/blenderbin__testimonial_logo.png' },
+  { name: 'Beta Accelerator', id: 'beta', logoSrc: '/testimonials/beta_testimonial_logo.png' },
+  { name: 'Antler', id: 'antler', logoSrc: '/testimonials/antler_testimonial_logo.png' },
+  { name: 'RMC', id: 'rmc', logoSrc: '/testimonials/rmc_testimonial_logo.png' },
+  { name: 'La Creme', id: 'lacreme', logoSrc: '/testimonials/lacreme_testimonial_logo.png' }
+];
 
 // Enhanced location type with repo information
 interface EnhancedLocation {
@@ -1214,6 +1226,25 @@ export default function HeroSection() {
               </button>
             </form>
             <a href="/discovery" className={styles.primaryBtn}>Discovery Call</a>
+          </div>
+
+          {/* Trusted by logos with marquee animation */}
+          <div className={styles.trustedBy}>
+            <div className={styles.scroller}>
+              <div className={styles.scrollerInner}>
+                {[...partners, ...partners].map((partner, index) => (
+                  <div key={`${partner.id}-${index}`} className={styles.partnerLogo}>
+                    <Image 
+                      src={partner.logoSrc}
+                      alt={`${partner.name} logo`} 
+                      width={120}
+                      height={32}
+                      style={{ objectFit: 'contain' }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 

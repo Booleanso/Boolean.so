@@ -315,6 +315,58 @@
   /* Removed transform: translateY(-2px); */
 }
 
+/* Trusted by section in hero with marquee animation */
+.trustedBy {
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  position: relative;
+  opacity: 0.8;
+}
+
+.scroller {
+  -webkit-mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+  mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent);
+  position: relative;
+  overflow: hidden;
+}
+
+.scrollerInner {
+  display: flex;
+  gap: 3rem;
+  width: max-content;
+  animation: scroll 25s linear infinite;
+}
+
+@keyframes scroll {
+  to {
+    transform: translateX(calc(-50% - 1.5rem)); /* Half the width minus half the gap */
+  }
+}
+
+.partnerLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+  filter: grayscale(100%);
+  flex-shrink: 0;
+}
+
+.partnerLogo:hover {
+  opacity: 1;
+  filter: grayscale(0%);
+}
+
+:global(.dark-theme) .partnerLogo {
+  filter: grayscale(100%) invert(100%) brightness(2);
+}
+
+:global(.dark-theme) .partnerLogo:hover {
+  filter: grayscale(0%) invert(0%) brightness(1);
+}
+
 /* Search form styles */
 .searchForm {
   display: flex;
@@ -697,6 +749,16 @@
     padding: 0 1rem; /* Consistent with desktop, no vertical padding */
     font-size: 14px;
     gap: 0.3rem; /* Smaller gap on mobile */
+  }
+  
+  .trustedBy {
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .scrollerInner {
+    animation-duration: 20s;
+    gap: 2rem;
   }
   
   .locationsLegend ul {
