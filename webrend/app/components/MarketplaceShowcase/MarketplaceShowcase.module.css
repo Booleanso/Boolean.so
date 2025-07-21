@@ -4,6 +4,8 @@
   background-color: #ffffff; /* Changed from light gray to white */
   overflow: hidden;
   position: relative;
+  min-height: 300vh; /* Increased height to cover previous section */
+  margin-top: -20vh; /* Negative margin to overlap with previous section */
 }
 
 .showcaseContent {
@@ -111,8 +113,11 @@
 .imageContainer {
   width: 100%;
   max-width: 1200px;
-  position: relative;
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
   margin-top: 1rem;
+  z-index: 10;
 }
 
 .showcaseImageContainer {
@@ -126,8 +131,10 @@
   position: relative;
   overflow: hidden;
   border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); /* Reduced shadow intensity */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
   aspect-ratio: 16 / 10;
+  transform-origin: center center;
+  will-change: transform, border-radius, box-shadow;
 }
 
 .showcaseImage {
@@ -276,6 +283,7 @@
 @media (max-width: 768px) {
   .showcaseSection {
     padding: 5rem 1.5rem 8rem;
+    min-height: 150vh; /* Shorter on mobile */
   }
   
   .heading {
@@ -305,6 +313,11 @@
   .primaryButton, .secondaryButton {
     width: 100%;
     justify-content: center;
+  }
+  
+  .imageContainer {
+    max-width: 100%;
+    padding: 0 1rem;
   }
 }
 

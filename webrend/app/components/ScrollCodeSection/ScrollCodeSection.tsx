@@ -75,6 +75,8 @@ export default function ScrollCodeSection() {
       // Check if section is actually visible in viewport
       const isInViewport = sectionStart < viewportBottom && sectionEnd > viewportTop;
       
+      // We'll handle fade-out based on progress within the section instead
+      
       if (isInViewport) {
         // Calculate progress through the section (0 to 1)
         const progress = Math.max(0, Math.min(1, (scrollY - sectionStart) / sectionHeight));
@@ -138,7 +140,7 @@ export default function ScrollCodeSection() {
           setShowTerminal(false);
           setTerminalFadingOut(false);
           setIsInstalling(false);
-        } else if (progress >= 0.6 && progress < 0.75) {
+        } else if (progress >= 0.6 && progress < 0.9) {
           // Third phase: Show second message
           if (!showSecondMessage && !showFirstMessage) {
             setShowSecondMessage(true);
@@ -149,8 +151,8 @@ export default function ScrollCodeSection() {
           setShowFirstMessage(false);
           setFirstMessageFadingOut(false);
           setIsInstalling(false);
-        } else if (progress >= 0.75) {
-          // Final phase: Fade out everything
+        } else if (progress >= 0.9) {
+          // Final phase: Fade out second message in last 10% of section
           if (showSecondMessage && !secondMessageFadingOut) {
             setSecondMessageFadingOut(true);
             setTimeout(() => {
