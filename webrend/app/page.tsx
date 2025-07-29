@@ -106,12 +106,13 @@ export default async function Home() {
         <section id="marketplace">
           <MarketplaceShowcase />
         </section>
-        <section id="featured-repos">
-          <FeaturedRepos />
-        </section>
         <section id="marketplace-features">
           <MarketplaceFeatures />
         </section>
+        <section id="featured-repos">
+          <FeaturedRepos />
+        </section>
+        
         <section id="video">
           <VideoSection />
         </section>

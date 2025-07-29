@@ -273,7 +273,7 @@ export default function ScrollCodeSection() {
             {showSecondMessage && (
               <div className={`${styles.messageCard} ${secondMessageFadingOut ? styles.fadeOut : ''}`}>
                 <h2 className={styles.messageTitle}>
-                  It's okay! That is what we are here to handle.
+                  How are you going to build the next big thing if you don't know how to build it?
                 </h2>
               </div>
             )}

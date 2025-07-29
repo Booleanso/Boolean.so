@@ -17,7 +17,9 @@ const services = [
       '/images/services/website-dev-2.png',
       '/images/services/website-dev-3.png'
     ],
-    href: '/services/websites'
+    href: '/services/websites',
+    available: true,
+    slotsLeft: 2
   },
   {
     title: 'Mobile App Development',
@@ -30,7 +32,9 @@ const services = [
       '/images/services/mobile-app-2.png',
       '/images/services/mobile-app-3.png'
     ],
-    href: '/services/apps'
+    href: '/services/apps',
+    available: true,
+    slotsLeft: 4
   },
   {
     title: 'Software Development',
@@ -43,7 +47,9 @@ const services = [
       '/images/services/software-dev-2.png',
       '/images/services/software-dev-3.png'
     ],
-    href: '/services/software'
+    href: '/services/software',
+    available: false,
+    slotsLeft: 0
   },
   {
     title: 'Firmware Development',
@@ -56,7 +62,9 @@ const services = [
       '/images/services/firmware-dev-2.png',
       '/images/services/firmware-dev-3.png'
     ],
-    href: '/services/firmware'
+    href: '/services/firmware',
+    available: false,
+    slotsLeft: 0
   }
 ];
 
@@ -120,18 +128,23 @@ export default function ServicesCardsSection() {
         <div className={styles.servicesGrid}>
           {services.map((service, index) => (
             <Link
-              href={service.href}
+              href={service.available ? service.href : '#'}
               key={index}
               className={`${styles.serviceCard} ${isVisible ? styles.visible : ''} ${
                 hoveredIndex !== null && hoveredIndex !== index ? styles.blurred : ''
-              }`}
+              } ${!service.available ? styles.unavailable : ''}`}
               style={{
                 animationDelay: `${index * 0.1}s`,
                 '--card-gradient': service.gradient,
                 '--card-color': service.color
               } as React.CSSProperties}
-              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseEnter={() => service.available && setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
+              onClick={(e) => {
+                if (!service.available) {
+                  e.preventDefault();
+                }
+              }}
             >
               {/* Icon container */}
               <div className={styles.iconContainer}>
@@ -163,19 +176,16 @@ export default function ServicesCardsSection() {
               {/* Title and description */}
               <h3 className={styles.cardTitle}>{service.title}</h3>
               <p className={styles.cardDescription}>{service.description}</p>
+              
+              {/* Availability pill */}
+              <div className={`${styles.availabilityPill} ${!service.available ? styles.unavailablePill : ''}`}>
+                {service.available 
+                  ? `${service.slotsLeft} slot${service.slotsLeft !== 1 ? 's' : ''} left`
+                  : 'Currently unavailable'
+                }
+              </div>
             </Link>
           ))}
-        </div>
-
-        {/* Call to action */}
-        <div className={`${styles.ctaSection} ${isVisible ? styles.visible : ''}`}>
-          <p className={styles.ctaText}>
-            Ready to bring your ideas to life?
-          </p>
-          <a href="https://calendly.com/webrend/discovery" className={styles.ctaButton} target="_blank" rel="noopener noreferrer">
-            <span>Start Your Project</span>
-            <div className={styles.ctaGlow} />
-          </a>
         </div>
       </div>
     </section>
