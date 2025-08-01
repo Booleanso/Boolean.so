@@ -289,7 +289,6 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   const handleIconClick = (location: EnhancedLocation, index: number, event: MouseEvent) => {
     // Prevent event from bubbling up to other icons or the globe
     event.stopPropagation();
-    event.nativeEvent.stopImmediatePropagation();
     
     // Debug log to confirm which icon was clicked
     console.log(`Clicked icon ${index}: ${location.repoName} at ${location.name}`);
@@ -334,9 +333,6 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   const handlePointerOver = (index: number, event: PointerEvent) => {
     // Prevent propagation to other elements
     event.stopPropagation();
-    if (event.nativeEvent) {
-      event.nativeEvent.stopImmediatePropagation();
-    }
     
     // Only update if not already hovering on this icon
     if (hoveredIcon !== index) {
@@ -350,9 +346,6 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   const handlePointerOut = (event: PointerEvent) => {
     // Prevent propagation to other elements
     event.stopPropagation();
-    if (event.nativeEvent) {
-      event.nativeEvent.stopImmediatePropagation();
-    }
     
     setHoveredIcon(null);
     setIsGlobeRotating(true);
