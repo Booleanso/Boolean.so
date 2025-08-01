@@ -78,7 +78,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   const [hoveredIcon, setHoveredIcon] = useState<number | null>(null);
   const [isGlobeRotating, setIsGlobeRotating] = useState<boolean>(true);
   // const [globeRotationSpeed, setGlobeRotationSpeed] = useState<number>(0.0004);
-  const orbitControlsRef = useRef<THREE.Object3D | null>(null);
+  const orbitControlsRef = useRef<any>(null);
   const iconsRef = useRef<THREE.Group[]>([]);
   const globeGroupRef = useRef<THREE.Group>(null);
   
@@ -286,7 +286,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   };
   
   // Function to handle icon click
-  const handleIconClick = (location: EnhancedLocation, index: number, event: MouseEvent) => {
+  const handleIconClick = (location: EnhancedLocation, index: number, event: any) => {
     // Prevent event from bubbling up to other icons or the globe
     event.stopPropagation();
     
@@ -330,7 +330,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   };
 
   // Event handler for hover detection
-  const handlePointerOver = (index: number, event: PointerEvent) => {
+  const handlePointerOver = (index: number, event: any) => {
     // Prevent propagation to other elements
     event.stopPropagation();
     
@@ -343,7 +343,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   };
   
   // Event handler for hover end
-  const handlePointerOut = (event: PointerEvent) => {
+  const handlePointerOut = (event: any) => {
     // Prevent propagation to other elements
     event.stopPropagation();
     
@@ -897,7 +897,7 @@ export default function HeroSection() {
         console.log(`Found ${repos.length} public repositories to scan`);
         
         // Try to find location.json in each public repo, trying different branch names
-        const publicLocationPromises = repos.map(async (repo: { name: string, clone_url?: string, html_url?: string }) => {
+        const publicLocationPromises = repos.map(async (repo: { name: string, clone_url?: string, html_url?: string, default_branch?: string }) => {
           console.log(`Scanning public repository: ${repo.name}, default branch: ${repo.default_branch || 'unknown'}`);
           
           // Get the default branch name or fallback to common ones
