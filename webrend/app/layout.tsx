@@ -4,6 +4,7 @@ import "./globals.css";
 import NavBar from "./components/NavBar/NavBar";
 import PageTransition from "./components/PageTransition/PageTransition";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
+import SmoothScrollProvider from "./components/SmoothScrollProvider/SmoothScrollProvider";
 import { ThemeProvider } from "./components/ThemeProvider/ThemeProvider";
 import { verifyUser, simplifyUser } from "./utils/auth-utils";
 import ServiceStatus from "./components/ServiceStatus/ServiceStatus";
@@ -35,12 +36,14 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: 'var(--background)' }}>
         <ThemeProvider>
-          <NavBar serverUser={simpleUser} />
-          <ServiceStatus />
-          <PageTransition type="slide-up" duration={0.4}>
-            {children}
-          </PageTransition>
-          <ScrollToTop />
+          <SmoothScrollProvider ease={0.1}>
+            <NavBar serverUser={simpleUser} />
+            <ServiceStatus />
+            <PageTransition type="slide-up" duration={0.4}>
+              {children}
+            </PageTransition>
+            <ScrollToTop />
+          </SmoothScrollProvider>
         </ThemeProvider>
       </body>
     </html>

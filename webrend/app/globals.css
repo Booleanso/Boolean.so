@@ -106,20 +106,32 @@ html {
   -webkit-overflow-scrolling: touch;
   /* Better text rendering during scroll */
   text-rendering: optimizeSpeed;
+  /* Enhanced scroll timeline for CSS scroll-driven animations */
+  scroll-timeline: --page-scroll block;
 }
 
 /* Enhanced smooth scrolling with better performance */
 @media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 80px; /* Account for fixed navbar */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px; /* Account for fixed navbar */
+    }
+    
+    /* Smooth scrolling for all elements */
+    * {
+      scroll-behavior: smooth;
+    }
+    
+    /* Smooth scrolling for anchor links */
+    a[href^="#"] {
+      scroll-behavior: smooth;
+    }
+    
+    /* Enhanced scrolling for containers */
+    section, main, article {
+      scroll-behavior: smooth;
+    }
   }
-  
-  /* Smooth scrolling for all elements */
-  * {
-    scroll-behavior: smooth;
-  }
-}
 
 /* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
@@ -145,6 +157,28 @@ body {
   min-height: 100vh;
   width: 100%;
   padding-top: 80px; /* Account for fixed navbar */
+  /* Enhanced scroll performance */
+  scroll-padding-top: 80px;
+  scroll-behavior: smooth;
+}
+
+/* Enhanced smooth scrolling for better user experience */
+@media (prefers-reduced-motion: no-preference) {
+  /* Disable default smooth scrolling when using custom momentum scroll */
+  html {
+    scroll-behavior: auto;
+  }
+  
+  /* Enhanced momentum scrolling on supported browsers */
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Ensure smooth momentum scrolling works well */
+body {
+  /* Prevent default scroll behaviors that might interfere */
+  overscroll-behavior: none;
 }
 
 /* Explicit styles for light theme */

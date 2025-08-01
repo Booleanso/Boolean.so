@@ -13,6 +13,7 @@ import FAQ from "./components/FAQ/FAQ";
 // import ContactUs from "./components/ContactUs/ContactUs"; // Commented out - "Let's work together" section removed
 import Footer from "./components/Footer/Footer";
 import ScrollCodeSection from "./components/ScrollCodeSection/ScrollCodeSection";
+import StickyTransitionSection from "./components/StickyTransitionSection/StickyTransitionSection";
 
 import { db } from './lib/firebase-admin';
 import { DocumentData, Timestamp } from 'firebase-admin/firestore';
@@ -106,24 +107,21 @@ export default async function Home() {
         <section id="marketplace">
           <MarketplaceShowcase />
         </section>
+        <section id="services-and-portfolio">
+          <StickyTransitionSection sectionHeight="400vh">
+            <ServicesCardsSection />
+            <PortfolioPreview projects={featuredProjects} />
+            <ReviewCrowd />
+          </StickyTransitionSection>
+        </section>
         <section id="marketplace-features">
           <MarketplaceFeatures />
         </section>
-        <section id="featured-repos">
-          <FeaturedRepos />
-        </section>
-        
         <section id="video">
           <VideoSection />
         </section>
-        <section id="services">
-          <ServicesCardsSection />
-        </section>
-        <section id="portfolio">
-          <PortfolioPreview projects={featuredProjects} />
-        </section>
-        <section id="reviews">
-          <ReviewCrowd />
+        <section id="featured-repos">
+          <FeaturedRepos />
         </section>
         <section id="instagram">
           <InstagramFeed />

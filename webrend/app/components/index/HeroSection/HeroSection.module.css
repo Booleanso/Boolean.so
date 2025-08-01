@@ -7,7 +7,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  overflow: hidden; /* Hide all overflow */
+  overflow-y: hidden; /* Only hide vertical overflow, allow horizontal for sticky positioning */
   position: relative;
   box-shadow: 0 100px 200px rgba(255, 255, 255, 0.8), 
               0 150px 300px rgba(255, 255, 255, 0.6),
