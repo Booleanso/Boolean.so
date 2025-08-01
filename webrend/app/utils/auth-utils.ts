@@ -21,7 +21,20 @@ export async function verifyUser() {
       return null;
     }
 
-    const cookieStore = await cookies();
+    // During static generation, cookies() will throw an error
+    // We need to handle this gracefully
+    let cookieStore;
+    try {
+      cookieStore = await cookies();
+    } catch (error) {
+      // This happens during static generation - no cookies available
+      if (error && typeof error === 'object' && 'digest' in error && error.digest === 'DYNAMIC_SERVER_USAGE') {
+        console.log('Static generation detected, skipping authentication check');
+        return null;
+      }
+      throw error; // Re-throw if it's a different error
+    }
+
     const sessionCookie = cookieStore.get('session')?.value;
     
     if (!sessionCookie) {
