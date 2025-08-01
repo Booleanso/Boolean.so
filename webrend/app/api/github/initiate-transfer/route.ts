@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Verify the session cookie to get the user ID
-    const decodedClaims = await auth.verifySessionCookie(sessionCookie);
+    const decodedClaims = await auth!.verifySessionCookie(sessionCookie);
     const buyerId = decodedClaims.uid;
     
     if (!buyerId) {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Get purchase details
-    const purchaseDoc = await db.collection('purchases').doc(purchaseId).get();
+    const purchaseDoc = await db!.collection('purchases').doc(purchaseId).get();
     
     if (!purchaseDoc.exists) {
       return NextResponse.json(
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Get listing details
-    const listingDoc = await db.collection('listings').doc(documentId).get();
+    const listingDoc = await db!.collection('listings').doc(documentId).get();
     
     if (!listingDoc.exists) {
       return NextResponse.json(
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       });
       
       // Create a self-purchase transaction record
-      const transactionRef = await db.collection('transactions').add({
+      const transactionRef = await db!.collection('transactions').add({
         listingId,
         repoId,
         sellerId,
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
       purchaseId
     };
     
-    const transactionRef = await db.collection('transactions').add(transactionData);
+    const transactionRef = await db!.collection('transactions').add(transactionData);
     
     // Call the transfer API
     const transferResponse = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/github/transfer`, {

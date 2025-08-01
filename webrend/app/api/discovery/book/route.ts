@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { google } from 'googleapis';
+import { google, calendar_v3 } from 'googleapis';
 
 interface BookingRequest {
   name: string;
@@ -38,7 +38,8 @@ function getCalendarClient() {
 // Convert time string to 24-hour format
 function convertTo24Hour(timeStr: string): string {
   const [time, modifier] = timeStr.split(' ');
-  let [hours, minutes] = time.split(':');
+  const [hoursStr, minutes] = time.split(':');
+  let hours = hoursStr;
   
   if (hours === '12') {
     hours = '00';
@@ -52,7 +53,7 @@ function convertTo24Hour(timeStr: string): string {
 }
 
 // Create calendar event
-async function createCalendarEvent(calendar: any, bookingData: BookingRequest) {
+async function createCalendarEvent(calendar: calendar_v3.Calendar, bookingData: BookingRequest) {
   const { 
     name, 
     email, 

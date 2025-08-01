@@ -113,7 +113,7 @@ export const isElementInViewport = (element: HTMLElement): boolean => {
 // Enhanced scroll event listener with throttling
 export const addScrollListener = (
   callback: (scrollY: number, progress: number) => void,
-  throttleMs: number = 16
+  // _throttleMs: number = 16
 ): (() => void) => {
   let ticking = false;
   

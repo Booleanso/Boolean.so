@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-// Instagram Graph API configuration
-const INSTAGRAM_ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN;
-const INSTAGRAM_USER_ID = process.env.INSTAGRAM_USER_ID;
+// Instagram Graph API configuration (legacy - now using individual account tokens)
+// const INSTAGRAM_ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN;
+// const INSTAGRAM_USER_ID = process.env.INSTAGRAM_USER_ID;
 
 // Account information for the two Instagram accounts
 const ACCOUNTS = {
@@ -30,6 +30,16 @@ interface InstagramPost {
   account: string;
 }
 
+interface InstagramMediaResponse {
+  id: string;
+  caption?: string;
+  media_type: string;
+  media_url: string;
+  thumbnail_url?: string;
+  permalink: string;
+  timestamp: string;
+}
+
 async function fetchInstagramPosts(account: string, userId: string, accessToken: string): Promise<InstagramPost[]> {
   try {
     const response = await fetch(
@@ -48,7 +58,7 @@ async function fetchInstagramPosts(account: string, userId: string, accessToken:
 
     const data = await response.json();
     
-    return data.data.map((post: any) => ({
+    return data.data.map((post: InstagramMediaResponse) => ({
       id: post.id,
       caption: post.caption || '',
       media_type: post.media_type,

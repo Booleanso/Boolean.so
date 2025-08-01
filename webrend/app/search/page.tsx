@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -39,7 +39,7 @@ interface PortfolioProject {
 
 type SearchResult = MarketplaceListing | PortfolioProject;
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   
@@ -100,7 +100,7 @@ export default function SearchPage() {
         const marketplaceListings = marketplaceData.listings || [];
         
         // Fetch real portfolio projects from API
-        let portfolioProjects: any[] = [];
+        let portfolioProjects: PortfolioProject[] = [];
         try {
           const portfolioResponse = await fetch('/api/portfolio/projects');
           if (portfolioResponse.ok) {
@@ -130,11 +130,11 @@ export default function SearchPage() {
         
         // Filter marketplace listings based on search query
         const filteredMarketplaceListings = marketplaceListings
-          .filter((listing: any) => 
+          .filter((listing: MarketplaceListing) => 
             listing.name.toLowerCase().includes(query.toLowerCase()) || 
             listing.description.toLowerCase().includes(query.toLowerCase())
           )
-          .map((listing: any) => ({
+          .map((listing: MarketplaceListing) => ({
             ...listing,
             type: 'marketplace'
           }));
@@ -388,5 +388,37 @@ export default function SearchPage() {
         </>
       )}
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function SearchLoading() {
+  return (
+    <div className={styles.searchContainer}>
+      <div className={styles.header}>
+        <h1>Search Results</h1>
+      </div>
+      <div className={styles.loading}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin" style={{ animation: 'spin 1s linear infinite', marginRight: '0.5rem' }}>
+          <line x1="12" y1="2" x2="12" y2="6"></line>
+          <line x1="12" y1="18" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+          <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+          <line x1="2" y1="12" x2="6" y2="12"></line>
+          <line x1="18" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+          <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+        </svg>
+        Loading search page...
+      </div>
+    </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchLoading />}>
+      <SearchPageContent />
+    </Suspense>
   );
 } 

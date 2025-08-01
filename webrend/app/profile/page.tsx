@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FaGithub } from 'react-icons/fa';
 import { FiRefreshCw, FiSun, FiMoon, FiMonitor } from 'react-icons/fi';
 import Image from 'next/image';
 import Link from 'next/link';
-import styles from './profile.module.scss';
+import styles from './profile.module.css';
 import { auth } from '../lib/firebase-client';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { useTheme } from '../components/ThemeProvider/ThemeProvider';
@@ -145,7 +145,7 @@ export default function ProfilePage() {
     }
 
     return () => unsubscribe();
-  }, []);
+  }, [fetchGithubRepos, fetchPurchasedRepos, fetchUserDetails, fetchListedRepos, checkStripeStatus]);
 
   // Add a new effect to refresh listings when mounting
   // This catches any new listings created since the last visit
@@ -154,10 +154,10 @@ export default function ProfilePage() {
     if (user && !loading) {
       fetchListedRepos();
     }
-  }, [user, loading]);
+  }, [user, loading, fetchListedRepos]);
 
   // Fetch user details using the Admin API endpoint
-  const fetchUserDetails = async () => {
+  const fetchUserDetails = useCallback(async () => {
     try {
       const response = await fetch('/api/user/get-current');
       
@@ -184,9 +184,9 @@ export default function ProfilePage() {
     } catch (err) {
       console.error('Error fetching user details:', err);
     }
-  };
+  }, []);
 
-  const fetchGithubRepos = async () => {
+  const fetchGithubRepos = useCallback(async () => {
     try {
       setReposLoading(true);
       setError(null);
@@ -215,9 +215,9 @@ export default function ProfilePage() {
     } finally {
       setReposLoading(false);
     }
-  };
+  }, []);
 
-  const fetchPurchasedRepos = async (retryCount = 0) => {
+  const fetchPurchasedRepos = useCallback(async (retryCount = 0) => {
     try {
       setPurchasesLoading(true);
       setError(null); // Clear any previous errors
@@ -257,9 +257,9 @@ export default function ProfilePage() {
     } finally {
       setPurchasesLoading(false);
     }
-  };
+  }, []);
 
-  const fetchListedRepos = async () => {
+  const fetchListedRepos = useCallback(async () => {
     try {
       setListedReposLoading(true);
       
@@ -329,9 +329,9 @@ export default function ProfilePage() {
     } finally {
       setListedReposLoading(false);
     }
-  };
+  }, [user]);
 
-  const checkStripeStatus = async () => {
+  const checkStripeStatus = useCallback(async () => {
     try {
       setStripeLoading(true);
       
@@ -397,7 +397,7 @@ export default function ProfilePage() {
     } finally {
       setStripeLoading(false);
     }
-  };
+  }, [username, user]);
 
   const handleBankDetailsSave = async () => {
     // Save the bank details to Firestore via API

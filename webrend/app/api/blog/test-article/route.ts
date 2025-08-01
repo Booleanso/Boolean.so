@@ -4,7 +4,7 @@ import { db } from '../../../lib/firebase-admin';
 export async function GET() {
   try {
     // Check if the test article already exists
-    const testArticleQuery = await db.collection('articles')
+    const testArticleQuery = await db!.collection('articles')
       .where('slug', '==', 'getting-started-with-webrend')
       .limit(1)
       .get();
@@ -149,7 +149,7 @@ Ready to take your skills further? Explore our documentation and tutorials to le
     };
     
     // Add to Firestore
-    const docRef = await db.collection('articles').add(testArticle);
+    const docRef = await db!.collection('articles').add(testArticle);
     
     return NextResponse.json({
       success: true,

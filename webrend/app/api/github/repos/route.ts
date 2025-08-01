@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     // Verify the session cookie to get the user
     let decodedClaims;
     try {
-      decodedClaims = await auth.verifySessionCookie(sessionCookie);
+      decodedClaims = await auth!.verifySessionCookie(sessionCookie);
     } catch (sessionError) {
       console.error('GitHub repos: Failed to verify session:', sessionError);
       return NextResponse.json(
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     console.log(`GitHub repos: Getting repos for user ${userId}`);
 
     // Get the user document to check GitHub connection
-    const userDoc = await db.collection('customers').doc(userId).get();
+    const userDoc = await db!.collection('customers').doc(userId).get();
     
     if (!userDoc.exists) {
       console.log(`GitHub repos: User document not found for ${userId}`);
@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
           const newAuthMethod = authMethod.toLowerCase() === 'bearer' ? 'token' : 'bearer';
           console.log(`GitHub repos: Updating auth method to ${newAuthMethod}`);
           
-          await db.collection('customers').doc(userId).update({
+          await db!.collection('customers').doc(userId).update({
             githubTokenType: newAuthMethod
           });
           
@@ -158,7 +158,7 @@ export async function GET(request: NextRequest) {
           
           // Clear the invalid token
           console.log('GitHub repos: Token is invalid, clearing from database');
-          await db.collection('customers').doc(userId).update({
+          await db!.collection('customers').doc(userId).update({
             githubAccessToken: null,
             githubConnectedAt: null,
             githubDisconnectedAt: new Date().toISOString()
@@ -212,7 +212,7 @@ export async function GET(request: NextRequest) {
       if (apiError instanceof Error && 
           (apiError.message.includes('401') || apiError.message.includes('Unauthorized'))) {
         // Clear the token so user can reconnect
-        await db.collection('customers').doc(userId).update({
+        await db!.collection('customers').doc(userId).update({
           githubAccessToken: null,
           githubConnectedAt: null,
           githubDisconnectedAt: new Date().toISOString()

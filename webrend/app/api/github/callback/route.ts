@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
     };
     
     try {
-      await db.collection('customers').doc(userId).set(userData, { merge: true });
+      await db!.collection('customers').doc(userId).set(userData, { merge: true });
       console.log('GitHub callback: Successfully stored GitHub data in Firestore');
     } catch (dbError) {
       console.error('GitHub callback: Error storing data in Firestore', dbError);

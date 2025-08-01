@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/app/lib/firebase-admin';
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function GET(
@@ -12,15 +12,16 @@ export async function GET(
   context: RouteContext
 ) {
   try {
-    // Access the slug directly from the context
-    const slug = context.params.slug;
+    // Await params before accessing properties
+    const params = await context.params;
+    const slug = params.slug;
     
     if (!slug) {
       return NextResponse.json({ error: "Slug is required" }, { status: 400 });
     }
     
     // Try to fetch by slug first
-    let listingQuery = await db.collection('listings').where('slug', '==', slug).limit(1).get();
+    const listingQuery = await db.collection('listings').where('slug', '==', slug).limit(1).get();
     
     // If not found by slug, try to fetch directly by ID (for backward compatibility)
     if (listingQuery.empty) {

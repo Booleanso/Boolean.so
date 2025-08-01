@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import styles from './success.module.scss';
 
-export default function SuccessPage() {
+function SuccessPageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [transactionDetails, setTransactionDetails] = useState<{
@@ -126,5 +126,22 @@ export default function SuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function SuccessPageLoading() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.loadingSpinner}>Loading success page...</div>
+    </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<SuccessPageLoading />}>
+      <SuccessPageContent />
+    </Suspense>
   );
 } 

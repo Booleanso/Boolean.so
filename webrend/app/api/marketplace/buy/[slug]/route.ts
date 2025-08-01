@@ -26,12 +26,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 
 export async function POST(
   req: NextRequest,
-  context: { params: { slug: string } }
+  context: { params: Promise<{ slug: string }> }
 ) {
   // Await params before accessing properties
   const params = await context.params;
   
-  return withAuth(req, async (userId, data) => {
+  return withAuth(req, async (userId) => {
     try {
       // Use slug instead of id to match the route parameter
       const slug = params.slug;

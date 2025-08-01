@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import styles from './VideoSection.module.css';
 
 export default function VideoSection() {
@@ -80,7 +80,7 @@ export default function VideoSection() {
             <div className={styles.cardContent}>
               <h3 className={styles.featureTitle}>Global Reach</h3>
               <p className={styles.featureDescription}>
-                Connect with buyers across the globe looking for exactly what you've built, expanding your market reach.
+                Connect with buyers across the globe looking for exactly what you&apos;ve built, expanding your market reach.
               </p>
             </div>
           </div>

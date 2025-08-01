@@ -1,8 +1,8 @@
 // /api/lib/firebase-admin.ts
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import { getAuth } from 'firebase-admin/auth';
-import { getStorage } from 'firebase-admin/storage';
+import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
+import { getFirestore, Firestore } from 'firebase-admin/firestore';
+import { getAuth, Auth } from 'firebase-admin/auth';
+import { getStorage, Storage } from 'firebase-admin/storage';
 
 // Environment variables with fallbacks
 const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'webrend-fallback';
@@ -18,95 +18,66 @@ const hasValidFirebaseConfig = !!(
   process.env.FIREBASE_STORAGE_BUCKET
 );
 
-let app: any = null;
-let db: any = null;
-let auth: any = null;
-let storage: any = null;
+let app: App | null = null;
+let db: Firestore | null = null;
+let auth: Auth | null = null;
+let storage: Storage | null = null;
 
-if (hasValidFirebaseConfig) {
-  try {
-    const privateKey = FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');
-
-    const firebaseAdminConfig = {
-      credential: cert({
-        projectId: FIREBASE_PROJECT_ID,
-        clientEmail: FIREBASE_CLIENT_EMAIL,
-        privateKey: privateKey,
-      }),
-      storageBucket: FIREBASE_STORAGE_BUCKET
-    };
-
-    /**
-     * Gets or initializes the Firebase Admin app
-     * @returns The Firebase Admin app instance
-     */
-    function getOrInitializeApp() {
-      return !getApps().length ? initializeApp(firebaseAdminConfig) : getApps()[0];
-    }
-
-    app = getOrInitializeApp();
-    db = getFirestore(app);
-    auth = getAuth(app);
-    storage = getStorage(app);
-  } catch (error) {
-    console.warn('Firebase Admin initialization failed. Running in fallback mode:', error);
-    if (hasValidFirebaseConfig) {
-      console.warn('This is expected if Firebase environment variables are not properly configured.');
-    }
-  }
+if (!hasValidFirebaseConfig) {
+  console.error('Firebase configuration is missing!', {
+    projectId: !!process.env.FIREBASE_PROJECT_ID,
+    clientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: !!process.env.FIREBASE_PRIVATE_KEY,
+    storageBucket: !!process.env.FIREBASE_STORAGE_BUCKET
+  });
+  throw new Error('Firebase configuration is incomplete. Check your environment variables.');
 }
 
-// Create mock implementations for when Firebase is not available
-const mockFirestore = {
-  collection: () => ({
-    doc: () => ({
-      get: () => Promise.resolve({ exists: false, data: () => null }),
-      set: () => Promise.resolve(),
-      update: () => Promise.resolve(),
-      delete: () => Promise.resolve(),
+try {
+  const privateKey = FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');
+
+  const firebaseAdminConfig = {
+    credential: cert({
+      projectId: FIREBASE_PROJECT_ID,
+      clientEmail: FIREBASE_CLIENT_EMAIL,
+      privateKey: privateKey,
     }),
-    add: () => Promise.resolve({ id: 'mock-id' }),
-    get: () => Promise.resolve({ docs: [], empty: true }),
-    where: () => mockFirestore.collection(),
-    orderBy: () => mockFirestore.collection(),
-    limit: () => mockFirestore.collection(),
-  }),
-  doc: () => mockFirestore.collection().doc(),
-  runTransaction: (callback: any) => Promise.resolve(callback({ 
-    get: () => Promise.resolve({ exists: false }), 
-    set: () => {}, 
-    update: () => {}, 
-    delete: () => {} 
-  })),
-};
+    storageBucket: FIREBASE_STORAGE_BUCKET
+  };
 
-const mockAuth = {
-  verifySessionCookie: () => Promise.reject(new Error('Firebase Auth not configured')),
-  getUser: () => Promise.reject(new Error('Firebase Auth not configured')),
-  createSessionCookie: () => Promise.reject(new Error('Firebase Auth not configured')),
-  verifyIdToken: () => Promise.reject(new Error('Firebase Auth not configured')),
-};
+  /**
+   * Gets or initializes the Firebase Admin app
+   * @returns The Firebase Admin app instance
+   */
+  function getOrInitializeApp() {
+    return !getApps().length ? initializeApp(firebaseAdminConfig) : getApps()[0];
+  }
 
-const mockStorage = {
-  bucket: () => ({
-    file: () => ({
-      save: () => Promise.resolve(),
-      download: () => Promise.reject(new Error('Firebase Storage not configured')),
-      delete: () => Promise.resolve(),
-      getSignedUrl: () => Promise.reject(new Error('Firebase Storage not configured')),
-    }),
-  }),
-};
+  app = getOrInitializeApp();
+  db = getFirestore(app);
+  auth = getAuth(app);
+  storage = getStorage(app);
+} catch (error) {
+  console.error('Firebase Admin initialization FAILED:', error);
+  console.error('Environment check:', {
+    hasValidConfig: hasValidFirebaseConfig,
+    projectId: !!process.env.FIREBASE_PROJECT_ID,
+    clientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: !!process.env.FIREBASE_PRIVATE_KEY,
+    storageBucket: !!process.env.FIREBASE_STORAGE_BUCKET
+  });
+  throw error; // Don't silently fail
+}
 
-// Export either real Firebase instances or mocks
-const finalDb = db || mockFirestore;
-const finalAuth = auth || mockAuth;
-const finalStorage = storage || mockStorage;
+// Export real Firebase instances (guaranteed to exist or app would crash)
+if (!db || !auth || !storage) {
+  throw new Error('Firebase services failed to initialize');
+}
 
 export { 
-  finalDb as db, 
-  finalAuth as auth, 
-  finalStorage as storage,
+  db, 
+  auth, 
+  storage,
   hasValidFirebaseConfig 
 };
 

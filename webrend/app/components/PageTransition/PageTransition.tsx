@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
 import { smoothScrollTo } from '../../utils/smooth-scroll';
@@ -25,8 +25,8 @@ export default function PageTransition({
   const previousPathnameRef = useRef<string>('');
   
   // Transition configurations
-  const getTransitionProps = (direction: 'in' | 'out') => {
-    const fadeAmount = 0;
+  const getTransitionProps = useCallback((direction: 'in' | 'out') => {
+    // const fadeAmount = 0;
     const slideAmount = 15;
     const baseDuration = direction === 'in' ? duration : duration * 0.6;
     
@@ -57,7 +57,7 @@ export default function PageTransition({
           ease: direction === 'in' ? 'power2.out' : 'power2.in'
         };
     }
-  };
+  }, [type, duration]);
   
   // Handle initial page load animation
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function PageTransition({
     });
     
     return () => ctx.revert();
-  }, []);
+  }, [getTransitionProps]);
   
   // Handle route changes
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function PageTransition({
     previousPathnameRef.current = pathname;
     
     return () => ctx.revert();
-  }, [pathname, isFirstRender, type, duration]);
+  }, [pathname, isFirstRender, type, duration, getTransitionProps]);
   
   // Handle page exit on navigation away from site
   useEffect(() => {
@@ -146,7 +146,7 @@ export default function PageTransition({
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [type, duration]);
+  }, [type, duration, getTransitionProps]);
   
   return (
     <div ref={pageRef} className={styles.pageTransition}>

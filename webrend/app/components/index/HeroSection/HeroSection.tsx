@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense, useCallback, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Billboard, Text, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -68,8 +68,8 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   const [alarmColor, setAlarmColor] = useState<THREE.Color>(new THREE.Color("#FF0000")); // Start with red
   const [alarmIntensity, setAlarmIntensity] = useState<number>(1.0); // For pulsating effect
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-  const [lightsError, setLightsError] = useState<string | null>(null);
-  const isInitialMount = useRef(true);
+  // const [lightsError, setLightsError] = useState<string | null>(null);
+  // const isInitialMount = useRef(true);
   
   // State to track which icons are in the central view
   const [centeredIcons, setCenteredIcons] = useState<Record<number, number>>({});
@@ -77,30 +77,22 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   // State for hover effects
   const [hoveredIcon, setHoveredIcon] = useState<number | null>(null);
   const [isGlobeRotating, setIsGlobeRotating] = useState<boolean>(true);
-  const [globeRotationSpeed, setGlobeRotationSpeed] = useState<number>(0.0004);
-  const orbitControlsRef = useRef<any>(null);
+  // const [globeRotationSpeed, setGlobeRotationSpeed] = useState<number>(0.0004);
+  const orbitControlsRef = useRef<THREE.Object3D | null>(null);
   const iconsRef = useRef<THREE.Group[]>([]);
   const globeGroupRef = useRef<THREE.Group>(null);
   
   // Direct access to the texture loader
-  const textureLoader = new THREE.TextureLoader();
+  const textureLoader = useMemo(() => new THREE.TextureLoader(), []);
   const dayTexturePath = '/earth-blue-marble.jpg';
   const nightTexturePath = '/earth-night.jpg';
   const cityLightsPath = '/earth-city-lights.jpg';
-  const topologyPath = '/earth-topology.jpg';
+  // const topologyPath = '/earth-topology.jpg';
   const cloudsPath = '/earth-clouds.png';
   const specularPath = '/earth-specular.jpg';
 
-  // This effect runs once on mount to load the correct texture based on theme
-  useEffect(() => {
-    // First-time setup for correct theme
-    const isDark = document.documentElement.classList.contains('dark-theme');
-    setIsDarkMode(isDark);
-    loadGlobeTextures(isDark);
-  }, []);
-
   // Separate function to load globe textures
-  const loadGlobeTextures = (isDark: boolean) => {
+  const loadGlobeTextures = useCallback((isDark: boolean) => {
     console.log(`Loading ${isDark ? 'dark' : 'light'} mode textures...`);
     
     if (!globeRef.current) return;
@@ -202,7 +194,15 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
         }
       );
     }
-  };
+  }, [textureLoader]);
+
+  // This effect runs once on mount to load the correct texture based on theme
+  useEffect(() => {
+    // First-time setup for correct theme
+    const isDark = document.documentElement.classList.contains('dark-theme');
+    setIsDarkMode(isDark);
+    loadGlobeTextures(isDark);
+  }, [loadGlobeTextures]);
 
   // Check for dark mode on mount and theme changes
   useEffect(() => {
@@ -259,7 +259,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
       document.documentElement.removeEventListener('theme-check', handleThemeCheck);
       observer.disconnect();
     };
-  }, [isDarkMode]);
+  }, [isDarkMode, loadGlobeTextures]);
   
   // Spring animation for globe rotation slowdown
   const { rotationSpeedSpring } = useSpring({
@@ -268,11 +268,11 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   });
   
   // References for cloud animation
-  const cloudRotationRef = useRef<number>(0);
-  const cloudDriftXRef = useRef<number>(0);
-  const cloudDriftZRef = useRef<number>(0);
-  const cloudPulseRef = useRef<number>(0);
-  const timeOffsetRef = useRef<number>(Math.random() * 10000);
+  // const cloudRotationRef = useRef<number>(0);
+  // const cloudDriftXRef = useRef<number>(0);
+  // const cloudDriftZRef = useRef<number>(0);
+  // const cloudPulseRef = useRef<number>(0);
+  // const timeOffsetRef = useRef<number>(Math.random() * 10000);
   
   // Router for navigation
   const router = useRouter();
@@ -286,7 +286,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   };
   
   // Function to handle icon click
-  const handleIconClick = (location: EnhancedLocation, index: number, event: any) => {
+  const handleIconClick = (location: EnhancedLocation, index: number, event: MouseEvent) => {
     // Prevent event from bubbling up to other icons or the globe
     event.stopPropagation();
     event.nativeEvent.stopImmediatePropagation();
@@ -331,7 +331,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   };
 
   // Event handler for hover detection
-  const handlePointerOver = (index: number, event: any) => {
+  const handlePointerOver = (index: number, event: PointerEvent) => {
     // Prevent propagation to other elements
     event.stopPropagation();
     if (event.nativeEvent) {
@@ -347,7 +347,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   };
   
   // Event handler for hover end
-  const handlePointerOut = (event: any) => {
+  const handlePointerOut = (event: PointerEvent) => {
     // Prevent propagation to other elements
     event.stopPropagation();
     if (event.nativeEvent) {
@@ -370,9 +370,9 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
         const theta = (location.lng + 180) * (Math.PI / 180);
         
         // Calculate position
-        const x = -(3 * Math.sin(phi) * Math.cos(theta));
+        // const x = -(3 * Math.sin(phi) * Math.cos(theta));
         const z = 3 * Math.sin(phi) * Math.sin(theta);
-        const y = 3 * Math.cos(phi);
+        // const y = 3 * Math.cos(phi);
         
         // Determine if the point is visible in the current view
         // Front of the globe is more visible (has a larger z value)
@@ -479,8 +479,8 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
   // Alarm blinking effect with smooth fade
   useEffect(() => {
     let fadeTimer: number;
-    let redColor = new THREE.Color("#FF0000");
-    let blackColor = new THREE.Color("#000000");
+    const redColor = new THREE.Color("#FF0000");
+    const blackColor = new THREE.Color("#000000");
     let targetColor = blackColor;
     let transitionProgress = 0;
     
@@ -625,20 +625,19 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
           const baseScaleFactor = centeredIcons[index] || 1;
           
           // Create animated scaling when hovered
-          const { iconScale } = useSpring({
-            iconScale: isHovered ? baseScaleFactor * 1.3 : baseScaleFactor, // Increased scale factor for more visible hover effect
-            config: { mass: 2, tension: 170, friction: 26 }
-          });
+          // const { iconScale } = useSpring({
+          //   iconScale: isHovered ? baseScaleFactor * 1.3 : baseScaleFactor, // Increased scale factor for more visible hover effect
+          //   config: { mass: 2, tension: 170, friction: 26 }
+          // });
+          const iconScale = isHovered ? baseScaleFactor * 1.3 : baseScaleFactor;
           
           // No truncation - display full name
           const displayName = location.name;
           
           // Create shape based on repo type
-          const isPrivate = location.isPrivate;
-          let iconShape;
-          
+          // const isPrivate = location.isPrivate;
           // Use rounded rect for all repos (both public and private)
-          iconShape = createRoundedRectShape(0.15, 0.15, 0.03);
+          const iconShape = createRoundedRectShape(0.15, 0.15, 0.03);
           
           // Check if we have a loaded icon texture for this location
           const hasCustomIcon = loadedIcons[location.repoName] !== undefined && loadedIcons[location.repoName] !== null;
@@ -905,7 +904,7 @@ export default function HeroSection() {
         console.log(`Found ${repos.length} public repositories to scan`);
         
         // Try to find location.json in each public repo, trying different branch names
-        const publicLocationPromises = repos.map(async (repo: any) => {
+        const publicLocationPromises = repos.map(async (repo: { name: string, clone_url?: string, html_url?: string }) => {
           console.log(`Scanning public repository: ${repo.name}, default branch: ${repo.default_branch || 'unknown'}`);
           
           // Get the default branch name or fallback to common ones
@@ -953,7 +952,7 @@ export default function HeroSection() {
                 }
               }
               // If we get here without returning, this branch didn't have a valid location.json
-            } catch (error) {
+            } catch {
               // Only log 404s if in the last branch attempt
               if (branch === branchesToTry[branchesToTry.length - 1]) {
                 console.log(`❌ No location.json found in ${repo.name} on any branch`);

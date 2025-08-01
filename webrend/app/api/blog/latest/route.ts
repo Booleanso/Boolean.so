@@ -20,7 +20,7 @@ type FirestoreTimestamp = {
 export async function GET() {
   try {
     // Fetch the latest articles
-    const articlesSnapshot = await db.collection('articles')
+    const articlesSnapshot = await db!.collection('articles')
       .orderBy('publishedAt', 'desc')
       .limit(3) // Limit to 3 latest articles
       .get();

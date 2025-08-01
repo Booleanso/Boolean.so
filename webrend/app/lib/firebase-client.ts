@@ -1,8 +1,8 @@
 // lib/firebase-client.ts
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 // Check if we have valid Firebase client configuration
 const hasValidFirebaseClientConfig = !!(
@@ -21,10 +21,10 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-ABCDEF1234'
 };
 
-let app: any = null;
-let firebaseAuth: any = null;
-let firebaseDb: any = null;
-let firebaseStorage: any = null;
+let app: FirebaseApp | null = null;
+let firebaseAuth: Auth | null = null;
+let firebaseDb: Firestore | null = null;
+let firebaseStorage: FirebaseStorage | null = null;
 
 // Only initialize Firebase if we have valid configuration
 if (hasValidFirebaseClientConfig) {
@@ -44,7 +44,7 @@ if (hasValidFirebaseClientConfig) {
 // Create mock implementations for when Firebase is not available
 const mockAuth = {
   currentUser: null,
-  onAuthStateChanged: (callback: any) => {
+  onAuthStateChanged: (callback: (user: unknown) => void) => {
     callback(null);
     return () => {}; // unsubscribe function
   },
@@ -60,7 +60,7 @@ const mockFirestore = {
       set: () => Promise.resolve(),
       update: () => Promise.resolve(),
       delete: () => Promise.resolve(),
-      onSnapshot: (callback: any) => {
+      onSnapshot: (callback: (snapshot: { exists: boolean; data: () => unknown }) => void) => {
         callback({ exists: false, data: () => null });
         return () => {}; // unsubscribe function
       },
@@ -70,7 +70,7 @@ const mockFirestore = {
     where: () => mockFirestore.collection(),
     orderBy: () => mockFirestore.collection(),
     limit: () => mockFirestore.collection(),
-    onSnapshot: (callback: any) => {
+    onSnapshot: (callback: (snapshot: { docs: unknown[]; empty: boolean }) => void) => {
       callback({ docs: [], empty: true });
       return () => {}; // unsubscribe function
     },

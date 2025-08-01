@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     // Verify the session cookie with Firebase Admin
     let decodedClaims;
     try {
-      decodedClaims = await auth.verifySessionCookie(sessionCookie);
+      decodedClaims = await auth!.verifySessionCookie(sessionCookie);
     } catch (error) {
       console.error('Error verifying session cookie:', error);
       return NextResponse.json(

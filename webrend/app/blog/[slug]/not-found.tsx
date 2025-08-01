@@ -6,7 +6,7 @@ export default function ArticleNotFound() {
     <div className={styles.container}>
       <div className={styles.errorContainer}>
         <h1>Article Not Found</h1>
-        <p>We couldn't find the article you're looking for.</p>
+        <p>We couldn&apos;t find the article you&apos;re looking for.</p>
         <p>It may have been moved, deleted, or never existed.</p>
         
         <div className={styles.relatedSection}>

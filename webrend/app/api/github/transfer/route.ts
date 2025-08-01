@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Verify the session cookie to get the buyer's user ID
-    const decodedClaims = await auth.verifySessionCookie(sessionCookie);
+    const decodedClaims = await auth!.verifySessionCookie(sessionCookie);
     const buyerId = decodedClaims.uid;
     
     if (!buyerId) {
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     console.log(`GitHub transfer: Transferring repo ${repoId} from ${sellerId} to ${buyerId}, type: ${isSinglePurchase ? 'one-time purchase' : 'subscription'}`);
 
     // Get buyer and seller GitHub information
-    const buyerDoc = await db.collection('customers').doc(buyerId).get();
+    const buyerDoc = await db!.collection('customers').doc(buyerId).get();
     if (!buyerDoc.exists) {
       return NextResponse.json(
         { error: 'Buyer account not found' },
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
     const buyerData = buyerDoc.data() || {};
     
-    const sellerDoc = await db.collection('customers').doc(sellerId).get();
+    const sellerDoc = await db!.collection('customers').doc(sellerId).get();
     if (!sellerDoc.exists) {
       return NextResponse.json(
         { error: 'Seller account not found' },
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       
       // Update transaction with self-purchase status
       if (transactionId) {
-        await db.collection('transactions').doc(transactionId).update({
+        await db!.collection('transactions').doc(transactionId).update({
           type: 'repository_self_purchase',
           transferStatus: 'not_applicable',
           note: 'Self-purchase: Repository already owned by buyer',
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get repository details from database
-    const repoDoc = await db.collection('repositories').doc(repoId).get();
+    const repoDoc = await db!.collection('repositories').doc(repoId).get();
     if (!repoDoc.exists) {
       return NextResponse.json(
         { error: 'Repository not found' },
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
         const transferResult = await transferResponse.json();
         
         // Record the transaction in Firestore
-        await db.collection('transactions').doc(transactionId).update({
+        await db!.collection('transactions').doc(transactionId).update({
           type: 'repository_transfer',
           githubTransferId: transferResult.id,
           transferStatus: 'initiated',
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
         });
         
         // Update repository ownership in database
-        await db.collection('repositories').doc(repoId).update({
+        await db!.collection('repositories').doc(repoId).update({
           ownerUserId: buyerId,
           previousOwnerUserId: sellerId,
           transferredAt: new Date().toISOString()
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
         
         // Update transaction with error
         if (transactionId) {
-          await db.collection('transactions').doc(transactionId).update({
+          await db!.collection('transactions').doc(transactionId).update({
             transferStatus: 'failed',
             transferError: error instanceof Error ? error.message : 'Unknown error',
             updatedAt: new Date().toISOString()
@@ -200,7 +200,7 @@ export async function POST(request: NextRequest) {
         
         // Update transaction with collaboration status
         if (transactionId) {
-          await db.collection('transactions').doc(transactionId).update({
+          await db!.collection('transactions').doc(transactionId).update({
             collaborationStatus: 'added',
             collaborationAddedAt: new Date().toISOString()
           });
@@ -216,7 +216,7 @@ export async function POST(request: NextRequest) {
         
         // Update transaction with error
         if (transactionId) {
-          await db.collection('transactions').doc(transactionId).update({
+          await db!.collection('transactions').doc(transactionId).update({
             collaborationStatus: 'failed',
             collaborationError: error instanceof Error ? error.message : 'Unknown error',
             updatedAt: new Date().toISOString()

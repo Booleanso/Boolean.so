@@ -116,7 +116,7 @@ export default function UserMarketplace() {
       ) : listings.length === 0 ? (
         <div className={marketplaceStyles.emptyState}>
           <h2>No repositories found</h2>
-          <p>This user hasn't listed any repositories yet.</p>
+          <p>This user hasn&apos;t listed any repositories yet.</p>
           <Link href="/marketplace" className={marketplaceStyles.sellButton}>
             Back to Marketplace
           </Link>

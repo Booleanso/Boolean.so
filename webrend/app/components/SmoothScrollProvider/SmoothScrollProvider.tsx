@@ -103,7 +103,7 @@ export default function SmoothScrollProvider({
     };
 
     // Handle direct scroll events (from scrollbar, touch, etc.)
-    const handleScroll = (e: Event) => {
+    const handleScroll = () => {
       // Only update if this isn't from our smooth scrolling
       if (!isScrollingRef.current) {
         const scrollY = window.pageYOffset;

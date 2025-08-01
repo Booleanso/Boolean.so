@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { auth, db } from '../../../lib/firebase-admin';
 
 // GET: Fetch all player data
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Get all players from the players collection
     // No authentication needed as player positions are public

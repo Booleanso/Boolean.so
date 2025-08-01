@@ -13,7 +13,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-muted);
+  color: var(--blog-text-muted);
   font-size: 0.95rem;
   margin-bottom: 2rem;
   transition: color 0.15s ease;
@@ -21,7 +21,7 @@
 }
 
 .backLink:hover {
-  color: var(--text-primary);
+  color: var(--blog-text-primary);
 }
 
 .categoryAndDate {
@@ -30,12 +30,12 @@
   gap: 0.5rem;
   font-size: 0.95rem;
   margin-bottom: 1.5rem;
-  color: var(--text-muted);
+  color: var(--blog-text-muted);
 }
 
 .category {
-  background-color: var(--accent-muted);
-  color: var(--accent);
+  background-color: var(--blog-accent-muted);
+  color: var(--blog-accent);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-weight: 500;
@@ -52,13 +52,13 @@
   line-height: 1.2;
   letter-spacing: -0.02em;
   margin-bottom: 1rem;
-  color: var(--text-primary);
+  color: var(--blog-text-primary);
 }
 
 .description {
   font-size: 1.25rem;
   line-height: 1.6;
-  color: var(--text-secondary);
+  color: var(--blog-text-secondary);
   margin-bottom: 2rem;
 }
 
@@ -81,7 +81,7 @@
 .content {
   font-size: 1.125rem;
   line-height: 1.8;
-  color: var(--text-primary);
+  color: var(--blog-text-primary);
   margin-bottom: 3rem;
 }
 
@@ -92,7 +92,7 @@
   margin-top: 2.5rem;
   margin-bottom: 1rem;
   position: relative;
-  color: var(--text-primary);
+  color: var(--blog-text-primary);
 }
 
 .content h3 {
@@ -100,7 +100,7 @@
   font-weight: 600;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
-  color: var(--text-primary);
+  color: var(--blog-text-primary);
 }
 
 .content p {
@@ -108,14 +108,14 @@
 }
 
 .content a {
-  color: var(--accent);
+  color: var(--blog-accent);
   text-decoration: none;
-  border-bottom: 1px solid var(--accent-muted);
+  border-bottom: 1px solid var(--blog-accent-muted);
   transition: border-color 0.2s ease;
 }
 
 .content a:hover {
-  border-color: var(--accent);
+  border-color: var(--blog-accent);
 }
 
 .content ul, .content ol {
@@ -128,17 +128,17 @@
 }
 
 .content blockquote {
-  border-left: 4px solid var(--accent-muted);
+  border-left: 4px solid var(--blog-accent-muted);
   padding-left: 1rem;
   margin-left: 0;
   margin-right: 0;
   margin-bottom: 1.5rem;
   font-style: italic;
-  color: var(--text-secondary);
+  color: var(--blog-text-secondary);
 }
 
 .content code {
-  background-color: var(--code-bg);
+  background-color: var(--blog-code-bg);
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-family: var(--font-geist-mono);
@@ -146,7 +146,7 @@
 }
 
 .content pre {
-  background-color: var(--code-bg);
+  background-color: var(--blog-code-bg);
   padding: 1rem;
   border-radius: 8px;
   overflow-x: auto;
@@ -172,17 +172,17 @@
   flex-direction: column;
   gap: 1.5rem;
   padding-top: 2rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--blog-border-color);
   margin-bottom: 3rem;
 }
 
 .sourceLink {
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: var(--blog-text-muted);
 }
 
 .sourceLink a {
-  color: var(--accent);
+  color: var(--blog-accent);
   text-decoration: none;
 }
 
@@ -199,7 +199,7 @@
 
 .share p {
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: var(--blog-text-muted);
   margin: 0;
 }
 
@@ -215,29 +215,29 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 9999px;
-  background-color: var(--card-bg);
-  color: var(--text-muted);
+  background-color: var(--blog-card-bg);
+  color: var(--blog-text-muted);
   transition: all 0.2s ease;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--blog-border-color);
 }
 
 .shareButton:hover {
-  color: var(--text-primary);
-  background-color: var(--hover-bg);
+  color: var(--blog-text-primary);
+  background-color: var(--blog-hover-bg);
   transform: translateY(-2px);
 }
 
 .relatedSection {
   margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--blog-border-color);
 }
 
 .relatedSection h2 {
   font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  color: var(--text-primary);
+  color: var(--blog-text-primary);
 }
 
 .relatedLink {
@@ -251,71 +251,22 @@
   gap: 0.5rem;
   font-size: 1rem;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--blog-accent);
   text-decoration: none;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
-  background-color: var(--accent-muted);
+  background-color: var(--blog-accent-muted);
   transition: all 0.2s ease;
 }
 
 .relatedLink a:hover {
-  background-color: var(--accent);
+  background-color: var(--blog-accent);
   color: white;
 }
 
-/* Light/Dark mode variables */
-:root {
-  --text-primary: #171717;
-  --text-secondary: #404040;
-  --text-muted: #6b7280;
-  --accent: #3b82f6;
-  --accent-muted: rgba(59, 130, 246, 0.1);
-  --border-color: #e5e7eb;
-  --card-bg: #ffffff;
-  --hover-bg: #f9fafb;
-  --code-bg: #f3f4f6;
-  --page-bg: #ffffff;
-}
+/* CSS variables are now defined in globals.css */
 
-/* Dark mode - these are applied when the theme-provider sets data-theme="dark" */
-.darkTheme {
-  --text-primary: #f3f4f6;
-  --text-secondary: #d1d5db;
-  --text-muted: #9ca3af;
-  --accent: #60a5fa;
-  --accent-muted: rgba(96, 165, 250, 0.1);
-  --border-color: #2d3748;
-  --card-bg: #000000;
-  --hover-bg: #111111;
-  --code-bg: #111111;
-  --page-bg: #000000;
-}
-
-/* Additional explicit dark mode overrides */
-.darkTheme.container {
-  background-color: #000000;
-}
-
-.darkTheme .articleHeader,
-.darkTheme .content,
-.darkTheme .footer,
-.darkTheme .relatedSection,
-.darkTheme .imageContainer {
-  background-color: #000000;
-}
-
-.darkTheme .shareButton {
-  background-color: #000000;
-}
-
-.darkTheme .relatedLink a {
-  background-color: rgba(96, 165, 250, 0.1);
-}
-
-.darkTheme .relatedLink a:hover {
-  background-color: #60a5fa;
-}
+/* Dark theme styles are now handled globally in globals.css */
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -361,21 +312,21 @@
   padding: 4rem 2rem;
   margin: 2rem auto;
   max-width: 600px;
-  background-color: var(--card-bg);
+  background-color: var(--blog-card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--blog-border-color);
 }
 
 .errorContainer h1 {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  color: var(--text-primary);
+  color: var(--blog-text-primary);
 }
 
 .errorContainer p {
   font-size: 1.1rem;
-  color: var(--text-secondary);
+  color: var(--blog-text-secondary);
   margin-bottom: 1rem;
 }
 
@@ -390,13 +341,13 @@
 .relatedArticleCard {
   display: flex;
   flex-direction: column;
-  background-color: var(--card-bg);
+  background-color: var(--blog-card-bg);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   height: 100%;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--blog-border-color);
 }
 
 .relatedArticleCard:hover {
@@ -434,12 +385,12 @@
   gap: 0.5rem;
   margin-bottom: 0.75rem;
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--blog-text-muted);
 }
 
 .relatedArticleCategory {
-  background-color: var(--accent-muted);
-  color: var(--accent);
+  background-color: var(--blog-accent-muted);
+  color: var(--blog-accent);
   padding: 0.2rem 0.5rem;
   border-radius: 9999px;
   font-weight: 500;
@@ -451,13 +402,13 @@
   font-weight: 700;
   line-height: 1.4;
   margin-bottom: 0.5rem;
-  color: var(--text-primary);
+  color: var(--blog-text-primary);
 }
 
 .relatedArticleDescription {
   font-size: 0.9rem;
   line-height: 1.5;
-  color: var(--text-secondary);
+  color: var(--blog-text-secondary);
   margin-bottom: 0;
   flex: 1;
 }
@@ -465,7 +416,7 @@
 /* Dark theme overrides for related articles */
 .darkTheme .relatedArticleCard {
   background-color: #000000;
-  border-color: var(--border-color);
+  border-color: var(--blog-border-color);
 }
 
 .darkTheme .relatedArticleCard:hover {

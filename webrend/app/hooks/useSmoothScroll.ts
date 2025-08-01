@@ -5,8 +5,7 @@ import {
   smoothScrollToElement, 
   smoothScrollToTop, 
   smoothScrollTo,
-  addScrollListener,
-  getScrollProgress 
+  addScrollListener
 } from '../utils/smooth-scroll';
 
 export const useSmoothScroll = () => {

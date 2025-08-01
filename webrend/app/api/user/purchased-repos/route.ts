@@ -20,6 +20,20 @@ export interface PurchasedRepo {
   transferStatus?: string;
 }
 
+interface ListingData {
+  title?: string;
+  description?: string;
+  image?: string;
+  githubUrl?: string;
+  [key: string]: unknown;
+}
+
+interface SellerData {
+  username?: string;
+  displayName?: string;
+  [key: string]: unknown;
+}
+
 export async function GET(request: NextRequest) {
   try {
     console.log('Fetching purchased repositories - starting');
@@ -141,7 +155,7 @@ export async function GET(request: NextRequest) {
           const repoData = repoDoc.data() || {};
           
           // Get listing details - don't error if not found
-          let listingData: any = {};
+          let listingData: ListingData = {};
           if (transaction.listingId) {
             const listingDoc = await db.collection('listings').doc(transaction.listingId).get();
             if (listingDoc.exists) {
@@ -154,7 +168,7 @@ export async function GET(request: NextRequest) {
           }
           
           // Get seller details
-          let sellerData: any = {};
+          let sellerData: SellerData = {};
           if (transaction.sellerId) {
             const sellerDoc = await db.collection('customers').doc(transaction.sellerId).get();
             if (sellerDoc.exists) {

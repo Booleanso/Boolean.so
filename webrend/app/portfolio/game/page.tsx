@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+// import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Physics, useBox, usePlane } from '@react-three/cannon';
-import { PerspectiveCamera, PointerLockControls, Text, useGLTF } from '@react-three/drei';
+import { PointerLockControls, Text, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import styles from './game.module.scss';
 import { auth } from '../../lib/firebase-client';
@@ -177,29 +177,29 @@ function usePlayerSync(userId: string, username: string) {
   return { otherPlayers, playerCount, updatePlayerData };
 }
 
-// Wall component
-function Wall({ position, rotation = [0, 0, 0], size = [20, 5, 0.5], color = "#ffffff" }: { 
-  position: [number, number, number]; 
-  rotation?: [number, number, number]; 
-  size?: [number, number, number]; 
-  color?: string;
-}) {
-  const [ref] = useBox(() => ({ 
-    position,
-    rotation,
-    args: size,
-    type: 'Static' as const,
-    friction: 0.3,
-    restitution: 0.1
-  }));
-  
-  return (
-    <mesh ref={ref} castShadow receiveShadow>
-      <boxGeometry args={size} />
-      <meshStandardMaterial color={color} />
-    </mesh>
-  );
-}
+// Wall component - UNUSED
+// function Wall({ position, rotation = [0, 0, 0], size = [20, 5, 0.5], color = "#ffffff" }: { 
+//   position: [number, number, number]; 
+//   rotation?: [number, number, number]; 
+//   size?: [number, number, number]; 
+//   color?: string;
+// }) {
+//   const [ref] = useBox(() => ({ 
+//     position,
+//     rotation,
+//     args: size,
+//     type: 'Static' as const,
+//     friction: 0.3,
+//     restitution: 0.1
+//   }));
+//   
+//   return (
+//     <mesh ref={ref} castShadow receiveShadow>
+//       <boxGeometry args={size} />
+//       <meshStandardMaterial color={color} />
+//     </mesh>
+//   );
+// }
 
 // Floor component - keep for physics collision
 function Floor(props: { position: [number, number, number] }) {
@@ -219,44 +219,44 @@ function Floor(props: { position: [number, number, number] }) {
   );
 }
 
-// Ceiling component
-function Ceiling(props: { position: [number, number, number] }) {
-  const [ref] = usePlane(() => ({ 
-    rotation: [Math.PI / 2, 0, 0],
-    position: props.position,
-    type: 'Static',
-    friction: 0.2,
-    restitution: 0.1
-  }));
-  
-  return (
-    <mesh ref={ref} receiveShadow>
-      <planeGeometry args={[100, 100]} />
-      <meshStandardMaterial color="#f0f0f0" />
-    </mesh>
-  );
-}
+// Ceiling component - UNUSED
+// function Ceiling(props: { position: [number, number, number] }) {
+//   const [ref] = usePlane(() => ({ 
+//     rotation: [Math.PI / 2, 0, 0],
+//     position: props.position,
+//     type: 'Static',
+//     friction: 0.2,
+//     restitution: 0.1
+//   }));
+//   
+//   return (
+//     <mesh ref={ref} receiveShadow>
+//       <planeGeometry args={[100, 100]} />
+//       <meshStandardMaterial color="#f0f0f0" />
+//     </mesh>
+//   );
+// }
 
-// Box component
-function Box({ position }: { position: [number, number, number] }) {
-  const [ref] = useBox(() => ({ 
-    mass: 10,
-    position,
-    args: [1, 1, 1] as [number, number, number],
-    type: 'Dynamic' as const,
-    friction: 0.3,
-    restitution: 0.2,
-    linearDamping: 0.4,
-    angularDamping: 0.4
-  }));
-  
-  return (
-    <mesh ref={ref} castShadow>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="#ff4040" />
-    </mesh>
-  );
-}
+// Box component - UNUSED
+// function Box({ position }: { position: [number, number, number] }) {
+//   const [ref] = useBox(() => ({ 
+//     mass: 10,
+//     position,
+//     args: [1, 1, 1] as [number, number, number],
+//     type: 'Dynamic' as const,
+//     friction: 0.3,
+//     restitution: 0.2,
+//     linearDamping: 0.4,
+//     angularDamping: 0.4
+//   }));
+//   
+//   return (
+//     <mesh ref={ref} castShadow>
+//       <boxGeometry args={[1, 1, 1]} />
+//       <meshStandardMaterial color="#ff4040" />
+//     </mesh>
+//   );
+// }
 
 // Other Player component (renders other players in the game)
 function OtherPlayer({ player }: { player: Player }) {
@@ -285,10 +285,8 @@ function OtherPlayer({ player }: { player: Player }) {
 }
 
 // Player (camera) controls with network synchronization
-function FirstPersonControls({ joystickData, userId, username, updatePlayerData }: { 
-  joystickData: JoystickData; 
-  userId: string; 
-  username: string;
+function FirstPersonControls({ joystickData, updatePlayerData }: { 
+  joystickData: JoystickData;
   updatePlayerData: (position: [number, number, number], rotation: [number, number, number, number]) => void;
 }) {
   const { camera } = useThree();
@@ -369,12 +367,12 @@ function FirstPersonControls({ joystickData, userId, username, updatePlayerData 
   });
   
   // Jump function
-  const jump = () => {
+  const jump = useCallback(() => {
     // Only jump if close to the ground to prevent air jumping
     if (Math.abs(velocity.current.y) < 0.5) {
       api.velocity.set(velocity.current.x, 8, velocity.current.z);
     }
-  };
+  }, [api]);
   
   // Handle keyboard controls
   useEffect(() => {
@@ -438,7 +436,7 @@ function FirstPersonControls({ joystickData, userId, username, updatePlayerData 
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, []);
+  }, [jump]);
   
   return (
     <mesh ref={ref}>
@@ -466,16 +464,13 @@ function GalleryModel() {
 }
 
 // Main Scene component
-function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData, containerRef }: { 
+function Scene({ joystickData, otherPlayers, updatePlayerData }: {
   joystickData: JoystickData; 
-  userId: string; 
-  username: string;
   otherPlayers: Player[];
   updatePlayerData: (position: [number, number, number], rotation: [number, number, number, number]) => void;
-  containerRef: React.RefObject<HTMLDivElement>;
 }) {
-  const isMobile = useIsMobile();
-  const [pointerLockControls, setPointerLockControls] = useState<any>(null);
+  // const isMobile = useIsMobile();
+  const [pointerLockControls, setPointerLockControls] = useState<PointerLockControls | null>(null);
   
   // Handle pointer lock errors
   useEffect(() => {
@@ -529,9 +524,7 @@ function Scene({ joystickData, userId, username, otherPlayers, updatePlayerData,
       
       <Physics gravity={[0, -9.8, 0]}>
         <FirstPersonControls 
-          joystickData={joystickData} 
-          userId={userId} 
-          username={username} 
+          joystickData={joystickData}
           updatePlayerData={updatePlayerData}
         />
         
@@ -559,7 +552,7 @@ export default function GamePage() {
   const [showInstructions, setShowInstructions] = useState(true);
   const [userId, setUserId] = useState<string>('');
   const [username, setUsername] = useState<string>('Guest');
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  // const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -633,7 +626,7 @@ export default function GamePage() {
   }, []);
   
   // Use the player synchronization hook
-  const { otherPlayers, playerCount, updatePlayerData } = usePlayerSync(userId, username);
+  const { otherPlayers, updatePlayerData } = usePlayerSync(userId, username);
   
   return (
     <div className={styles.embeddedGameContainer} ref={containerRef}>
@@ -654,12 +647,9 @@ export default function GamePage() {
           
           <div className={styles.gameContent}>
             <Scene 
-              joystickData={joystickData} 
-              userId={userId} 
-              username={username}
+              joystickData={joystickData}
               otherPlayers={otherPlayers}
               updatePlayerData={updatePlayerData}
-              containerRef={containerRef}
             />
           </div>
           

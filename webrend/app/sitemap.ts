@@ -1,10 +1,10 @@
 import { MetadataRoute } from 'next';
 import { db } from './lib/firebase-admin';
 
-interface Article {
-  slug: string;
-  publishedAt: { seconds: number } | Date;
-}
+// interface Article {
+//   slug: string;
+//   publishedAt: { seconds: number } | Date;
+// }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://webrend.com';

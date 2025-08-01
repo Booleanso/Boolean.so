@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Verify the session cookie to get the user
-    const decodedClaims = await auth.verifySessionCookie(sessionCookie);
+    const decodedClaims = await auth!.verifySessionCookie(sessionCookie);
     const userId = decodedClaims.uid;
     
     if (!userId) {
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     console.log(`GitHub status: Checking status for user ${userId}`);
 
     // Get the user document to check GitHub connection
-    const userDoc = await db.collection('customers').doc(userId).get();
+    const userDoc = await db!.collection('customers').doc(userId).get();
     
     if (!userDoc.exists) {
       console.log(`GitHub status: User document not found for ${userId}`);

@@ -70,10 +70,10 @@ export default function ContactUs() {
           }}
         >
           <h2 className={styles.heading}>
-            Let's work<br />together
+            Let&apos;s work<br />together
           </h2>
           <p className={styles.description}>
-            Ready to take the next step with your project? We're here to help you build, launch, and scale your vision.
+            Ready to take the next step with your project? We&apos;re here to help you build, launch, and scale your vision.
           </p>
           <div className={styles.buttonGroup}>
             <a 

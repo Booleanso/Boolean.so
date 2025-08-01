@@ -1,10 +1,6 @@
 import { db } from '../../lib/firebase-admin';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Metadata, ResolvingMetadata } from 'next';
-import ReactMarkdown from 'react-markdown';
-import styles from './page.module.css';
+import { Metadata } from 'next';
 import BlogSlugPage from '@/app/blog/[slug]/BlogSlugPage';
 
 // Types for our article
@@ -20,16 +16,15 @@ interface Article {
   slug: string;
 }
 
-type PageProps = {
-  params: {
-    slug: string;
-  };
-};
+// type PageProps = {
+//   params: {
+//     slug: string;
+//   };
+// };
 
 // Generate metadata for the page
 export async function generateMetadata(
-  { params }: { params: Promise<{ slug: string }> },
-  parent: ResolvingMetadata
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   try {
     // Await the params promise to get the slug
@@ -147,7 +142,7 @@ async function getArticleBySlug(slug: string): Promise<Article | null> {
 async function getRelatedArticles(currentSlug: string, category: string, limit: number = 3): Promise<Article[]> {
   try {
     // First try to get articles from the same category
-    let articlesQuery = await db
+    const articlesQuery = await db
       .collection('articles')
       .where('category', '==', category)
       .where('slug', '!=', currentSlug)

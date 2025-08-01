@@ -88,7 +88,7 @@ export default function BlogPreview() {
         </div>
       ) : (
         <div className={styles.blogGrid}>
-          {latestPosts.map((post, index) => (
+          {latestPosts.map((post) => (
             <Link href={`/blog/${post.slug || post.id}`} key={post.id} className={styles.blogCard}>
               <div className={styles.blogImageWrapper}>
                 <Image 

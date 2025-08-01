@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import styles from './success.module.css';
@@ -14,7 +14,7 @@ interface BookingDetails {
   meetingLink?: string;
 }
 
-export default function DiscoverySuccessPage() {
+function DiscoverySuccessContent() {
   const searchParams = useSearchParams();
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,7 +62,7 @@ export default function DiscoverySuccessPage() {
       <div className={styles.container}>
         <div className={styles.error}>
           <h1>Booking Not Found</h1>
-          <p>We couldn't find your booking details. Please check your email for confirmation or contact us directly.</p>
+          <p>We couldn&apos;t find your booking details. Please check your email for confirmation or contact us directly.</p>
           <Link href="/discovery" className={styles.button}>
             Book Another Call
           </Link>
@@ -82,7 +82,7 @@ export default function DiscoverySuccessPage() {
         
         <h1>Discovery Call Booked Successfully!</h1>
         <p className={styles.subtitle}>
-          We're excited to discuss your project and explore how we can help bring your vision to life.
+          We&apos;re excited to discuss your project and explore how we can help bring your vision to life.
         </p>
 
         <div className={styles.bookingDetails}>
@@ -125,7 +125,7 @@ export default function DiscoverySuccessPage() {
               <div className={styles.stepNumber}>1</div>
               <div className={styles.stepContent}>
                 <h3>Calendar Invitation</h3>
-                <p>You'll receive a calendar invitation with the meeting link and details via email.</p>
+                <p>You&apos;ll receive a calendar invitation with the meeting link and details via email.</p>
               </div>
             </div>
             
@@ -133,7 +133,7 @@ export default function DiscoverySuccessPage() {
               <div className={styles.stepNumber}>2</div>
               <div className={styles.stepContent}>
                 <h3>Pre-Meeting Questions</h3>
-                <p>We'll send you a brief questionnaire to help us understand your project better before the call.</p>
+                <p>We&apos;ll send you a brief questionnaire to help us understand your project better before the call.</p>
               </div>
             </div>
             
@@ -141,7 +141,7 @@ export default function DiscoverySuccessPage() {
               <div className={styles.stepNumber}>3</div>
               <div className={styles.stepContent}>
                 <h3>Discovery Call</h3>
-                <p>We'll discuss your project requirements, goals, timeline, and provide initial recommendations.</p>
+                <p>We&apos;ll discuss your project requirements, goals, timeline, and provide initial recommendations.</p>
               </div>
             </div>
             
@@ -149,7 +149,7 @@ export default function DiscoverySuccessPage() {
               <div className={styles.stepNumber}>4</div>
               <div className={styles.stepContent}>
                 <h3>Follow-up</h3>
-                <p>After the call, we'll send you a detailed proposal with project scope, timeline, and pricing.</p>
+                <p>After the call, we&apos;ll send you a detailed proposal with project scope, timeline, and pricing.</p>
               </div>
             </div>
           </div>
@@ -183,5 +183,25 @@ export default function DiscoverySuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function DiscoverySuccessLoading() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.loading}>
+        <div className={styles.spinner}></div>
+        <p>Loading your booking details...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function DiscoverySuccessPage() {
+  return (
+    <Suspense fallback={<DiscoverySuccessLoading />}>
+      <DiscoverySuccessContent />
+    </Suspense>
   );
 } 

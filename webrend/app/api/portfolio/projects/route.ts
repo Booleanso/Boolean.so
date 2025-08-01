@@ -17,7 +17,7 @@ interface PortfolioProject {
 export async function GET() {
   try {
     // Fetch all portfolio projects, ordered by dateCompleted descending
-    const projectsSnapshot = await db.collection('portfolioProjects')
+    const projectsSnapshot = await db!.collection('portfolioProjects')
       .orderBy('dateCompleted', 'desc')
       .get();
 

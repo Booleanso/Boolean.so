@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,7 +11,7 @@ interface MarketplaceClientProps {
   initialListings: MarketplaceListing[];
 }
 
-export default function ListingsClient({ initialListings }: MarketplaceClientProps) {
+function ListingsClientContent({ initialListings }: MarketplaceClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const filterParam = searchParams.get('filter');
@@ -269,5 +269,32 @@ export default function ListingsClient({ initialListings }: MarketplaceClientPro
         </div>
       )}
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function ListingsClientLoading() {
+  return (
+    <div className={styles.marketplaceContainer}>
+      <div className={styles.hero}>
+        <div className={styles.heroContent}>
+          <h1 className={styles.heroTitle}>Discover Code That Powers Innovation</h1>
+          <p className={styles.heroSubtitle}>
+            Loading marketplace...
+          </p>
+        </div>
+      </div>
+      <div className={styles.header}>
+        <h2>GitHub Repository Marketplace</h2>
+      </div>
+    </div>
+  );
+}
+
+export default function ListingsClient({ initialListings }: MarketplaceClientProps) {
+  return (
+    <Suspense fallback={<ListingsClientLoading />}>
+      <ListingsClientContent initialListings={initialListings} />
+    </Suspense>
   );
 } 

@@ -1,4 +1,4 @@
-@import '../../marketplace.module.scss';
+@use '../../marketplace.module.scss' as marketplace;
 
 // Main container for user marketplace
 .userMarketplaceContainer {
@@ -6,7 +6,7 @@
   max-width: 100%;
   margin: 0 auto;
   padding: 0;
-  color: $text-color;
+  color: marketplace.$text-color;
   background-color: white;
 }
 
@@ -17,7 +17,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid marketplace.$border-color;
 }
 
 .userProfileContainer {
@@ -51,7 +51,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $accent-color;
+  background-color: marketplace.$accent-color;
   color: white;
   font-size: 48px;
   font-weight: 600;
@@ -61,19 +61,19 @@
   font-size: 32px;
   font-weight: 600;
   margin: 0.5rem 0 1rem;
-  color: $text-color;
+  color: marketplace.$text-color;
 }
 
 // Repository section header
 .repoSectionHeader {
   padding: 2rem 5% 0;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid marketplace.$border-color;
   
   h3 {
     font-size: 24px;
     font-weight: 600;
     margin: 0 0 1rem;
-    color: $text-color;
+    color: marketplace.$text-color;
   }
 }
 
@@ -94,9 +94,9 @@
 
 .repoCard {
   background-color: transparent;
-  border-radius: $radius;
+  border-radius: marketplace.$radius;
   overflow: visible;
-  box-shadow: $card-shadow;
+  box-shadow: marketplace.$card-shadow;
   transition: all 0.25s ease;
   border: none;
   height: 100%;

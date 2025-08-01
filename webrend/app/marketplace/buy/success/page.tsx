@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import styles from './success.module.scss';
 
-export default function SuccessPage() {
+function SuccessPageContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
+  // const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -165,5 +165,26 @@ export default function SuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function SuccessPageLoading() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.loadingMessage}>
+        <div className={styles.loadingSpinner}></div>
+        <h2>Loading purchase information...</h2>
+        <p>Please wait while we load your purchase details.</p>
+      </div>
+    </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<SuccessPageLoading />}>
+      <SuccessPageContent />
+    </Suspense>
   );
 } 

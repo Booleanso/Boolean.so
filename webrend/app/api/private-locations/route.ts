@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
 // GET private repo locations
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const dataDir = path.join(process.cwd(), 'data');
     const filePath = path.join(dataDir, 'privatelocation.json');

@@ -213,14 +213,14 @@ async function getRelatedRepos(listingId: string | number): Promise<RelatedRepo[
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // Server component with proper params handling
 export default async function BuyPage({ params }: PageProps) {
-  const slug = params.slug;
+  const { slug } = await params;
   
   // Fetch listing data using our helper function
   const listing = await getListingBySlug(slug);
@@ -252,7 +252,7 @@ export default async function BuyPage({ params }: PageProps) {
 
 // Generate dynamic metadata based on the listing
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const slug = params.slug;
+  const { slug } = await params;
   
   // Get listing data
   const listing = await getListingBySlug(slug);

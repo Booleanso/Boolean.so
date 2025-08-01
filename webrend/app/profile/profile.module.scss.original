@@ -1,0 +1,1848 @@
+@use 'sass:color';
+
+// Variables - Apple-inspired design 
+$primary-color: #0071e3; // Apple blue
+$secondary-color: #86868b; // Apple secondary text
+$accent-color: #06c; // Apple accent blue
+$light-bg: #f5f5f7; // Apple light background
+$border-color: #d2d2d7; // Apple borders
+$text-color: #1d1d1f; // Apple dark text
+$text-light: #86868b; // Apple medium text
+$radius: 12px; // Increased rounded corners
+$card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); // Subtle shadow
+$card-hover-shadow: 0 4px 24px rgba(0, 0, 0, 0.12); // Hover shadow
+$transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1); // Smooth transitions
+
+// Dark mode variables
+$dark-primary-color: #0a84ff; // Apple blue (dark mode)
+$dark-secondary-color: #98989d; // Apple secondary (dark mode)
+$dark-accent-color: #0a84ff; // Apple accent (dark mode)
+$dark-bg: #000000; // Pure black background
+$dark-border-color: #1d1d1f; // Dark mode borders
+$dark-text-color: #f5f5f7; // Light text color
+$dark-text-light: #98989d; // Medium gray text
+$dark-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+$dark-component-bg: #1c1c1e; // Apple card background (dark)
+$dark-input-bg: #1c1c1e; // Apple dark input
+$dark-hover-bg: #2c2c2e; // Apple hover (dark)
+
+// Theme toggle styles
+.themeToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.themeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background-color: #e8e8ed;
+  color: $text-color;
+  cursor: pointer;
+  transition: $transition;
+  
+  &:hover {
+    background-color: color.scale(#e8e8ed, $lightness: -5%);
+  }
+  
+  &.activeTheme {
+    background-color: $primary-color;
+    color: white;
+  }
+  
+  // Apply dark mode styles when dark theme is active
+  :global(.dark-theme) & {
+    background-color: #323236;
+    color: $dark-text-color;
+    
+    &:hover {
+      background-color: color.scale(#323236, $lightness: 10%);
+    }
+    
+    &.activeTheme {
+      background-color: $dark-primary-color;
+      color: white;
+    }
+  }
+}
+
+// Main container
+.container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  color: $text-color;
+  background-color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  letter-spacing: -0.012em;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+    background-color: $dark-bg;
+  }
+}
+
+// Header section
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  padding: 5rem 5% 2rem;
+  background-color: white;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  
+  h1 {
+    font-size: 40px;
+    font-weight: 600;
+    color: $text-color;
+    margin: 0;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+}
+
+// Profile section
+.profile {
+  width: 100%;
+  max-width: 100%;
+  background-color: white;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 500;
+  margin: 0;
+  color: $text-color;
+  padding: 2rem 5% 1rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
+}
+
+.section {
+  margin-bottom: 3rem;
+  position: relative;
+  
+  &:last-child {
+    margin-bottom: 6rem;
+  }
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 5% 1.5rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    border-color: $dark-border-color;
+  }
+}
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+  color: $text-color;
+  letter-spacing: -0.025em;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
+}
+
+.sectionControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+// Unified layout for account and connections
+.unifiedSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 0 5% 2rem;
+  
+  @media (max-width: 992px) {
+    flex-direction: column;
+  }
+}
+
+.accountColumn {
+  flex: 1;
+  min-width: 300px;
+  
+  .accountInfo {
+    padding: 2rem;
+    background-color: white;
+    border-radius: $radius;
+    box-shadow: $card-shadow;
+    border: 1px solid rgba(0,0,0,0.05);
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: $dark-component-bg;
+      border-color: rgba(255,255,255,0.05);
+    }
+  }
+}
+
+.connectionsColumn {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+// User info styling
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  overflow: hidden;
+  box-shadow: $card-shadow;
+  
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.placeholderAvatar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $primary-color;
+  color: white;
+  font-size: 42px;
+  font-weight: 600;
+}
+
+.userDetails {
+  flex: 1;
+  
+  h3 {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    color: $text-color;
+    letter-spacing: -0.02em;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+  
+  p {
+    color: $text-light;
+    margin: 0;
+    font-size: 16px;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
+  }
+}
+
+// GitHub and bank connections
+.connectionCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.75rem;
+  border-radius: $radius;
+  background-color: white;
+  box-shadow: $card-shadow;
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: $transition;
+  
+  &:hover {
+    transform: none;
+    box-shadow: $card-shadow;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: rgba(255,255,255,0.05);
+  }
+}
+
+.connectionInfo {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.connectionIcon {
+  font-size: 24px;
+  color: $primary-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  background-color: rgba(0, 113, 227, 0.1);
+  border-radius: 50%;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-primary-color;
+    background-color: rgba(10, 132, 255, 0.15);
+  }
+}
+
+.connectionDetails {
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+    color: $text-color;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+  
+  p {
+    color: $text-light;
+    margin: 0;
+    font-size: 14px;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
+  }
+}
+
+.connectionActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.connectionButton {
+  padding: 0.6rem 1.4rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: $transition;
+  
+  &.connect {
+    background-color: $primary-color;
+    color: white;
+    
+    &:hover {
+      background-color: color.scale($primary-color, $lightness: -5%);
+      transform: scale(1.02);
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: $dark-primary-color;
+    }
+  }
+  
+  &.disconnect {
+    background-color: rgba(0,0,0,0.05);
+    color: $text-color;
+    
+    &:hover {
+      background-color: rgba(0,0,0,0.08);
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: rgba(255,255,255,0.08);
+      color: $dark-text-color;
+      
+      &:hover {
+        background-color: rgba(255,255,255,0.12);
+      }
+    }
+  }
+  
+  &.edit {
+    background-color: rgba(0,0,0,0.05);
+    color: $text-color;
+    
+    &:hover {
+      background-color: rgba(0,0,0,0.08);
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: rgba(255,255,255,0.08);
+      color: $dark-text-color;
+      
+      &:hover {
+        background-color: rgba(255,255,255,0.12);
+      }
+    }
+  }
+  
+  &.loading {
+    background-color: rgba(0,0,0,0.05);
+    color: $text-light;
+    cursor: not-allowed;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: rgba(255,255,255,0.08);
+      color: $dark-text-light;
+    }
+  }
+}
+
+// Status messages
+.statusMessage {
+  padding: 1rem 5%;
+  margin: 0 0 1.5rem;
+  width: 100%;
+  font-size: 15px;
+  font-weight: 400;
+  border-radius: $radius;
+  
+  &.successStatus {
+    background-color: rgba(52, 199, 89, 0.1); // Apple success green
+    color: #34c759;
+    border: 1px solid rgba(52, 199, 89, 0.2);
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: rgba(48, 209, 88, 0.15);
+      color: #30d158;
+      border-color: rgba(48, 209, 88, 0.2);
+    }
+  }
+  
+  &.errorStatus {
+    background-color: rgba(255, 59, 48, 0.1); // Apple error red
+    color: #ff3b30;
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: rgba(255, 69, 58, 0.15);
+      color: #ff453a;
+      border-color: rgba(255, 69, 58, 0.2);
+    }
+  }
+}
+
+.error {
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
+  padding: 1.2rem 5%;
+  margin: 0 0 1.5rem;
+  width: 100%;
+  border-radius: $radius;
+  font-size: 15px;
+  font-weight: 400;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255, 69, 58, 0.15);
+    color: #ff453a;
+  }
+}
+
+// Username edit section
+.usernameEdit {
+  margin: 1rem 0;
+  max-width: 500px;
+}
+
+.usernameInputContainer {
+  display: flex;
+  align-items: center;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  padding: 0 0.75rem;
+  margin-bottom: 0.75rem;
+  background-color: rgba(0,0,0,0.02);
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    border-color: $dark-border-color;
+    background-color: rgba(255,255,255,0.05);
+  }
+  
+  .atSymbol {
+    color: $text-light;
+    font-size: 16px;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
+  }
+  
+  .usernameInput {
+    flex: 1;
+    padding: 0.85rem 0.5rem;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: $text-color;
+    width: 100%;
+    background-color: transparent;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+}
+
+.usernameRequirements {
+  font-size: 14px;
+  color: $text-light;
+  margin-bottom: 1.5rem;
+  background-color: rgba(0,0,0,0.02);
+  padding: 1rem;
+  border-radius: 10px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+    background-color: rgba(255,255,255,0.05);
+  }
+  
+  ul {
+    margin: 0.5rem 0 0 1.5rem;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 0.25rem;
+  }
+}
+
+.usernameValidation {
+  color: #ff9500; // Apple orange warning color
+  font-size: 14px;
+  margin-bottom: 1rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: #ff9f0a; // Apple orange warning (dark mode)
+  }
+}
+
+.usernameError {
+  color: #ff3b30; // Apple red error color
+  font-size: 14px;
+  margin-bottom: 1rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: #ff453a; // Apple red error (dark mode)
+  }
+}
+
+.usernameButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.cancelButton, .saveButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: $transition;
+}
+
+.cancelButton {
+  background-color: rgba(0,0,0,0.05);
+  color: $text-color;
+  border: none;
+  
+  &:hover {
+    background-color: rgba(0,0,0,0.08);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.08);
+    color: $dark-text-color;
+    
+    &:hover {
+      background-color: rgba(255,255,255,0.12);
+    }
+  }
+}
+
+.saveButton {
+  background-color: $primary-color;
+  color: white;
+  border: none;
+  
+  &:hover:not(:disabled) {
+    background-color: color.scale($primary-color, $lightness: -5%);
+    transform: scale(1.02);
+  }
+  
+  &:disabled {
+    background-color: color.scale($primary-color, $lightness: 25%);
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-primary-color;
+    
+    &:disabled {
+      background-color: rgba(10, 132, 255, 0.4);
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+}
+
+.usernameDisplay {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  
+  .editUsernameButton {
+    padding: 0.45rem 1rem;
+    border-radius: 15px;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+    background-color: rgba(0,0,0,0.05);
+    color: $text-color;
+    transition: $transition;
+    
+    &:hover {
+      background-color: rgba(0,0,0,0.08);
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: rgba(255,255,255,0.08);
+      color: $dark-text-color;
+      
+      &:hover {
+        background-color: rgba(255,255,255,0.12);
+      }
+    }
+  }
+}
+
+// Bank details form
+.formContainer {
+  padding: 0 5% 2rem;
+}
+
+.formSection {
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: $radius;
+  border: 1px solid rgba(0,0,0,0.05);
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: $card-shadow;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: rgba(255,255,255,0.05);
+  }
+  
+  h3 {
+    margin-top: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: $text-color;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.02em;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+}
+
+.formHelper {
+  color: $text-light;
+  margin-bottom: 2rem;
+  font-size: 15px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.formGroup {
+  margin-bottom: 1.75rem;
+  
+  label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-weight: 500;
+    font-size: 15px;
+    color: $text-color;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+  
+  .formInput {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    font-size: 16px;
+    color: $text-color;
+    outline: none;
+    transition: all 0.2s ease;
+    background-color: rgba(0,0,0,0.02);
+    
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      background-color: rgba(255,255,255,0.05);
+      border-color: $dark-border-color;
+      color: $dark-text-color;
+      
+      &:focus {
+        border-color: $dark-primary-color;
+        box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
+      }
+    }
+  }
+  
+  .formHint {
+    display: block;
+    margin-top: 0.6rem;
+    color: $text-light;
+    font-size: 13px;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-light;
+    }
+  }
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+// Buttons and actions
+.sellButton, .browseButton, .viewRepoButton {
+  display: inline-block;
+  background-color: $primary-color;
+  color: white;
+  padding: 0.85rem 1.8rem;
+  border-radius: 20px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: $transition;
+  font-size: 15px;
+  text-align: center;
+  
+  &:hover {
+    background-color: color.scale($primary-color, $lightness: -5%);
+    transform: scale(1.02);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-primary-color;
+    
+    &:hover {
+      background-color: color.scale($dark-primary-color, $lightness: 5%);
+    }
+  }
+}
+
+.refreshButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $text-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: $transition;
+  background-color: rgba(0,0,0,0.03);
+  
+  &:hover {
+    background-color: rgba(0,0,0,0.05);
+    transform: rotate(15deg);
+  }
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none !important;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+    background-color: rgba(255,255,255,0.05);
+    
+    &:hover {
+      background-color: rgba(255,255,255,0.08);
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+}
+
+.spinning {
+  animation: spin 1.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.toggleSoldButton {
+  background-color: rgba(0,0,0,0.03);
+  border: none;
+  color: $text-color;
+  padding: 0.7rem 1.5rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: $transition;
+  
+  &:hover {
+    background-color: rgba(0,0,0,0.05);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.05);
+    color: $dark-text-color;
+    
+    &:hover {
+      background-color: rgba(255,255,255,0.08);
+    }
+    
+    &:active {
+      background-color: rgba(255,255,255,0.12);
+    }
+  }
+}
+
+// Grids for repos, purchased repos, listed repos
+.loading {
+  text-align: center;
+  padding: 4rem 0;
+  color: $text-light;
+  font-size: 16px;
+  font-weight: 400;
+  width: 100%;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 5rem 5%;
+  border-radius: $radius;
+  background-color: rgba(0,0,0,0.02);
+  margin: 0 5% 2rem;
+  
+  p {
+    color: $text-light;
+    margin-bottom: 1.5rem;
+    font-size: 16px;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.05);
+    color: $dark-text-light;
+  }
+}
+
+// Purchased and listed repos styling
+.purchasedRepos, .listedRepos {
+  padding: 1rem 5% 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.purchasedRepoCard, .listedRepoCard {
+  background-color: white;
+  border-radius: $radius;
+  box-shadow: $card-shadow;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  transition: $transition;
+  
+  &:hover {
+    transform: none;
+    box-shadow: $card-shadow;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: rgba(255,255,255,0.05);
+    box-shadow: $dark-card-shadow;
+  }
+}
+
+.purchasedRepoImage, .listedRepoImage {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.purchaseType, .listingType {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 1;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.soldBadge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: rgba(255, 59, 48, 0.8);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 1;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.purchasedRepoInfo, .listedRepoInfo {
+  flex: 1;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 0.8rem;
+    color: $text-color;
+    letter-spacing: -0.02em;
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+    }
+  }
+}
+
+.purchasedRepoDescription, .listedRepoDescription {
+  color: $text-light;
+  margin: 0 0 1.5rem;
+  font-size: 15px;
+  line-height: 1.5;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.purchasedRepoMeta, .listedRepoMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  font-size: 14px;
+  color: $text-light;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.subscriptionInfo, .transferStatus {
+  background-color: rgba(0,0,0,0.03);
+  padding: 0.6rem 1.2rem;
+  border-radius: 15px;
+  font-size: 13px;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.08);
+    color: $dark-text-color;
+  }
+}
+
+.purchasedRepoActions, .listedRepoControls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
+}
+
+.viewListingButton, .editListingButton, .removeListingButton, .soldButton {
+  padding: 0.75rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: $transition;
+  text-align: center;
+  width: 100%;
+  flex: none;
+}
+
+.viewListingButton {
+  background-color: $primary-color;
+  color: white;
+  
+  &:hover {
+    background-color: color.scale($primary-color, $lightness: -5%);
+    transform: scale(1.02);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-primary-color;
+    
+    &:hover {
+      background-color: color.scale($dark-primary-color, $lightness: 5%);
+    }
+  }
+}
+
+.editListingButton {
+  background-color: rgba(0,0,0,0.03);
+  color: $text-color;
+  
+  &:hover {
+    background-color: rgba(0,0,0,0.05);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.08);
+    color: $dark-text-color;
+    
+    &:hover {
+      background-color: rgba(255,255,255,0.12);
+    }
+  }
+}
+
+.removeListingButton {
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
+  
+  &:hover:not(:disabled) {
+    background-color: rgba(255, 59, 48, 0.15);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255, 69, 58, 0.2);
+    color: #ff453a;
+    
+    &:hover:not(:disabled) {
+      background-color: rgba(255, 69, 58, 0.25);
+    }
+  }
+}
+
+.soldButton {
+  background-color: rgba(255, 149, 0, 0.1); // Apple orange
+  color: #ff9500;
+  
+  &:hover:not(:disabled) {
+    background-color: rgba(255, 149, 0, 0.15);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255, 159, 10, 0.2);
+    color: #ff9f0a;
+    
+    &:hover:not(:disabled) {
+      background-color: rgba(255, 159, 10, 0.25);
+    }
+  }
+}
+
+.listedRepoPrice {
+  font-size: 16px;
+  font-weight: 600;
+  color: $primary-color;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  background-color: rgba(0, 113, 227, 0.1);
+  display: inline-block;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-primary-color;
+    background-color: rgba(10, 132, 255, 0.15);
+  }
+}
+
+.listedRepoStats {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: $text-light;
+    font-size: 14px;
+  }
+  
+  .statIcon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// Status colors for transfers
+.status-completed {
+  background-color: rgba(52, 199, 89, 0.1); // Apple green
+  color: #34c759;
+}
+
+.status-pending {
+  background-color: rgba(255, 149, 0, 0.1); // Apple orange
+  color: #ff9500;
+}
+
+.status-failed {
+  background-color: rgba(255, 59, 48, 0.1); // Apple red
+  color: #ff3b30;
+}
+
+.bankDetailsButtons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+// Verifications notes
+.verificationNote {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 13px;
+  color: #ff9500; // Apple orange
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: #ff9f0a; // Apple orange (dark)
+  }
+}
+
+// Repository list styling
+.repoListContainer {
+  padding: 1.5rem 5%;
+  display: flex;
+  flex-direction: column;
+}
+
+.repoControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.filterContainer {
+  flex: 1;
+  max-width: 500px;
+  
+  @media (max-width: 768px) {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+.repoFilterInput {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  font-size: 15px;
+  color: $text-color;
+  outline: none;
+  transition: all 0.2s ease;
+  background-color: rgba(0,0,0,0.02);
+  
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.05);
+    color: $dark-text-color;
+    border-color: rgba(255,255,255,0.1);
+    
+    &:focus {
+      border-color: $dark-primary-color;
+      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
+    }
+  }
+}
+
+.sortContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.repoSortSelect {
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  font-size: 15px;
+  color: $text-color;
+  outline: none;
+  background-color: rgba(0,0,0,0.02);
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  appearance: none;
+  cursor: pointer;
+  
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.05);
+    color: $dark-text-color;
+    border-color: rgba(255,255,255,0.1);
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ccc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    
+    &:focus {
+      border-color: $dark-primary-color;
+      box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
+    }
+  }
+}
+
+.sortDirectionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  background-color: rgba(0,0,0,0.02);
+  color: $text-color;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(0,0,0,0.04);
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.05);
+    color: $dark-text-color;
+    border-color: rgba(255,255,255,0.1);
+    
+    &:hover {
+      background-color: rgba(255,255,255,0.08);
+    }
+  }
+}
+
+.repoList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.repoListItem {
+  padding: 1.75rem;
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: $radius;
+  background-color: white;
+  transition: $transition;
+  
+  &:hover {
+    transform: none;
+    box-shadow: $card-shadow;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: rgba(255,255,255,0.05);
+  }
+}
+
+.repoListItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+.repoName {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
+  
+  a {
+    color: $text-color;
+    text-decoration: none;
+    
+    &:hover {
+      color: $primary-color;
+    }
+    
+    // Dark mode styles
+    :global(.dark-theme) & {
+      color: $dark-text-color;
+      
+      &:hover {
+        color: $dark-primary-color;
+      }
+    }
+  }
+}
+
+.repoDescription {
+  color: $text-light;
+  margin: 0 0 1.25rem;
+  font-size: 15px;
+  line-height: 1.5;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.repoListItemFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  font-size: 14px;
+}
+
+.repoLanguage {
+  background-color: rgba(0,0,0,0.03);
+  padding: 0.4rem 0.9rem;
+  border-radius: 15px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: rgba(255,255,255,0.08);
+    color: $dark-text-light;
+  }
+}
+
+.repoStat {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: $text-light;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.repoDate {
+  color: $text-light;
+  margin-left: auto;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.noResults {
+  text-align: center;
+  padding: 3rem 0;
+  color: $text-light;
+  font-size: 16px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+// Footer styling
+.compressedFooter {
+  padding: 2rem 5%;
+  background-color: $light-bg;
+  margin-top: 3rem;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+  }
+}
+
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+
+.footerLeft {
+  color: $text-light;
+  font-size: 14px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+.footerRight {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+.footerLink {
+  color: $text-light;
+  font-size: 14px;
+  text-decoration: none;
+  
+  &:hover {
+    color: $primary-color;
+  }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+    
+    &:hover {
+      color: $dark-primary-color;
+    }
+  }
+}
+
+.footerCopyright {
+  color: $text-light;
+  font-size: 14px;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+// Global heading styles for dark mode
+h1, h2, h3, h4, h5, h6 {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-color;
+  }
+}
+
+// All background containers
+.repoCard, .purchasedRepoCard, .listedRepoCard, .formSection, .connectionCard, .usernameInputContainer {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-component-bg;
+    border-color: $dark-border-color;
+    box-shadow: $dark-card-shadow;
+  }
+}
+
+// Repository grid backgrounds
+.repoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  padding: 3rem 5%;
+  background-color: white;
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 2rem 5%;
+    gap: 2rem;
+  }
+}
+
+// All white background sections
+.accountInfo, .purchasedRepos, .listedRepos {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+}
+
+// All loading and empty states
+.loading, .emptyState, .noResults {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+    color: $dark-text-light;
+  }
+}
+
+// Ensure all buttons with white backgrounds have dark mode styles
+button, .button {
+  // Dark mode styles for buttons that don't have specific styles
+  :global(.dark-theme) & {
+    &:not([class*="connectionButton"]):not([class*="saveButton"]):not([class*="cancelButton"]):not([class*="editUsernameButton"]):not([class*="themeButton"]):not([class*="refreshButton"]):not([class*="toggleSoldButton"]):not([class*="sortDirectionButton"]):not([class*="removeListingButton"]):not([class*="soldButton"]):not([class*="viewListingButton"]):not([class*="editListingButton"]) {
+      background-color: $dark-component-bg;
+      color: $dark-text-color;
+      border-color: $dark-border-color;
+      
+      &:hover {
+        background-color: $dark-hover-bg;
+      }
+    }
+  }
+}
+
+// Placeholder avatar background
+.placeholderAvatar {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-accent-color;
+  }
+}
+
+// Status messages and info sections
+.verificationNote, .formHint {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    color: $dark-text-light;
+  }
+}
+
+// Additional specific containers that need dark backgrounds
+.repoListContainer {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+}
+
+// Bank details form background
+.formContainer {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+}
+
+// Footer container
+.compressedFooter {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+    border-color: $dark-border-color;
+  }
+}
+
+// Any remaining input fields
+input, select, textarea {
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-input-bg;
+    color: $dark-text-color;
+    border-color: $dark-border-color;
+  }
+}
+
+// Marketplace listing card with blue background
+.marketplaceCard {
+  background-color: $primary-color;
+  border-radius: $radius;
+  overflow: hidden;
+  box-shadow: $card-shadow;
+  transition: $transition;
+  position: relative;
+  
+  &:hover {
+    transform: none;
+    box-shadow: $card-shadow;
+  }
+  
+  .cardHeader {
+    padding: 1rem;
+    position: relative;
+  }
+  
+  .purchaseType {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+  
+  .cardTitle {
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    margin: 3rem 1.5rem 2rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+  }
+  
+  .cardBody {
+    background-color: #222;
+    color: white;
+    padding: 1.75rem;
+  }
+  
+  .cardDescription {
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    min-height: 100px;
+  }
+  
+  .priceTag {
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+  
+  .cardStats {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0 1.5rem;
+    
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+    }
+  }
+  
+  .cardActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .cardButton {
+    padding: 0.75rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: $transition;
+    text-align: center;
+    width: 100%;
+    
+    &.primary {
+      background-color: white;
+      color: $primary-color;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+        transform: none;
+      }
+    }
+    
+    &.secondary {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: white;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+    
+    &.danger {
+      background-color: rgba(255, 59, 48, 0.15);
+      color: white;
+      
+      &:hover {
+        background-color: rgba(255, 59, 48, 0.25);
+      }
+    }
+    
+    &.warning {
+      background-color: rgba(255, 149, 0, 0.15);
+      color: white;
+      
+      &:hover {
+        background-color: rgba(255, 149, 0, 0.25);
+      }
+    }
+  }
+}
+
+
+

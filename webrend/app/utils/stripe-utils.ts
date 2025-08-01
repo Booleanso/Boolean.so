@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { db, auth } from '../lib/firebase-admin';
 
+// Interfaces for Stripe account data
+interface StripeAccountData {
+  accountHolderName: string;
+  country?: string;
+}
+
 // Mock Stripe Connect functionality
 export const stripeConnect = {
-  createAccount: async (userId: string, data: any) => {
+  createAccount: async (userId: string, data: StripeAccountData) => {
     try {
       // In a real implementation, this would call Stripe API
       // For now, we'll simulate a successful account creation
@@ -70,10 +76,10 @@ export async function verifyUserAuth(sessionCookie: string | undefined) {
 }
 
 // API handler helper
-export async function withAuth(
+export async function withAuth<T = unknown, R = unknown>(
   req: Request,
-  handler: (userId: string, data: any) => Promise<any>
-) {
+  handler: (userId: string, data: T) => Promise<R>
+): Promise<NextResponse<R | { error: string }>> {
   try {
     // Get session cookie from request
     const cookies = req.headers.get('cookie') || '';

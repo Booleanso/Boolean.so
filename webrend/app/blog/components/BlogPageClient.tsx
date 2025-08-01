@@ -169,10 +169,10 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
     // Add listener for theme changes - this ensures the UI updates appropriately
     const checkDarkMode = () => {
       const isDark = document.documentElement.classList.contains('dark-theme');
-      const searchInput = document.querySelector(`.${styles.searchInput}`) as HTMLInputElement;
-      const searchIcon = document.querySelector(`.${styles.searchIcon}`) as HTMLElement;
-      const clearBtn = document.querySelector(`.${styles.clearSearch}`) as HTMLButtonElement;
-      const submitBtn = document.querySelector(`.${styles.searchSubmitButton}`) as HTMLButtonElement;
+      // const searchInput = document.querySelector(`.${styles.searchInput}`) as HTMLInputElement;
+      // const searchIcon = document.querySelector(`.${styles.searchIcon}`) as HTMLElement;
+      // const clearBtn = document.querySelector(`.${styles.clearSearch}`) as HTMLButtonElement;
+      // const submitBtn = document.querySelector(`.${styles.searchSubmitButton}`) as HTMLButtonElement;
       
       // Add the right class to elements based on theme
       const container = document.querySelector('main');
@@ -198,7 +198,7 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
     return () => {
       observer.disconnect();
     };
-  }, [isMounted, styles]);
+  }, [isMounted]);
   
   // For SSR compatibility, render a simplified version initially
   if (!isMounted) {

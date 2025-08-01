@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Verify the session cookie to get the seller's user ID
-    const decodedClaims = await auth.verifySessionCookie(sessionCookie);
+    const decodedClaims = await auth!.verifySessionCookie(sessionCookie);
     const sellerId = decodedClaims.uid;
     
     if (!sellerId) {
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     console.log(`GitHub revoke: Revoking access for repo ${repoId}, buyer ${buyerId}, subscription ${subscriptionId}`);
 
     // Get buyer and seller GitHub information
-    const buyerDoc = await db.collection('customers').doc(buyerId).get();
+    const buyerDoc = await db!.collection('customers').doc(buyerId).get();
     if (!buyerDoc.exists) {
       return NextResponse.json(
         { error: 'Buyer account not found' },
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
     const buyerData = buyerDoc.data() || {};
     
-    const sellerDoc = await db.collection('customers').doc(sellerId).get();
+    const sellerDoc = await db!.collection('customers').doc(sellerId).get();
     if (!sellerDoc.exists) {
       return NextResponse.json(
         { error: 'Seller account not found' },
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get subscription document to validate the relationship
-    const subscriptionDoc = await db.collection('subscriptions').doc(subscriptionId).get();
+    const subscriptionDoc = await db!.collection('subscriptions').doc(subscriptionId).get();
     if (!subscriptionDoc.exists) {
       return NextResponse.json(
         { error: 'Subscription not found' },
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get repository details
-    const repoDoc = await db.collection('repositories').doc(repoId).get();
+    const repoDoc = await db!.collection('repositories').doc(repoId).get();
     if (!repoDoc.exists) {
       return NextResponse.json(
         { error: 'Repository not found' },
@@ -125,14 +125,14 @@ export async function POST(request: NextRequest) {
       }
       
       // Update subscription status in Firestore
-      await db.collection('subscriptions').doc(subscriptionId).update({
+      await db!.collection('subscriptions').doc(subscriptionId).update({
         status: 'canceled',
         canceledAt: new Date().toISOString(),
         accessRevokedAt: new Date().toISOString()
       });
       
       // Log the access revocation
-      await db.collection('accessLogs').add({
+      await db!.collection('accessLogs').add({
         type: 'revoke_access',
         subscriptionId,
         repoId,
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
       console.error('GitHub revoke error:', error);
       
       // Update subscription with error information
-      await db.collection('subscriptions').doc(subscriptionId).update({
+      await db!.collection('subscriptions').doc(subscriptionId).update({
         revocationError: error instanceof Error ? error.message : 'Unknown error',
         revocationAttemptedAt: new Date().toISOString()
       });

@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Verify the session cookie to get the user
-    const decodedClaims = await auth.verifySessionCookie(sessionCookie);
+    const decodedClaims = await auth!.verifySessionCookie(sessionCookie);
     const userId = decodedClaims.uid;
     
     if (!userId) {

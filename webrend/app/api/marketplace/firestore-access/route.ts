@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
           const { field, operator, value, orderByField, orderDirection, limit } = data;
           
           // Start with a collection reference
-          let collectionRef: CollectionReference = db.collection(collection);
+          const collectionRef: CollectionReference = db.collection(collection);
           
           // Convert to query type as we add constraints
           let query: Query = collectionRef;

@@ -57,7 +57,7 @@ export default function DiscoveryPage() {
   useEffect(() => {
     const dates: string[] = [];
     const today = new Date();
-    let currentDate = new Date(today);
+    const currentDate = new Date(today);
     
     while (dates.length < 14) {
       // Check if it's a weekday (Monday = 1, Friday = 5)
@@ -193,7 +193,7 @@ export default function DiscoveryPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Schedule Your Discovery Call</h1>
-        <p>Let's discuss your project and explore how we can help bring your vision to life.</p>
+        <p>Let&apos;s discuss your project and explore how we can help bring your vision to life.</p>
       </div>
 
       <form onSubmit={handleSubmit} className={styles.form}>
@@ -303,7 +303,7 @@ export default function DiscoveryPage() {
           </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="budget">What's your budget range?</label>
+            <label htmlFor="budget">What&apos;s your budget range?</label>
             <select
               id="budget"
               value={formData.budget}

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import styles from './page.module.css';
 
@@ -83,7 +84,7 @@ export default function BlogSlugPage({ article, formattedDate, relatedArticles =
     return () => {
       observer.disconnect();
     };
-  }, [isMounted, styles.container, styles.darkTheme]);
+  }, [isMounted]);
 
   // Use the ISO string directly for the datetime attribute
   const formattedDateTime = article.publishedAt;
@@ -136,7 +137,7 @@ export default function BlogSlugPage({ article, formattedDate, relatedArticles =
       
       {article.imageUrl && (
         <div className={styles.imageContainer}>
-          <img 
+          <Image 
             src={article.imageUrl} 
             alt={article.title} 
             className={styles.featuredImage}
@@ -195,7 +196,7 @@ export default function BlogSlugPage({ article, formattedDate, relatedArticles =
               <Link href={`/blog/${relatedArticle.slug}`} key={index} className={styles.relatedArticleCard}>
                 {relatedArticle.imageUrl && (
                   <div className={styles.relatedArticleImage}>
-                    <img 
+                    <Image 
                       src={relatedArticle.imageUrl} 
                       alt={relatedArticle.title}
                       width={300}

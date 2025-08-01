@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth, db } from '../../../lib/firebase-admin';
 import Stripe from 'stripe';
-import { PLATFORM_FEE_PERCENT } from '../connect/route';
+import { PLATFORM_FEE_PERCENT } from '../../../lib/constants';
 
 // Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {

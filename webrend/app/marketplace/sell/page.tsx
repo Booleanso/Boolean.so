@@ -8,8 +8,9 @@
  * we now use secure server-side API routes to access Firestore.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import styles from './sell.module.scss';
 import { MarketplaceListing } from '../../api/marketplace/list-repo/route';
 import { generateSlug } from '../../lib/utils';
@@ -42,7 +43,7 @@ interface GitHubApiRepo {
   updatedAt: string;
 }
 
-export default function SellPage() {
+function SellPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const repoId = searchParams.get('repo');
@@ -131,7 +132,7 @@ export default function SellPage() {
     else if (repoId) {
       fetchRepoInfo(repoId);
     }
-  }, [repoId, listingId, isEditing, router]);
+  }, [repoId, listingId, isEditing, router, sellerUsername]);
   
   const fetchExistingListing = async (id: string) => {
     try {
@@ -395,11 +396,11 @@ export default function SellPage() {
         <div className={styles.successMessage}>
           <h1>{isEditing ? 'Listing Updated Successfully!' : 'Repository Listed Successfully!'}</h1>
           <p>Your repository has been {isEditing ? 'updated' : 'listed'} on the marketplace. Redirecting to marketplace...</p>
-        </div>
-      </div>
-    );
+              </div>
+    </div>
+  );
   }
-  
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>{isEditing ? 'Edit Repository Listing' : 'Sell Your Repository'}</h1>
@@ -432,30 +433,7 @@ export default function SellPage() {
               <div className={styles.repoStats}>
                 <span>⭐ {repoInfo.stargazers_count}</span>
                 <span>🍴 {repoInfo.forks_count}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className={styles.formSection}>
-            <h2>Repository Image</h2>
-            <div className={styles.formGroup}>
-              <label htmlFor="imageUrl">Image URL</label>
-              <input 
-                type="text" 
-                id="imageUrl"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className={styles.formInput}
-                required
-              />
-              <div className={styles.imagePreview}>
-                {imageUrl && (
-                  <img 
-                    src={imageUrl} 
-                    alt="Repository Preview" 
-                    className={styles.previewImage}
-                  />
-                )}
+                <span>👤 {repoInfo.owner.login}</span>
               </div>
             </div>
           </div>
@@ -464,89 +442,104 @@ export default function SellPage() {
             <h2>Pricing</h2>
             
             <div className={styles.pricingOptions}>
-              <div className={styles.pricingOption}>
-                <input 
-                  type="radio" 
-                  id="oneTime" 
+              <label className={styles.pricingToggle}>
+                <input
+                  type="radio"
                   name="pricingType"
                   checked={!isSubscription}
                   onChange={() => setIsSubscription(false)}
                 />
-                <label htmlFor="oneTime">One-time Purchase</label>
-              </div>
+                <span>One-time Purchase</span>
+              </label>
               
-              <div className={styles.pricingOption}>
-                <input 
-                  type="radio" 
-                  id="subscription" 
+              <label className={styles.pricingToggle}>
+                <input
+                  type="radio"
                   name="pricingType"
                   checked={isSubscription}
                   onChange={() => setIsSubscription(true)}
                 />
-                <label htmlFor="subscription">Monthly Subscription</label>
-              </div>
+                <span>Monthly Subscription</span>
+              </label>
             </div>
             
             {!isSubscription ? (
               <div className={styles.formGroup}>
-                <label htmlFor="price">Price ($)</label>
-                <input 
-                  type="number" 
+                <label htmlFor="price">One-time Price ($)</label>
+                <input
+                  type="number"
                   id="price"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
+                  placeholder="99"
                   min="1"
                   step="0.01"
-                  className={styles.formInput}
-                  required={!isSubscription}
+                  required
                 />
-                <p className={styles.feeInfo}>
-                  Platform fee: 2.5% (${price ? (parseFloat(price) * 0.025).toFixed(2) : '0.00'})
-                </p>
               </div>
             ) : (
               <div className={styles.formGroup}>
                 <label htmlFor="subscriptionPrice">Monthly Subscription Price ($)</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   id="subscriptionPrice"
                   value={subscriptionPrice}
                   onChange={(e) => setSubscriptionPrice(e.target.value)}
+                  placeholder="9.99"
                   min="1"
                   step="0.01"
-                  className={styles.formInput}
-                  required={isSubscription}
+                  required
                 />
-                <p className={styles.feeInfo}>
-                  Platform fee: 2.5% (${subscriptionPrice ? (parseFloat(subscriptionPrice) * 0.025).toFixed(2) : '0.00'}/month)
-                </p>
               </div>
             )}
           </div>
           
-          <div className={styles.formActions}>
-            <button 
-              type="button" 
-              className={styles.cancelButton}
-              onClick={() => router.push('/profile')}
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit" 
-              className={styles.submitButton}
-              disabled={loading}
-            >
-              {loading 
-                ? 'Processing...' 
-                : isEditing 
-                  ? 'Update Listing' 
-                  : 'List Repository for Sale'
-              }
-            </button>
+          <div className={styles.formSection}>
+            <h2>Preview Image</h2>
+            <div className={styles.formGroup}>
+              <label htmlFor="imageUrl">Image URL (optional)</label>
+              <input
+                type="url"
+                id="imageUrl"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="https://example.com/preview.png"
+              />
+              {imageUrl && (
+                <div className={styles.imagePreview}>Image preview here</div>
+              )}
+            </div>
           </div>
+          
+          <button 
+            type="submit" 
+            className={styles.submitButton}
+            disabled={loading}
+          >
+            {loading ? (isEditing ? 'Updating...' : 'Listing...') : (isEditing ? 'Update Listing' : 'List for Sale')}
+          </button>
         </form>
       )}
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function SellPageLoading() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1>Sell Your Repository</h1>
+        <p>Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function SellPage() {
+  return (
+    <Suspense fallback={<SellPageLoading />}>
+      <SellPageContent />
+    </Suspense>
   );
 }

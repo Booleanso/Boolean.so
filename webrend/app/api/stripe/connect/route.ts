@@ -8,9 +8,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2025-02-24.acacia'
 });
 
-// Platform fee percentage (your commission) will be used in the payment route
-export const PLATFORM_FEE_PERCENT = 5;
-
 export async function POST(request: NextRequest) {
   try {
     // Get the session cookie

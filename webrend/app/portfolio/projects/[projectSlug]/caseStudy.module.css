@@ -154,8 +154,7 @@
 
 /* Dark mode styles for tags container - with increased specificity */
 :global(.dark-theme) .caseStudyContainer .tagsContainer,
-:global(.dark-theme) .heroContent .tagsContainer,
-:global(.dark-theme) [class*="tagsContainer"] {
+:global(.dark-theme) .heroContent .tagsContainer {
   background-color: rgba(0, 0, 0, 0.8) !important; /* Semi-transparent black in dark mode */
   border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Light border in dark mode */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
@@ -164,8 +163,7 @@
 
 @media (prefers-color-scheme: dark) {
   :global(.system-theme) .caseStudyContainer .tagsContainer,
-  :global(.system-theme) .heroContent .tagsContainer,
-  :global(.system-theme) [class*="tagsContainer"] {
+  :global(.system-theme) .heroContent .tagsContainer {
     background-color: rgba(0, 0, 0, 0.8) !important; /* Semi-transparent black in system dark mode */
     border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Light border in dark mode */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;

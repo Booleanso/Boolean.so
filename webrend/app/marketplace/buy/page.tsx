@@ -3,6 +3,19 @@ import { db } from '@/app/lib/firebase-admin';
 import Link from 'next/link';
 import Image from 'next/image';
 
+interface MarketplaceListing {
+  docId: string;
+  slug: string;
+  name: string;
+  description: string;
+  imageUrl?: string;
+  stars: number;
+  forks: number;
+  isSubscription: boolean;
+  price?: number;
+  subscriptionPrice?: number;
+}
+
 export const metadata: Metadata = {
   title: 'Marketplace | WebRend',
   description: 'Browse and purchase web development resources on WebRend Marketplace',
@@ -31,7 +44,7 @@ export default async function MarketplacePage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {listings.map((listing: any) => (
+          {listings.map((listing: MarketplaceListing) => (
             <Link href={`/marketplace/buy/${listing.slug}`} key={listing.docId} className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
               <div className="relative h-48">
                 <Image

@@ -45,6 +45,38 @@
   --gradient-start: rgba(255, 255, 255, 1);
   --gradient-mid: rgb(255, 255, 255);
   --gradient-end: rgba(255, 255, 255, 0.319);
+
+  /* Blog-specific variables */
+  --blog-text-primary: #171717;
+  --blog-text-secondary: #404040;
+  --blog-text-muted: #6b7280;
+  --blog-accent: #3b82f6;
+  --blog-accent-muted: rgba(59, 130, 246, 0.1);
+  --blog-border-color: #e5e7eb;
+  --blog-card-bg: #ffffff;
+  --blog-hover-bg: #f9fafb;
+  --blog-code-bg: #f3f4f6;
+  --blog-page-bg: #ffffff;
+
+  /* Blog page-specific variables */
+  --blog-page-bg: #f5f5f7;
+  --blog-surface-variant: #f5f5f5;
+  --blog-search-bg: rgba(0, 0, 0, 0.03);
+  --blog-search-bg-focus: rgba(0, 0, 0, 0.04);
+  --blog-search-border-focus: rgba(0, 0, 0, 0.1);
+  --blog-topbar-bg: rgba(255, 255, 255, 0.85);
+  --blog-categories-bg: white;
+  --blog-category-hover-bg: rgba(0, 0, 0, 0.07);
+  --blog-category-active-bg: rgba(0, 0, 0, 0.1);
+  --blog-empty-state-bg: white;
+  --blog-button-primary-bg: #000;
+  --blog-button-primary-text: white;
+  --blog-button-primary-hover-bg: #333;
+  --blog-button-hover-bg: rgba(0, 0, 0, 0.05);
+  --blog-placeholder-color: #eaeaea;
+  --blog-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --blog-card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --blog-accent-color: #0071e3;
 }
 
 /* Light theme class explicitly sets light theme variables */
@@ -91,6 +123,37 @@
   --link-hover: #ffffff;
   --success-color: #66bb6a;
   --error-color: #e57373;
+
+  /* Blog-specific dark theme variables */
+  --blog-text-primary: #f3f4f6;
+  --blog-text-secondary: #d1d5db;
+  --blog-text-muted: #9ca3af;
+  --blog-accent: #60a5fa;
+  --blog-accent-muted: rgba(96, 165, 250, 0.1);
+  --blog-border-color: #2d3748;
+  --blog-card-bg: #000000;
+  --blog-hover-bg: #111111;
+  --blog-code-bg: #111111;
+  --blog-page-bg: #000000;
+
+  /* Blog page-specific dark theme variables */
+  --blog-surface-variant: #000;
+  --blog-search-bg: rgba(40, 40, 40, 0.95);
+  --blog-search-bg-focus: rgba(50, 50, 50, 0.95);
+  --blog-search-border-focus: rgba(60, 60, 60, 0.9);
+  --blog-topbar-bg: rgba(0, 0, 0, 0.85);
+  --blog-categories-bg: #000;
+  --blog-category-hover-bg: rgba(255, 255, 255, 0.1);
+  --blog-category-active-bg: rgba(255, 255, 255, 0.15);
+  --blog-empty-state-bg: #000;
+  --blog-button-primary-bg: #fff;
+  --blog-button-primary-text: #000;
+  --blog-button-primary-hover-bg: #ddd;
+  --blog-button-hover-bg: rgba(255, 255, 255, 0.1);
+  --blog-placeholder-color: #333;
+  --blog-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --blog-card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --blog-accent-color: #2997ff;
 }
 
 html,

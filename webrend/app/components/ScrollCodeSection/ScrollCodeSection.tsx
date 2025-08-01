@@ -185,7 +185,7 @@ export default function ScrollCodeSection() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [visibleLines]);
+  }, [visibleLines, firstMessageFadingOut, secondMessageFadingOut, showFirstMessage, showSecondMessage, showTerminal, terminalFadingOut]);
 
   const renderCodeLines = () => {
     const lines = [];
@@ -265,7 +265,7 @@ export default function ScrollCodeSection() {
             {showFirstMessage && (
               <div className={`${styles.messageCard} ${firstMessageFadingOut ? styles.fadeOut : ''}`}>
                 <h2 className={styles.messageTitle}>
-                  You didn't know what any of that was, did you?
+                  You didn&apos;t know what any of that was, did you?
                 </h2>
               </div>
             )}

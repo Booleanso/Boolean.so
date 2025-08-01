@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     }
     
     // Get the listing details from Firestore
-    const listingRef = db.collection('listings').doc(documentId);
+    const listingRef = db!.collection('listings').doc(documentId);
     const listingDoc = await listingRef.get();
     
     if (!listingDoc.exists) {
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     
     // Create a purchase record if it doesn't exist yet
     // Check if there's already a purchase for this session
-    const purchasesQuery = await db.collection('purchases')
+    const purchasesQuery = await db!.collection('purchases')
       .where('stripeSessionId', '==', sessionId)
       .limit(1)
       .get();
@@ -98,7 +98,7 @@ export async function POST(request: Request) {
           
         if (sessionCookie) {
           try {
-            const decodedClaims = await auth.verifySessionCookie(sessionCookie);
+            const decodedClaims = await auth!.verifySessionCookie(sessionCookie);
             userId = decodedClaims.uid;
           } catch (error) {
             console.error('Error verifying session cookie:', error);
@@ -130,7 +130,7 @@ export async function POST(request: Request) {
         stripeSubscriptionId: session.subscription,
       };
       
-      const purchaseRef = await db.collection('purchases').add(newPurchase);
+      const purchaseRef = await db!.collection('purchases').add(newPurchase);
       purchaseId = purchaseRef.id;
       
       // Mark the listing as sold for one-time purchases

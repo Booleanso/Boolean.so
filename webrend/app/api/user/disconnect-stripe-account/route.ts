@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAuth, stripeConnect } from '../../../utils/stripe-utils';
 
 export async function POST(req: NextRequest) {
-  return withAuth(req, async (userId, data) => {
+  return withAuth(req, async (userId) => {
     try {
       // Disconnect Stripe Connect account
       await stripeConnect.disconnectAccount(userId);

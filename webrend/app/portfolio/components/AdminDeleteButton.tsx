@@ -19,14 +19,14 @@ export default function AdminDeleteButton({ projectId }: AdminDeleteButtonProps)
         const response = await fetch('/api/auth/check-admin');
         const data = await response.json();
         setIsAdmin(data.isAdmin === true);
-      } catch (error) {
+      } catch {
         console.error('Error checking admin status:', error);
         setIsAdmin(false);
       }
     }
 
     checkAdminStatus();
-  }, []);
+  }, [error]);
 
   // If not admin, don't render anything
   if (!isAdmin) return null;

@@ -10,6 +10,37 @@ import { isValidImageUrl } from '../../../utils/url-utils';
 const PLACEHOLDER_IMAGE_URL = 'https://placehold.co/800x600/eee/ccc?text=Image+Not+Available';
 const GALLERY_PLACEHOLDER_IMAGE_URL = 'https://placehold.co/800x600/eee/ccc?text=Image+Not+Available';
 
+// Firestore raw data interface
+interface FirestoreProjectData {
+  slug?: string;
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+  projectUrl?: string;
+  tags?: string[];
+  dateCompleted?: Timestamp;
+  featured?: boolean;
+  createdAt?: Timestamp;
+  clientName?: string;
+  clientLinkedIn?: string;
+  clientInstagram?: string;
+  clientX?: string;
+  projectLength?: string;
+  projectGoal?: string;
+  solution?: string;
+  keyFeatures?: string[];
+  challenges?: string;
+  results?: string;
+  testimonialText?: string;
+  testimonialAuthor?: string;
+  testimonialTitle?: string;
+  galleryImages?: string[];
+  videoUrl?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string[];
+}
+
 // Define the type for the full project data including new fields
 interface PortfolioProject {
   id: string;
@@ -49,7 +80,7 @@ async function getProjectBySlug(slug: string): Promise<PortfolioProject | null> 
   try {
     // First, try to find by exact slug match
     const projectsRef = db.collection('portfolioProjects');
-    let querySnapshot = await projectsRef.where('slug', '==', slug).limit(1).get();
+    const querySnapshot = await projectsRef.where('slug', '==', slug).limit(1).get();
 
     if (!querySnapshot.empty) {
       console.log(`Found project by exact slug match: ${slug}`);
@@ -113,7 +144,7 @@ async function getProjectBySlug(slug: string): Promise<PortfolioProject | null> 
 }
 
 // Helper function to convert Firestore data to PortfolioProject
-function convertFirestoreDataToProject(docId: string, data: any): PortfolioProject {
+function convertFirestoreDataToProject(docId: string, data: FirestoreProjectData): PortfolioProject {
   // Convert Timestamps
   const dateCompleted = (data.dateCompleted as Timestamp)?.toDate();
   const createdAt = (data.createdAt as Timestamp)?.toDate();
@@ -152,13 +183,14 @@ function convertFirestoreDataToProject(docId: string, data: any): PortfolioProje
 
 // --- Dynamic Metadata Generation ---
 type Props = {
-  params: { projectSlug: string }
+  params: Promise<{ projectSlug: string }>
 }
 
 export async function generateMetadata(
   { params }: Props
 ): Promise<Metadata> {
-  const project = await getProjectBySlug(params.projectSlug);
+  const { projectSlug } = await params;
+  const project = await getProjectBySlug(projectSlug);
 
   if (!project) {
     return {
@@ -201,7 +233,8 @@ export async function generateMetadata(
 
 // --- Page Component ---
 export default async function ProjectPage({ params }: Props) {
-  const project = await getProjectBySlug(params.projectSlug);
+  const { projectSlug } = await params;
+  const project = await getProjectBySlug(projectSlug);
 
   if (!project) {
     notFound(); // Trigger 404 page

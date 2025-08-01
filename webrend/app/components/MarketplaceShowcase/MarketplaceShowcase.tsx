@@ -20,9 +20,9 @@ export default function MarketplaceShowcase() {
 
       // Calculate when section is in viewport
       const sectionStart = sectionTop;
-      const sectionEnd = sectionTop + sectionHeight;
-      const viewportTop = scrollY;
-      const viewportBottom = scrollY + viewportHeight;
+      // const sectionEnd = sectionTop + sectionHeight;
+      // const viewportTop = scrollY;
+      // const viewportBottom = scrollY + viewportHeight;
 
       // Start animation when section is 80% above viewport entry
       const offsetStart = sectionStart - (viewportHeight * 0.8); // 80% offset above entry
@@ -74,7 +74,7 @@ export default function MarketplaceShowcase() {
           </h2>
           
           <p className={styles.description}>
-            Whether you're a solo developer or part of a large team, WebRend's marketplace puts the power of premium code repositories in your hands—ready to use and customize. Transform your workflow with our curated collection of high-quality repositories.
+            Whether you&apos;re a solo developer or part of a large team, WebRend&apos;s marketplace puts the power of premium code repositories in your hands—ready to use and customize. Transform your workflow with our curated collection of high-quality repositories.
           </p>
           
           <div className={styles.ctaContainer}>
