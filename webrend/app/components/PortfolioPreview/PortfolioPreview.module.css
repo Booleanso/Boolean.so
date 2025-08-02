@@ -1,6 +1,6 @@
-/* Portfolio Section - Full Viewport Two Column Layout with Large Globe */
+/* Portfolio Section - Globe Entering from Right Edge */
 .portfolioSection {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   margin: 0;
   padding: 0;
@@ -26,18 +26,17 @@
 .content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   margin: 0;
   padding: 0;
-  gap: 0;
+  position: relative;
 }
 
 .textContent {
-  flex: 0 0 40%;
-  max-width: 40%;
-  padding: 4rem 2rem 4rem 4rem;
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding: 4rem;
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -131,13 +130,13 @@
 }
 
 .globeContainer {
-  flex: 0 0 60%;
-  width: 60vw;
-  height: 100vh;
-  position: relative;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+  position: absolute;
+  right: -35%;
+  top: 40%;
+  width: 150vh;
+  height: 150vh;
+  transform: translateY(-50%);
+  overflow: visible;
   z-index: 5;
 }
 
@@ -203,18 +202,65 @@
 
 /* Removed old project grid styles - now using globe layout */
 
-/* Responsive Design */
-@media (max-width: 1200px) {
+/* Large screens - show even more globe */
+@media (min-width: 1800px) {
+  .globeContainer {
+    right: -30%;
+    width: 160vh;
+    height: 160vh;
+  }
+}
+
+/* Responsive Design - Less globe visible as screen gets smaller */
+@media (max-width: 1400px) {
   .textContent {
-    padding: 3rem 1.5rem 3rem 3rem;
+    padding: 3rem;
   }
   
   .heading {
     font-size: 3rem;
   }
+  
+  .globeContainer {
+    right: -45%;
+    width: 140vh;
+    height: 140vh;
+  }
 }
 
-@media (max-width: 968px) {
+@media (max-width: 1200px) {
+  .textContent {
+    padding: 2.5rem;
+  }
+  
+  .heading {
+    font-size: 2.8rem;
+  }
+  
+  .globeContainer {
+    right: -55%;
+    width: 130vh;
+    height: 130vh;
+  }
+}
+
+@media (max-width: 1024px) {
+  .textContent {
+    padding: 2rem;
+  }
+  
+  .heading {
+    font-size: 2.5rem;
+  }
+  
+  .globeContainer {
+    right: -65%;
+    width: 120vh;
+    height: 120vh;
+  }
+}
+
+@media (max-width: 768px) {
   .portfolioSection {
     height: auto;
     min-height: 100vh;
@@ -234,11 +280,14 @@
   }
   
   .globeContainer {
-    flex: 1;
-    width: 100vw;
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
     height: 60vh;
     min-height: 400px;
-    transform: translateX(-25vw);
+    margin-top: 2rem;
   }
   
   .heading {
@@ -254,52 +303,24 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .textContent {
-    padding: 2rem 1.5rem 1.5rem;
+    padding: 2rem 1rem 1rem;
   }
   
   .heading {
-    font-size: 2.2rem;
+    font-size: 2rem;
     margin-bottom: 1rem;
   }
   
   .subheading {
-    font-size: 1rem;
+    font-size: 0.95rem;
     margin-bottom: 1.5rem;
-  }
-  
-  .globeContainer {
-    height: 50vh;
-    min-height: 300px;
-    transform: translateX(-30vw);
-  }
-  
-  .viewPortfolioButton {
-    padding: 0.7rem 1.2rem;
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .textContent {
-    padding: 1.5rem 1rem 1rem;
-  }
-  
-  .heading {
-    font-size: 1.8rem;
-    margin-bottom: 0.8rem;
-  }
-  
-  .subheading {
-    font-size: 0.9rem;
-    margin-bottom: 1.2rem;
   }
   
   .globeContainer {
     height: 45vh;
     min-height: 280px;
-    transform: translateX(-35vw);
   }
   
   .viewPortfolioButton {

@@ -760,7 +760,6 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
       
       <OrbitControls 
         ref={orbitControlsRef}
-        target={[4, 0, 0]}
         enableZoom={false}
         enablePan={false}
         rotateSpeed={0.2}
@@ -768,7 +767,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
         minDistance={5}
         maxDistance={8}
         autoRotate={isGlobeRotating}
-        autoRotateSpeed={0.25}
+        autoRotateSpeed={0.05}
       />
     </>
   );
@@ -1098,7 +1097,7 @@ export default function PortfolioPreview({ projects }: PortfolioPreviewProps) {
             {loading ? (
               <div className={styles.loading}>Loading globe...</div>
             ) : (
-              <Canvas shadows camera={{ position: [-3, 0, 3.5], fov: 65 }}>
+              <Canvas shadows camera={{ position: [0, 0, 5.5], fov: 70 }}>
                 {/* Main ambient light */}
                 <ambientLight intensity={0.6} /> 
                 
@@ -1124,9 +1123,7 @@ export default function PortfolioPreview({ projects }: PortfolioPreviewProps) {
                 />
                 
                 <Suspense fallback={null}>
-                  <group position={[4, 0, 0]}>
-                    <Globe locations={locations} findMatchingProject={findMatchingProject} />
-                  </group>
+                  <Globe locations={locations} findMatchingProject={findMatchingProject} />
                 </Suspense>
               </Canvas>
             )}
