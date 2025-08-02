@@ -1588,13 +1588,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   }
 }
 
-// Global heading styles for dark mode
-h1, h2, h3, h4, h5, h6 {
-  // Dark mode styles
-  :global(.dark-theme) & {
-    color: $dark-text-color;
-  }
-}
+// Heading styles handled by component-specific classes
 
 // All background containers
 .repoCard, .purchasedRepoCard, .listedRepoCard, .formSection, .connectionCard, .usernameInputContainer {
@@ -1644,7 +1638,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 // Ensure all buttons with white backgrounds have dark mode styles
-button, .button {
+.button {
   // Dark mode styles for buttons that don't have specific styles
   :global(.dark-theme) & {
     &:not([class*="connectionButton"]):not([class*="saveButton"]):not([class*="cancelButton"]):not([class*="editUsernameButton"]):not([class*="themeButton"]):not([class*="refreshButton"]):not([class*="toggleSoldButton"]):not([class*="sortDirectionButton"]):not([class*="removeListingButton"]):not([class*="soldButton"]):not([class*="viewListingButton"]):not([class*="editListingButton"]) {
@@ -1658,6 +1652,8 @@ button, .button {
     }
   }
 }
+
+// Button styles handled by component-specific classes above
 
 // Placeholder avatar background
 .placeholderAvatar {
@@ -1700,15 +1696,7 @@ button, .button {
   }
 }
 
-// Any remaining input fields
-input, select, textarea {
-  // Dark mode styles
-  :global(.dark-theme) & {
-    background-color: $dark-input-bg;
-    color: $dark-text-color;
-    border-color: $dark-border-color;
-  }
-}
+// Input/select/textarea styles handled by component-specific classes
 
 // Marketplace listing card with blue background
 .marketplaceCard {

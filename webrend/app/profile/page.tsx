@@ -5,7 +5,7 @@ import { FaGithub } from 'react-icons/fa';
 import { FiRefreshCw, FiSun, FiMoon, FiMonitor } from 'react-icons/fi';
 import Image from 'next/image';
 import Link from 'next/link';
-import styles from './profile.module.css';
+import styles from './profile.module.scss';
 import { auth } from '../lib/firebase-client';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { useTheme } from '../components/ThemeProvider/ThemeProvider';
