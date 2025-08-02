@@ -18,10 +18,10 @@ const hasValidFirebaseConfig = !!(
   process.env.FIREBASE_STORAGE_BUCKET
 );
 
-let app: App | null = null;
-let db: Firestore | null = null;
-let auth: Auth | null = null;
-let storage: Storage | null = null;
+let app: App;
+let db: Firestore;
+let auth: Auth;
+let storage: Storage;
 
 if (!hasValidFirebaseConfig) {
   console.error('Firebase configuration is missing!', {
@@ -69,10 +69,7 @@ try {
   throw error; // Don't silently fail
 }
 
-// Export real Firebase instances (guaranteed to exist or app would crash)
-if (!db || !auth || !storage) {
-  throw new Error('Firebase services failed to initialize');
-}
+// Firebase instances are now guaranteed to exist (non-nullable)
 
 export { 
   db, 

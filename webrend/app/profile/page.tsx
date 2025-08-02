@@ -118,44 +118,6 @@ export default function ProfilePage() {
   // Get theme from context
   const { theme, setTheme } = useTheme();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-      
-      if (currentUser) {
-        fetchGithubRepos();
-        fetchPurchasedRepos();
-        fetchUserDetails();
-        fetchListedRepos();
-        checkStripeStatus();
-      }
-    });
-
-    // Check URL params for GitHub connection status
-    const params = new URLSearchParams(window.location.search);
-    const githubStatus = params.get('github');
-    const githubError = params.get('error');
-    const errorMessage = params.get('message');
-    
-    if (githubStatus === 'connected') {
-      setGithubConnectStatus('Successfully connected your GitHub account');
-    } else if (githubError) {
-      setGithubConnectStatus(`Error connecting GitHub: ${githubError}${errorMessage ? ` - ${errorMessage}` : ''}`);
-    }
-
-    return () => unsubscribe();
-  }, [fetchGithubRepos, fetchPurchasedRepos, fetchUserDetails, fetchListedRepos, checkStripeStatus]);
-
-  // Add a new effect to refresh listings when mounting
-  // This catches any new listings created since the last visit
-  useEffect(() => {
-    // If user is already set (not first render), refresh listings
-    if (user && !loading) {
-      fetchListedRepos();
-    }
-  }, [user, loading, fetchListedRepos]);
-
   // Fetch user details using the Admin API endpoint
   const fetchUserDetails = useCallback(async () => {
     try {
@@ -398,6 +360,46 @@ export default function ProfilePage() {
       setStripeLoading(false);
     }
   }, [username, user]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+      
+      if (currentUser) {
+        fetchGithubRepos();
+        fetchPurchasedRepos();
+        fetchUserDetails();
+        fetchListedRepos();
+        checkStripeStatus();
+      }
+    });
+
+    // Check URL params for GitHub connection status
+    const params = new URLSearchParams(window.location.search);
+    const githubStatus = params.get('github');
+    const githubError = params.get('error');
+    const errorMessage = params.get('message');
+    
+    if (githubStatus === 'connected') {
+      setGithubConnectStatus('Successfully connected your GitHub account');
+    } else if (githubError) {
+      setGithubConnectStatus(`Error connecting GitHub: ${githubError}${errorMessage ? ` - ${errorMessage}` : ''}`);
+    }
+
+    return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Add a new effect to refresh listings when mounting
+  // This catches any new listings created since the last visit
+  useEffect(() => {
+    // If user is already set (not first render), refresh listings
+    if (user && !loading) {
+      fetchListedRepos();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading]);
 
   const handleBankDetailsSave = async () => {
     // Save the bank details to Firestore via API

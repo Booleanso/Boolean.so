@@ -79,7 +79,7 @@ async function getProjectBySlug(slug: string): Promise<PortfolioProject | null> 
   console.log(`Fetching project with slug: ${slug}`);
   try {
     // First, try to find by exact slug match
-    const projectsRef = db.collection('portfolioProjects');
+    const projectsRef = db!.collection('portfolioProjects');
     const querySnapshot = await projectsRef.where('slug', '==', slug).limit(1).get();
 
     if (!querySnapshot.empty) {

@@ -1,35 +1,38 @@
 import { NextResponse } from 'next/server';
 import { db, auth } from '../lib/firebase-admin';
+import { createConnectAccount, isAccountOnboardingComplete, createAccountLink } from '../../lib/stripe';
 
 // Interfaces for Stripe account data
 interface StripeAccountData {
   accountHolderName: string;
   country?: string;
+  email: string;
 }
 
-// Mock Stripe Connect functionality
+// Real Stripe Connect functionality
 export const stripeConnect = {
   createAccount: async (userId: string, data: StripeAccountData) => {
     try {
-      // In a real implementation, this would call Stripe API
-      // For now, we'll simulate a successful account creation
-      const stripeAccountId = `acct_${Math.random().toString(36).substring(2, 15)}`;
-      const accountStatus = 'pending';
+      // Create real Stripe Connect account
+      const stripeAccount = await createConnectAccount(data.email, data.country || 'US');
+      const accountStatus = 'pending'; // Will be updated when onboarding completes
       
       // Save to Firestore
-      await db.collection('users').doc(userId).set({
+      await db!.collection('users').doc(userId).set({
         accountHolderName: data.accountHolderName,
+        email: data.email,
         country: data.country || 'US',
-        bankDetailsAdded: true,
-        stripeAccountId,
+        bankDetailsAdded: false, // Will be true after onboarding
+        stripeAccountId: stripeAccount.id,
         stripeAccountStatus: accountStatus,
         updatedAt: new Date().toISOString()
       }, { merge: true });
       
       return {
         success: true,
-        stripeAccountId,
-        accountStatus
+        stripeAccountId: stripeAccount.id,
+        accountStatus,
+        account: stripeAccount
       };
     } catch (error) {
       console.error('Error creating Stripe account:', error);
@@ -37,17 +40,61 @@ export const stripeConnect = {
     }
   },
   
+  createOnboardingLink: async (userId: string, stripeAccountId: string, refreshUrl: string, returnUrl: string) => {
+    try {
+      // Create real Stripe onboarding link
+      const accountLink = await createAccountLink(stripeAccountId, refreshUrl, returnUrl);
+      
+      return {
+        success: true,
+        url: accountLink.url
+      };
+    } catch (error) {
+      console.error('Error creating onboarding link:', error);
+      throw new Error('Failed to create onboarding link');
+    }
+  },
+  
+  checkAccountStatus: async (userId: string, stripeAccountId: string) => {
+    try {
+      // Check real Stripe account onboarding status
+      const isComplete = await isAccountOnboardingComplete(stripeAccountId);
+      
+      // Update Firestore with current status
+      await db!.collection('users').doc(userId).set({
+        bankDetailsAdded: isComplete,
+        stripeAccountStatus: isComplete ? 'verified' : 'pending',
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+      
+      return {
+        success: true,
+        isComplete,
+        accountStatus: isComplete ? 'verified' : 'pending'
+      };
+    } catch (error) {
+      console.error('Error checking account status:', error);
+      throw new Error('Failed to check account status');
+    }
+  },
+  
   disconnectAccount: async (userId: string) => {
     try {
-      // Update Firestore document
-      await db.collection('users').doc(userId).set({
+      // Note: Stripe doesn't allow programmatic deletion of Connect accounts
+      // for security reasons. Users must contact Stripe directly.
+      // We'll just update our records to reflect disconnection
+      
+      await db!.collection('users').doc(userId).set({
         bankDetailsAdded: false,
         stripeAccountId: null,
         stripeAccountStatus: null,
         updatedAt: new Date().toISOString()
       }, { merge: true });
       
-      return { success: true };
+      return { 
+        success: true,
+        message: 'Account disconnected from platform. Contact Stripe support to permanently delete the account.'
+      };
     } catch (error) {
       console.error('Error disconnecting Stripe account:', error);
       throw new Error('Failed to disconnect Stripe account');

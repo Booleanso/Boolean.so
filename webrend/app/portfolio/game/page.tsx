@@ -470,7 +470,7 @@ function Scene({ joystickData, otherPlayers, updatePlayerData }: {
   updatePlayerData: (position: [number, number, number], rotation: [number, number, number, number]) => void;
 }) {
   // const isMobile = useIsMobile();
-  const [pointerLockControls, setPointerLockControls] = useState<PointerLockControls | null>(null);
+  const [pointerLockControls, setPointerLockControls] = useState<any>(null);
   
   // Handle pointer lock errors
   useEffect(() => {
@@ -552,7 +552,7 @@ export default function GamePage() {
   const [showInstructions, setShowInstructions] = useState(true);
   const [userId, setUserId] = useState<string>('');
   const [username, setUsername] = useState<string>('Guest');
-  // const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
   

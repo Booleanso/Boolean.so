@@ -26,16 +26,32 @@ function SuccessPageContent() {
     
     async function verifyTransaction() {
       try {
-        // In a real implementation, you would verify the transaction with Stripe
-        // For this demo, we'll simulate success after a delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock data for the success page
-        setTransactionDetails({
-          repositoryName: 'Advanced React Component Library',
-          transactionType: Math.random() > 0.5 ? 'purchase' : 'subscription',
-          sellerName: 'DevShop Solutions'
+        // Make a real API call to verify the Stripe session
+        const response = await fetch('/api/payments/verify-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sessionId }),
         });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to verify transaction');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.listing) {
+          // Set real transaction details from the API response
+          setTransactionDetails({
+            repositoryName: data.listing.name,
+            transactionType: data.listing.isSubscription ? 'subscription' : 'purchase',
+            sellerName: data.listing.sellerId || 'Repository Owner'
+          });
+        } else {
+          throw new Error('Transaction verification failed');
+        }
         
         setLoading(false);
       } catch (err) {
