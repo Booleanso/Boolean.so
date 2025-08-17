@@ -1,6 +1,7 @@
 import { verifyUser } from "../../../utils/auth-utils";
 import { redirect } from 'next/navigation';
 import AddProjectForm from "./components/AddProjectForm";
+import styles from "../page.module.css";
 
 // This is a server component
 export default async function AddPortfolioProjectPage() {
@@ -15,9 +16,10 @@ export default async function AddPortfolioProjectPage() {
 
   // If authorized, render the page content
   return (
-    <main style={{ padding: '2rem' }}>
-      <h1>Add New Portfolio Project</h1>
-      <p>Welcome, Admin! Use the form below to add a new project.</p>
+    <main className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Add Portfolio Project</h1>
+      </div>
       <AddProjectForm />
     </main>
   );

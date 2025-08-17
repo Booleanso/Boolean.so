@@ -48,13 +48,22 @@ export async function GET(request: NextRequest) {
     
     // Check if the user has a GitHub connection
     const isConnected = !!userData.githubUsername;
-    
+
+    // Include recent copy jobs for visibility
+    const jobSnap = await db!.collection('repoCopyJobs')
+      .where('buyerId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .limit(5)
+      .get();
+    const recentJobs = jobSnap.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
+
     return NextResponse.json({
       connected: isConnected,
       githubUsername: userData.githubUsername || null,
       githubAvatarUrl: userData.githubAvatarUrl || null,
       githubProfileUrl: userData.githubProfileUrl || null,
-      githubConnectedAt: userData.githubConnectedAt || null
+      githubConnectedAt: userData.githubConnectedAt || null,
+      recentJobs
     });
   } catch (error) {
     console.error('GitHub status check error:', error);

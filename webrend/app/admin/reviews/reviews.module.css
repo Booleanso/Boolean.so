@@ -1,0 +1,10 @@
+.page { padding: 2rem; max-width: 900px; margin: 0 auto; }
+.list { display: grid; gap: 1rem; margin-top: 1rem; }
+.row { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 1rem; }
+.meta { display: flex; align-items: center; gap: 0.5rem; color: #1d1d1f; }
+.status { color: #6e6e73; }
+.comment { margin-top: 0.5rem; color: #1d1d1f; }
+.actions { margin-top: 0.75rem; display: flex; gap: 0.5rem; }
+.approve { background: #34c759; color: #fff; border: none; padding: 0.45rem 0.8rem; border-radius: 8px; }
+.reject { background: #ff3b30; color: #fff; border: none; padding: 0.45rem 0.8rem; border-radius: 8px; }
+

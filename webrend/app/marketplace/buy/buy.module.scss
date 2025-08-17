@@ -1141,6 +1141,89 @@ $dark-error-red: #ff453a; // Apple red (dark mode)
     @include section-title;
     margin-bottom: 2rem;
   }
+
+  // Write review form
+  .reviewForm {
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba($border-color, 0.3);
+    @include flex-column;
+    gap: 1rem;
+
+    :global(.dark-theme) & {
+      border-top: 1px solid rgba($dark-border-color, 0.3);
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      color: $text-color;
+
+      :global(.dark-theme) & {
+        color: $dark-text-color;
+      }
+    }
+
+    .ratingInput {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+
+      button {
+        @include button-reset;
+        background: transparent;
+        font-size: 22px;
+        line-height: 1;
+        padding: 4px;
+      }
+
+      .starFilled { color: $primary-color; }
+      .starEmpty  { color: rgba($border-color, 0.6); }
+
+      :global(.dark-theme) & {
+        .starFilled { color: $dark-primary-color; }
+        .starEmpty  { color: rgba($dark-border-color, 0.6); }
+      }
+    }
+
+    .commentInput {
+      width: 100%;
+      min-height: 110px;
+      padding: 0.9rem 1rem;
+      border-radius: 10px;
+      border: 1px solid $border-color;
+      background-color: rgba(0,0,0,0.02);
+      color: $text-color;
+      font-size: 15px;
+      resize: vertical;
+      outline: none;
+
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+      }
+
+      :global(.dark-theme) & {
+        background-color: rgba(255,255,255,0.06);
+        border-color: $dark-border-color;
+        color: $dark-text-color;
+
+        &:focus {
+          border-color: $dark-primary-color;
+          box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.3);
+        }
+      }
+    }
+
+    .submitReviewButton {
+      @include apple-button;
+      width: fit-content;
+      padding: 0.8rem 1.6rem;
+      font-size: 15px;
+      align-self: flex-start;
+    }
+  }
   
   .reviewStats {
     display: flex;

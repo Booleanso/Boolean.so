@@ -7,7 +7,7 @@ import MarketplaceShowcase from "./components/MarketplaceShowcase/MarketplaceSho
 import MarketplaceFeatures from "./components/MarketplaceFeatures/MarketplaceFeatures";
 import ServicesCardsSection from "./components/ServicesCardsSection/ServicesCardsSection";
 import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
-import InstagramFeed from "./components/InstagramFeed/InstagramFeed";
+// import InstagramFeed from "./components/InstagramFeed/InstagramFeed";
 import ReviewCrowd from "./components/ReviewCrowd/ReviewCrowd";
 import FAQ from "./components/FAQ/FAQ";
 // import ContactUs from "./components/ContactUs/ContactUs"; // Commented out - "Let's work together" section removed
@@ -123,9 +123,9 @@ export default async function Home() {
         <section id="featured-repos">
           <FeaturedRepos />
         </section>
-        <section id="instagram">
+        {/* <section id="instagram">
           <InstagramFeed />
-        </section>
+        </section> */}
         <section id="blog">
           <BlogPreview />
         </section>

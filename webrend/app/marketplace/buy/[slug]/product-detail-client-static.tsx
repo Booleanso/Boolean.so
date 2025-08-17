@@ -74,13 +74,14 @@ interface DeveloperInfo {
 }
 
 interface Review {
-  id: string;
+  id?: string;
   userId: string;
   username: string;
   avatarUrl?: string;
   rating: number;
   comment: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 interface ProductDetailClientProps {
@@ -105,36 +106,12 @@ export default function ProductDetailClient({
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [showGithubTransferInfo, setShowGithubTransferInfo] = useState(false);
   
-  // Add sample reviews for demonstration
-  const [reviews] = useState<Review[]>([
-    {
-      id: '1',
-      userId: 'user1',
-      username: 'developer123',
-      avatarUrl: '/logo/logo.png',
-      rating: 5,
-      comment: 'Excellent repository! Well-organized code and very easy to use. Documentation is thorough and the implementation is clean.',
-      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: '2',
-      userId: 'user2',
-      username: 'webmaster',
-      avatarUrl: '/logo/logo_inverted.png',
-      rating: 4,
-      comment: 'Great code quality and implementation. Would have preferred more comments in some complex areas, but overall very satisfied with the purchase.',
-      createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: '3',
-      userId: 'user3',
-      username: 'codeExplorer',
-      avatarUrl: undefined,
-      rating: 5,
-      comment: 'Saved me countless hours of development time. This repository has exactly what I needed and was easy to integrate into my existing project.',
-      createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-    }
-  ]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState<boolean>(true);
+  const [reviewsError, setReviewsError] = useState<string | null>(null);
+  const [newRating, setNewRating] = useState<number>(5);
+  const [newComment, setNewComment] = useState<string>('');
+  const [submittingReview, setSubmittingReview] = useState<boolean>(false);
 
   // Frequently asked questions
   const faqItems = [
@@ -168,6 +145,28 @@ export default function ProductDetailClient({
     
     return () => unsubscribe();
   }, []);
+
+  // Fetch reviews on mount and when listing changes
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setReviewsLoading(true);
+        setReviewsError(null);
+        const res = await fetch(`/api/marketplace/reviews/${listing.docId}`);
+        if (!res.ok) {
+          throw new Error(`Failed to load reviews (${res.status})`);
+        }
+        const data = await res.json();
+        setReviews((data.reviews || []) as Review[]);
+      } catch (err) {
+        console.error('Error loading reviews:', err);
+        setReviewsError('Failed to load reviews');
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+    fetchReviews();
+  }, [listing.docId]);
 
   const handlePurchase = async () => {
     if (!isAuthenticated) {
@@ -680,45 +679,108 @@ export default function ProductDetailClient({
       {/* Reviews Section - New */}
       <div className={styles.reviewsSection}>
         <h2>Customer Reviews</h2>
-        <div className={styles.reviewStats}>
-          <div className={styles.averageRating}>
-            <div className={styles.ratingNumber}>
-              {(reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1)}
-            </div>
-            <div className={styles.ratingStars}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span key={star} className={styles.ratingStar}>
-                  ★
-                </span>
-              ))}
-            </div>
-            <div className={styles.ratingCount}>
-              Based on {reviews.length} reviews
-            </div>
-          </div>
-          <div className={styles.ratingBreakdown}>
-            {[5, 4, 3, 2, 1].map((rating) => {
-              const count = reviews.filter(r => r.rating === rating).length;
-              const percentage = (count / reviews.length) * 100;
-              return (
-                <div key={rating} className={styles.ratingBar}>
-                  <span className={styles.ratingLabel}>{rating} stars</span>
-                  <div className={styles.ratingBarContainer}>
-                    <div 
-                      className={styles.ratingBarFill} 
-                      style={{ width: `${percentage}%` }}
-                    ></div>
-                  </div>
-                  <span className={styles.ratingCount}>{count}</span>
+        {reviewsLoading ? (
+          <div className={styles.loading}>Loading reviews…</div>
+        ) : reviewsError ? (
+          <div className={styles.error}>{reviewsError}</div>
+        ) : (
+          <>
+            <div className={styles.reviewStats}>
+              <div className={styles.averageRating}>
+                <div className={styles.ratingNumber}>
+                  {reviews.length > 0 ? (
+                    (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1)
+                  ) : (
+                    '0.0'
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        </div>
+                <div className={styles.ratingStars}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span key={star} className={styles.ratingStar}>★</span>
+                  ))}
+                </div>
+                <div className={styles.ratingCount}>
+                  {reviews.length > 0 ? `Based on ${reviews.length} reviews` : 'No reviews yet'}
+                </div>
+              </div>
+              <div className={styles.ratingBreakdown}>
+                {[5, 4, 3, 2, 1].map((rating) => {
+                  const count = reviews.filter(r => r.rating === rating).length;
+                  const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+                  return (
+                    <div key={rating} className={styles.ratingBar}>
+                      <span className={styles.ratingLabel}>{rating} stars</span>
+                      <div className={styles.ratingBarContainer}>
+                        <div className={styles.ratingBarFill} style={{ width: `${percentage}%` }}></div>
+                      </div>
+                      <span className={styles.ratingCount}>{count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Review form for authenticated users */}
+            {isAuthenticated && (
+              <div className={styles.reviewForm}>
+                <h3>Write a Review</h3>
+                <div className={styles.ratingInput}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      className={star <= newRating ? styles.starFilled : styles.starEmpty}
+                      onClick={() => setNewRating(star)}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+                <textarea
+                  className={styles.commentInput}
+                  placeholder="Share your experience with this repository"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  maxLength={5000}
+                />
+                <button
+                  className={styles.submitReviewButton}
+                  disabled={submittingReview || newComment.trim().length === 0}
+                  onClick={async () => {
+                    try {
+                      setSubmittingReview(true);
+                      const res = await fetch(`/api/marketplace/reviews/${listing.docId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ rating: newRating, comment: newComment.trim() })
+                      });
+                      if (!res.ok) {
+                        const data = await res.json();
+                        throw new Error(data.error || 'Failed to submit review');
+                      }
+                      // Reload reviews
+                      const refreshed = await fetch(`/api/marketplace/reviews/${listing.docId}`);
+                      const data = await refreshed.json();
+                      setReviews((data.reviews || []) as Review[]);
+                      setNewComment('');
+                    } catch (err) {
+                      console.error('Submit review error:', err);
+                      alert(err instanceof Error ? err.message : 'Failed to submit review');
+                    } finally {
+                      setSubmittingReview(false);
+                    }
+                  }}
+                >
+                  {submittingReview ? 'Submitting…' : 'Submit Review'}
+                </button>
+              </div>
+            )}
+          </>
+        )}
         
         <div className={styles.reviewsList}>
           {reviews.map((review) => (
-            <div key={review.id} className={styles.reviewItem}>
+            <div key={review.id || review.userId + String(review.createdAt)} className={styles.reviewItem}>
               <div className={styles.reviewHeader}>
                 <div className={styles.reviewerInfo}>
                   <div className={styles.reviewerAvatar}>

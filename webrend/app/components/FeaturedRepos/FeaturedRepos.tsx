@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./FeaturedRepos.module.css";
+import marketplaceStyles from "../../marketplace/marketplace.module.scss";
 
 // Import the type for consistency
 import { MarketplaceListing } from '../../api/marketplace/list-repo/route';
@@ -18,39 +19,25 @@ export default function FeaturedRepos() {
       try {
         setLoading(true);
         setError(null);
-        
-        // Fetch all listings from the API
         const response = await fetch('/api/marketplace/listings');
-        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
         const data = await response.json();
         const allListings = data.listings || [];
-        
-        // Filter out sold repositories
         const availableRepos = allListings.filter((repo: MarketplaceListing) => !repo.sold);
-        
         if (availableRepos.length === 0) {
           setFeaturedRepos([]);
           return;
         }
-        
-        // Select up to 3 random repos to feature
         const randomRepos: MarketplaceListing[] = [];
         const totalToShow = Math.min(3, availableRepos.length);
-        
-        // Create a copy of the array to avoid modifying the original
         const repoPool = [...availableRepos];
-        
         for (let i = 0; i < totalToShow; i++) {
           const randomIndex = Math.floor(Math.random() * repoPool.length);
           randomRepos.push(repoPool[randomIndex]);
-          // Remove the selected repo to avoid duplicates
           repoPool.splice(randomIndex, 1);
         }
-        
         setFeaturedRepos(randomRepos);
       } catch (err) {
         console.error('Error fetching featured repositories:', err);
@@ -60,7 +47,6 @@ export default function FeaturedRepos() {
         setLoading(false);
       }
     };
-    
     fetchFeaturedRepos();
   }, []);
 
@@ -72,7 +58,7 @@ export default function FeaturedRepos() {
           Discover high-quality code ready to use in your next project. Our marketplace offers the best GitHub repositories from top developers worldwide.
         </p>
       </div>
-      
+
       {loading ? (
         <div className={styles.loadingContainer}>
           <div className={styles.loadingBar}></div>
@@ -90,50 +76,105 @@ export default function FeaturedRepos() {
           <p>No repositories available at the moment. Check back soon!</p>
         </div>
       ) : (
-        <div className={styles.repoGrid}>
+        <div className={marketplaceStyles.grid}>
           {featuredRepos.map((repo) => (
-            <Link href={`/marketplace/buy/${repo.docId || repo.id}`} key={repo.id} className={styles.repoCard}>
-              <div className={styles.repoImageWrapper}>
+            <div key={repo.id} className={marketplaceStyles.card}>
+              <div className={marketplaceStyles.cardImage}>
                 <Image 
-                  src={repo.imageUrl} 
+                  src={repo.imageUrl}
                   alt={repo.name}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className={styles.repoImage}
+                  width={600}
+                  height={400}
                 />
-                <div className={styles.overlay}></div>
+                {repo.sold && (
+                  <div className={marketplaceStyles.soldBadge}>Sold</div>
+                )}
+                <Link href={`/marketplace/buy/${repo.slug || repo.docId || repo.id}`}>
+                  <button className={marketplaceStyles.buyButton} disabled={repo.sold}>
+                    {repo.sold 
+                      ? 'Sold Out' 
+                      : repo.isSubscription 
+                        ? 'Subscribe' 
+                        : 'Buy Now'}
+                  </button>
+                </Link>
               </div>
-              <div className={styles.repoContent}>
-                <div className={styles.repoName}>{repo.name}</div>
-                <div className={styles.repoDetails}>
-                  <div className={styles.repoDescription}>{repo.description}</div>
-                  <div className={styles.repoStats}>
-                    <div className={styles.statsGroup}>
-                      <div className={styles.stat}>
-                        <span className={styles.statValue}>{repo.stars}</span>
-                        <span className={styles.statLabel}>Stars</span>
+              <div className={marketplaceStyles.cardContent}>
+                <div className={marketplaceStyles.cardHeader}>
+                  <h2 className={marketplaceStyles.repoName}>{repo.name}</h2>
+                  <div>
+                    {repo.isSubscription ? (
+                      <div className={marketplaceStyles.price}>${repo.subscriptionPrice}/mo</div>
+                    ) : (
+                      <div className={marketplaceStyles.price}>${repo.price}</div>
+                    )}
+                    {repo.isSubscription && (
+                      <div className={marketplaceStyles.subscription}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 2v20M2 12h20"></path>
+                        </svg>
+                        Subscription
                       </div>
-                      <div className={styles.stat}>
-                        <span className={styles.statValue}>{repo.forks}</span>
-                        <span className={styles.statLabel}>Forks</span>
-                      </div>
-                    </div>
-                    <div className={styles.price}>
-                      {repo.isSubscription ? (
-                        <>${repo.subscriptionPrice}/mo</>
+                    )}
+                  </div>
+                </div>
+                <p className={marketplaceStyles.description}>{repo.description}</p>
+                {repo.tags && repo.tags.length > 0 && (
+                  <div className={marketplaceStyles.tags}>
+                    {repo.tags.slice(0, 3).map(tag => (
+                      <Link key={tag} href={`/marketplace?search=${encodeURIComponent(tag)}`} className={marketplaceStyles.tag}>
+                        {tag}
+                      </Link>
+                    ))}
+                    {repo.tags.length > 3 && (
+                      <span className={marketplaceStyles.moreTags}>+{repo.tags.length - 3}</span>
+                    )}
+                  </div>
+                )}
+                <div className={marketplaceStyles.cardFooter}>
+                  <div className={marketplaceStyles.seller}>
+                    <div className={marketplaceStyles.avatar}>
+                      {repo.seller.avatarUrl ? (
+                        <Image 
+                          src={repo.seller.avatarUrl} 
+                          alt={repo.seller.username}
+                          width={24}
+                          height={24}
+                        />
                       ) : (
-                        <>${repo.price}</>
+                        <div className={marketplaceStyles.defaultAvatar}>
+                          {repo.seller.username.charAt(0).toUpperCase()}
+                        </div>
                       )}
+                    </div>
+                    <Link href={`/marketplace/user/${repo.seller.username}`} className={marketplaceStyles.sellerUsername}>
+                      @{repo.seller.username}
+                    </Link>
+                  </div>
+                  <div className={marketplaceStyles.stats}>
+                    <div className={marketplaceStyles.stat}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                      {repo.stars}
+                    </div>
+                    <div className={marketplaceStyles.stat}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="6" y1="3" x2="6" y2="15"></line>
+                        <circle cx="18" cy="6" r="3"></circle>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <path d="M18 9a9 9 0 0 1-9 9"></path>
+                      </svg>
+                      {repo.forks}
                     </div>
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
-      
+
       <div className={styles.viewAllContainer}>
         <Link href="/marketplace" className={styles.viewAllButton}>
           View All Repositories
@@ -144,4 +185,4 @@ export default function FeaturedRepos() {
       </div>
     </section>
   );
-} 
+}

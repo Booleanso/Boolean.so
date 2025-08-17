@@ -29,6 +29,46 @@ interface FormData {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string; // Comma-separated
+  // Extended case study fields
+  industry: string;
+  companyStage: string;
+  fundingRaised: string;
+  location: string;
+  partners: string; // comma-separated
+  integrations: string; // comma-separated
+  targetAudience: string;
+  whyNow: string;
+  marketSize: string;
+  industryTrends: string;
+  competitiveLandscape: string;
+  timeConstraints: string;
+  fundingAndPartnerImpact: string;
+  strategicPartnerships: string; // comma-separated
+  accelerators: string; // comma-separated
+  valuationChange: string;
+  investorLogos: string; // comma-separated URLs
+  mediaCoverage: string; // newline-separated Title|URL
+  awards: string; // comma-separated
+  founderStory: string;
+  scalability: string;
+  defensibility: string;
+  barriersToEntry: string;
+  techAdvantages: string;
+  ctaText: string;
+  ctaLink: string;
+  // Extra fields from case study spec
+  clientLogoUrl: string;
+  heroHeadline: string;
+  role: string;
+  deliverables: string; // comma-separated
+  technologyStack: string; // comma-separated
+  innovations: string;
+  processOutline: string;
+  businessResults: string;
+  technicalResults: string;
+  investors: string; // comma-separated
+  growthPotential: string;
+  whyCritical: string;
 }
 
 export default function AddProjectForm() {
@@ -57,6 +97,44 @@ export default function AddProjectForm() {
     seoTitle: '',
     seoDescription: '',
     seoKeywords: '',
+    industry: '',
+    companyStage: '',
+    fundingRaised: '',
+    location: '',
+    partners: '',
+    integrations: '',
+    targetAudience: '',
+    whyNow: '',
+    marketSize: '',
+    industryTrends: '',
+    competitiveLandscape: '',
+    timeConstraints: '',
+    fundingAndPartnerImpact: '',
+    strategicPartnerships: '',
+    accelerators: '',
+    valuationChange: '',
+    investorLogos: '',
+    mediaCoverage: '',
+    awards: '',
+    founderStory: '',
+    scalability: '',
+    defensibility: '',
+    barriersToEntry: '',
+    techAdvantages: '',
+    ctaText: '',
+    ctaLink: '',
+    clientLogoUrl: '',
+    heroHeadline: '',
+    role: '',
+    deliverables: '',
+    technologyStack: '',
+    innovations: '',
+    processOutline: '',
+    businessResults: '',
+    technicalResults: '',
+    investors: '',
+    growthPotential: '',
+    whyCritical: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -93,6 +171,16 @@ export default function AddProjectForm() {
           keyFeatures: formData.keyFeatures.split(',').map(f => f.trim()).filter(Boolean),
           galleryImages: formData.galleryImages.split(',').map(url => url.trim()).filter(Boolean),
           seoKeywords: formData.seoKeywords.split(',').map(k => k.trim()).filter(Boolean),
+          partners: formData.partners.split(',').map(v => v.trim()).filter(Boolean),
+          integrations: formData.integrations.split(',').map(v => v.trim()).filter(Boolean),
+          strategicPartnerships: formData.strategicPartnerships.split(',').map(v => v.trim()).filter(Boolean),
+          accelerators: formData.accelerators.split(',').map(v => v.trim()).filter(Boolean),
+          investorLogos: formData.investorLogos.split(',').map(v => v.trim()).filter(Boolean),
+          mediaCoverage: formData.mediaCoverage.split('\n').map(line => {
+            const [title, url] = line.split('|').map(s => s?.trim());
+            return url ? { title: title || url, url } : null;
+          }).filter(Boolean),
+          awards: formData.awards.split(',').map(v => v.trim()).filter(Boolean),
         }),
       });
 
@@ -129,6 +217,32 @@ export default function AddProjectForm() {
         seoTitle: '',
         seoDescription: '',
         seoKeywords: '',
+        industry: '',
+        companyStage: '',
+        fundingRaised: '',
+        location: '',
+        partners: '',
+        integrations: '',
+        targetAudience: '',
+        whyNow: '',
+        marketSize: '',
+        industryTrends: '',
+        competitiveLandscape: '',
+        timeConstraints: '',
+        fundingAndPartnerImpact: '',
+        strategicPartnerships: '',
+        accelerators: '',
+        valuationChange: '',
+        investorLogos: '',
+        mediaCoverage: '',
+        awards: '',
+        founderStory: '',
+        scalability: '',
+        defensibility: '',
+        barriersToEntry: '',
+        techAdvantages: '',
+        ctaText: '',
+        ctaLink: '',
       });
 
     } catch (err: unknown) {
@@ -142,7 +256,8 @@ export default function AddProjectForm() {
 
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
-      <h2>Core Project Info</h2>
+      <div className={styles.sectionCard}>
+        <h2 className={styles.sectionTitle}>Core Project Info</h2>
       {error && <div className={styles.errorMessage}>{error}</div>}
       {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
 
@@ -157,6 +272,7 @@ export default function AddProjectForm() {
           required
           className={styles.input}
         />
+      </div>
       </div>
 
       <div className={styles.formGroup}>
@@ -456,6 +572,348 @@ export default function AddProjectForm() {
           className={styles.input}
           placeholder="e.g., web development, case study, react app"
         />
+      </div>
+
+      <div className={styles.sectionCard}>
+      <h2 className={styles.sectionTitle}>Market & Opportunity</h2>
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="industry">Industry</label>
+          <input
+            type="text"
+            id="industry"
+            name="industry"
+            value={formData.industry}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="companyStage">Company Stage</label>
+          <input
+            type="text"
+            id="companyStage"
+            name="companyStage"
+            value={formData.companyStage}
+            onChange={handleChange}
+            className={styles.input}
+            placeholder="Pre-seed, Seed, Series A, etc."
+          />
+        </div>
+      </div>
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="fundingRaised">Funding Raised</label>
+          <input
+            type="text"
+            id="fundingRaised"
+            name="fundingRaised"
+            value={formData.fundingRaised}
+            onChange={handleChange}
+            className={styles.input}
+            placeholder="$1.2M Seed"
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="location">Location</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="targetAudience">Target Audience</label>
+        <input
+          type="text"
+          id="targetAudience"
+          name="targetAudience"
+          value={formData.targetAudience}
+          onChange={handleChange}
+          className={styles.input}
+        />
+      </div>
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="whyNow">Why Now</label>
+          <input
+            type="text"
+            id="whyNow"
+            name="whyNow"
+            value={formData.whyNow}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="marketSize">Market Size</label>
+          <input
+            type="text"
+            id="marketSize"
+            name="marketSize"
+            value={formData.marketSize}
+            onChange={handleChange}
+            className={styles.input}
+            placeholder="TAM/SAM/SOM summary"
+          />
+        </div>
+      </div>
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="industryTrends">Industry Trends</label>
+          <input
+            type="text"
+            id="industryTrends"
+            name="industryTrends"
+            value={formData.industryTrends}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="competitiveLandscape">Competitive Landscape</label>
+          <input
+            type="text"
+            id="competitiveLandscape"
+            name="competitiveLandscape"
+            value={formData.competitiveLandscape}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="timeConstraints">Time Constraints</label>
+        <input
+          type="text"
+          id="timeConstraints"
+          name="timeConstraints"
+          value={formData.timeConstraints}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="Deadlines, launch windows, etc."
+        />
+      </div>
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="partners">Partners (comma-separated)</label>
+          <input
+            type="text"
+            id="partners"
+            name="partners"
+            value={formData.partners}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="integrations">Integrations (comma-separated)</label>
+          <input
+            type="text"
+            id="integrations"
+            name="integrations"
+            value={formData.integrations}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+      </div>
+
+      </div>
+
+      <div className={styles.sectionCard}>
+      <h2 className={styles.sectionTitle}>Funding & Credibility</h2>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="fundingAndPartnerImpact">Funding & Partner Impact</label>
+        <textarea
+          id="fundingAndPartnerImpact"
+          name="fundingAndPartnerImpact"
+          value={formData.fundingAndPartnerImpact}
+          onChange={handleChange}
+          rows={3}
+          className={styles.textarea}
+        />
+      </div>
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="strategicPartnerships">Strategic Partnerships (comma-separated)</label>
+          <input
+            type="text"
+            id="strategicPartnerships"
+            name="strategicPartnerships"
+            value={formData.strategicPartnerships}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="accelerators">Accelerators (comma-separated)</label>
+          <input
+            type="text"
+            id="accelerators"
+            name="accelerators"
+            value={formData.accelerators}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+      </div>
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="valuationChange">Valuation Change</label>
+          <input
+            type="text"
+            id="valuationChange"
+            name="valuationChange"
+            value={formData.valuationChange}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="investorLogos">Investor Logos (comma-separated URLs)</label>
+          <input
+            type="text"
+            id="investorLogos"
+            name="investorLogos"
+            value={formData.investorLogos}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="mediaCoverage">Media Coverage (Title|URL per line)</label>
+        <textarea
+          id="mediaCoverage"
+          name="mediaCoverage"
+          value={formData.mediaCoverage}
+          onChange={handleChange}
+          rows={3}
+          className={styles.textarea}
+          placeholder="TechCrunch|https://...\nForbes|https://..."
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="awards">Awards (comma-separated)</label>
+        <input
+          type="text"
+          id="awards"
+          name="awards"
+          value={formData.awards}
+          onChange={handleChange}
+          className={styles.input}
+        />
+      </div>
+
+      </div>
+
+      <div className={styles.sectionCard}>
+      <h2 className={styles.sectionTitle}>Final</h2>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="founderStory">Founder Story</label>
+        <textarea
+          id="founderStory"
+          name="founderStory"
+          value={formData.founderStory}
+          onChange={handleChange}
+          rows={3}
+          className={styles.textarea}
+        />
+      </div>
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="scalability">Scalability</label>
+          <textarea
+            id="scalability"
+            name="scalability"
+            value={formData.scalability}
+            onChange={handleChange}
+            rows={2}
+            className={styles.textarea}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="defensibility">Defensibility</label>
+          <textarea
+            id="defensibility"
+            name="defensibility"
+            value={formData.defensibility}
+            onChange={handleChange}
+            rows={2}
+            className={styles.textarea}
+          />
+        </div>
+      </div>
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="barriersToEntry">Barriers To Entry</label>
+          <textarea
+            id="barriersToEntry"
+            name="barriersToEntry"
+            value={formData.barriersToEntry}
+            onChange={handleChange}
+            rows={2}
+            className={styles.textarea}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="techAdvantages">Tech Advantages</label>
+          <textarea
+            id="techAdvantages"
+            name="techAdvantages"
+            value={formData.techAdvantages}
+            onChange={handleChange}
+            rows={2}
+            className={styles.textarea}
+          />
+        </div>
+      </div>
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="ctaText">CTA Text</label>
+          <input
+            type="text"
+            id="ctaText"
+            name="ctaText"
+            value={formData.ctaText}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="ctaLink">CTA Link</label>
+          <input
+            type="url"
+            id="ctaLink"
+            name="ctaLink"
+            value={formData.ctaLink}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+      </div>
+
       </div>
 
       <button 

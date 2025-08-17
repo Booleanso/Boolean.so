@@ -42,6 +42,46 @@ interface AddProjectRequestBody {
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string[];
+  // Extended case study fields
+  industry?: string;
+  companyStage?: string;
+  fundingRaised?: string;
+  location?: string;
+  partners?: string[];
+  integrations?: string[];
+  targetAudience?: string;
+  whyNow?: string;
+  marketSize?: string;
+  industryTrends?: string;
+  competitiveLandscape?: string;
+  timeConstraints?: string;
+  fundingAndPartnerImpact?: string;
+  strategicPartnerships?: string[];
+  accelerators?: string[];
+  valuationChange?: string;
+  investorLogos?: string[];
+  mediaCoverage?: { title: string; url: string }[];
+  awards?: string[];
+  founderStory?: string;
+  scalability?: string;
+  defensibility?: string;
+  barriersToEntry?: string;
+  techAdvantages?: string;
+  ctaText?: string;
+  ctaLink?: string;
+  // Extra from spec
+  clientLogoUrl?: string;
+  heroHeadline?: string;
+  role?: string;
+  deliverables?: string[];
+  technologyStack?: string[];
+  innovations?: string;
+  processOutline?: string;
+  businessResults?: string;
+  technicalResults?: string;
+  investors?: string[];
+  growthPotential?: string;
+  whyCritical?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -118,6 +158,45 @@ export async function POST(request: NextRequest) {
       seoKeywords: body.seoKeywords || body.tags, // Default SEO keywords to tags
       // Add the generated slug
       slug: generatedSlug, 
+      // Extended fields (optional)
+      clientLogoUrl: body.clientLogoUrl || null,
+      heroHeadline: body.heroHeadline || null,
+      industry: body.industry || null,
+      companyStage: body.companyStage || null,
+      fundingRaised: body.fundingRaised || null,
+      location: body.location || null,
+      partners: body.partners || [],
+      integrations: body.integrations || [],
+      targetAudience: body.targetAudience || null,
+      whyNow: body.whyNow || null,
+      growthPotential: body.growthPotential || null,
+      marketSize: body.marketSize || null,
+      industryTrends: body.industryTrends || null,
+      competitiveLandscape: body.competitiveLandscape || null,
+      timeConstraints: body.timeConstraints || null,
+      whyCritical: body.whyCritical || null,
+      fundingAndPartnerImpact: body.fundingAndPartnerImpact || null,
+      investors: body.investors || [],
+      strategicPartnerships: body.strategicPartnerships || [],
+      accelerators: body.accelerators || [],
+      valuationChange: body.valuationChange || null,
+      investorLogos: body.investorLogos || [],
+      mediaCoverage: body.mediaCoverage || [],
+      awards: body.awards || [],
+      role: body.role || null,
+      deliverables: body.deliverables || [],
+      technologyStack: body.technologyStack || [],
+      innovations: body.innovations || null,
+      processOutline: body.processOutline || null,
+      businessResults: body.businessResults || null,
+      technicalResults: body.technicalResults || null,
+      founderStory: body.founderStory || null,
+      scalability: body.scalability || null,
+      defensibility: body.defensibility || null,
+      barriersToEntry: body.barriersToEntry || null,
+      techAdvantages: body.techAdvantages || null,
+      ctaText: body.ctaText || null,
+      ctaLink: body.ctaLink || null,
     };
 
     // --- Optional: Check for slug uniqueness (important for production) ---

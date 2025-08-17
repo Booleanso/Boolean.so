@@ -48,8 +48,8 @@ const services = [
       '/images/services/software-dev-3.png'
     ],
     href: '/services/software',
-    available: false,
-    slotsLeft: 0
+    available: true,
+    slotsLeft: 3
   },
   {
     title: 'Firmware Development',
@@ -63,8 +63,8 @@ const services = [
       '/images/services/firmware-dev-3.png'
     ],
     href: '/services/firmware',
-    available: false,
-    slotsLeft: 0
+    available: true,
+    slotsLeft: 2
   }
 ];
 
@@ -155,7 +155,8 @@ export default function ServicesCardsSection() {
                 </div>
                 
                 {/* Images that appear on hover */}
-                <div className={`${styles.imageReveal} ${hoveredIndex === index ? styles.active : ''}`}>
+                <div className={`${styles.imageReveal} ${hoveredIndex === index ? styles.active : ''}`}
+                     style={{ zIndex: hoveredIndex === index ? 50 : 5 }}>
                   {/* PNG Images */}
                   {service.images.map((imagePath, imgIndex) => (
                     <div key={imgIndex} className={styles.floatingImage}>

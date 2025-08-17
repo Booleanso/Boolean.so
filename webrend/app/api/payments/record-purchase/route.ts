@@ -87,7 +87,7 @@ export async function POST(request: Request) {
     // Add purchase to Firestore
     await db.collection('purchases').add(newPurchase);
     
-    // For one-time purchases, initiate GitHub repository transfer
+    // For one-time purchases, initiate GitHub repository copy+transfer via WebRend org
     if (purchaseType === 'purchase') {
       try {
         // Get listing details to find the repository info and seller
@@ -126,8 +126,8 @@ export async function POST(request: Request) {
           purchaseId: newPurchase.id
         });
         
-        // Call the GitHub transfer API
-        const transferResponse = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/github/transfer`, {
+        // Call the new copy-transfer API (creates a copy in WebRend org, then a job will transfer to buyer)
+        const transferResponse = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/github/copy-transfer`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -137,7 +137,8 @@ export async function POST(request: Request) {
             sellerId: listingData.seller?.id || null,
             buyerId: userId,
             isSinglePurchase: true,
-            transactionId: transactionRef.id
+            transactionId: transactionRef.id,
+            documentId
           })
         });
         
@@ -151,10 +152,10 @@ export async function POST(request: Request) {
             updatedAt: new Date().toISOString()
           });
         } else {
-          // Transfer initiated successfully
+          // Copy/transfer job initiated successfully
           const transferResult = await transferResponse.json();
           await transactionRef.update({
-            transferStatus: 'initiated',
+            transferStatus: 'initiated', // will complete when background job finishes
             transferInitiatedAt: new Date().toISOString(),
             transferDetails: transferResult
           });

@@ -25,7 +25,7 @@
   backdrop-filter: blur(0px);
   opacity: 0;
   transition: all 0.4s ease;
-  pointer-events: none;
+  pointer-events: none; /* keep hover/click on cards */
   z-index: 5;
 }
 
@@ -52,6 +52,7 @@
 .sectionBlurOverlay.active {
   backdrop-filter: blur(8px);
   opacity: 1;
+  pointer-events: none; /* never capture hover */
 }
 
 /* Header Content */
@@ -154,6 +155,8 @@
   transform: translateY(30px);
   animation: fadeInUp 0.6s ease-out forwards;
   z-index: 10;
+  overflow: visible; /* ensure reveal content can overflow the card */
+  isolation: isolate; /* prevent child z-index from leaking over siblings */
 }
 
 .serviceCard.visible {
@@ -162,6 +165,8 @@
 }
 
 /* Unavailable service card */
+
+/* Keep unavailable style only for disabled entries if any remain */
 .serviceCard.unavailable {
   opacity: 0.5;
   filter: grayscale(100%);
@@ -216,7 +221,7 @@
 .iconContainer {
   position: relative;
   margin-bottom: 1.5rem;
-  z-index: 11;
+  z-index: 30;
 }
 
 /* Icon Wrapper */
@@ -274,11 +279,12 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.3s ease;
-  z-index: 30;
+  z-index: 5; /* base below card content */
 }
 
 .imageReveal.active {
   opacity: 1;
+  z-index: 50; /* above contents within this card only */
 }
 
 /* Floating Images */
@@ -305,7 +311,7 @@
   background: transparent;
   box-shadow: inset 0 -250px 80px 0px rgb(255, 255, 255);
   pointer-events: none;
-  z-index: 50;
+  z-index: 20; /* keep below reveal images */
 }
 
 .imageReveal.active .floatingImage {

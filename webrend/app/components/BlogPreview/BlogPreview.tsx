@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './BlogPreview.module.css';
+import marketplaceStyles from '../../marketplace/marketplace.module.scss';
 
 interface BlogPost {
   id: string;
@@ -87,35 +88,45 @@ export default function BlogPreview() {
           <p>No articles available at the moment. Check back soon!</p>
         </div>
       ) : (
-        <div className={styles.blogGrid}>
+        <div className={marketplaceStyles.grid}>
           {latestPosts.map((post) => (
-            <Link href={`/blog/${post.slug || post.id}`} key={post.id} className={styles.blogCard}>
-              <div className={styles.blogImageWrapper}>
+            <Link href={`/blog/${post.slug || post.id}`} key={post.id} className={marketplaceStyles.card}>
+              <div className={marketplaceStyles.cardImage}>
                 <Image 
                   src={post.imageUrl || '/images/blog-placeholder.jpg'} 
                   alt={post.title}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className={styles.blogImage}
-                  onError={(e) => {
-                    // Fallback to placeholder if image fails to load
-                    const img = e.target as HTMLImageElement;
-                    if (img.src !== '/images/blog-placeholder.jpg') {
-                      img.src = '/images/blog-placeholder.jpg';
-                    }
-                  }}
+                  width={600}
+                  height={400}
                 />
               </div>
-              <div className={styles.blogContent}>
-                <div className={styles.blogMeta}>
-                  <span className={styles.blogCategory}>{post.category}</span>
-                  <span className={styles.blogDate}>{formatDate(post.publishedAt)}</span>
+              <div className={marketplaceStyles.cardContent}>
+                <div className={marketplaceStyles.cardHeader}>
+                  <h2 className={marketplaceStyles.repoName}>{post.title}</h2>
+                  <div className={marketplaceStyles.price}>{post.readTime} min</div>
                 </div>
-                <h3 className={styles.blogTitle}>{post.title}</h3>
-                <p className={styles.blogDescription}>{truncateDescription(post.description)}</p>
-                <div className={styles.blogFooter}>
-                  <span className={styles.readTime}>{post.readTime} min read</span>
+                <p className={marketplaceStyles.description}>{truncateDescription(post.description)}</p>
+                <div className={marketplaceStyles.tags}>
+                  <span className={marketplaceStyles.tag}>{post.category}</span>
+                </div>
+                <div className={marketplaceStyles.cardFooter}>
+                  <div className={marketplaceStyles.stats}>
+                    <div className={marketplaceStyles.stat}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      {formatDate(post.publishedAt)}
+                    </div>
+                    <div className={marketplaceStyles.stat}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                      {post.readTime} min
+                    </div>
+                  </div>
                 </div>
               </div>
             </Link>

@@ -8,7 +8,7 @@ WebRend.com is a platform that allows developers to buy and sell GitHub reposito
 - **Stripe Connect**: Direct payments to sellers with platform fee support
 - **Repository Marketplace**: Browse, search, and filter repositories for sale
 - **Multiple Purchase Options**: 
-  - One-time purchases (transfers repository ownership)
+  - One-time purchases (copies repo into WebRend org and transfers a fresh copy to buyer)
   - Subscription access (provides collaborator access for the subscription period)
 - **Seller Dashboard**: Track sales, manage listings, and view analytics
 - **Firebase Integration**: Authentication, database, and storage
@@ -126,6 +126,25 @@ webrend/
 │   └── stripe.ts         # Stripe client
 ├── public/               # Static assets
 └── styles/               # Global styles
+```
+
+## Marketplace Copy/Transfer Flow
+
+One-time purchases no longer transfer the seller’s original repository. Instead, the platform creates a private copy in the WebRend org and transfers that copy to the buyer, enabling multiple sales per repo.
+
+Flow:
+- API: `POST /api/github/copy-transfer` creates an org repo and kicks off a GitHub Import from the seller’s repo, recording a job in `repoCopyJobs`.
+- Worker: `scripts/cron.github-copy-worker.ts` polls jobs; when import completes, it transfers the org repo to the buyer’s GitHub.
+
+Required env:
+```
+GITHUB_WEBREND_ORG=webrend-hq
+GITHUB_WEBREND_TOKEN=ghp_... # org admin token with repo scope
+```
+
+Run worker manually:
+```
+npx ts-node scripts/cron.github-copy-worker.ts
 ```
 
 ## Deployment

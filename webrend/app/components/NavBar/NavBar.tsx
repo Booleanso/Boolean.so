@@ -8,7 +8,7 @@ import { auth } from '../../lib/firebase-client';
 import { signOut } from 'firebase/auth';
 import type { SimpleUser } from '../../utils/auth-utils';
 import { useTheme } from '../ThemeProvider/ThemeProvider';
-import PortfolioDropdown from './PortfolioDropdown';
+// Removed PortfolioDropdown import
 import './NavBar.scss';
 
 interface NavBarProps {
@@ -28,6 +28,9 @@ export default function NavBar({ serverUser }: NavBarProps) {
   // Scroll-based navbar visibility
   const [isNavbarVisible, setIsNavbarVisible] = useState<boolean>(true);
   const [lastScrollY, setLastScrollY] = useState<number>(0);
+  const [isPortfolioOpen, setIsPortfolioOpen] = useState<boolean>(false);
+  const [isPortfolioClosing, setIsPortfolioClosing] = useState<boolean>(false);
+  const [portfolioProjects, setPortfolioProjects] = useState<any[]>([]);
 
   useEffect(() => {
     // Set mounted state to true once component is mounted
@@ -95,6 +98,33 @@ export default function NavBar({ serverUser }: NavBarProps) {
   
   const isAdmin = user?.email === 'ceo@webrend.com';
 
+  // Fetch portfolio projects when overlay opens
+  const fetchPortfolioProjects = async () => {
+    try {
+      const response = await fetch('/api/portfolio/projects');
+      if (response.ok) {
+        const projects = await response.json();
+        setPortfolioProjects(projects);
+      }
+    } catch (error) {
+      console.error('Error fetching portfolio projects:', error);
+    }
+  };
+
+  const handlePortfolioOpen = () => {
+    setIsPortfolioOpen(true);
+    setIsPortfolioClosing(false);
+    fetchPortfolioProjects();
+  };
+
+  const handlePortfolioClose = () => {
+    setIsPortfolioClosing(true);
+    setTimeout(() => {
+      setIsPortfolioOpen(false);
+      setIsPortfolioClosing(false);
+    }, 400); // Match the animation duration
+  };
+
 
 
   // Only render client-specific content after component is mounted
@@ -102,21 +132,32 @@ export default function NavBar({ serverUser }: NavBarProps) {
   if (!isMounted) {
     return (
       <>
-        <div className={`top-navbar-container ${scrolled ? 'scrolled' : ''} ${!isNavbarVisible ? 'hidden' : ''}`}>
-          <div className="top-navbar">
+        {/* Logo Island */}
+        <div className="logo-island-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
+          <div className="logo-island">
             <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
               <Image 
                 src="/logo/logo_black.png" 
                 alt="WebRend Logo" 
-                width={40} 
-                height={40} 
+                width={28} 
+                height={28} 
                 className="navbar-logo"
                 priority
               />
             </Link>
-            
-            <div className="top-navbar-menu">
-              <PortfolioDropdown isDarkMode={isDarkMode} pathname={pathname} />
+          </div>
+        </div>
+
+        {/* Main Navbar Island */}
+        <div className="navbar-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
+          <div className="navbar">
+            <div className="navbar-menu">
+              <button
+                onClick={handlePortfolioOpen}
+                className={`nav-button marketplace-button ${pathname.startsWith('/portfolio') ? 'active' : ''}`}
+              >
+                Portfolio
+              </button>
               
               <Link 
                 href="/marketplace" 
@@ -127,113 +168,26 @@ export default function NavBar({ serverUser }: NavBarProps) {
               
               <Link 
                 href="/blog" 
-                className={`nav-button portfolio-button ${pathname === '/blog' ? 'active' : ''}`}
+                className={`nav-button marketplace-button ${pathname === '/blog' ? 'active' : ''}`}
               >
                 AI Blog
               </Link>
               
               {isAdmin && (
                 <Link 
-                  href="/admin/portfolio/add"
-                  className={`nav-button admin-button ${pathname.startsWith('/admin') ? 'active' : ''}`}
+                  href="/admin"
+                  className={`nav-button marketplace-button ${pathname.startsWith('/admin') ? 'active' : ''}`}
                 >
                   Admin
                 </Link>
               )}
-              
-              {/* Auth Buttons */}
-              {!loading && (
-                <>
-                  {user ? (
-                    <>
-                      <Link 
-                        href="/profile" 
-                        className="nav-button profile-button"
-                      >
-                        Profile
-                      </Link>
-                      <button
-                        onClick={handleSignOut}
-                        className="nav-button signout-button"
-                        style={{
-                          backgroundColor: isDarkMode ? 'rgba(155, 32, 32, 0.7)' : 'rgba(255, 59, 48, 0.15)',
-                          color: isDarkMode ? '#ff8080' : '#ff3b30'
-                        }}
-                      >
-                        Sign Out
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        href="/auth?mode=signin"
-                        className="nav-button login-button"
-                      >
-                        Login
-                      </Link>
-                      <Link
-                        href="/auth?mode=signup"
-                        className="nav-button signup-button"
-                        style={{
-                          backgroundColor: isDarkMode ? '#0066cc' : '#0071e3',
-                          color: 'white'
-                        }}
-                      >
-                        Sign Up
-                      </Link>
-                    </>
-                  )}
-                </>
-              )}
             </div>
           </div>
         </div>
-      </>
-    );
-  }
 
-      return (
-      <>
-        <div className={`top-navbar-container ${scrolled ? 'scrolled' : ''} ${!isNavbarVisible ? 'hidden' : ''}`}>
-          <div className="top-navbar">
-          <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
-            <Image 
-              src="/logo/logo_black.png" 
-              alt="WebRend Logo" 
-              width={40} 
-              height={40} 
-              className="navbar-logo"
-              priority
-            />
-          </Link>
-          
-                      <div className="top-navbar-menu">
-              <PortfolioDropdown isDarkMode={isDarkMode} pathname={pathname} />
-              
-              <Link 
-                href="/marketplace" 
-                className={`nav-button marketplace-button ${pathname === '/marketplace' ? 'active' : ''}`}
-              >
-                Marketplace
-              </Link>
-              
-              <Link 
-                href="/blog" 
-                className={`nav-button portfolio-button ${pathname === '/blog' ? 'active' : ''}`}
-              >
-                AI Blog
-              </Link>
-            
-            {isAdmin && (
-              <Link 
-                href="/admin/portfolio/add"
-                className={`nav-button admin-button ${pathname.startsWith('/admin') ? 'active' : ''}`}
-              >
-                Admin
-              </Link>
-            )}
-            
-            {/* Auth Buttons */}
+        {/* Auth Island */}
+        <div className="auth-island-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
+          <div className="auth-island">
             {!loading && (
               <>
                 {user ? (
@@ -247,10 +201,6 @@ export default function NavBar({ serverUser }: NavBarProps) {
                     <button
                       onClick={handleSignOut}
                       className="nav-button signout-button"
-                      style={{
-                        backgroundColor: isDarkMode ? 'rgba(155, 32, 32, 0.7)' : 'rgba(255, 59, 48, 0.15)',
-                        color: isDarkMode ? '#ff8080' : '#ff3b30'
-                      }}
                     >
                       Sign Out
                     </button>
@@ -266,10 +216,6 @@ export default function NavBar({ serverUser }: NavBarProps) {
                     <Link
                       href="/auth?mode=signup"
                       className="nav-button signup-button"
-                      style={{
-                        backgroundColor: isDarkMode ? '#0066cc' : '#0071e3',
-                        color: 'white'
-                      }}
                     >
                       Sign Up
                     </Link>
@@ -279,8 +225,139 @@ export default function NavBar({ serverUser }: NavBarProps) {
             )}
           </div>
         </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {/* Logo Island */}
+      <div className="logo-island-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
+        <div className="logo-island">
+          <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
+            <Image 
+              src="/logo/logo_black.png" 
+              alt="WebRend Logo" 
+              width={28} 
+              height={28} 
+              className="navbar-logo"
+              priority
+            />
+          </Link>
+        </div>
       </div>
 
+      {/* Main Navbar Island */}
+      <div className="navbar-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
+                  <div className="navbar">
+            <div className="navbar-menu">
+              <button
+                onClick={handlePortfolioOpen}
+                className={`nav-button marketplace-button ${pathname.startsWith('/portfolio') ? 'active' : ''}`}
+              >
+                Portfolio
+              </button>
+            
+            <Link 
+              href="/marketplace" 
+              className={`nav-button marketplace-button ${pathname === '/marketplace' ? 'active' : ''}`}
+            >
+              Marketplace
+            </Link>
+            
+            <Link 
+              href="/blog" 
+              className={`nav-button marketplace-button ${pathname === '/blog' ? 'active' : ''}`}
+            >
+              AI Blog
+            </Link>
+            
+            {isAdmin && (
+              <Link 
+                href="/admin"
+                className={`nav-button marketplace-button ${pathname.startsWith('/admin') ? 'active' : ''}`}
+              >
+                Admin
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Auth Island */}
+      <div className="auth-island-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
+        <div className="auth-island">
+          {!loading && (
+            <>
+              {user ? (
+                <>
+                  <Link 
+                    href="/profile" 
+                    className="nav-button profile-button"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="nav-button signout-button"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth?mode=signin"
+                    className="nav-button login-button"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/auth?mode=signup"
+                    className="nav-button signup-button"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Portfolio Overlay */}
+      {isPortfolioOpen && (
+        <div 
+          className={`portfolio-overlay ${isPortfolioClosing ? 'closing' : ''}`} 
+          onClick={handlePortfolioClose}
+        >
+          <div className={`portfolio-grid ${isPortfolioClosing ? 'closing' : ''}`}>
+            {portfolioProjects.map((project, index) => (
+              <Link
+                key={project.id}
+                href={`/portfolio/projects/${project.slug}`}
+                className={`portfolio-project ${isPortfolioClosing ? 'closing' : ''}`}
+                style={{ '--index': index } as any}
+                onClick={handlePortfolioClose}
+              >
+                <div className="project-image">
+                  <Image
+                    src={project.imageUrl}
+                    alt={project.title}
+                    width={400}
+                    height={300}
+                    className="project-img"
+                  />
+                </div>
+                <div className="project-info">
+                  <h3>{project.title}</h3>
+                  <p>{project.description}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 } 

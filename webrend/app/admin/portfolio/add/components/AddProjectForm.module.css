@@ -1,13 +1,9 @@
 .formContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem; /* Spacing between form groups */
-  max-width: 600px; /* Limit form width */
-  margin: 2rem auto; /* Center form */
-  padding: 2rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  display: grid;
+  gap: 1rem;
+  max-width: 1220px;
+  margin: 5rem auto 3rem;
+  padding: 0 5%;
 }
 
 .formGroup {
@@ -24,11 +20,14 @@
 .input,
 .textarea {
   padding: 0.75rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 10px;
   font-size: 1rem;
   width: 100%;
-  box-sizing: border-box; /* Include padding and border in element's total width */
+  box-sizing: border-box;
+  background: #fff;
+  color: #111;
+  caret-color: #111;
 }
 
 .input:focus,
@@ -100,16 +99,17 @@
   margin-bottom: 1rem;
 }
 
-.formRow {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem; /* Space between items in the row */
-  width: 100%;
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; }
+.formRow .formGroup { width: 100%; }
+
+.sectionCard {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 14px;
+  padding: 1rem;
 }
 
-.formRow .formGroup {
-  flex: 1; /* Make form groups in a row share space equally */
-}
+.sectionTitle { margin: 0 0 .5rem; color: #111; }
 
 .divider {
   border: none;
