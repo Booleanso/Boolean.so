@@ -41,9 +41,27 @@ export default function SmoothScrollProvider({
       isScrollingRef.current = true;
     };
 
+    const isEditableTarget = (evt: KeyboardEvent) => {
+      // Prefer the actively focused element; fallback to event target
+      const el = (document.activeElement as HTMLElement | null) || (evt.target as HTMLElement | null);
+      if (!el) return false;
+      if ((el as any).isContentEditable) return true;
+      const tag = el.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return true;
+      if (el instanceof HTMLInputElement) {
+        const textLike = ['text','search','email','url','password','number','tel'];
+        if (textLike.includes(el.type)) return true;
+      }
+      // ARIA textbox (e.g., some UI libs)
+      if (el.getAttribute && el.getAttribute('role') === 'textbox') return true;
+      return false;
+    };
+
     const handleKeydown = (e: KeyboardEvent) => {
       const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '];
       if (keys.includes(e.key)) {
+        // Do not hijack typing in inputs/textareas/contenteditable
+        if (isEditableTarget(e)) return;
         e.preventDefault();
         
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;

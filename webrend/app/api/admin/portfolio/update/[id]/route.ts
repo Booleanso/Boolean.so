@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { db } from '../../../../../lib/firebase-admin';
+import { generateSlug } from '../../../../../lib/utils';
 import { verifyUser } from '../../../../../utils/auth-utils';
 
 interface Params { params: { id: string } }
@@ -16,6 +17,29 @@ export async function POST(req: NextRequest, { params }: Params) {
     // Prevent overriding immutable fields
     delete payload.id;
     if (payload.createdAt) delete payload.createdAt;
+
+    // Normalize dateCompleted to a Firestore Timestamp by passing a JS Date
+    if (typeof payload.dateCompleted === 'string' && payload.dateCompleted) {
+      const d = new Date(payload.dateCompleted);
+      if (!Number.isNaN(d.getTime())) payload.dateCompleted = d;
+      else delete payload.dateCompleted; // invalid
+    }
+
+    // Auto-generate slug from title
+    if (payload.title) {
+      let newSlug = generateSlug(String(payload.title));
+      if (!newSlug) newSlug = id; // fallback
+      // Ensure uniqueness across other docs
+      const dupSnap = await db
+        .collection('portfolioProjects')
+        .where('slug', '==', newSlug)
+        .limit(1)
+        .get();
+      if (!dupSnap.empty && dupSnap.docs[0].id !== id) {
+        newSlug = `${newSlug}-${id.slice(0, 6)}`;
+      }
+      payload.slug = newSlug;
+    }
 
     await db.collection('portfolioProjects').doc(id).update(payload);
     return NextResponse.json({ ok: true, id });

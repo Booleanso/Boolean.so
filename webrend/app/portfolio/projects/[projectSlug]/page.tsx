@@ -199,9 +199,13 @@ async function getProjectBySlug(slug: string): Promise<PortfolioProject | null> 
 
 // Helper function to convert Firestore data to PortfolioProject
 function convertFirestoreDataToProject(docId: string, data: FirestoreProjectData): PortfolioProject {
-  // Convert Timestamps
-  const dateCompleted = (data.dateCompleted as Timestamp)?.toDate();
-  const createdAt = (data.createdAt as Timestamp)?.toDate();
+  // Convert Timestamps (support Date or Firestore Timestamp)
+  const dateCompleted = data.dateCompleted instanceof Timestamp
+    ? data.dateCompleted.toDate()
+    : (data.dateCompleted as unknown as Date) || undefined;
+  const createdAt = data.createdAt instanceof Timestamp
+    ? data.createdAt.toDate()
+    : (data.createdAt as unknown as Date) || undefined;
 
   return {
     id: docId,
