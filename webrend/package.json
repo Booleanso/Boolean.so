@@ -14,7 +14,8 @@
     "cron": "node scripts/cron.js",
     "start-all": "node scripts/startup.js",
     "pm2-start": "pm2 start ecosystem.config.cjs",
-    "pm2-stop": "pm2 stop ecosystem.config.cjs"
+    "pm2-stop": "pm2 stop ecosystem.config.cjs",
+    "generate-blog-cron-docs": "node scripts/generate-blog-cron-docs.js"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
@@ -41,6 +42,7 @@
     "nipplejs": "^0.10.2",
     "node-fetch": "^3.3.2",
     "openai": "^4.96.0",
+    "pdfkit": "^0.15.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
