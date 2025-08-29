@@ -10,6 +10,7 @@ import type { SimpleUser } from '../../utils/auth-utils';
 import { useTheme } from '../ThemeProvider/ThemeProvider';
 // Removed PortfolioDropdown import
 import './NavBar.scss';
+import { motion } from 'framer-motion';
 
 interface NavBarProps {
   serverUser: SimpleUser;
@@ -125,6 +126,11 @@ export default function NavBar({ serverUser }: NavBarProps) {
     }, 400); // Match the animation duration
   };
 
+  const slideVariants = {
+    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 600, damping: 40 } },
+    hidden: { y: -80, opacity: 1, transition: { type: 'spring', stiffness: 550, damping: 45 } }
+  } as const;
+
 
 
   // Only render client-specific content after component is mounted
@@ -133,7 +139,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
     return (
       <>
         {/* Logo Island */}
-        <div className="logo-island-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
+        <motion.div className="logo-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
           <div className="logo-island">
             <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
               <Image 
@@ -146,10 +152,10 @@ export default function NavBar({ serverUser }: NavBarProps) {
               />
             </Link>
           </div>
-        </div>
+        </motion.div>
 
         {/* Main Navbar Island */}
-        <div className="navbar-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
+        <motion.div className="navbar-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
           <div className="navbar">
             <div className="navbar-menu">
               <button
@@ -183,10 +189,10 @@ export default function NavBar({ serverUser }: NavBarProps) {
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Auth Island */}
-        <div className="auth-island-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
+        <motion.div className="auth-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
           <div className="auth-island">
             {!loading && (
               <>
@@ -224,32 +230,34 @@ export default function NavBar({ serverUser }: NavBarProps) {
               </>
             )}
           </div>
-        </div>
+        </motion.div>
       </>
     );
   }
 
   return (
     <>
-      {/* Logo Island */}
-      <div className="logo-island-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
-        <div className="logo-island">
-          <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
-            <Image 
-              src="/logo/logo_black.png" 
-              alt="WebRend Logo" 
-              width={28} 
-              height={28} 
-              className="navbar-logo"
-              priority
-            />
-          </Link>
-        </div>
-      </div>
+      {/* Islands wrapper centered */}
+      <div className="nav-islands" aria-hidden={!isNavbarVisible}>
+        {/* Logo Island */}
+        <motion.div className="logo-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
+          <div className="logo-island">
+            <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
+              <Image 
+                src="/logo/logo_black.png" 
+                alt="WebRend Logo" 
+                width={28} 
+                height={28} 
+                className="navbar-logo"
+                priority
+              />
+            </Link>
+          </div>
+        </motion.div>
 
-      {/* Main Navbar Island */}
-      <div className="navbar-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
-                  <div className="navbar">
+        {/* Main Navbar Island */}
+        <motion.div className="navbar-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
+          <div className="navbar">
             <div className="navbar-menu">
               <button
                 onClick={handlePortfolioOpen}
@@ -257,72 +265,70 @@ export default function NavBar({ serverUser }: NavBarProps) {
               >
                 Portfolio
               </button>
-            
-            <Link 
-              href="/marketplace" 
-              className={`nav-button marketplace-button ${pathname === '/marketplace' ? 'active' : ''}`}
-            >
-              Marketplace
-            </Link>
-            
-            <Link 
-              href="/blog" 
-              className={`nav-button marketplace-button ${pathname === '/blog' ? 'active' : ''}`}
-            >
-              AI Blog
-            </Link>
-            
-            {isAdmin && (
               <Link 
-                href="/admin"
-                className={`nav-button marketplace-button ${pathname.startsWith('/admin') ? 'active' : ''}`}
+                href="/marketplace" 
+                className={`nav-button marketplace-button ${pathname === '/marketplace' ? 'active' : ''}`}
               >
-                Admin
+                Marketplace
               </Link>
+              <Link 
+                href="/blog" 
+                className={`nav-button marketplace-button ${pathname === '/blog' ? 'active' : ''}`}
+              >
+                AI Blog
+              </Link>
+              {isAdmin && (
+                <Link 
+                  href="/admin"
+                  className={`nav-button marketplace-button ${pathname.startsWith('/admin') ? 'active' : ''}`}
+                >
+                  Admin
+                </Link>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Auth Island */}
+        <motion.div className="auth-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
+          <div className="auth-island">
+            {!loading && (
+              <>
+                {user ? (
+                  <>
+                    <Link 
+                      href="/profile" 
+                      className="nav-button profile-button"
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="nav-button signout-button"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth?mode=signin"
+                      className="nav-button login-button"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/auth?mode=signup"
+                      className="nav-button signup-button"
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
+              </>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* Auth Island */}
-      <div className="auth-island-container" style={{ opacity: isNavbarVisible ? 1 : 0 }}>
-        <div className="auth-island">
-          {!loading && (
-            <>
-              {user ? (
-                <>
-                  <Link 
-                    href="/profile" 
-                    className="nav-button profile-button"
-                  >
-                    Profile
-                  </Link>
-                  <button
-                    onClick={handleSignOut}
-                    className="nav-button signout-button"
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/auth?mode=signin"
-                    className="nav-button login-button"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/auth?mode=signup"
-                    className="nav-button signup-button"
-                  >
-                    Sign Up
-                  </Link>
-                </>
-              )}
-            </>
-          )}
-        </div>
+        </motion.div>
       </div>
 
       {/* Portfolio Overlay */}

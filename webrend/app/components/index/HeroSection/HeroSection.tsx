@@ -9,7 +9,7 @@ import Image from 'next/image';
 import styles from './HeroSection.module.css';
 
 import { useRouter } from 'next/navigation';
-import { useSpring, animated } from '@react-spring/three';
+import { useSpring } from '@react-spring/three';
 
 
 
@@ -679,8 +679,8 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
                   lockY={false}
                   lockZ={false}
                 >
-                  {/* Animated scale group based on hover state (without z-position animation) */}
-                  <animated.group 
+                  {/* Scale group based on hover state (without z-position animation) */}
+                  <group 
                     scale={iconScale}
                   >
                     {/* Hit detection area - larger than visual icon for easier interaction */}
@@ -765,7 +765,7 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
                         </div>
                       </Html>
                     )}
-                  </animated.group>
+                  </group>
                 </Billboard>
               </group>
             </group>
@@ -872,11 +872,11 @@ export default function HeroSection() {
     };
   }, []);
 
-  // Search handler function
+  // Search handler function → route to marketplace search
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/marketplace?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
     }
   };
@@ -1192,7 +1192,7 @@ export default function HeroSection() {
       <div className={styles.container}>
         <div className={styles.content}>
           <div className={styles.heading}>
-            <h1>Turn Code Into Profit.</h1>
+            <h1><span className={styles.gradText}>Turn Code Into Profit.</span></h1>
             <p className={styles.subtitle}>
               We build cutting-edge software from your concepts and provide a marketplace where developers can monetize their GitHub repositories.
             </p>
@@ -1217,7 +1217,7 @@ export default function HeroSection() {
                 Search
               </button>
             </form>
-            <a href="/discovery" className={styles.primaryBtn}>Discovery Call</a>
+            <a href="/discovery" className={styles.primaryBtn}>Speak with us</a>
           </div>
 
           {/* Trusted by logos with marquee animation */}

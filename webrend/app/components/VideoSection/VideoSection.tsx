@@ -1,56 +1,39 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import styles from './VideoSection.module.css';
 
 export default function VideoSection() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
 
   return (
     <section className={styles.videoSection}>
       <div className={styles.container}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.heading}>
-            See it in <span className={styles.headingHighlight}>action</span>
-          </h2>
-          <p className={styles.sectionIntro}>
-            Watch how our platform helps developers monetize their code and reach a global audience of businesses and other developers.
-          </p>
+          <p className={styles.overline}>Studio & marketplace for the modern web</p>
+          <h2 className={styles.heading}>Ship standout web experiences fast.<br />Let WebRend do the heavy lifting.</h2>
+          <ul className={styles.pills}>
+            <li className={styles.pill}><span className={styles.pillDot}></span>Custom sites</li>
+            <li className={styles.pill}><span className={styles.pillDot}></span>Component library</li>
+            <li className={styles.pill}><span className={styles.pillDot}></span>Real‑world case studies</li>
+          </ul>
         </div>
         
-        <div className={styles.videoContainer}>
-          <div className={styles.videoWrapper}>
-            <video 
-              className={styles.video}
-              ref={videoRef}
-              poster="/images/video-poster.jpg"
-              playsInline
-              onClick={togglePlay}
-            >
-              <source src="/videos/marketplace-demo.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            <button 
-              className={`${styles.playButton} ${isPlaying ? styles.hidden : ''}`}
-              onClick={togglePlay}
-              aria-label="Play video"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 5.14V19.14L19 12.14L8 5.14Z" fill="currentColor" />
-              </svg>
-            </button>
+        {/* Top: single GIF */}
+        <figure className={styles.heroMedia}>
+          <img src="/images/demo/hero-demo.gif" alt="Demo playback" className={styles.mediaImage} />
+        </figure>
+
+        {/* Bottom: two images with headings/desc */}
+        <div className={styles.belowGrid}>
+          <div className={styles.colItem}>
+            <h3 className={styles.colTitle}>Design to deploy</h3>
+            <p className={styles.colDesc}>From concept to production‑ready Next.js—animations, CMS, and storefronts included.</p>
+            <figure className={styles.colMedia}><img src="/images/demo/feature-1.jpg" alt="Feature preview one" className={styles.mediaImage} /></figure>
+          </div>
+          <div className={styles.colItem}>
+            <h3 className={styles.colTitle}>Built‑in performance</h3>
+            <p className={styles.colDesc}>Lighthouse‑friendly, optimized images and fonts, analytics hooks, and CI that scales.</p>
+            <figure className={styles.colMedia}><img src="/images/demo/feature-2.jpg" alt="Feature preview two" className={styles.mediaImage} /></figure>
           </div>
         </div>
         

@@ -163,7 +163,8 @@ function ListingsClientContent({ initialListings }: MarketplaceClientProps) {
           </Link>
         </div>
       ) : (
-        <div className={styles.grid}>
+        <section className={styles.gridSection}>
+          <div className={styles.grid}>
           {filteredListings.map((repo) => (
             <div key={repo.id} className={styles.card}>
               <div className={styles.cardImage}>
@@ -266,7 +267,8 @@ function ListingsClientContent({ initialListings }: MarketplaceClientProps) {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        </section>
       )}
     </div>
   );

@@ -14,6 +14,7 @@ import FAQ from "./components/FAQ/FAQ";
 import Footer from "./components/Footer/Footer";
 import ScrollCodeSection from "./components/ScrollCodeSection/ScrollCodeSection";
 import StickyTransitionSection from "./components/StickyTransitionSection/StickyTransitionSection";
+import CTAStickyTrack from "./components/CTAStickyTrack/CTAStickyTrack";
 
 import { db } from './lib/firebase-admin';
 import { DocumentData, Timestamp } from 'firebase-admin/firestore';
@@ -129,8 +130,8 @@ export default async function Home() {
         <section id="blog">
           <BlogPreview />
         </section>
-        <section id="faq">
-          <FAQ />
+        <section id="cta-track-and-faq">
+          <CTAStickyTrack />
         </section>
         {/* <ContactUs /> */} {/* Commented out - "Let's work together" section removed */}
       </main>

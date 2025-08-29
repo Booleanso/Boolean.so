@@ -1,13 +1,11 @@
 .section {
-  background-color: var(--background, #ffffff);
+  background-color: transparent !important;
   height: 400vh; /* Very tall section for extended scroll animation */
   position: relative;
   /* Ensure this section can contain sticky elements */
 }
 
-:global(.dark-theme) .section {
-  background-color: #000000;
-}
+:global(.dark-theme) .section { background-color: transparent; }
 
 .track {
   position: relative;
@@ -75,9 +73,9 @@
 
 /* Message cards */
 .messageCard {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border-radius: 0 !important;
   padding: 3rem 2rem;
   text-align: center;
   max-width: 600px;
@@ -90,9 +88,7 @@
   width: 100%;
 }
 
-:global(.dark-theme) .messageCard {
-  background: rgba(0, 0, 0, 0.9);
-}
+:global(.dark-theme) .messageCard { background: transparent !important; }
 
 .messageCard.fadeOut {
   animation: fadeOutMessage 0.4s ease-out forwards;
@@ -105,6 +101,11 @@
   margin: 0;
   line-height: 1.2;
   letter-spacing: -0.02em;
+  background: transparent !important;
+  padding: 0 !important;
+  display: inline;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
 }
 
 :global(.dark-theme) .messageTitle {

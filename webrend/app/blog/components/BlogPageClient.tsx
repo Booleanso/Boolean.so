@@ -216,55 +216,9 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
 
   return (
     <>
-      {/* Top Navigation Bar */}
-      <div className={styles.topBar}>
-        <div className={styles.topBarLeft}>
-          <form 
-            className={styles.searchBar} 
-            onSubmit={handleSearchSubmit}
-          >
-            <span className={styles.searchIcon}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </span>
-            <input 
-              type="text" 
-              className={styles.searchInput} 
-              placeholder="Search articles..." 
-              value={inputValue}
-              onChange={handleSearchChange}
-            />
-            {inputValue && (
-              <button 
-                type="button" 
-                className={styles.clearSearch}
-                onClick={clearSearch}
-                aria-label="Clear search"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            )}
-            <button 
-              type="submit"
-              className={styles.searchSubmitButton}
-              aria-label="Search"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          </form>
-        </div>
-        <div className={styles.topBarRight}>
-          <button className={styles.button}>Today</button>
-          <button className={`${styles.button} ${styles.buttonPrimary}`}>Subscribe</button>
-        </div>
-      </div>
+
+
+      
 
       {/* Categories Bar */}
       <div className={styles.categoriesBar}>
@@ -290,8 +244,48 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
         <div className={animationClass}>
           {filteredArticles.length > 0 ? (
             <>
-              {/* Header */}
+              {/* Header with search on top */}
               <div className={styles.header}>
+                <form 
+                  className={`${styles.searchBar} ${styles.headerSearchBar}`}
+                  onSubmit={handleSearchSubmit}
+                >
+                  <span className={styles.searchIcon}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </span>
+                  <input 
+                    type="text" 
+                    className={styles.searchInput} 
+                    placeholder="Search articles..." 
+                    value={inputValue}
+                    onChange={handleSearchChange}
+                  />
+                  {inputValue && (
+                    <button 
+                      type="button" 
+                      className={styles.clearSearch}
+                      onClick={clearSearch}
+                      aria-label="Clear search"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  )}
+                  <button 
+                    type="submit"
+                    className={styles.searchSubmitButton}
+                    aria-label="Search"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                </form>
                 <h1 className={styles.title}>WebRend Blog</h1>
                 <p className={styles.subtitle}>
                   {searchQuery ? (

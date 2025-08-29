@@ -1,7 +1,7 @@
 .showcaseSection {
   width: 100%;
   padding: 7rem 2rem;
-  background-color: #ffffff; /* Changed from light gray to white */
+  background-color: transparent; /* remove grey background */
   overflow: visible; /* allow sticky child to extend without clipping */
   position: relative;
   min-height: 300vh; /* Increased height to cover previous section */
@@ -14,6 +14,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: transparent; /* ensure no section tint */
 }
 
 .headerContent {
@@ -118,6 +119,7 @@
   transform: none;
   margin-top: 1rem;
   z-index: 20; /* ensure it layers above previous text */
+  background: transparent;
 }
 
 .showcaseImageContainer {
@@ -125,6 +127,7 @@
   border-radius: 24px;
   overflow: visible;
   margin: 0 auto;
+  background: transparent;
 }
 
 .imageWrapper {
@@ -135,6 +138,7 @@
   aspect-ratio: 21 / 9; /* slimmer, brick-like aspect */
   transform-origin: center center;
   will-change: transform, border-radius, box-shadow;
+  background: transparent;
 }
 
 /* Parallax bricks */
@@ -169,6 +173,7 @@
   margin-top: 4rem; /* appear immediately after the image container */
   padding: 0; /* allow blocks to reach the edges */
   overflow: visible;
+  background: transparent !important; /* remove any default tint */
 }
 
 .floatingBrick {
@@ -275,7 +280,7 @@
 
 /* Dark mode styles */
 :global(.dark-theme) .showcaseSection {
-  background-color: #000;
+  background-color: transparent;
 }
 
 :global(.dark-theme) .heading,

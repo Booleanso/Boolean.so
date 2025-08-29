@@ -5,6 +5,7 @@
   font-family: "Helvetica Neue", Helvetica, Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
 }
 
 /* Dark mode support for the container */
@@ -19,6 +20,10 @@
     color: #f5f5f7; /* Light text for dark background */
   }
 }
+
+/* Side borders for key containers */
+.withSideBorders { border-left: 1px solid rgba(0,0,0,0.08); border-right: 1px solid rgba(0,0,0,0.08); }
+:global(.dark-theme) .withSideBorders { border-color: rgba(255,255,255,0.12); }
 
 /* --- Hero Section --- */
 .heroSection {
@@ -288,13 +293,17 @@
 
 /* --- Main Content Area --- */
 .mainContent {
-  max-width: 860px;
-  margin: 2rem auto 5rem auto;
+  width: 90vw;
+  max-width: 90vw;
+  margin-left: calc(-45vw + 50%);
+  margin-right: calc(-45vw + 50%);
+  margin-top: 2rem;
+  margin-bottom: 5rem;
   padding: 0 1rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 4rem; /* Increased gap between major sections */
+  gap: 3rem; /* Tighter, more minimal spacing */
   background-color: #ffffff; /* Light mode: white background */
   transition: background-color 0.3s ease;
 }
@@ -705,35 +714,71 @@
 .testimonialSection {
   background-color: transparent;
   border: none;
-  padding: 4rem 2rem;
+  padding: 2.5rem 0;
   margin: 3rem 0;
-  text-align: center;
+  text-align: left;
   width: 100%;
   position: relative;
 }
 
-.testimonialBlockquote {
-  border-left: none;
-  padding-left: 0;
-  padding-right: 0;
-  margin: 0 auto;
-  max-width: 80ch;
-  position: relative;
+
+/* Rail layout aligned with 90vw content and side borders */
+.testimonialCard { 
+  width: 90vw; 
+  max-width: 1200px; 
+  margin-left: calc(-45vw + 50%);
+  margin-right: calc(-45vw + 50%);
+  border-left: 1px solid rgba(0,0,0,0.08);
+  border-right: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  background: transparent;
 }
 
+:global(.dark-theme) .testimonialCard { 
+  border-left-color: rgba(255,255,255,0.12);
+  border-right-color: rgba(255,255,255,0.12);
+}
+
+.testimonialHeader { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.avatar { width: 40px; height: 40px; border-radius: 999px; background: #eaeaea; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #555; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08); }
+:global(.dark-theme) .avatar { background: #1c1c1e; color: #ddd; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+.headerMeta { display: flex; flex-direction: column; }
+.stars { letter-spacing: .2em; color: #111; font-size: .9rem; opacity: .9; }
+:global(.dark-theme) .stars { color: #fff; }
+.byline { color: #6e6e73; font-size: .95rem; }
+:global(.dark-theme) .byline { color: #a1a1a6; }
+
 .testimonialText {
-  font-size: 2rem;
+  font-size: 1.35rem;
   font-style: normal;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   color: #1d1d1f; /* Light mode: dark text */
-  margin-bottom: 2rem;
-  line-height: 1.4;
+  margin: 0;
+  line-height: 1.6;
   position: relative;
-  padding: 0 3rem;
-  text-align: center;
+  padding: 0;
+  text-align: left;
   transition: color 0.3s ease;
 }
+
+.quotePlain { quotes: none; }
+
+/* Subtle quote marks fading at edges */
+.testimonialCard::before,
+.testimonialCard::after {
+  content: '"';
+  position: absolute;
+  top: 8px;
+  font-size: 2rem;
+  line-height: 1;
+  color: rgba(0,0,0,0.15);
+}
+.testimonialCard::before { left: 8px; }
+.testimonialCard::after { right: 8px; transform: scaleX(-1); }
+:global(.dark-theme) .testimonialCard::before,
+:global(.dark-theme) .testimonialCard::after { color: rgba(255,255,255,0.2); }
 
 /* Add quote marks */
 .testimonialText::before,
@@ -1387,7 +1432,7 @@
 .kicker { text-transform: uppercase; letter-spacing: .12em; font-weight: 700; color: #6e6e73; margin-bottom: .5rem; font-size: .8rem; }
 .docTitle { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.01em; margin: 0 0 .75rem 0; }
 .docGrid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start; }
-.metaCard { background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 1rem; backdrop-filter: blur(8px); }
+.metaCard { background: transparent; border: none; border-radius: 8px; padding: .75rem .9rem; }
 .metaRow { display: flex; justify-content: space-between; padding: .35rem 0; border-bottom: 1px dashed rgba(0,0,0,0.08); }
 .metaRow:last-child { border-bottom: none; }
 .body { font-size: 1.05rem; color: #1d1d1f; }
@@ -1395,3 +1440,74 @@
 .stackTag { background: #f5f5f7; border: 1px solid rgba(0,0,0,0.08); border-radius: 999px; padding: .35rem .7rem; font-weight: 600; font-size: .85rem; }
 
 @media (max-width: 900px) { .docGrid { grid-template-columns: 1fr; } }
+
+/* Minimal section block + rules for consistent PDF-like rhythm */
+.sectionBlock { display: block; }
+.sectionRule { width: 100%; height: 1px; background: rgba(0,0,0,0.12); }
+:global(.dark-theme) .sectionRule { background: rgba(255,255,255,0.12); }
+
+/* Specs grid section */
+.specsSection { display: block; }
+.specsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem 2rem; }
+.kvRow { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(0,0,0,0.08); padding: .4rem 0; }
+.kvLabel { color: #6e6e73; font-weight: 600; }
+.kvValue { color: #1d1d1f; font-weight: 600; }
+@media (max-width: 700px) { .specsGrid { grid-template-columns: 1fr; } }
+
+/* Visual narrative placements */
+.visualSection { width: 100%; display: flex; flex-direction: column; gap: 2.5rem; }
+.fullBleedBand { width: 90vw; margin-left: calc(-45vw + 50%); margin-right: calc(-45vw + 50%); }
+.bandTopLine, .bandBottomLine { height: 1px; background: rgba(0,0,0,0.12); width: 100%; }
+.framedBandInner { padding: 14px 5%; background: #fff; }
+.imageFrame { display: flex; flex-direction: column; gap: 8px; margin: 0; }
+.imageViewport { position: relative; width: 100%; height: 0; padding-bottom: 50%; border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; overflow: hidden; background: #fafafa; }
+.figureImage { object-fit: cover; }
+.imageCaption { font-size: .8rem; color: #6e6e73; text-align: left; padding: 0 .25rem; }
+.twoUpGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.threeUpGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.quadGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.figure { position: relative; width: 100%; }
+/* Reuse imageFrame + imageViewport inside grids */
+/* Ensure consistent aspect ratios on grid items */
+.twoUpGrid .imageViewport { padding-bottom: 62%; }
+.threeUpGrid .imageViewport { padding-bottom: 70%; }
+.quadGrid .imageViewport { padding-bottom: 75%; }
+@media (max-width: 1024px) { .quadGrid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px) { 
+  .twoUpGrid { grid-template-columns: 1fr; }
+  .threeUpGrid { grid-template-columns: 1fr; }
+  .quadGrid { grid-template-columns: 1fr; }
+}
+
+/* Dark mode adjustments for frames */
+:global(.dark-theme) .bandTopLine, :global(.dark-theme) .bandBottomLine { background: rgba(255,255,255,0.12); }
+:global(.dark-theme) .framedBandInner { background: #000; }
+:global(.dark-theme) .imageViewport { border-color: rgba(255,255,255,0.18); background: #121212; }
+:global(.dark-theme) .imageCaption { color: #a1a1a6; }
+
+/* Approach section refinements */
+.approachSection { display: flex; flex-direction: column; gap: 1.5rem; }
+.approachIntro { text-align: center; }
+.sectionTitleCenter { text-align: center; display: inline-block; border-bottom: none; }
+.sectionTextCenter { margin: 0 auto; text-align: center; }
+.approachTitle { font-size: 3rem; font-weight: 700; line-height: 1.1; margin: 0 0 .5rem 0; color: #1d1d1f; }
+:global(.dark-theme) .approachTitle { color: #fff; }
+.approachDesc { font-size: 1.25rem; font-weight: 300; max-width: 600px; margin: 0 auto 1.5rem auto; color: rgba(29,29,31,0.9); }
+:global(.dark-theme) .approachDesc { color: rgba(255,255,255,0.9); }
+.twoUpGridAligned { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
+.twoUpGridAligned .imageViewport { padding-bottom: 62%; }
+.featureListWide { width: 100%; margin-top: .5rem; justify-content: center; gap: .6rem; }
+@media (max-width: 768px) {
+  .twoUpGridAligned { grid-template-columns: 1fr; }
+}
+
+/* Four column info grid */
+.infoQuadGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+.infoCard { border: 1px dashed rgba(0,0,0,0.15); border-radius: 8px; padding: .9rem; background: #fff; }
+.infoCardTitle { font-weight: 700; letter-spacing: .02em; margin-bottom: .35rem; color: #1d1d1f; font-size: .95rem; text-transform: none; }
+.infoCardText { font-size: .95rem; line-height: 1.55; color: #1d1d1f; }
+:global(.dark-theme) .infoCard { background: #000; border-color: rgba(255,255,255,0.18); }
+:global(.dark-theme) .infoCardTitle { color: #f5f5f7; }
+:global(.dark-theme) .infoCardText { color: #f5f5f7; }
+@media (max-width: 1200px) { .infoQuadGrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px) { .infoQuadGrid { grid-template-columns: 1fr; } }

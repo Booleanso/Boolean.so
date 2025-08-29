@@ -90,35 +90,24 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 }
 
 // Header section
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0;
-  padding: 5rem 5% 2rem;
-  background-color: white;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  
-  // Dark mode styles
-  :global(.dark-theme) & {
-    background-color: $dark-bg;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-  }
-  
-  h1 {
-    font-size: 40px;
-    font-weight: 600;
-    color: $text-color;
-    margin: 0;
-    letter-spacing: -0.025em;
-    line-height: 1.1;
-    
-    // Dark mode styles
-    :global(.dark-theme) & {
-      color: $dark-text-color;
-    }
-  }
+// Replace old header with video-section-like header
+.sectionHeader {
+  text-align: left;
+  margin-bottom: 5rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
 }
+.heading { font-size: 2.6rem; font-weight: 700; line-height: 1.1; margin: 0 0 1.5rem; letter-spacing: -0.02em; color: $text-color; padding: 0; }
+.headingHighlight { background: linear-gradient(90deg, #1d1d1f, #6e6e73); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.sectionIntro { color: #6e6e73; max-width: 800px; }
+
+// Dark
+:global(.dark-theme) .heading { color: #f5f5f7; }
+:global(.dark-theme) .headingHighlight { background: linear-gradient(90deg, #f5f5f7, #a1a1a6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+:global(.dark-theme) .sectionIntro { color: #a1a1a6; }
 
 // Profile section
 .profile {
@@ -157,8 +146,14 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 .sectionHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 2rem 5% 1.5rem;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5rem;
+  margin-bottom: 1rem;
+  padding: 0;
   
   // Dark mode styles
   :global(.dark-theme) & {
@@ -166,18 +161,10 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   }
 }
 
-.sectionTitle {
-  font-size: 28px;
-  font-weight: 600;
-  margin: 0;
-  color: $text-color;
-  letter-spacing: -0.025em;
-  
-  // Dark mode styles
-  :global(.dark-theme) & {
-    color: $dark-text-color;
-  }
-}
+.sectionTitle { font-size: 2.6rem; font-weight: 700; margin: 0 0 1.2rem; letter-spacing: -0.02em; color: $text-color; line-height: 1.1; padding: 0; }
+.sectionTitle span { background: linear-gradient(90deg, #1d1d1f, #6e6e73); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; padding: 0; }
+:global(.dark-theme) .sectionTitle { color: #f5f5f7; }
+:global(.dark-theme) .sectionTitle span { background: linear-gradient(90deg, #f5f5f7, #a1a1a6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
 .sectionControls {
   display: flex;
@@ -186,26 +173,19 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 }
 
 // Unified layout for account and connections
-.unifiedSection {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  padding: 0 5% 2rem;
-  
-  @media (max-width: 992px) {
-    flex-direction: column;
-  }
-}
+.gridWrap { max-width: 1200px; margin-left: auto; margin-right: auto; padding: 0; }
+.unifiedSection { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding: 0 0 2rem; }
+@media (max-width: 992px) { .unifiedSection { grid-template-columns: 1fr; } }
 
 .accountColumn {
   flex: 1;
   min-width: 300px;
   
   .accountInfo {
-    padding: 2rem;
+    padding: 1.25rem;
     background-color: white;
-    border-radius: $radius;
-    box-shadow: $card-shadow;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.08);
     border: 1px solid rgba(0,0,0,0.05);
     
     // Dark mode styles
@@ -237,11 +217,11 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 }
 
 .avatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 60px;
+  width: 72px;
+  height: 72px;
+  border-radius: 36px;
   overflow: hidden;
-  box-shadow: $card-shadow;
+  box-shadow: 0 8px 24px rgba(0,0,0,.06);
   
   img {
     object-fit: cover;
@@ -266,7 +246,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   flex: 1;
   
   h3 {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 600;
     margin: 0 0 0.5rem;
     color: $text-color;
@@ -281,7 +261,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   p {
     color: $text-light;
     margin: 0;
-    font-size: 16px;
+    font-size: 13px;
     
     // Dark mode styles
     :global(.dark-theme) & {
@@ -295,10 +275,10 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.75rem;
-  border-radius: $radius;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
   background-color: white;
-  box-shadow: $card-shadow;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
   border: 1px solid rgba(0,0,0,0.05);
   transition: $transition;
   
@@ -321,13 +301,13 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 }
 
 .connectionIcon {
-  font-size: 24px;
+  font-size: 18px;
   color: $primary-color;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
+  width: 36px;
+  height: 36px;
   background-color: rgba(0, 113, 227, 0.1);
   border-radius: 50%;
   
@@ -340,7 +320,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 
 .connectionDetails {
   h3 {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
     margin: 0 0 0.25rem;
     color: $text-color;
@@ -354,7 +334,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   p {
     color: $text-light;
     margin: 0;
-    font-size: 14px;
+    font-size: 12px;
     
     // Dark mode styles
     :global(.dark-theme) & {
@@ -369,10 +349,10 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 }
 
 .connectionButton {
-  padding: 0.6rem 1.4rem;
+  padding: 0.5rem 1rem;
   border-radius: 20px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
   border: none;
   transition: $transition;
@@ -935,10 +915,13 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 
 // Purchased and listed repos styling
 .purchasedRepos, .listedRepos {
-  padding: 1rem 5% 2rem;
+  padding: 0 0 2rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -947,8 +930,8 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 
 .purchasedRepoCard, .listedRepoCard {
   background-color: white;
-  border-radius: $radius;
-  box-shadow: $card-shadow;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
   overflow: hidden;
   border: 1px solid rgba(0,0,0,0.05);
   display: flex;
@@ -971,7 +954,8 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 .purchasedRepoImage, .listedRepoImage {
   position: relative;
   width: 100%;
-  height: 180px;
+  height: 160px;
+  overflow: hidden; border-radius: 12px;
   
   img {
     object-fit: cover;
@@ -1012,12 +996,12 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 
 .purchasedRepoInfo, .listedRepoInfo {
   flex: 1;
-  padding: 1.75rem;
+  padding: 1rem 1rem 1.25rem;
   display: flex;
   flex-direction: column;
   
   h3 {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
     margin: 0 0 0.8rem;
     color: $text-color;
@@ -1032,8 +1016,8 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 
 .purchasedRepoDescription, .listedRepoDescription {
   color: $text-light;
-  margin: 0 0 1.5rem;
-  font-size: 15px;
+  margin: 0 0 1rem;
+  font-size: 13px;
   line-height: 1.5;
   
   // Dark mode styles
@@ -1074,60 +1058,62 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 
 .purchasedRepoActions, .listedRepoControls {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  flex-direction: row;
+  gap: 0.5rem;
   margin-top: auto;
-  padding-top: 1.5rem;
+  padding-top: 1rem;
 }
 
 .viewListingButton, .editListingButton, .removeListingButton, .soldButton {
-  padding: 0.75rem 1rem;
-  border-radius: 20px;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
-  border: none;
+  border: 1px solid rgba(0,0,0,0.12);
   text-decoration: none;
   transition: $transition;
   text-align: center;
-  width: 100%;
+  width: auto;
   flex: none;
+  background: #ffffff;
+  color: #000000;
 }
 
 .viewListingButton {
-  background-color: $primary-color;
-  color: white;
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
   
   &:hover {
-    background-color: color.scale($primary-color, $lightness: -5%);
-    transform: scale(1.02);
+    opacity: 0.9;
+    transform: none;
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: $dark-primary-color;
-    
-    &:hover {
-      background-color: color.scale($dark-primary-color, $lightness: 5%);
-    }
+    background-color: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
   }
 }
 
 .editListingButton {
-  background-color: rgba(0,0,0,0.03);
-  color: $text-color;
+  background-color: #ffffff;
+  color: #000000;
   
   &:hover {
-    background-color: rgba(0,0,0,0.05);
+    background-color: #f5f5f5;
   }
   
   // Dark mode styles
   :global(.dark-theme) & {
-    background-color: rgba(255,255,255,0.08);
-    color: $dark-text-color;
+    background-color: #000000;
+    color: #ffffff;
+    border-color: #333333;
     
     &:hover {
-      background-color: rgba(255,255,255,0.12);
+      background-color: #111111;
     }
   }
 }
@@ -1181,7 +1167,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 }
 
 .listedRepoPrice {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: $primary-color;
   padding: 0.5rem 1rem;
@@ -1251,9 +1237,12 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 
 // Repository list styling
 .repoListContainer {
-  padding: 1.5rem 5%;
+  padding: 1.5rem 0;
   display: flex;
   flex-direction: column;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .repoControls {

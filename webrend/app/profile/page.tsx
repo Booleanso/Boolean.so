@@ -6,6 +6,7 @@ import { FiRefreshCw, FiSun, FiMoon, FiMonitor } from 'react-icons/fi';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './profile.module.scss';
+import marketplaceStyles from '../marketplace/marketplace.module.scss';
 import { auth } from '../lib/firebase-client';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { useTheme } from '../components/ThemeProvider/ThemeProvider';
@@ -838,15 +839,16 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Your Profile</h1>
+      <div className={styles.sectionHeader}>
+        <h1 className={styles.heading}><span className={styles.headingHighlight}>Your Profile</span></h1>
+        <p className={styles.sectionIntro}>Manage your account, connections, and repositories in one place.</p>
       </div>
       
       <div className={styles.profile}>
         {/* Account & Connections unified section */}
-        <div className={styles.section}>
+        <div className={`${styles.section} ${styles.gridWrap}`}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Account & Connections</h2>
+            <h2 className={styles.heading}>Account & Connections</h2>
           </div>
           
           {/* Status messages */}
@@ -1190,9 +1192,9 @@ export default function ProfilePage() {
         {user && (
           <>
             {/* Listed Repositories - moved to be right after Account & Connections */}
-            <div className={styles.section}>
+            <div className={`${styles.section} ${styles.gridWrap}`}>
               <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Your Listed Repositories</h2>
+                <h2 className={styles.heading}>Your Listed Repositories</h2>
                 <div className={styles.sectionControls}>
                   <button 
                     onClick={toggleSoldListings}
@@ -1215,86 +1217,75 @@ export default function ProfilePage() {
               {listedReposLoading ? (
                 <div className={styles.loading}>Loading listed repositories...</div>
               ) : listedRepos.length > 0 ? (
-                <div className={styles.listedRepos}>
-                  {listedRepos.map(repo => (
-                    <div key={repo.id} className={styles.listedRepoCard}>
-                      <div className={styles.listedRepoImage}>
-                        <Image 
-                          src={repo.imageUrl} 
-                          alt={repo.name} 
-                          width={400} 
-                          height={250}
-                        />
-                        <div className={styles.listingType}>
-                          {repo.isSubscription ? 'Subscription' : 'One-time Purchase'}
-                        </div>
-                        {repo.sold && (
-                          <div className={styles.soldBadge}>
-                            Sold
-                          </div>
-                        )}
-                      </div>
-                      <div className={styles.listedRepoInfo}>
-                        <h3>{repo.name}</h3>
-                        <p className={styles.listedRepoDescription}>
-                          {repo.description}
-                        </p>
-                        <div className={styles.listedRepoMeta}>
-                          <div className={styles.listedRepoPrice}>
-                            {repo.isSubscription 
-                              ? `$${repo.subscriptionPrice}/month` 
-                              : `$${repo.price}`
-                            }
-                          </div>
-                          <div className={styles.listedRepoStats}>
-                            <span>
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.statIcon}>
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                              </svg>
-                              {repo.stars}
-                            </span>
-                            <span>
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.statIcon}>
-                                <line x1="6" y1="3" x2="6" y2="15"></line>
-                                <circle cx="18" cy="6" r="3"></circle>
-                                <circle cx="6" cy="18" r="3"></circle>
-                                <path d="M18 9a9 9 0 0 1-9 9"></path>
-                              </svg>
-                              {repo.forks}
-                            </span>
-                          </div>
-                        </div>
-                        <div className={styles.listedRepoControls}>
-                          <Link 
-                            href={`/marketplace/buy/${repo.id}`} 
-                            className={styles.viewListingButton}
-                          >
-                            View Listing
+                <div className={`${styles.gridWrap}`}>
+                  <div className={marketplaceStyles.grid}>
+                    {listedRepos.map(repo => (
+                      <div key={repo.id} className={marketplaceStyles.card}>
+                        <div className={marketplaceStyles.cardImage}>
+                          <Image src={repo.imageUrl} alt={repo.name} width={600} height={400} />
+                          {repo.sold && (<div className={marketplaceStyles.soldBadge}>Sold</div>)}
+                          <Link href={`/marketplace/buy/${repo.id}`}>
+                            <button className={marketplaceStyles.buyButton} disabled={repo.sold}>
+                              {repo.sold ? 'Sold Out' : repo.isSubscription ? 'Subscribe' : 'Buy Now'}
+                            </button>
                           </Link>
-                          <Link 
-                            href={`/marketplace/sell?edit=true&listing=${repo.id}`} 
-                            className={styles.editListingButton}
-                          >
-                            Edit Listing
-                          </Link>
-                          <button
-                            className={styles.removeListingButton}
-                            onClick={() => handleRemoveListing(repo.id, repo.stripeProductId || '')}
-                            disabled={deleteLoading === repo.id}
-                          >
-                            {deleteLoading === repo.id ? 'Removing...' : 'Remove Listing'}
-                          </button>
-                          <button
-                            className={styles.soldButton}
-                            onClick={() => handleMarkAsSold(repo.id)}
-                            disabled={deleteLoading === repo.id}
-                          >
-                            Mark as Sold
-                          </button>
+                        </div>
+                        <div className={marketplaceStyles.cardContent}>
+                          <div className={marketplaceStyles.cardHeader}>
+                            <h2 className={marketplaceStyles.repoName}>{repo.name}</h2>
+                            <div className={marketplaceStyles.price}>{repo.isSubscription ? `$${repo.subscriptionPrice}/mo` : `$${repo.price}`}</div>
+                          </div>
+                          <p className={marketplaceStyles.description}>{repo.description}</p>
+                          {/* Tags omitted on profile cards */}
+                          <div className={marketplaceStyles.cardFooter}>
+                            <div className={marketplaceStyles.seller}>
+                              <div className={marketplaceStyles.avatar}>
+                                <div className={marketplaceStyles.defaultAvatar}>{repo.seller.username.charAt(0).toUpperCase()}</div>
+                              </div>
+                              <Link href={`/marketplace/user/${repo.seller.username}`} className={marketplaceStyles.sellerUsername}>
+                                @{repo.seller.username}
+                              </Link>
+                            </div>
+                            <div className={marketplaceStyles.stats}>
+                              <div className={marketplaceStyles.stat}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                                {repo.stars}
+                              </div>
+                              <div className={marketplaceStyles.stat}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <line x1="6" y1="3" x2="6" y2="15"></line>
+                                  <circle cx="18" cy="6" r="3"></circle>
+                                  <circle cx="6" cy="18" r="3"></circle>
+                                  <path d="M18 9a9 9 0 0 1-9 9"></path>
+                                </svg>
+                                {repo.forks}
+                              </div>
+                            </div>
+                          </div>
+                          <div className={styles.listedRepoControls}>
+                            <Link href={`/marketplace/buy/${repo.id}`} className={styles.viewListingButton}>View Listing</Link>
+                            <Link href={`/marketplace/sell?edit=true&listing=${repo.id}`} className={styles.editListingButton}>Edit</Link>
+                            <button
+                              className={styles.removeListingButton}
+                              onClick={() => handleRemoveListing(repo.id, repo.stripeProductId || '')}
+                              disabled={deleteLoading === repo.id}
+                            >
+                              {deleteLoading === repo.id ? 'Removing…' : 'Remove'}
+                            </button>
+                            <button
+                              className={styles.soldButton}
+                              onClick={() => handleMarkAsSold(repo.id)}
+                              disabled={deleteLoading === repo.id}
+                            >
+                              Mark as Sold
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className={styles.emptyState}>
@@ -1306,9 +1297,9 @@ export default function ProfilePage() {
               )}
             </div>
             
-            <div className={styles.section}>
+            <div className={`${styles.section} ${styles.gridWrap}`}>
               <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Your Purchased Repositories</h2>
+                <h2 className={styles.heading}>Your Purchased Repositories</h2>
                 <button 
                   onClick={() => fetchPurchasedRepos(0)} 
                   className={styles.refreshButton}
@@ -1388,9 +1379,9 @@ export default function ProfilePage() {
               )}
             </div>
             
-            <div className={styles.section}>
+            <div className={`${styles.section} ${styles.gridWrap}`}>
               <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Your GitHub Repositories</h2>
+                <h2 className={styles.heading}>Your GitHub Repositories</h2>
               </div>
               
               {reposLoading ? (
@@ -1432,7 +1423,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   
-                  {/* Repositories list */}
+                  {/* Repositories list (rows) */}
                   <div className={styles.repoList}>
                     {getSortedFilteredRepos().map((repo) => (
                       <div key={repo.id} className={styles.repoListItem}>

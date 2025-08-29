@@ -428,7 +428,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 2.5rem;
-  padding: 3rem 5% 5rem;
+  padding: 0; /* padding handled by parent wrapper to avoid affecting other sections */
   background-color: white;
   
   @media (max-width: 768px) {
@@ -436,6 +436,17 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
     padding: 2rem 5% 4rem;
     gap: 2.5rem;
   }
+  
+  // Dark mode styles
+  :global(.dark-theme) & {
+    background-color: $dark-bg;
+  }
+}
+
+// Wrapper around the grid to control spacing without touching card internals
+.gridSection {
+  padding: 2rem 5% 4rem; // match filters left/right padding
+  background-color: white;
   
   // Dark mode styles
   :global(.dark-theme) & {
@@ -586,19 +597,15 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
 }
 
 .price {
-  font-size: 16px;
+  font-size: 14px; /* smaller */
   font-weight: 600;
-  color: $primary-color;
-  padding: 0.5rem 1rem;
-  border-radius: 15px;
-  background-color: rgba(0, 113, 227, 0.1);
+  color: $text-color; /* neutral, not blue */
+  padding: 0; /* remove pill */
+  border-radius: 0;
+  background: transparent;
   display: inline-block;
   
-  // Dark mode styles
-  :global(.dark-theme) & {
-    color: $dark-primary-color;
-    background-color: rgba(10, 132, 255, 0.15);
-  }
+  :global(.dark-theme) & { color: $dark-text-color; background: transparent; }
 }
 
 .subscription {
@@ -654,6 +661,8 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
     border-top: 1px solid rgba(255, 255, 255, 0.05);
   }
 }
+
+.readTimeInline { font-size: 13px; color: $text-light; }
 
 .seller {
   display: flex;
@@ -715,7 +724,7 @@ $dark-hover-bg: #2c2c2e; // Apple hover (dark)
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 14px;
+  font-size: 13px; /* slightly smaller for read times */
   color: $text-light;
   
   svg {

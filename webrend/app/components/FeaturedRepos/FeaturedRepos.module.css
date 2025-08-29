@@ -20,21 +20,23 @@
 
 .sectionHeader {
   margin-bottom: 3rem;
-  max-width: 1400px;
+  max-width: 1200px; /* align with media width above */
   margin-left: auto;
   margin-right: auto;
   text-align: left;
-  padding-bottom: 0; /* Remove padding from original design */
-  border-bottom: none; /* Remove border from original design */
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 :global(.dark-theme) .sectionHeader {
   border-bottom: none;
 }
 
+.overline { font-size: .9rem; color: #0071e3; font-weight: 600; margin-bottom: .75rem; }
+
 .sectionHeader h2 {
-  font-size: 3rem;
-  font-weight: 600;
+  font-size: 2.6rem; /* match video section sizing */
+  font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 1.2rem;
   line-height: 1.1;
@@ -65,7 +67,7 @@
 
 .featuredRepoIntro {
   font-size: 1.1rem;
-  color: #6e6e73; /* Changed to darker secondary text */
+  color: #6e6e73;
   max-width: 700px;
   line-height: 1.5;
   margin: 0;
@@ -340,10 +342,12 @@
   display: flex;
   justify-content: flex-start;
   margin-top: 2.5rem;
-  max-width: 1400px;
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
+
+.gridWrap { max-width: 1200px; margin-left: auto; margin-right: auto; }
 
 .viewAllButton {
   display: inline-flex;

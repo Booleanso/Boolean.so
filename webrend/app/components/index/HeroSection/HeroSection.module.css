@@ -97,6 +97,7 @@
 .heading {
   text-align: center;
   margin-bottom: 2rem;
+  position: relative;
 }
 
 .heading h1 {
@@ -105,6 +106,21 @@
   margin-bottom: 1rem;
   line-height: 1.2;
   color: var(--heading-color, #333);
+  background: rgba(255,255,255,0.35);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: none;
+  border-radius: 18px;
+  padding: .75rem 1.25rem;
+  display: inline-block;
+}
+
+.gradText {
+  background-image: linear-gradient(90deg, #1d1d1f, #6e6e73);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 :global(.dark-theme) .heading h1 {
@@ -120,6 +136,13 @@
   color: var(--subtitle-color, #666);
   max-width: 700px;
   margin: 0 auto 2rem auto;
+  background: rgba(255,255,255,0.25);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  backdrop-filter: saturate(180%) blur(16px);
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: none;
+  border-radius: 16px;
+  padding: .75rem 1rem;
 }
 
 :global(.dark-theme) .subtitle {
@@ -286,34 +309,27 @@
 }
 
 .primaryBtn {
-  background-color: #333333; /* Dark grey color */
-  color: white;
-  border: none;
-  padding: 0 1.5rem; /* Removed vertical padding for precise height control */
-  height: 44px; /* Match search form height exactly */
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  padding: 0 1.5rem;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px; /* Ensure consistent minimum height */
-  border-radius: 25px; /* Match search form border radius for consistency */
-  font-size: 15px; /* Slightly smaller font for sleeker look */
+  min-height: 44px;
+  border-radius: 25px;
+  font-size: 15px;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
 }
 
-.primaryBtn:hover {
-  background-color: #555555; /* Lighter grey on hover */
-  /* Removed transform: translateY(-2px); */
-}
+.primaryBtn:hover { opacity: .9; }
 
-.secondaryBtn {
-  background-color: #f5f5f5;
-  color: #333;
-  border: 1px solid #ddd;
-}
+.secondaryBtn { background: rgba(255,255,255,0.35); color: #0a0a0a; border: 1px solid rgba(255,255,255,0.5); -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%); box-shadow: none; }
 
-.secondaryBtn:hover {
-  background-color: #eaeaea;
-  /* Removed transform: translateY(-2px); */
-}
+.secondaryBtn:hover { opacity: .95; }
 
 /* Trusted by section in hero with marquee animation */
 .trustedBy {
@@ -458,14 +474,12 @@
   background-color: #0066cc;
 }
 
-/* Dark theme styles for discovery call button */
-:global(.dark-theme) .primaryBtn {
-  background-color: #666666; /* Lighter grey for dark theme */
-}
-
-:global(.dark-theme) .primaryBtn:hover {
-  background-color: #777777; /* Even lighter grey on hover in dark theme */
-}
+/* Dark theme adjustments for glass */
+:global(.dark-theme) .heading h1 { background: rgba(20,20,20,0.45); border-color: rgba(255,255,255,0.14); box-shadow: none; }
+:global(.dark-theme) .gradText { background-image: linear-gradient(90deg, #f5f5f7, #a1a1a6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+:global(.dark-theme) .subtitle { background: rgba(20,20,20,0.35); border-color: rgba(255,255,255,0.12); box-shadow: none; }
+:global(.dark-theme) .primaryBtn { background: #ffffff; color: #000; border-color: #ffffff; }
+:global(.dark-theme) .secondaryBtn { background: rgba(20,20,20,0.4); color: #fff; border-color: rgba(255,255,255,0.14); }
 
 /* Apple Watch app grid styles */
 .appGrid {

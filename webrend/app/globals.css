@@ -162,6 +162,9 @@ body {
   /* overflow-x: hidden; Temporarily commented out to allow sticky positioning in ScrollCodeSection */
 }
 
+/* Global page padding */
+body { padding: 8px; }
+
 /* Enhanced smooth scrolling for the entire site */
 html {
   scroll-behavior: smooth;
@@ -222,6 +225,7 @@ body {
   /* Remove global navbar padding */
   /* Enhanced scroll performance */
   scroll-behavior: smooth;
+  position: relative;
 }
 
 /* Enhanced smooth scrolling for better user experience */
@@ -237,6 +241,28 @@ body {
   }
 }
 
+/* Global telescope edge overlay at bottom of viewport */
+.telescope-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+}
+
+.telescope-vignette {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24vh; /* area that applies the blur */
+  pointer-events: none;
+  z-index: 60;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  /* blur fades upward so content blends into it on scroll */
+  mask-image: linear-gradient(to top, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
+}
 /* Ensure smooth momentum scrolling works well */
 body {
   /* Prevent default scroll behaviors that might interfere */

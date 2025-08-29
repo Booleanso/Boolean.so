@@ -23,6 +23,10 @@
   z-index: 1;
 }
 
+.twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+.rightCol { grid-column: 2 / 3; max-height: 75vh; overflow: auto; padding-right: 0.25rem; }
+.stickyExplain { position: sticky; top: 20vh; align-self: start; }
+
 /* Header Styles */
 .headerContent {
   text-align: center;
@@ -36,11 +40,11 @@
   margin-bottom: 6rem;
   position: relative;
   z-index: 2;
-  padding: 2rem;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 20px;
+  padding: 0;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 0;
 }
 
 .headerContent.visible {
@@ -451,6 +455,8 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .twoCol { grid-template-columns: 1fr; }
+  .stickyExplain { position: static; top: auto; }
   .section {
     padding: 6rem 0;
   }

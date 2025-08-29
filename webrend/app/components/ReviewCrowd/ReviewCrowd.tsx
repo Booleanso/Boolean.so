@@ -124,8 +124,8 @@ export default function ReviewCrowd() {
 
   return (
     <section ref={sectionRef} className={styles.section}>
-      <div className={styles.container}>
-        <div className={`${styles.headerContent} ${isVisible ? styles.visible : ''}`}>
+      <div className={`${styles.container} ${styles.twoCol}`}>
+        <div className={`${styles.headerContent} ${styles.stickyExplain} ${isVisible ? styles.visible : ''}`}>
           <div className={styles.badge}>
             <span className={styles.badgeText}>Testimonials</span>
           </div>
@@ -145,7 +145,7 @@ export default function ReviewCrowd() {
           </div>
         </div>
 
-        <div className={`${styles.cards} ${isVisible ? styles.visible : ''}`}>
+        <div className={`${styles.cards} ${styles.rightCol} ${isVisible ? styles.visible : ''}`}>
           {loading && (
             <div className={styles.skeletonRow}>
               {Array.from({ length: 6 }).map((_, i) => (

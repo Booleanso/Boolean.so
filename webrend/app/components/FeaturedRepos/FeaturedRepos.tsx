@@ -53,9 +53,10 @@ export default function FeaturedRepos() {
   return (
     <section className={styles.featuredSection}>
       <div className={styles.sectionHeader}>
-        <h2>Premium GitHub<br />Repositories</h2>
+        <p className={styles.overline}>Curated marketplace</p>
+        <h2>Premium GitHub<br />repositories, ready to ship</h2>
         <p className={styles.featuredRepoIntro}>
-          Discover high-quality code ready to use in your next project. Our marketplace offers the best GitHub repositories from top developers worldwide.
+          Production‑grade starters, components, and full apps built with modern stacks. Buy once or subscribe—scale faster with code that’s already battle‑tested.
         </p>
       </div>
 
@@ -76,7 +77,8 @@ export default function FeaturedRepos() {
           <p>No repositories available at the moment. Check back soon!</p>
         </div>
       ) : (
-        <div className={marketplaceStyles.grid}>
+        <div className={styles.gridWrap}>
+          <div className={marketplaceStyles.grid}>
           {featuredRepos.map((repo) => (
             <div key={repo.id} className={marketplaceStyles.card}>
               <div className={marketplaceStyles.cardImage}>
@@ -172,6 +174,7 @@ export default function FeaturedRepos() {
               </div>
             </div>
           ))}
+          </div>
         </div>
       )}
 

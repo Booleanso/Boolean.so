@@ -88,7 +88,8 @@ export default function BlogPreview() {
           <p>No articles available at the moment. Check back soon!</p>
         </div>
       ) : (
-        <div className={marketplaceStyles.grid}>
+        <div className={styles.gridWrap}>
+          <div className={marketplaceStyles.grid}>
           {latestPosts.map((post) => (
             <Link href={`/blog/${post.slug || post.id}`} key={post.id} className={marketplaceStyles.card}>
               <div className={marketplaceStyles.cardImage}>
@@ -102,7 +103,6 @@ export default function BlogPreview() {
               <div className={marketplaceStyles.cardContent}>
                 <div className={marketplaceStyles.cardHeader}>
                   <h2 className={marketplaceStyles.repoName}>{post.title}</h2>
-                  <div className={marketplaceStyles.price}>{post.readTime} min</div>
                 </div>
                 <p className={marketplaceStyles.description}>{truncateDescription(post.description)}</p>
                 <div className={marketplaceStyles.tags}>
@@ -119,18 +119,13 @@ export default function BlogPreview() {
                       </svg>
                       {formatDate(post.publishedAt)}
                     </div>
-                    <div className={marketplaceStyles.stat}>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                      </svg>
-                      {post.readTime} min
-                    </div>
+                    <div className={marketplaceStyles.readTimeInline}>{post.readTime} min</div>
                   </div>
                 </div>
               </div>
             </Link>
           ))}
+          </div>
         </div>
       )}
     </section>

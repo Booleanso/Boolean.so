@@ -45,6 +45,8 @@ export default async function RootLayout({
             <ScrollToTop />
           </SmoothScrollProvider>
         </ThemeProvider>
+        {/* Global viewport blur at bottom */}
+        <div className="telescope-vignette" aria-hidden="true"></div>
       </body>
     </html>
   );
