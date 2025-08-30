@@ -8,7 +8,7 @@ import MarketplaceFeatures from "./components/MarketplaceFeatures/MarketplaceFea
 import ServicesCardsSection from "./components/ServicesCardsSection/ServicesCardsSection";
 import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
 // import InstagramFeed from "./components/InstagramFeed/InstagramFeed";
-import FAQ from "./components/FAQ/FAQ";
+// import FAQ from "./components/FAQ/FAQ";
 // import ContactUs from "./components/ContactUs/ContactUs"; // Commented out - "Let's work together" section removed
 import Footer from "./components/Footer/Footer";
 import ScrollCodeSection from "./components/ScrollCodeSection/ScrollCodeSection";
@@ -123,9 +123,6 @@ export default async function Home() {
         </section> */}
         <section id="blog">
           <BlogPreview />
-        </section>
-        <section id="faq">
-          <FAQ />
         </section>
         <section id="cta">
           <CTAStickyTrack />

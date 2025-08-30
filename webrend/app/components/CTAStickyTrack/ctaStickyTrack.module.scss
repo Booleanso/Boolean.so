@@ -3,17 +3,74 @@
   grid-template-columns: 1fr;
   justify-items: center;
   align-items: center;
-  padding: 6rem 5%;
+  padding: 4rem 3%;
 }
 
 .ctaWrapper {
   position: relative;
   width: 100%;
-  max-width: 980px;
+  max-width: 100%;
   display: grid;
-  place-items: center;
+  grid-template-rows: auto 1fr;
   background: transparent !important;
   backdrop-filter: none !important;
+}
+
+.headerRow {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 24px;
+  justify-content: space-between;
+}
+
+.ctaLeft { justify-self: start; text-align: left; align-items: flex-start; display: grid; gap: 8px; }
+.ctaRight { justify-self: end; text-align: right; max-width: 540px; position: relative; }
+
+.actionsLeft { display: flex; gap: 12px; }
+
+.faqTitle { font-weight: 700; margin-bottom: 8px; color: #1d1d1f; }
+.faqListMini { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 10px; justify-items: end; }
+.faqMiniItem { position: relative; }
+.faqMiniButton { width: 100%; text-align: right; cursor: pointer; padding: 10px 0; font-weight: 600; color: #1d1d1f; background: none; border: none; display: flex; align-items: center; justify-content: space-between; }
+.faqMiniChevron { color: #6e6e73; font-size: 12px; margin-left: 8px; }
+.faqMiniAnswer {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  padding: 10px 12px;
+  color: #1d1d1f;
+  font-size: .95rem;
+  pointer-events: auto;
+  text-align: right;
+  background: rgba(255,255,255,.38);
+  backdrop-filter: blur(50px) saturate(160%);
+  -webkit-backdrop-filter: blur(50px) saturate(160%);
+  background-clip: padding-box;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  will-change: backdrop-filter, opacity, transform;
+  isolation: isolate; /* ensure backdrop compositing */
+  transform: translateZ(0); /* force GPU compositing for backdrop */
+  z-index: 10;
+}
+
+.faqMiniAnswer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255,255,255,.38);
+  backdrop-filter: inherit;
+  -webkit-backdrop-filter: inherit;
+  z-index: -1;
+}
+
+@media (max-width: 900px) {
+  .headerRow { grid-template-columns: 1fr; gap: 16px; }
+  .ctaRight { justify-self: start; max-width: 100%; }
 }
 
 .appCloud {

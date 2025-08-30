@@ -22,6 +22,34 @@ export default function MarketplaceShowcase() {
   const [phoneEaseY, setPhoneEaseY] = useState<number>(60);
   const [phoneOpacity, setPhoneOpacity] = useState<number>(0);
   const [phoneTrackProgress, setPhoneTrackProgress] = useState<number>(0);
+  const [timelineOpacity, setTimelineOpacity] = useState<number>(0);
+  const [hoveredServiceIdx, setHoveredServiceIdx] = useState<number | null>(null);
+  const [serviceIconPlacements, setServiceIconPlacements] = useState<Array<{ x: number; y: number; size: number; speed: number; dir: 1 | -1; amp: number; rotSeed: number; rotDir: 1 | -1; rotSpeed: number }>>([]);
+  const serviceIcons = [
+    { emoji: '💻', img: '/images/services/chrome.png', title: 'Websites', desc: 'Blazing‑fast responsive sites.', images: ['/images/services/website-dev-1.png','/images/services/website-dev-2.png','/images/services/website-dev-3.png'] },
+    { emoji: '📱', img: '/images/services/appstore.png', title: 'Mobile Apps', desc: 'Native & cross‑platform.', images: ['/images/services/mobile-app-1.png','/images/services/mobile-app-2.png','/images/services/mobile-app-3.png'] },
+    { emoji: '⚙️', img: '/images/services/cursor.png', title: 'Software', desc: 'Scalable systems & APIs.', images: ['/images/services/software-dev-1.png','/images/services/software-dev-2.png','/images/services/software-dev-3.png'] },
+    { emoji: '🔩', img: '/images/services/c.png', title: 'Firmware', desc: 'Embedded & IoT.', images: ['/images/services/firmware-dev-1.png','/images/services/firmware-dev-2.png','/images/services/firmware-dev-3.png'] },
+  ];
+  const pageGlowColors = [
+    '#4DA6FF', // Onboarding – Soft Blue
+    '#6C63FF', // Blueprinting – Purple/Indigo
+    '#1E2A38', // Repo Creation – Dark Navy
+    '#FF9800', // Milestones – Vibrant Orange
+    '#00BFA6', // Transparency – Teal
+    '#3ED598', // Delivery – Bright Green
+  ];
+
+  const getGlowColor = (idx: number) => {
+    if (idx <= 0) return '#8EC6FF'; // softer, lighter blue for onboarding
+    return pageGlowColors[Math.min(pageGlowColors.length - 1, Math.max(0, idx))];
+  };
+  // Delayed step switching across the phone track
+  const steps = 6;
+  const SWITCH_DELAY_MS: number = 0; // remove dwell for snappier response
+  const [currentStep, setCurrentStep] = useState(0);
+  const [pendingStep, setPendingStep] = useState(0);
+  const [pendingStartedAt, setPendingStartedAt] = useState<number | null>(null);
 
   // Shuffle helper
   const shuffle = <T,>(arr: T[]): T[] => {
@@ -68,28 +96,69 @@ export default function MarketplaceShowcase() {
         const total = Math.max(1, rect.height - vh);
         const progress = Math.max(0, Math.min(1, -rect.top / total));
 
-        // Ease into sticky at start (first 15%) and ease out at end (last 15%)
+        // Gate timings: start after sticky fully engaged; fade only near end
+        const START_GUARD = 0.1;
+        const END_FADE_START = 0.98;
+
+        // Ease into sticky at start
         let translate = 0;
-        if (progress <= 0.15) {
-          translate = (1 - progress / 0.15) * 60; // from 60px to 0px
-        } else if (progress >= 0.85) {
-          translate = ((progress - 0.85) / 0.15) * 60; // from 0px to 60px
+        if (progress <= START_GUARD) {
+          translate = (1 - progress / START_GUARD) * 60; // from 60px to 0px
         } else {
           translate = 0;
         }
         setPhoneEaseY(translate);
 
-        // Subtle fade in/out around the edges
+        // Fade in at start, hold, then fade near end
         let op = 1;
-        if (progress <= 0.1) {
-          op = progress / 0.1;
-        } else if (progress >= 0.9) {
-          op = 1 - (progress - 0.9) / 0.1;
+        if (progress <= START_GUARD) {
+          op = progress / START_GUARD;
+        } else if (progress >= END_FADE_START) {
+          op = 1 - (progress - END_FADE_START) / (1 - END_FADE_START);
         } else {
           op = 1;
         }
         setPhoneOpacity(Math.max(0, Math.min(1, op)));
-        setPhoneTrackProgress(progress);
+        // Timeline opacity: start after phone fully faded in
+        const TIMELINE_FADE_LEN = 0.08; // fade-in length after start guard
+        let tl = 0;
+        if (progress > START_GUARD) {
+          tl = Math.min(1, (progress - START_GUARD) / TIMELINE_FADE_LEN);
+        } else {
+          tl = 0;
+        }
+        setTimelineOpacity(tl);
+        // Adjusted progress for timeline/pages
+        const adjusted = progress <= START_GUARD
+          ? 0
+          : progress >= END_FADE_START
+            ? 1
+            : (progress - START_GUARD) / (END_FADE_START - START_GUARD);
+        setPhoneTrackProgress(adjusted);
+
+        // Only start stepping once the sticky parent has reached the top
+        if (rect.top > 0) {
+          if (currentStep !== 0) setCurrentStep(0);
+          return;
+        }
+
+        // Determine which segment user is in (0..steps-1) based on adjusted
+        const rawIndex = Math.min(steps - 1, Math.floor(adjusted * steps));
+        if (SWITCH_DELAY_MS === 0) {
+          // Immediate switching
+          if (currentStep !== rawIndex) setCurrentStep(rawIndex);
+        } else {
+          // Time-gated switching: require dwell time before switching to new step
+          if (rawIndex !== pendingStep) {
+            setPendingStep(rawIndex);
+            setPendingStartedAt(Date.now());
+          } else if (currentStep !== pendingStep && pendingStartedAt) {
+            const elapsed = Date.now() - pendingStartedAt;
+            if (elapsed >= SWITCH_DELAY_MS) {
+              setCurrentStep(pendingStep);
+            }
+          }
+        }
       }
     };
 
@@ -230,6 +299,58 @@ export default function MarketplaceShowcase() {
     });
 
     setPlacedBricks(results);
+
+    // Place service icons using the same collision/packing logic so they feel part of the grid
+    const iconResults: Array<{ x: number; y: number; size: number; speed: number; dir: 1 | -1; amp: number; rotSeed: number; rotDir: 1 | -1; rotSpeed: number }> = [];
+    const occupied: Array<{ x: number; y: number; w: number; h: number }> = results.map((r) => ({ x: r.x, y: r.y, w: r.w, h: r.h }));
+    const iconCenters: Array<{ cx: number; cy: number; r: number }> = [];
+    const minCenterDist = 240; // keep icons visually spread out
+
+    const fitsIcon = (x: number, y: number, size: number) =>
+      x >= padding &&
+      y >= padding &&
+      x + size <= stageSize.width - padding &&
+      y + size <= stageSize.height - padding &&
+      // keep out of iPhone reserved bottom area
+      y + size <= Math.max(0, stageSize.height - (PHONE_HEIGHT + 160)) &&
+      // avoid bricks and other occupied rectangles
+      occupied.every(b => x + size + gap <= b.x || b.x + b.w + gap <= x || y + size + gap <= b.y || b.y + b.h + gap <= y) &&
+      // keep icons separated from each other (Poisson‑like spacing)
+      (() => {
+        const cx = x + size / 2;
+        const cy = y + size / 2;
+        return iconCenters.every(c => {
+          const d = Math.hypot(cx - c.cx, cy - c.cy);
+          const desired = Math.max(minCenterDist, (size / 2 + c.r) + gap * 0.6);
+          return d >= desired;
+        });
+      })();
+
+    const iconCount = Math.min(serviceIcons.length, 6);
+    for (let i = 0; i < iconCount; i++) {
+      const sizeBase = Math.random() < 0.5 ? 110 : 130;
+      let size = sizeBase + Math.round(Math.random() * 14) - 7; // small variance
+      let attempts = 0;
+      while (attempts < 80) {
+        const x = rand(padding, Math.max(padding, stageSize.width - size - padding));
+        const y = rand(padding, Math.max(padding, stageSize.height - size - padding));
+        if (fitsIcon(x, y, size)) {
+          const dir = Math.random() < 0.5 ? -1 : 1;
+          const amp = rand(stageSize.height * 0.14, stageSize.height * 0.3);
+          const speed = rand(0.25, 0.55);
+          const rotSeed = rand(-20, 20);
+          const rotDir = Math.random() < 0.5 ? -1 : 1; // clockwise or counter‑clockwise
+          const rotSpeed = rand(80, 220); // degrees across the full scrollProgress 0..1
+          iconResults.push({ x, y, size, speed, dir, amp, rotSeed, rotDir, rotSpeed });
+          occupied.push({ x, y, w: size, h: size });
+          iconCenters.push({ cx: x + size / 2, cy: y + size / 2, r: size / 2 });
+          break;
+        }
+        attempts++;
+        if (attempts % 20 === 0) size *= 0.95;
+      }
+    }
+    setServiceIconPlacements(iconResults);
   }, [stageSize.width, stageSize.height, brickPool]);
 
   // Choose a unique random image for each visible brick (no repeats)
@@ -306,6 +427,51 @@ export default function MarketplaceShowcase() {
             );
           })}
 
+          {/* Overlay randomized services icons integrated with bricks layout */}
+          <div className={`${styles.servicesIconsLayer} ${hoveredServiceIdx !== null ? styles.dimOthers : ''}`} aria-hidden>
+            {serviceIconPlacements.map((p, i) => {
+              const svc = serviceIcons[i % serviceIcons.length];
+              const offset = scrollProgress * p.amp * p.speed * p.dir;
+              const rot = (scrollProgress * p.rotSpeed * p.rotDir + p.rotSeed) % 360;
+              return (
+                <div
+                  key={i}
+                  className={`${styles.serviceIconItem} ${hoveredServiceIdx === i ? styles.hovered : ''}`}
+                  style={{ width: p.size, height: p.size, transform: `translate(${Math.round(p.x)}px, ${Math.round(p.y + offset)}px) rotate(${rot}deg)` }}
+                  onMouseEnter={() => setHoveredServiceIdx(i)}
+                  onMouseLeave={() => setHoveredServiceIdx(null)}
+                >
+                  <div className={styles.serviceIconTile}>
+                    {('img' in svc && (svc as any).img) ? (
+                      <img src={(svc as any).img} alt={svc.title} className={styles.serviceImgIcon} />
+                    ) : (
+                      <span className={styles.serviceEmoji}>{svc.emoji}</span>
+                    )}
+                  </div>
+                  {/* Floating images + overlay behind them */}
+                  <div className={`${styles.iconImageReveal} ${hoveredServiceIdx === i ? styles.active : ''}`}>
+                    {(svc.images || []).slice(0, 3).map((src: string, k: number) => (
+                      <div key={k} className={styles.floatingImage}>
+                        <img src={src} alt="preview" className={styles.serviceImage} />
+                      </div>
+                    ))}
+                    {/* Topmost gradient overlay to fade images into white/black near the bottom */}
+                    <div className={styles.revealFadeOverlay} />
+                  </div>
+                  {/* Text sits above everything and below the icon (outside reveal) */}
+                  <div className={`${styles.serviceText} ${hoveredServiceIdx === i ? styles.active : ''}`}>
+                    <div className={styles.textTitle}>{svc.title}</div>
+                    <div className={styles.textDesc}>{svc.desc}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Stage-level blur overlays must sit behind the floating images */}
+          <div className={`${styles.stageGlobalBlur} ${hoveredServiceIdx !== null ? styles.active : ''}`} aria-hidden />
+          <div className={`${styles.stageBlurOverlay} ${hoveredServiceIdx !== null ? styles.active : ''}`} aria-hidden />
+
           {/* Guard space so bricks end before the iPhone frame */}
           <div className={styles.bricksEndGuard} style={{ height: `${PHONE_HEIGHT + 160}px` }} />
 
@@ -314,6 +480,34 @@ export default function MarketplaceShowcase() {
         {/* New full-viewport track with sticky parent holding the iPhone */}
         <div ref={phoneTrackRef} className={styles.phoneTrack}>
           <div className={styles.phoneStickyParent} style={{ transform: `translateY(${Math.round(phoneEaseY)}px)`, opacity: phoneOpacity }}>
+            {/* Timeline progress indicator */}
+            <div className={styles.timelineWrapper} aria-hidden style={{ opacity: timelineOpacity }}>
+              <div className={styles.timeline}>
+                {Array.from({ length: 6 }).map((_, i) => {
+                  const rawIndex = Math.min(5, Math.floor(phoneTrackProgress * 6));
+                  const segmentProgress = (phoneTrackProgress * 6) - rawIndex; // 0..1 within segment
+                  const isActive = i <= rawIndex;
+                  const fillBetween = i < rawIndex ? 100 : i === rawIndex ? segmentProgress * 100 : 0;
+                  // Tail after the last dot, tracks progress through final segment
+                  const tailFill = Math.max(0, Math.min(100, (phoneTrackProgress * 6 - 5) * 100));
+
+                  return (
+                    <div key={i} className={styles.timelineStep}>
+                      <div className={`${styles.timelineDot} ${isActive ? styles.active : ''}`} />
+                      {i < 5 ? (
+                        <div className={styles.timelineLine}>
+                          <div className={styles.timelineLineFill} style={{ width: `${fillBetween}%` }} />
+                        </div>
+                      ) : (
+                        <div className={styles.timelineLine}>
+                          <div className={styles.timelineLineFill} style={{ width: `${tailFill}%` }} />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
             {/* Left-side onboarding copy that changes with the phone screen */}
             <div className={styles.phoneCopyWrapper} aria-hidden>
               <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 0 ? styles.active : ''}`}>
@@ -342,12 +536,42 @@ export default function MarketplaceShowcase() {
               </div>
             </div>
             <div className={styles.iphoneWrapper}>
+              {/* Back glow crossfading between steps based on segment progress */}
+              {(() => {
+                const stepsCount = 6;
+                const rawIndex = Math.min(stepsCount - 1, Math.floor(phoneTrackProgress * stepsCount));
+                const segmentProgress = Math.max(0, Math.min(1, phoneTrackProgress * stepsCount - rawIndex));
+                const nextIndex = Math.min(stepsCount - 1, rawIndex + 1);
+                const currentColor = getGlowColor(rawIndex);
+                const nextColor = getGlowColor(nextIndex);
+                const baseStyle = {} as React.CSSProperties;
+                return (
+                  <>
+                    <div
+                      className={styles.iphoneGlow}
+                      style={{
+                        ...baseStyle,
+                        opacity: timelineOpacity * phoneOpacity * (1 - segmentProgress),
+                        background: `radial-gradient(55% 55% at 50% 50%, ${currentColor} 0%, rgba(0,0,0,0) 75%)`
+                      }}
+                    />
+                    <div
+                      className={styles.iphoneGlow}
+                      style={{
+                        ...baseStyle,
+                        opacity: timelineOpacity * phoneOpacity * segmentProgress,
+                        background: `radial-gradient(55% 55% at 50% 50%, ${nextColor} 0%, rgba(0,0,0,0) 75%)`
+                      }}
+                    />
+                  </>
+                );
+              })()}
               <div
                 ref={specialBrickRef}
                 className={styles.specialBrick}
                 style={{ width: '100vw', height: '100vh' }}
               >
-                <Canvas camera={{ position: [0, 12, 25], fov: 35 }} dpr={[1, 2]}>
+                <Canvas camera={{ position: [0, 0, 45], fov: 35 }} dpr={[1, 2]}>
                   <ambientLight intensity={0.6} />
                   <directionalLight position={[5, 5, 5]} intensity={1.1} />
                   <directionalLight position={[-5, -3, -4]} intensity={0.4} />
@@ -430,7 +654,7 @@ function IPhoneGLBInteractive({ trackProgress }: { trackProgress: number }) {
   const groupRef = useRef<any>(null);
   const { pointer } = useThree();
   const [isHovering, setIsHovering] = useState(false);
-  const BASE_TILT_X = -0.8; // slight backward tilt (top recedes)
+  const BASE_TILT_X = 0; // face camera directly
 
   useFrame(() => {
     if (!groupRef.current) return;
@@ -438,19 +662,10 @@ function IPhoneGLBInteractive({ trackProgress }: { trackProgress: number }) {
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
-    if (isHovering) {
-      // Ease to facing camera with a slight forward tilt
-      rot.x = lerp(rot.x, BASE_TILT_X, 0.12);
-      rot.y = lerp(rot.y, 0, 0.12);
-      rot.z = lerp(rot.z, 0, 0.12);
-      return;
-    }
-
-    const maxTiltY = 0.35; // left/right tilt only
-    const targetY = clamp(pointer.x * maxTiltY, -maxTiltY, maxTiltY);
-    // Smoothly ease Y towards target; X always eases back to 0
-    rot.x = lerp(rot.x, BASE_TILT_X, 0.08);
-    rot.y = lerp(rot.y, targetY, 0.08);
+    // Always face camera directly (no tracking)
+    rot.x = lerp(rot.x, BASE_TILT_X, 0.12);
+    rot.y = lerp(rot.y, 0, 0.12);
+    rot.z = lerp(rot.z, 0, 0.12);
   });
 
   // Compute which app screen to show based on track progress (6 screens)
@@ -462,7 +677,7 @@ function IPhoneGLBInteractive({ trackProgress }: { trackProgress: number }) {
   const offsetY = (1 - innerProgress) * 0.02; // subtle slide
 
   return (
-    <Center position={[0, -3, 0]}>
+    <Center position={[0, 0, 0]}>
       <group
         ref={groupRef}
         onPointerOver={(e) => { e.stopPropagation(); setIsHovering(true); }}

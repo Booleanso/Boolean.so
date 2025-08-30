@@ -9,6 +9,7 @@ import { useScroll, useMotionValueEvent } from 'framer-motion';
 export default function CTAStickyTrack() {
   const [icons, setIcons] = React.useState<Array<{ src?: string; label: string }>>([]);
   const wrapperRef = React.useRef<HTMLDivElement | null>(null);
+  const faqRef = React.useRef<HTMLDivElement | null>(null);
   const [yBase, setYBase] = React.useState<number>(0);
 
   const { scrollYProgress } = useScroll({
@@ -165,6 +166,53 @@ export default function CTAStickyTrack() {
   return (
     <div className={styles.grid}>
       <div ref={wrapperRef} className={styles.ctaWrapper}>
+        <div className={styles.headerRow}>
+          <div className={styles.ctaLeft}>
+            <h2 className={styles.title}><span className={styles.gradText}>Ready to build something great?</span></h2>
+            <p className={styles.subtitle}>Join us for a quick discovery session and get a tailored plan.</p>
+            <div className={styles.actionsLeft}>
+              <Link href="/discovery" className={styles.primaryBtn}>Book a call</Link>
+              <Link href="/portfolio" className={styles.secondaryBtn}>View work</Link>
+            </div>
+          </div>
+          <div className={styles.ctaRight}>
+            <div className={styles.faqTitle}>Questions, answered</div>
+            <div ref={faqRef}>
+              <ul className={styles.faqListMini}>
+                <li className={styles.faqMiniItem}>
+                  <button className={styles.faqMiniButton} type="button" onClick={(e)=>{
+                    const root = faqRef.current; if(!root) return;
+                    const answers = Array.from(root.querySelectorAll(`.${styles.faqMiniAnswer}`)) as HTMLElement[];
+                    const ans = e.currentTarget.nextElementSibling as HTMLElement | null;
+                    answers.forEach(a=>{ if(a!==ans){ a.style.transition='transform .24s ease, opacity .24s ease'; a.style.opacity='0'; a.style.transform='translateY(-6px)'; }});
+                    if(ans){ ans.style.transition='transform .24s ease, opacity .24s ease'; const open = ans.style.opacity==='1'; ans.style.opacity = open ? '0' : '1'; ans.style.transform = open ? 'translateY(-6px)' : 'translateY(0)'; }
+                  }}>What services do you offer?<span className={styles.faqMiniChevron}>▾</span></button>
+                  <div className={styles.faqMiniAnswer} style={{opacity:0, transform:'translateY(-6px)'}}>We offer full‑stack web development, mobile apps, custom software, and a marketplace to monetize repos.</div>
+                </li>
+                <li className={styles.faqMiniItem}>
+                  <button className={styles.faqMiniButton} type="button" onClick={(e)=>{
+                    const root = faqRef.current; if(!root) return;
+                    const answers = Array.from(root.querySelectorAll(`.${styles.faqMiniAnswer}`)) as HTMLElement[];
+                    const ans = e.currentTarget.nextElementSibling as HTMLElement | null;
+                    answers.forEach(a=>{ if(a!==ans){ a.style.transition='transform .24s ease, opacity .24s ease'; a.style.opacity='0'; a.style.transform='translateY(-6px)'; }});
+                    if(ans){ ans.style.transition='transform .24s ease, opacity .24s ease'; const open = ans.style.opacity==='1'; ans.style.opacity = open ? '0' : '1'; ans.style.transform = open ? 'translateY(-6px)' : 'translateY(0)'; }
+                  }}>What's your typical project timeline?<span className={styles.faqMiniChevron}>▾</span></button>
+                  <div className={styles.faqMiniAnswer} style={{opacity:0, transform:'translateY(-6px)'}}>Simple sites: 2‑4 weeks. Complex apps: 8‑16 weeks. We provide a plan during discovery.</div>
+                </li>
+                <li className={styles.faqMiniItem}>
+                  <button className={styles.faqMiniButton} type="button" onClick={(e)=>{
+                    const root = faqRef.current; if(!root) return;
+                    const answers = Array.from(root.querySelectorAll(`.${styles.faqMiniAnswer}`)) as HTMLElement[];
+                    const ans = e.currentTarget.nextElementSibling as HTMLElement | null;
+                    answers.forEach(a=>{ if(a!==ans){ a.style.transition='transform .24s ease, opacity .24s ease'; a.style.opacity='0'; a.style.transform='translateY(-6px)'; }});
+                    if(ans){ ans.style.transition='transform .24s ease, opacity .24s ease'; const open = ans.style.opacity==='1'; ans.style.opacity = open ? '0' : '1'; ans.style.transform = open ? 'translateY(-6px)' : 'translateY(0)'; }
+                  }}>Do you provide ongoing support?<span className={styles.faqMiniChevron}>▾</span></button>
+                  <div className={styles.faqMiniAnswer} style={{opacity:0, transform:'translateY(-6px)'}}>Yes—maintenance, updates, optimization, hosting, and feature enhancements.</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
         {/* Decorative app icons around CTA */}
         <div className={styles.appCloud} aria-hidden>
           {icons.map((icon, idx) => {
@@ -196,15 +244,7 @@ export default function CTAStickyTrack() {
           {/* sentinel removed; framer-motion scroll drives progress */}
         </div>
 
-        {/* CTA core */}
-        <div className={styles.card}>
-          <h2 className={styles.title}><span className={styles.gradText}>Ready to build something great?</span></h2>
-          <p className={styles.subtitle}>Join us for a quick discovery session and get a tailored plan.</p>
-          <div className={styles.actions}>
-            <Link href="/discovery" className={styles.primaryBtn}>Book a call</Link>
-            <Link href="/portfolio" className={styles.secondaryBtn}>View work</Link>
-          </div>
-        </div>
+        {/* CTA core moved to headerRow */}
       </div>
     </div>
   );
