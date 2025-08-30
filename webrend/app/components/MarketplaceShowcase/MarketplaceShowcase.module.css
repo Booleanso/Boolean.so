@@ -205,12 +205,15 @@
 .iconImageReveal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 420px; pointer-events: none; opacity: 0; transition: opacity .25s ease; z-index: 12; }
 .serviceIconItem:hover .iconImageReveal { opacity: 1; }
 .floatingImage { position: absolute; width: 200px; height: 250px; overflow: hidden; opacity: 0; transform: translate(-50%, -50%) scale(.85); transition: all .45s cubic-bezier(.16,1,.3,1); }
-.iconImageReveal .floatingImage:nth-child(1) { top: 20%; left: 50%; z-index: 5; }
-.iconImageReveal .floatingImage:nth-child(2) { top: 38%; left: 28%; z-index: 4; transition-delay: .08s; }
-.iconImageReveal .floatingImage:nth-child(3) { top: 38%; left: 72%; z-index: 4; transition-delay: .16s; }
-.iconImageReveal.active .floatingImage, .serviceIconItem:hover .iconImageReveal .floatingImage { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.iconImageReveal .floatingImage:nth-child(1) { top: 30%; left: 50%; z-index: 5; }
+.iconImageReveal .floatingImage:nth-child(2) { top: 30%; left: 32%; z-index: 4; transition-delay: .08s; }
+.iconImageReveal .floatingImage:nth-child(3) { top: 30%; left: 68%; z-index: 4; transition-delay: .16s; }
+.iconImageReveal.active .floatingImage, .serviceIconItem:hover .iconImageReveal .floatingImage { opacity: 1; }
+.iconImageReveal.active .floatingImage:nth-child(1), .serviceIconItem:hover .iconImageReveal .floatingImage:nth-child(1) { transform: translate(-50%, -60%) scale(1) rotate(-12deg); }
+.iconImageReveal.active .floatingImage:nth-child(2), .serviceIconItem:hover .iconImageReveal .floatingImage:nth-child(2) { transform: translate(-58%, -60%) scale(.98) rotate(-22deg); }
+.iconImageReveal.active .floatingImage:nth-child(3), .serviceIconItem:hover .iconImageReveal .floatingImage:nth-child(3) { transform: translate(-42%, -60%) scale(.98) rotate(22deg); }
 .serviceImage { width: 100%; height: 100%; object-fit: cover; }
-.revealFadeOverlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.94) 40%, rgba(255,255,255,1) 60%, rgba(255,255,255,1) 100%); pointer-events: none; z-index: 90; border-radius: 12px; backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); }
+.revealFadeOverlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255, 255, 255, 0) 10%, rgba(255,255,255,1) 60%, rgba(255,255,255,1) 100%); pointer-events: none; z-index: 90; border-radius: 12px; backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); }
 :global(.dark-theme) .revealFadeOverlay { background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.93) 40%, rgba(0,0,0,1) 60%, rgba(0,0,0,1) 100%); }
 
 /* Dark mode variants */
@@ -270,7 +273,19 @@
   align-items: center;
   pointer-events: none;
   z-index: 1;
+  position: relative;
 }
+
+/* PNG iPhone container */
+.phonePng { position: relative; pointer-events: auto; }
+.phoneImg { display: block; width: 100%; height: auto; position: relative; z-index: 1; pointer-events: none; }
+.phoneScreenOverlay { position: absolute; inset: 1.2% 3.7% 1.35% 3.7%; border-radius: 46px; overflow: hidden; background: #000; pointer-events: auto; z-index: 0; }
+.phoneSlide { position: absolute; inset: 0; opacity: 0; transform: translateY(24px); transition: opacity 360ms ease, transform 360ms ease; }
+.phoneSlide.active { opacity: 1; transform: translateY(0); }
+
+/* See Portfolio button below phone */
+.portfolioBtn { position: absolute; top: calc(100% + 56px); left: 50%; transform: translateX(-50%); background: #000; color: #fff; text-decoration: none; padding: 0.75rem 1.25rem; border-radius: 9999px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.25); pointer-events: auto; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+.portfolioBtn:hover { transform: translateX(-50%) translateY(-1px); box-shadow: 0 14px 38px rgba(0,0,0,.3); background: #111; }
 
 /* Onboarding copy at left of the phone */
 .phoneCopyWrapper {

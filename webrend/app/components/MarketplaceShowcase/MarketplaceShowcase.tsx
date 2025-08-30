@@ -17,7 +17,7 @@ export default function MarketplaceShowcase() {
   const [placedBricks, setPlacedBricks] = useState<Array<{ w: number; h: number; x: number; y: number; speed: number; dir: 1 | -1; amp: number }>>([]);
   const [projectImages, setProjectImages] = useState<Array<{ src: string; title: string; slug?: string }>>([]);
   // iPhone frame sizing (static)
-  const PHONE_WIDTH = 440;
+  const PHONE_WIDTH = 380;
   const PHONE_HEIGHT = 950;
   const [phoneEaseY, setPhoneEaseY] = useState<number>(60);
   const [phoneOpacity, setPhoneOpacity] = useState<number>(0);
@@ -304,7 +304,7 @@ export default function MarketplaceShowcase() {
     const iconResults: Array<{ x: number; y: number; size: number; speed: number; dir: 1 | -1; amp: number; rotSeed: number; rotDir: 1 | -1; rotSpeed: number }> = [];
     const occupied: Array<{ x: number; y: number; w: number; h: number }> = results.map((r) => ({ x: r.x, y: r.y, w: r.w, h: r.h }));
     const iconCenters: Array<{ cx: number; cy: number; r: number }> = [];
-    const minCenterDist = 240; // keep icons visually spread out
+    const minCenterDist = 190; // slightly closer grouping than before
 
     const fitsIcon = (x: number, y: number, size: number) =>
       x >= padding &&
@@ -327,16 +327,22 @@ export default function MarketplaceShowcase() {
       })();
 
     const iconCount = Math.min(serviceIcons.length, 6);
+    // Define a central band for icon placement (bring closer to middle)
+    const centerBandXMin = Math.max(padding, Math.round(stageSize.width * 0.18));
+    const centerBandXMax = Math.max(centerBandXMin + 1, Math.round(stageSize.width * 0.82));
+    const centerBandYMin = Math.max(padding, Math.round(stageSize.height * 0.15));
+    const centerBandYMax = Math.max(centerBandYMin + 1, Math.round(stageSize.height * 0.8));
     for (let i = 0; i < iconCount; i++) {
       const sizeBase = Math.random() < 0.5 ? 110 : 130;
       let size = sizeBase + Math.round(Math.random() * 14) - 7; // small variance
       let attempts = 0;
       while (attempts < 80) {
-        const x = rand(padding, Math.max(padding, stageSize.width - size - padding));
-        const y = rand(padding, Math.max(padding, stageSize.height - size - padding));
+        // sample within central band to cluster nearer the center
+        const x = rand(centerBandXMin, Math.max(centerBandXMin, Math.min(stageSize.width - size - padding, centerBandXMax - size)));
+        const y = rand(centerBandYMin, Math.max(centerBandYMin, Math.min(stageSize.height - size - padding, centerBandYMax - size)));
         if (fitsIcon(x, y, size)) {
-          const dir = Math.random() < 0.5 ? -1 : 1;
-          const amp = rand(stageSize.height * 0.14, stageSize.height * 0.3);
+          const dir = -1 as const; // always drift upward as you scroll
+          const amp = rand(stageSize.height * 0.16, stageSize.height * 0.32); // a bit more upward travel
           const speed = rand(0.25, 0.55);
           const rotSeed = rand(-20, 20);
           const rotDir = Math.random() < 0.5 ? -1 : 1; // clockwise or counter‑clockwise
@@ -566,20 +572,19 @@ export default function MarketplaceShowcase() {
                   </>
                 );
               })()}
-              <div
-                ref={specialBrickRef}
-                className={styles.specialBrick}
-                style={{ width: '100vw', height: '100vh' }}
-              >
-                <Canvas camera={{ position: [0, 0, 45], fov: 35 }} dpr={[1, 2]}>
-                  <ambientLight intensity={0.6} />
-                  <directionalLight position={[5, 5, 5]} intensity={1.1} />
-                  <directionalLight position={[-5, -3, -4]} intensity={0.4} />
-                  <IPhoneGLBInteractive trackProgress={phoneTrackProgress} />
-                  <Environment preset="studio" />
-                  <ContactShadows position={[0, -2.2, 0]} opacity={0.3} scale={6} blur={2.5} far={4} />
-                  <OrbitControls enablePan={false} enableZoom={false} enableRotate={false} />
-                </Canvas>
+              {/* Replace R3F iPhone with PNG and HTML slides */}
+              <div className={styles.phonePng} style={{ width: PHONE_WIDTH, height: 'auto' }}>
+                {/* Screen renders behind; PNG is on top and transparent */}
+                <div className={styles.phoneScreenOverlay}>
+                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 0 ? styles.active : ''}`}><PhoneSlideOne /></div>
+                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 1 ? styles.active : ''}`}><PhoneSlideTwo /></div>
+                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 2 ? styles.active : ''}`}><PhoneSlideThree /></div>
+                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 3 ? styles.active : ''}`}><PhoneSlideFour /></div>
+                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 4 ? styles.active : ''}`}><PhoneSlideFive /></div>
+                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 5 ? styles.active : ''}`}><PhoneSlideSix /></div>
+                </div>
+                <img src="/images/iphone.png" alt="iPhone" className={styles.phoneImg} />
+                <a href="/portfolio" className={styles.portfolioBtn}>See Portfolio</a>
               </div>
             </div>
           </div>
