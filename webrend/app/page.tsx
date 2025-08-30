@@ -111,7 +111,7 @@ export default async function Home() {
         <section id="services-and-portfolio">
           <StickyTransitionSection sectionHeight="400vh">
             <ServicesCardsSection />
-            <PortfolioPreview projects={featuredProjects} />
+            {/* <PortfolioPreview projects={featuredProjects} /> */}
             <ReviewCrowd />
           </StickyTransitionSection>
         </section>
@@ -130,12 +130,16 @@ export default async function Home() {
         <section id="blog">
           <BlogPreview />
         </section>
-        <section id="cta-track-and-faq">
+        <section id="faq">
+          <FAQ />
+        </section>
+        <section id="cta">
           <CTAStickyTrack />
+          <Footer />
         </section>
         {/* <ContactUs /> */} {/* Commented out - "Let's work together" section removed */}
       </main>
-      <Footer />
+      {/* Footer included in CTA section below */}
     </div>
   );
 }

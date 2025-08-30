@@ -3,15 +3,24 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Environment, ContactShadows, OrbitControls, Center, useGLTF } from '@react-three/drei';
 import styles from './MarketplaceShowcase.module.css';
 
 export default function MarketplaceShowcase() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const bricksStageRef = useRef<HTMLDivElement>(null);
+  const specialBrickRef = useRef<HTMLDivElement>(null);
+  const phoneTrackRef = useRef<HTMLDivElement>(null);
   const [stageSize, setStageSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
   const [placedBricks, setPlacedBricks] = useState<Array<{ w: number; h: number; x: number; y: number; speed: number; dir: 1 | -1; amp: number }>>([]);
   const [projectImages, setProjectImages] = useState<Array<{ src: string; title: string; slug?: string }>>([]);
+  // iPhone frame sizing (static)
+  const PHONE_WIDTH = 440;
+  const PHONE_HEIGHT = 950;
+  const [phoneEaseY, setPhoneEaseY] = useState<number>(60);
+  const [phoneOpacity, setPhoneOpacity] = useState<number>(0);
 
   // Shuffle helper
   const shuffle = <T,>(arr: T[]): T[] => {
@@ -50,6 +59,36 @@ export default function MarketplaceShowcase() {
       } else {
         setScrollProgress(0);
       }
+
+      // iPhone uses sticky positioning to rest at the center; no scroll math needed
+      if (phoneTrackRef.current) {
+        const rect = phoneTrackRef.current.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const total = Math.max(1, rect.height - vh);
+        const progress = Math.max(0, Math.min(1, -rect.top / total));
+
+        // Ease into sticky at start (first 15%) and ease out at end (last 15%)
+        let translate = 0;
+        if (progress <= 0.15) {
+          translate = (1 - progress / 0.15) * 60; // from 60px to 0px
+        } else if (progress >= 0.85) {
+          translate = ((progress - 0.85) / 0.15) * 60; // from 0px to 60px
+        } else {
+          translate = 0;
+        }
+        setPhoneEaseY(translate);
+
+        // Subtle fade in/out around the edges
+        let op = 1;
+        if (progress <= 0.1) {
+          op = progress / 0.1;
+        } else if (progress >= 0.9) {
+          op = 1 - (progress - 0.9) / 0.1;
+        } else {
+          op = 1;
+        }
+        setPhoneOpacity(Math.max(0, Math.min(1, op)));
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -82,6 +121,8 @@ export default function MarketplaceShowcase() {
       cancelled = true;
     };
   }, []);
+
+  // No scaling logic needed for the iPhone frame
 
   // Calculate transform values based on scroll progress
   // Keep sizes fixed; only shadow may still ease out if desired
@@ -231,7 +272,11 @@ export default function MarketplaceShowcase() {
 
         {/* Floating bricks after the image, varied sizes/positions with subtle parallax */}
         <div ref={bricksStageRef} className={styles.bricksStage}>
-          {placedBricks.slice(0, assignedImages.length || placedBricks.length).map((b, index) => {
+          {placedBricks
+            // keep bricks above the reserved iPhone area
+            .filter((b) => b.y + b.h <= Math.max(0, stageSize.height - (PHONE_HEIGHT + 160)))
+            .slice(0, assignedImages.length || placedBricks.length)
+            .map((b, index) => {
             const offset = scrollProgress * b.amp * b.speed * b.dir;
             const img = assignedImages[index] || { src: '/images/placeholder.png', title: 'Project' };
             const href = img.slug ? `/portfolio/projects/${img.slug}` : '#';
@@ -258,8 +303,61 @@ export default function MarketplaceShowcase() {
               </div>
             );
           })}
+
+          {/* Guard space so bricks end before the iPhone frame */}
+          <div className={styles.bricksEndGuard} style={{ height: `${PHONE_HEIGHT + 160}px` }} />
+
+        </div>
+
+        {/* New full-viewport track with sticky parent holding the iPhone */}
+        <div ref={phoneTrackRef} className={styles.phoneTrack}>
+          <div className={styles.phoneStickyParent} style={{ transform: `translateY(${Math.round(phoneEaseY)}px)`, opacity: phoneOpacity }}>
+            <div className={styles.iphoneWrapper}>
+              <div
+                ref={specialBrickRef}
+                className={styles.specialBrick}
+                style={{ width: '100vw', height: '100vh' }}
+              >
+                <Canvas camera={{ position: [0, 0, 45.2], fov: 35 }} dpr={[1, 2]}>
+                  <ambientLight intensity={0.6} />
+                  <directionalLight position={[5, 5, 5]} intensity={1.1} />
+                  <directionalLight position={[-5, -3, -4]} intensity={0.4} />
+                  <IPhoneGLBInteractive />
+                  <Environment preset="studio" />
+                  <ContactShadows position={[0, -2.2, 0]} opacity={0.3} scale={6} blur={2.5} far={4} />
+                  <OrbitControls enablePan={false} enableZoom={false} enableRotate={false} />
+                </Canvas>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 } 
+
+// GLB loader with cursor-tracking tilt
+function IPhoneGLBInteractive() {
+  const gltf = useGLTF('/iphone/iphone.glb');
+  const groupRef = useRef<any>(null);
+  const { pointer } = useThree();
+
+  useFrame(() => {
+    if (!groupRef.current) return;
+    const maxTiltX = 0.25; // up/down tilt
+    const maxTiltY = 0.35; // left/right tilt
+    const targetX = -pointer.y * maxTiltX;
+    const targetY = pointer.x * maxTiltY;
+    // Smoothly ease towards target
+    groupRef.current.rotation.x += (targetX - groupRef.current.rotation.x) * 0.08;
+    groupRef.current.rotation.y += (targetY - groupRef.current.rotation.y) * 0.08;
+  });
+
+  return (
+    <Center>
+      <group ref={groupRef}>
+        <primitive object={gltf.scene} scale={1.2} />
+      </group>
+    </Center>
+  );
+}

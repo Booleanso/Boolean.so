@@ -166,13 +166,13 @@
 /* Absolute-positioned floating bricks stage */
 .bricksStage {
   position: relative;
-  width: 100vw; /* span full viewport width */
-  left: 50%;
-  transform: translateX(-50%); /* center the viewport-width stage */
-  height: 220vh; /* tall stage, but closer to image */
+  width: 100vw; /* full viewport width */
+  margin-left: calc(50% - 50vw); /* full-bleed without causing side gaps */
+  margin-right: calc(50% - 50vw);
+  height: 320vh; /* increased static height for longer track */
   margin-top: 4rem; /* appear immediately after the image container */
   padding: 0; /* allow blocks to reach the edges */
-  overflow: visible;
+  overflow: hidden; /* prevent overflow from spilling outside parent */
   background: transparent !important; /* remove any default tint */
 }
 
@@ -183,6 +183,125 @@
   border-radius: 14px;
   box-shadow: none; /* remove drop shadow */
   overflow: hidden; /* ensure image corners clip to radius */
+}
+
+/* Special brick that scales to fill the viewport when centered */
+.specialBrick {
+  position: absolute;
+  transform-origin: center center;
+  will-change: transform;
+  z-index: 30;
+  border-radius: 0; /* no rounded corners */
+  overflow: hidden;
+}
+
+.specialBrickInner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden; /* ensure no overflow specifically for this div */
+  background: #eaf4ff; /* very light whitish blue */
+  border-radius: 0; /* no rounded corners */
+}
+
+/* Guard area so bricks end before the iPhone frame appears */
+.bricksEndGuard {
+  width: 100%;
+}
+
+/* Sticky iPhone container that holds position at viewport center while scrolling */
+.iphoneSticky {
+  position: sticky;
+  top: 50vh; /* lock reference at middle of viewport */
+  transform: translateY(-50%); /* center vertically */
+  width: 100%;
+  height: 0; /* do not affect layout height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* phone is presentational for now */
+}
+
+.iphoneWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+/* New track after bricks: full viewport area with sticky parent */
+.phoneTrack {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  height: 240vh; /* larger track for bigger model */
+  position: relative;
+}
+
+.phoneStickyParent {
+  position: sticky;
+  top: 0;
+  height: 100vh; /* spans the whole viewport */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* iPhone 16 Pro styled frame */
+.iphoneFrame {
+  width: 100%;
+  height: 100%;
+  border-radius: 40px; /* modern rounded corners */
+  background: linear-gradient(145deg, #1b1b1d, #2a2a2c);
+  padding: 12px; /* bezel thickness */
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+}
+
+.iphoneBezel {
+  width: 100%;
+  height: 100%;
+  border-radius: 32px;
+  background: #0a0a0b;
+  position: relative;
+  overflow: hidden;
+}
+
+.iphoneDynamicIsland {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 32px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 2;
+  box-shadow: inset 0 -1px 3px rgba(255,255,255,0.06);
+}
+
+.iphoneScreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 32px;
+  background: linear-gradient(180deg, #0e1420 0%, #0b0f18 100%);
+}
+
+.specialBrickImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.specialBrickOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%);
 }
 
 .brickLink {
