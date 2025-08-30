@@ -230,12 +230,53 @@
   pointer-events: none;
 }
 
+/* Onboarding copy at left of the phone */
+.phoneCopyWrapper {
+  position: absolute;
+  left: max(3vw, 40px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(36rem, 40vw);
+  color: #0f172a;
+  pointer-events: none;
+}
+
+:global(.dark-theme) .phoneCopyWrapper {
+  color: #e5e7eb;
+}
+
+.phoneCopyCard {
+  position: absolute;
+  inset: 0 auto auto 0;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 360ms ease, transform 360ms ease;
+}
+
+.phoneCopyCard.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.phoneCopyTitle {
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+
+.phoneCopyDesc {
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
 /* New track after bricks: full viewport area with sticky parent */
 .phoneTrack {
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  height: 240vh; /* larger track for bigger model */
+  height: 700vh; /* increased scroll time for 6 onboarding screens */
   position: relative;
 }
 

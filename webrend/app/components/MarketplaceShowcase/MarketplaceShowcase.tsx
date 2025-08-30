@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, ContactShadows, OrbitControls, Center, useGLTF } from '@react-three/drei';
+import { Environment, ContactShadows, OrbitControls, Center, useGLTF, Html } from '@react-three/drei';
 import styles from './MarketplaceShowcase.module.css';
 
 export default function MarketplaceShowcase() {
@@ -21,6 +21,7 @@ export default function MarketplaceShowcase() {
   const PHONE_HEIGHT = 950;
   const [phoneEaseY, setPhoneEaseY] = useState<number>(60);
   const [phoneOpacity, setPhoneOpacity] = useState<number>(0);
+  const [phoneTrackProgress, setPhoneTrackProgress] = useState<number>(0);
 
   // Shuffle helper
   const shuffle = <T,>(arr: T[]): T[] => {
@@ -88,6 +89,7 @@ export default function MarketplaceShowcase() {
           op = 1;
         }
         setPhoneOpacity(Math.max(0, Math.min(1, op)));
+        setPhoneTrackProgress(progress);
       }
     };
 
@@ -312,17 +314,44 @@ export default function MarketplaceShowcase() {
         {/* New full-viewport track with sticky parent holding the iPhone */}
         <div ref={phoneTrackRef} className={styles.phoneTrack}>
           <div className={styles.phoneStickyParent} style={{ transform: `translateY(${Math.round(phoneEaseY)}px)`, opacity: phoneOpacity }}>
+            {/* Left-side onboarding copy that changes with the phone screen */}
+            <div className={styles.phoneCopyWrapper} aria-hidden>
+              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 0 ? styles.active : ''}`}>
+                <div className={styles.phoneCopyTitle}>Onboarding</div>
+                <div className={styles.phoneCopyDesc}>Tell us your idea — as rough or as detailed as you want.</div>
+              </div>
+              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 1 ? styles.active : ''}`}>
+                <div className={styles.phoneCopyTitle}>Blueprinting</div>
+                <div className={styles.phoneCopyDesc}>We map it into something real.</div>
+              </div>
+              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 2 ? styles.active : ''}`}>
+                <div className={styles.phoneCopyTitle}>Repo Creation</div>
+                <div className={styles.phoneCopyDesc}>Your project gets its own GitHub repo.</div>
+              </div>
+              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 3 ? styles.active : ''}`}>
+                <div className={styles.phoneCopyTitle}>Milestones</div>
+                <div className={styles.phoneCopyDesc}>Features are built in milestones — you see every step.</div>
+              </div>
+              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 4 ? styles.active : ''}`}>
+                <div className={styles.phoneCopyTitle}>Transparency</div>
+                <div className={styles.phoneCopyDesc}>Commits, checklists, updates — all visible in real‑time.</div>
+              </div>
+              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 5 ? styles.active : ''}`}>
+                <div className={styles.phoneCopyTitle}>Delivery</div>
+                <div className={styles.phoneCopyDesc}>Demo‑ready product in your hands in weeks, not months.</div>
+              </div>
+            </div>
             <div className={styles.iphoneWrapper}>
               <div
                 ref={specialBrickRef}
                 className={styles.specialBrick}
                 style={{ width: '100vw', height: '100vh' }}
               >
-                <Canvas camera={{ position: [0, 0, 45.2], fov: 35 }} dpr={[1, 2]}>
+                <Canvas camera={{ position: [0, 12, 25], fov: 35 }} dpr={[1, 2]}>
                   <ambientLight intensity={0.6} />
                   <directionalLight position={[5, 5, 5]} intensity={1.1} />
                   <directionalLight position={[-5, -3, -4]} intensity={0.4} />
-                  <IPhoneGLBInteractive />
+                  <IPhoneGLBInteractive trackProgress={phoneTrackProgress} />
                   <Environment preset="studio" />
                   <ContactShadows position={[0, -2.2, 0]} opacity={0.3} scale={6} blur={2.5} far={4} />
                   <OrbitControls enablePan={false} enableZoom={false} enableRotate={false} />
@@ -336,27 +365,140 @@ export default function MarketplaceShowcase() {
   );
 } 
 
+// Placeholder app screens sized to the phone screen container
+function PhoneSlideOne() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#111827,#0b1220)', color: '#e5e7eb', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+      <div style={{ fontSize: 22, fontWeight: 700 }}>Welcome</div>
+      <div style={{ opacity: 0.8 }}>This is screen 1</div>
+    </div>
+  );
+}
+
+// Helper to compute which copy card is active without duplicating state
+function screenTitleIndex(progress: number, steps: number) {
+  return Math.min(steps - 1, Math.floor(progress * steps));
+}
+
+function PhoneSlideTwo() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#0f766e,#064e3b)', color: '#ecfeff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+      <div style={{ fontSize: 22, fontWeight: 700 }}>Features</div>
+      <div style={{ opacity: 0.9 }}>This is screen 2</div>
+    </div>
+  );
+}
+
+function PhoneSlideThree() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#1f2937,#111827)', color: '#f9fafb', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+      <div style={{ fontSize: 22, fontWeight: 700 }}>Get Started</div>
+      <div style={{ opacity: 0.85 }}>This is screen 3</div>
+    </div>
+  );
+}
+
+function PhoneSlideFour() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#0a2540,#0a0f1f)', color: '#dbeafe', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+      <div style={{ fontSize: 22, fontWeight: 700 }}>Connect</div>
+      <div style={{ opacity: 0.9 }}>This is screen 4</div>
+    </div>
+  );
+}
+
+function PhoneSlideFive() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#312e81,#1e1b4b)', color: '#ede9fe', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+      <div style={{ fontSize: 22, fontWeight: 700 }}>Configure</div>
+      <div style={{ opacity: 0.9 }}>This is screen 5</div>
+    </div>
+  );
+}
+
+function PhoneSlideSix() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#064e3b,#052e2b)', color: '#d1fae5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+      <div style={{ fontSize: 22, fontWeight: 700 }}>Finish</div>
+      <div style={{ opacity: 0.9 }}>This is screen 6</div>
+    </div>
+  );
+}
 // GLB loader with cursor-tracking tilt
-function IPhoneGLBInteractive() {
+function IPhoneGLBInteractive({ trackProgress }: { trackProgress: number }) {
   const gltf = useGLTF('/iphone/iphone.glb');
   const groupRef = useRef<any>(null);
   const { pointer } = useThree();
+  const [isHovering, setIsHovering] = useState(false);
+  const BASE_TILT_X = -0.8; // slight backward tilt (top recedes)
 
   useFrame(() => {
     if (!groupRef.current) return;
-    const maxTiltX = 0.25; // up/down tilt
-    const maxTiltY = 0.35; // left/right tilt
-    const targetX = -pointer.y * maxTiltX;
-    const targetY = pointer.x * maxTiltY;
-    // Smoothly ease towards target
-    groupRef.current.rotation.x += (targetX - groupRef.current.rotation.x) * 0.08;
-    groupRef.current.rotation.y += (targetY - groupRef.current.rotation.y) * 0.08;
+    const rot = groupRef.current.rotation;
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+
+    if (isHovering) {
+      // Ease to facing camera with a slight forward tilt
+      rot.x = lerp(rot.x, BASE_TILT_X, 0.12);
+      rot.y = lerp(rot.y, 0, 0.12);
+      rot.z = lerp(rot.z, 0, 0.12);
+      return;
+    }
+
+    const maxTiltY = 0.35; // left/right tilt only
+    const targetY = clamp(pointer.x * maxTiltY, -maxTiltY, maxTiltY);
+    // Smoothly ease Y towards target; X always eases back to 0
+    rot.x = lerp(rot.x, BASE_TILT_X, 0.08);
+    rot.y = lerp(rot.y, targetY, 0.08);
   });
 
+  // Compute which app screen to show based on track progress (6 screens)
+  const steps = 6;
+  const screenIndex = Math.min(steps - 1, Math.floor(trackProgress * steps));
+  const innerProgress = (trackProgress * steps) % 1; // 0..1 within each segment
+
+  // Positions for crossfade slide effect
+  const offsetY = (1 - innerProgress) * 0.02; // subtle slide
+
   return (
-    <Center>
-      <group ref={groupRef}>
+    <Center position={[0, -3, 0]}>
+      <group
+        ref={groupRef}
+        onPointerOver={(e) => { e.stopPropagation(); setIsHovering(true); }}
+        onPointerOut={() => setIsHovering(false)}
+      >
         <primitive object={gltf.scene} scale={1.2} />
+        {/* Overlay HTML that matches iPhone screen area (sits above glass) */}
+        <Html transform position={[0, 0, 0.5]} distanceFactor={1.2} zIndexRange={[1000, 0]}>
+          <div
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+            style={{ width: 2700, height: 5750, borderRadius: 375, overflow: 'hidden', background: '#000', position: 'relative', boxShadow: '0 0 0 1px rgba(255,255,255,0.05) inset' }}
+          >
+            {/* Simple track with 6 full-screen slides */}
+            <div style={{ position: 'absolute', inset: 0 }}>
+              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 0 ? 1 : 0, transform: `translateY(${screenIndex === 0 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
+                <PhoneSlideOne />
+              </div>
+              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 1 ? 1 : 0, transform: `translateY(${screenIndex === 1 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
+                <PhoneSlideTwo />
+              </div>
+              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 2 ? 1 : 0, transform: `translateY(${screenIndex === 2 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
+                <PhoneSlideThree />
+              </div>
+              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 3 ? 1 : 0, transform: `translateY(${screenIndex === 3 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
+                <PhoneSlideFour />
+              </div>
+              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 4 ? 1 : 0, transform: `translateY(${screenIndex === 4 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
+                <PhoneSlideFive />
+              </div>
+              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 5 ? 1 : 0, transform: `translateY(${screenIndex === 5 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
+                <PhoneSlideSix />
+              </div>
+            </div>
+          </div>
+        </Html>
       </group>
     </Center>
   );
