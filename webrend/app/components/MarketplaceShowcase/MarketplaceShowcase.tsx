@@ -7,11 +7,10 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, ContactShadows, OrbitControls, Center, useGLTF, Html } from '@react-three/drei';
 import styles from './MarketplaceShowcase.module.css';
 import dynamic from 'next/dynamic';
-const DynamicPortfolioPopup = dynamic(() => import('../PortfolioPopup/PortfolioPopup'), { ssr: false });
+import TestimonialMini from '../TestimonialMini/TestimonialMini';
 
 export default function MarketplaceShowcase() {
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [isPortfolioOpen, setIsPortfolioOpen] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const bricksStageRef = useRef<HTMLDivElement>(null);
   const specialBrickRef = useRef<HTMLDivElement>(null);
@@ -371,8 +370,7 @@ export default function MarketplaceShowcase() {
 
   return (
     <section ref={sectionRef} className={styles.showcaseSection}>
-      {/* Portfolio modal portal (always mounted for enter/exit animations) */}
-      <DynamicPortfolioPopup isOpen={isPortfolioOpen} onClose={() => setIsPortfolioOpen(false)} />
+      {/* Removed popup */}
       <div className={styles.showcaseContent}>
         <div className={styles.imageContainer}>
           <div className={styles.showcaseImageContainer}>
@@ -520,6 +518,10 @@ export default function MarketplaceShowcase() {
               </div>
             </div>
             {/* Left-side onboarding copy that changes with the phone screen */}
+            {/* Mini testimonial pinned to sticky container top-right */}
+            <div className={styles.testimonialMiniAnchor}>
+              <TestimonialMini />
+            </div>
             <div className={styles.phoneCopyWrapper} aria-hidden>
               <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 0 ? styles.active : ''}`}>
                 <div className={styles.phoneCopyTitle}>Onboarding</div>
@@ -589,9 +591,7 @@ export default function MarketplaceShowcase() {
                   <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 5 ? styles.active : ''}`}><PhoneSlideSix /></div>
                 </div>
                 <img src="/images/iphone.png" alt="iPhone" className={styles.phoneImg} />
-                <button type="button" className={styles.portfolioBtn} onClick={() => setIsPortfolioOpen(true)}>
-                  See Portfolio
-                </button>
+                <a href="/portfolio" className={styles.portfolioBtn}>See Portfolio</a>
               </div>
             </div>
           </div>

@@ -1,0 +1,29 @@
+.wrap { position: relative; width: 520px; background: transparent; }
+.cardRow { display: grid; grid-template-columns: 240px 1fr; align-items: center; gap: 26px; }
+
+/* Photo stack */
+.photoStack { position: relative; width: 240px; height: 240px; }
+.stackCard { position: absolute; inset: 0; border-radius: 18px; background: linear-gradient(180deg, #0f172a, #0b1220); box-shadow: 0 18px 45px rgba(0,0,0,.35); transform-origin: center; }
+.stackBack1 { transform: rotate(-8deg) translate(-10px, 8px); opacity: .65; }
+.stackBack2 { transform: rotate(6deg) translate(10px, -6px); opacity: .75; }
+.photoCard { position: absolute; inset: 0; border-radius: 18px; overflow: hidden; background: #111; box-shadow: 0 22px 50px rgba(0,0,0,.45); }
+.photoImg { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Copy */
+.copy { color: #0f172a; }
+.name { font-weight: 700; font-size: 18px; color: #e5e7eb; margin-bottom: 4px; }
+.title { font-size: 12px; color: rgba(255,255,255,.55); margin-bottom: 16px; }
+.quote { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,.8); max-width: 360px; }
+
+.controls { display: flex; gap: 12px; margin-top: 16px; }
+.navBtn { width: 28px; height: 28px; border-radius: 9999px; display: grid; place-items: center; background: rgba(255,255,255,.08); color: #e5e7eb; border: 1px solid rgba(255,255,255,.12); cursor: pointer; transition: background .2s ease; }
+.navBtn:hover { background: rgba(255,255,255,.14); }
+
+@media (max-width: 640px) {
+  .wrap { width: 100%; }
+  .cardRow { grid-template-columns: 1fr; gap: 18px; }
+  .photoStack { margin: 0 auto; }
+  .quote { max-width: none; }
+}
+
+
