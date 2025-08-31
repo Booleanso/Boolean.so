@@ -6,9 +6,12 @@ import Image from 'next/image';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, ContactShadows, OrbitControls, Center, useGLTF, Html } from '@react-three/drei';
 import styles from './MarketplaceShowcase.module.css';
+import dynamic from 'next/dynamic';
+const DynamicPortfolioPopup = dynamic(() => import('../PortfolioPopup/PortfolioPopup'), { ssr: false });
 
 export default function MarketplaceShowcase() {
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isPortfolioOpen, setIsPortfolioOpen] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const bricksStageRef = useRef<HTMLDivElement>(null);
   const specialBrickRef = useRef<HTMLDivElement>(null);
@@ -368,6 +371,8 @@ export default function MarketplaceShowcase() {
 
   return (
     <section ref={sectionRef} className={styles.showcaseSection}>
+      {/* Portfolio modal portal (always mounted for enter/exit animations) */}
+      <DynamicPortfolioPopup isOpen={isPortfolioOpen} onClose={() => setIsPortfolioOpen(false)} />
       <div className={styles.showcaseContent}>
         <div className={styles.imageContainer}>
           <div className={styles.showcaseImageContainer}>
@@ -584,7 +589,9 @@ export default function MarketplaceShowcase() {
                   <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 5 ? styles.active : ''}`}><PhoneSlideSix /></div>
                 </div>
                 <img src="/images/iphone.png" alt="iPhone" className={styles.phoneImg} />
-                <a href="/portfolio" className={styles.portfolioBtn}>See Portfolio</a>
+                <button type="button" className={styles.portfolioBtn} onClick={() => setIsPortfolioOpen(true)}>
+                  See Portfolio
+                </button>
               </div>
             </div>
           </div>
