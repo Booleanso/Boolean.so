@@ -1,10 +1,9 @@
 import styles from "./page.module.css";
 import HeroSection from "./components/index/HeroSection/HeroSection";
 import VideoSection from "./components/VideoSection/VideoSection";
-import FeaturedRepos from "./components/FeaturedRepos/FeaturedRepos";
+import ServicesAndClients from "./components/ServicesAndClients/ServicesAndClients";
+import IPhone from "./components/iPhone/IPhone";
 import BlogPreview from "./components/BlogPreview/BlogPreview";
-import MarketplaceShowcase from "./components/MarketplaceShowcase/MarketplaceShowcase";
-import MarketplaceFeatures from "./components/MarketplaceFeatures/MarketplaceFeatures";
 import ServicesCardsSection from "./components/ServicesCardsSection/ServicesCardsSection";
 import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
 // import InstagramFeed from "./components/InstagramFeed/InstagramFeed";
@@ -103,20 +102,17 @@ export default async function Home() {
         <section id="scroll-code">
           <ScrollCodeSection />
         </section>
-        <section id="marketplace">
-          <MarketplaceShowcase />
+        <section id="services-and-clients">
+          <ServicesAndClients />
         </section>
-        <section id="marketplace-features">
-          <MarketplaceFeatures />
+        <section id="iphone">
+          <IPhone />
         </section>
         <section id="services">
           <ServicesCardsSection />
         </section>
         <section id="video">
           <VideoSection />
-        </section>
-        <section id="featured-repos">
-          <FeaturedRepos />
         </section>
         {/* <section id="instagram">
           <InstagramFeed />

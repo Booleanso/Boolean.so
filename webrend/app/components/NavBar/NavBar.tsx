@@ -166,13 +166,6 @@ export default function NavBar({ serverUser }: NavBarProps) {
               </button>
               
               <Link 
-                href="/marketplace" 
-                className={`nav-button marketplace-button ${pathname === '/marketplace' ? 'active' : ''}`}
-              >
-                Marketplace
-              </Link>
-              
-              <Link 
                 href="/blog" 
                 className={`nav-button marketplace-button ${pathname === '/blog' ? 'active' : ''}`}
               >
@@ -198,12 +191,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
               <>
                 {user ? (
                   <>
-                    <Link 
-                      href="/profile" 
-                      className="nav-button profile-button"
-                    >
-                      Profile
-                    </Link>
+                    
                     <button
                       onClick={handleSignOut}
                       className="nav-button signout-button"
@@ -265,12 +253,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
               >
                 Portfolio
               </button>
-              <Link 
-                href="/marketplace" 
-                className={`nav-button marketplace-button ${pathname === '/marketplace' ? 'active' : ''}`}
-              >
-                Marketplace
-              </Link>
+              
               <Link 
                 href="/blog" 
                 className={`nav-button marketplace-button ${pathname === '/blog' ? 'active' : ''}`}
@@ -296,12 +279,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
               <>
                 {user ? (
                   <>
-                    <Link 
-                      href="/profile" 
-                      className="nav-button profile-button"
-                    >
-                      Profile
-                    </Link>
+                    
                     <button
                       onClick={handleSignOut}
                       className="nav-button signout-button"

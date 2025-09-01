@@ -187,7 +187,7 @@ export default function CTAStickyTrack() {
                     answers.forEach(a=>{ if(a!==ans){ a.style.transition='transform .24s ease, opacity .24s ease'; a.style.opacity='0'; a.style.transform='translateY(-6px)'; }});
                     if(ans){ ans.style.transition='transform .24s ease, opacity .24s ease'; const open = ans.style.opacity==='1'; ans.style.opacity = open ? '0' : '1'; ans.style.transform = open ? 'translateY(-6px)' : 'translateY(0)'; }
                   }}>What services do you offer?<span className={styles.faqMiniChevron}>▾</span></button>
-                  <div className={styles.faqMiniAnswer} style={{opacity:0, transform:'translateY(-6px)'}}>We offer full‑stack web development, mobile apps, custom software, and a marketplace to monetize repos.</div>
+                  <div className={styles.faqMiniAnswer} style={{opacity:0, transform:'translateY(-6px)'}}>We offer full‑stack web development, mobile apps, and custom software.</div>
                 </li>
                 <li className={styles.faqMiniItem}>
                   <button className={styles.faqMiniButton} type="button" onClick={(e)=>{

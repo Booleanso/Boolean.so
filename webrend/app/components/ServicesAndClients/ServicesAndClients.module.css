@@ -288,7 +288,7 @@
 .portfolioBtn:hover { transform: translateX(-50%) translateY(-1px); box-shadow: 0 14px 38px rgba(0,0,0,.3); background: #111; }
 
 /* Anchor for mini testimonial */
-.testimonialMiniAnchor { position: absolute; right: clamp(20px, 4vw, 60px); top: clamp(120px, 12vh, 160px); transform: scale(.78); transform-origin: top right; pointer-events: auto; z-index: 3; }
+.testimonialMiniAnchor { position: absolute; right: clamp(20px, 4vw, 60px); top: clamp(260px, 22vh, 320px); transform: scale(.78); transform-origin: top right; pointer-events: auto; z-index: 3; }
 @media (max-width: 1400px) { .testimonialMiniAnchor { transform: scale(.7); } }
 @media (max-width: 1100px) { .testimonialMiniAnchor { transform: scale(.6); } }
 @media (max-width: 900px) { .testimonialMiniAnchor { display: none; } }
