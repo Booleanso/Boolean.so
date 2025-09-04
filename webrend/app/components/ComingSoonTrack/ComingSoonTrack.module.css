@@ -1,0 +1,13 @@
+.section { width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); height: 300vh; position: relative; background: transparent; }
+.sticky { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; }
+.frame { position: relative; width: min(1200px, 92vw); height: min(70vh, 720px); overflow: hidden; transition: transform .4s ease, border-radius .4s ease, box-shadow .4s ease; }
+.video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.overlay { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: #fff; transition: opacity .4s ease; padding: 0 2rem; }
+.badge { display: inline-block; background: rgba(0,0,0,.5); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: .5rem 1rem; border-radius: 9999px; font-size: .85rem; letter-spacing: .08em; margin-bottom: .75rem; }
+.title { font-size: clamp(1.8rem, 3vw, 2.6rem); margin: 0; text-shadow: 0 2px 16px rgba(0,0,0,.4); }
+
+@media (max-width: 900px) {
+  .frame { height: 60vh; }
+}
+
+

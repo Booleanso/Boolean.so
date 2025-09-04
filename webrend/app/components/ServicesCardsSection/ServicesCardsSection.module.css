@@ -63,7 +63,7 @@
   transform: translateY(30px);
   transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
-  z-index: 1;
+  z-index: 40; /* ensure above icons but below any global overlays */
   width: 100%;
   max-width: 1200px; /* match video section width */
   margin-left: auto;
@@ -73,6 +73,13 @@
 .headerContent.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Dim and blur header (title + description) when an icon is hovered */
+.headerDim {
+  filter: blur(6px);
+  opacity: 0.35;
+  transition: filter 0.25s ease, opacity 0.25s ease;
 }
 
 /* Badge */
@@ -141,7 +148,7 @@
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 3rem;
   position: relative;
-  z-index: 10;
+  z-index: 10; /* above blur overlays (z 5/8), below header */
 }
 
 /* Service Card */
@@ -154,19 +161,13 @@
   text-decoration: none;
   padding: 2rem 1rem;
   border-radius: 16px;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  opacity: 0;
-  transform: translateY(30px);
-  animation: fadeInUp 0.6s ease-out forwards;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s linear;
   z-index: 10;
   overflow: visible; /* ensure reveal content can overflow the card */
   isolation: isolate; /* prevent child z-index from leaking over siblings */
 }
 
-.serviceCard.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.serviceCard.visible { }
 
 /* Unavailable service card */
 
@@ -202,12 +203,7 @@
   transform: translateY(0) scale(0.95);
 }
 
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+@keyframes fadeInUp { }
 
 .serviceCard:hover {
   transform: translateY(-5px);
@@ -225,7 +221,7 @@
 .iconContainer {
   position: relative;
   margin-bottom: 1.5rem;
-  z-index: 30;
+  z-index: 30; /* icon block under header but above overlays */
 }
 
 /* Icon Wrapper */
@@ -248,10 +244,8 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.cardIcon {
-  font-size: 3rem;
-  transition: all 0.3s ease;
-}
+.cardIcon { font-size: 3rem; transition: all 0.3s ease; }
+.cardIconImg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 24px; }
 
 .serviceCard:hover .cardIcon {
   transform: scale(1.1);
@@ -316,6 +310,11 @@
   box-shadow: inset 0 -250px 80px 0px rgb(255, 255, 255);
   pointer-events: none;
   z-index: 20; /* keep below reveal images */
+}
+
+/* Dark theme: use black overlay instead of white */
+:global(.dark-theme) .shadowOverlay {
+  box-shadow: inset 0 -250px 80px 0px rgb(0, 0, 0);
 }
 
 .imageReveal.active .floatingImage {

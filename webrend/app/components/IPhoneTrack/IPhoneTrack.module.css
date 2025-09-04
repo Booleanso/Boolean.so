@@ -1,0 +1,80 @@
+.phoneTrack {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  height: 700vh;
+  position: relative;
+}
+
+.phoneStickyParent {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: min(1200px, 92vw);
+  margin: 0 auto;
+}
+
+.iphoneWrapper {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+  position: relative;
+  margin: 0 auto;
+}
+
+.phonePng { position: relative; pointer-events: auto; width: clamp(180px, 16vw, 340px); max-width: 340px; }
+.phoneImg { display: block; width: 100%; height: auto; position: relative; z-index: 1; pointer-events: none; }
+.phoneScreenOverlay { position: absolute; inset: 1.2% 3.7% 1.35% 3.7%; border-radius: 35px; overflow: hidden; background: #000; pointer-events: auto; z-index: 0; }
+.phoneSlide { position: absolute; inset: 0; opacity: 0; transition: opacity 360ms ease; }
+.phoneSlide.active { opacity: 1; }
+
+.portfolioBtn { position: absolute; top: calc(100% + 56px); left: 50%; transform: translateX(-50%); background: #000; color: #fff; text-decoration: none; padding: 0.75rem 1.25rem; border-radius: 9999px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.25); pointer-events: auto; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; border: none; cursor: pointer; }
+.portfolioBtn:hover { transform: translateX(-50%) translateY(-1px); box-shadow: 0 14px 38px rgba(0,0,0,.3); background: #111; }
+
+.iphoneGlow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(80vw, 1200px);
+  height: min(80vh, 900px);
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.8;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.phoneCopyWrapper {
+  position: absolute;
+  left: max(3vw, 40px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(30rem, 34vw);
+  color: #0f172a;
+  pointer-events: none;
+}
+:global(.dark-theme) .phoneCopyWrapper { color: #e5e7eb; }
+
+.phoneCopyCard { position: absolute; inset: 0 auto auto 0; opacity: 0; transform: translateY(24px); transition: opacity 360ms ease, transform 360ms ease; }
+.phoneCopyCard.active { opacity: 1; transform: translateY(0); }
+.phoneCopyTitle { font-size: clamp(1.05rem, 1.8vw, 1.45rem); font-weight: 700; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+.phoneCopyDesc { font-size: clamp(0.85rem, 1.1vw, 1rem); line-height: 1.6; opacity: 0.85; }
+.phoneCopyLabel { font-size: clamp(0.8rem, 1vw, 0.95rem); opacity: 0.7; letter-spacing: 0.02em; margin-bottom: 0.25rem; }
+
+.timelineWrapper { position: absolute; top: clamp(20px, 6vh, 80px); left: 50%; transform: translateX(-50%); width: min(900px, 80vw); pointer-events: none; }
+.timeline { display: flex; align-items: center; gap: 10px; }
+.timelineStep { display: flex; align-items: center; gap: 10px; flex: 1 1 0; }
+.timelineDot { width: 12px; height: 12px; border-radius: 50%; background: #111111; box-shadow: 0 0 0 2px rgba(0,0,0,0.08); }
+.timelineDot.active { background: #000000; }
+.timelineLine { position: relative; height: 4px; background: rgba(0,0,0,0.12); border-radius: 2px; flex: 1 1 0; overflow: hidden; }
+.timelineLineFill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: #000000; transition: none; will-change: width; }
+
+

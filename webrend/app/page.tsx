@@ -2,9 +2,10 @@ import styles from "./page.module.css";
 import HeroSection from "./components/index/HeroSection/HeroSection";
 import VideoSection from "./components/VideoSection/VideoSection";
 import ServicesAndClients from "./components/ServicesAndClients/ServicesAndClients";
-import IPhone from "./components/iPhone/IPhone";
+// Removed legacy IPhone component
 import BlogPreview from "./components/BlogPreview/BlogPreview";
 import ServicesCardsSection from "./components/ServicesCardsSection/ServicesCardsSection";
+import PortfolioCarousel from "./components/PortfolioCarousel/PortfolioCarousel";
 import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
 // import InstagramFeed from "./components/InstagramFeed/InstagramFeed";
 // import FAQ from "./components/FAQ/FAQ";
@@ -12,6 +13,9 @@ import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
 import Footer from "./components/Footer/Footer";
 import ScrollCodeSection from "./components/ScrollCodeSection/ScrollCodeSection";
 import CTAStickyTrack from "./components/CTAStickyTrack/CTAStickyTrack";
+import FallingTrack from "./components/FallingTrack/FallingTrack";
+import ComingSoonTrack from "./components/ComingSoonTrack/ComingSoonTrack";
+import IPhoneTrack from "./components/IPhoneTrack/IPhoneTrack";
 
 import { db } from './lib/firebase-admin';
 import { DocumentData, Timestamp } from 'firebase-admin/firestore';
@@ -105,14 +109,24 @@ export default async function Home() {
         <section id="services-and-clients">
           <ServicesAndClients />
         </section>
-        <section id="iphone">
-          <IPhone />
+        <section id="iphone-track">
+          <IPhoneTrack />
+        </section>
+        {/* iPhone section removed */}
+        <section id="falling-track">
+          <FallingTrack />
         </section>
         <section id="services">
           <ServicesCardsSection />
         </section>
+        <section id="portfolio-carousel">
+          <PortfolioCarousel />
+        </section>
         <section id="video">
           <VideoSection />
+        </section>
+        <section id="coming-soon">
+          <ComingSoonTrack />
         </section>
         {/* <section id="instagram">
           <InstagramFeed />

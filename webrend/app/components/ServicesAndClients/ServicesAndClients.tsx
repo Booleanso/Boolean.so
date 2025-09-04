@@ -3,28 +3,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, ContactShadows, OrbitControls, Center, useGLTF, Html } from '@react-three/drei';
 import styles from './ServicesAndClients.module.css';
-import dynamic from 'next/dynamic';
-import TestimonialMini from '../TestimonialMini/TestimonialMini';
+ 
 
 export default function ServicesAndClients() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const bricksStageRef = useRef<HTMLDivElement>(null);
   const specialBrickRef = useRef<HTMLDivElement>(null);
-  const phoneTrackRef = useRef<HTMLDivElement>(null);
   const [stageSize, setStageSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
   const [placedBricks, setPlacedBricks] = useState<Array<{ w: number; h: number; x: number; y: number; speed: number; dir: 1 | -1; amp: number }>>([]);
   const [projectImages, setProjectImages] = useState<Array<{ src: string; title: string; slug?: string }>>([]);
-  // iPhone frame sizing (static)
-  const PHONE_WIDTH = 380;
-  const PHONE_HEIGHT = 950;
-  const [phoneEaseY, setPhoneEaseY] = useState<number>(60);
-  const [phoneOpacity, setPhoneOpacity] = useState<number>(0);
-  const [phoneTrackProgress, setPhoneTrackProgress] = useState<number>(0);
-  const [timelineOpacity, setTimelineOpacity] = useState<number>(0);
   const [hoveredServiceIdx, setHoveredServiceIdx] = useState<number | null>(null);
   const [serviceIconPlacements, setServiceIconPlacements] = useState<Array<{ x: number; y: number; size: number; speed: number; dir: 1 | -1; amp: number; rotSeed: number; rotDir: 1 | -1; rotSpeed: number }>>([]);
   const serviceIcons = [
@@ -46,12 +35,7 @@ export default function ServicesAndClients() {
     if (idx <= 0) return '#8EC6FF'; // softer, lighter blue for onboarding
     return pageGlowColors[Math.min(pageGlowColors.length - 1, Math.max(0, idx))];
   };
-  // Delayed step switching across the phone track
-  const steps = 6;
-  const SWITCH_DELAY_MS: number = 0; // remove dwell for snappier response
-  const [currentStep, setCurrentStep] = useState(0);
-  const [pendingStep, setPendingStep] = useState(0);
-  const [pendingStartedAt, setPendingStartedAt] = useState<number | null>(null);
+  
 
   // Shuffle helper
   const shuffle = <T,>(arr: T[]): T[] => {
@@ -91,77 +75,7 @@ export default function ServicesAndClients() {
         setScrollProgress(0);
       }
 
-      // iPhone uses sticky positioning to rest at the center; no scroll math needed
-      if (phoneTrackRef.current) {
-        const rect = phoneTrackRef.current.getBoundingClientRect();
-        const vh = window.innerHeight;
-        const total = Math.max(1, rect.height - vh);
-        const progress = Math.max(0, Math.min(1, -rect.top / total));
-
-        // Gate timings: start after sticky fully engaged; fade only near end
-        const START_GUARD = 0.1;
-        const END_FADE_START = 0.98;
-
-        // Ease into sticky at start
-        let translate = 0;
-        if (progress <= START_GUARD) {
-          translate = (1 - progress / START_GUARD) * 60; // from 60px to 0px
-        } else {
-          translate = 0;
-        }
-        setPhoneEaseY(translate);
-
-        // Fade in at start, hold, then fade near end
-        let op = 1;
-        if (progress <= START_GUARD) {
-          op = progress / START_GUARD;
-        } else if (progress >= END_FADE_START) {
-          op = 1 - (progress - END_FADE_START) / (1 - END_FADE_START);
-        } else {
-          op = 1;
-        }
-        setPhoneOpacity(Math.max(0, Math.min(1, op)));
-        // Timeline opacity: start after phone fully faded in
-        const TIMELINE_FADE_LEN = 0.08; // fade-in length after start guard
-        let tl = 0;
-        if (progress > START_GUARD) {
-          tl = Math.min(1, (progress - START_GUARD) / TIMELINE_FADE_LEN);
-        } else {
-          tl = 0;
-        }
-        setTimelineOpacity(tl);
-        // Adjusted progress for timeline/pages
-        const adjusted = progress <= START_GUARD
-          ? 0
-          : progress >= END_FADE_START
-            ? 1
-            : (progress - START_GUARD) / (END_FADE_START - START_GUARD);
-        setPhoneTrackProgress(adjusted);
-
-        // Only start stepping once the sticky parent has reached the top
-        if (rect.top > 0) {
-          if (currentStep !== 0) setCurrentStep(0);
-          return;
-        }
-
-        // Determine which segment user is in (0..steps-1) based on adjusted
-        const rawIndex = Math.min(steps - 1, Math.floor(adjusted * steps));
-        if (SWITCH_DELAY_MS === 0) {
-          // Immediate switching
-          if (currentStep !== rawIndex) setCurrentStep(rawIndex);
-        } else {
-          // Time-gated switching: require dwell time before switching to new step
-          if (rawIndex !== pendingStep) {
-            setPendingStep(rawIndex);
-            setPendingStartedAt(Date.now());
-          } else if (currentStep !== pendingStep && pendingStartedAt) {
-            const elapsed = Date.now() - pendingStartedAt;
-            if (elapsed >= SWITCH_DELAY_MS) {
-              setCurrentStep(pendingStep);
-            }
-          }
-        }
-      }
+      // iPhone track moved to separate component
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -171,6 +85,8 @@ export default function ServicesAndClients() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // iPhone removed from this section
 
   // Fetch portfolio project images for bricks
   useEffect(() => {
@@ -314,7 +230,7 @@ export default function ServicesAndClients() {
       x + size <= stageSize.width - padding &&
       y + size <= stageSize.height - padding &&
       // keep out of iPhone reserved bottom area
-      y + size <= Math.max(0, stageSize.height - (PHONE_HEIGHT + 160)) &&
+      
       // avoid bricks and other occupied rectangles
       occupied.every(b => x + size + gap <= b.x || b.x + b.w + gap <= x || y + size + gap <= b.y || b.y + b.h + gap <= y) &&
       // keep icons separated from each other (Poisson‑like spacing)
@@ -340,8 +256,14 @@ export default function ServicesAndClients() {
       let attempts = 0;
       while (attempts < 80) {
         // sample within central band to cluster nearer the center
-        const x = rand(centerBandXMin, Math.max(centerBandXMin, Math.min(stageSize.width - size - padding, centerBandXMax - size)));
-        const y = rand(centerBandYMin, Math.max(centerBandYMin, Math.min(stageSize.height - size - padding, centerBandYMax - size)));
+        const x = rand(
+          centerBandXMin,
+          Math.max(centerBandXMin, Math.min(stageSize.width - size - padding, centerBandXMax - size))
+        );
+        const y = rand(
+          centerBandYMin,
+          Math.max(centerBandYMin, Math.min(stageSize.height - size - padding, centerBandYMax - size))
+        );
         if (fitsIcon(x, y, size)) {
           const dir = -1 as const; // always drift upward as you scroll
           const amp = rand(stageSize.height * 0.16, stageSize.height * 0.32); // a bit more upward travel
@@ -379,6 +301,7 @@ export default function ServicesAndClients() {
                 style={{
                   borderRadius: `${borderRadius}px`,
                   boxShadow: `0 25px 50px -12px rgba(0, 0, 0, ${0.15 * shadowIntensity})`,
+                  transform: `translateY(${Math.round(-scrollProgress * 140)}px)`,
                 }}
               >
               <Image 
@@ -388,9 +311,7 @@ export default function ServicesAndClients() {
                 height={700}
                 className={styles.showcaseImage}
                 priority
-                style={{
-                  borderRadius: `${borderRadius}px`,
-                }}
+                style={{ borderRadius: `${borderRadius}px` }}
               />
               <div 
                 className={styles.imageOverlay} 
@@ -405,13 +326,14 @@ export default function ServicesAndClients() {
         {/* Floating bricks after the image, varied sizes/positions with subtle parallax */}
         <div ref={bricksStageRef} className={styles.bricksStage}>
           {placedBricks
-            // keep bricks above the reserved iPhone area
-            .filter((b) => b.y + b.h <= Math.max(0, stageSize.height - (PHONE_HEIGHT + 160)))
             .slice(0, assignedImages.length || placedBricks.length)
             .map((b, index) => {
             const offset = scrollProgress * b.amp * b.speed * b.dir;
             const img = assignedImages[index] || { src: '/images/placeholder.png', title: 'Project' };
             const href = img.slug ? `/portfolio/projects/${img.slug}` : '#';
+            const innerDir = (index % 2 === 0) ? 1 : -1;
+            const innerMagY = Math.min(140, Math.round((b.h || 220) * 0.24));
+            const innerY = -(scrollProgress * innerMagY * innerDir);
             return (
               <div
                 key={index}
@@ -423,14 +345,16 @@ export default function ServicesAndClients() {
                 }}
               >
                 <Link href={href} className={styles.brickLink} aria-label={img.title} prefetch={false}>
-                  <Image 
-                    src={img.src}
-                    alt={img.title}
-                    width={Math.round(b.w)}
-                    height={Math.round(b.h)}
-                    className={styles.brickImage}
-                    priority={index < 3}
-                  />
+                  <div className={styles.brickParallax} style={{ transform: `translateY(${Math.round(innerY)}px)` }}>
+                    <Image 
+                      src={img.src}
+                      alt={img.title}
+                      width={Math.round(b.w)}
+                      height={Math.round(b.h)}
+                      className={styles.brickImage}
+                      priority={index < 3}
+                    />
+                  </div>
                 </Link>
               </div>
             );
@@ -481,252 +405,13 @@ export default function ServicesAndClients() {
           <div className={`${styles.stageGlobalBlur} ${hoveredServiceIdx !== null ? styles.active : ''}`} aria-hidden />
           <div className={`${styles.stageBlurOverlay} ${hoveredServiceIdx !== null ? styles.active : ''}`} aria-hidden />
 
-          {/* Guard space so bricks end before the iPhone frame */}
-          <div className={styles.bricksEndGuard} style={{ height: `${PHONE_HEIGHT + 160}px` }} />
+          
 
         </div>
-
-        {/* New full-viewport track with sticky parent holding the iPhone */}
-        <div ref={phoneTrackRef} className={styles.phoneTrack}>
-          <div className={styles.phoneStickyParent} style={{ transform: `translateY(${Math.round(phoneEaseY)}px)`, opacity: phoneOpacity }}>
-            {/* Timeline progress indicator */}
-            <div className={styles.timelineWrapper} aria-hidden style={{ opacity: timelineOpacity }}>
-              <div className={styles.timeline}>
-                {Array.from({ length: 6 }).map((_, i) => {
-                  const rawIndex = Math.min(5, Math.floor(phoneTrackProgress * 6));
-                  const segmentProgress = (phoneTrackProgress * 6) - rawIndex; // 0..1 within segment
-                  const isActive = i <= rawIndex;
-                  const fillBetween = i < rawIndex ? 100 : i === rawIndex ? segmentProgress * 100 : 0;
-                  // Tail after the last dot, tracks progress through final segment
-                  const tailFill = Math.max(0, Math.min(100, (phoneTrackProgress * 6 - 5) * 100));
-
-                  return (
-                    <div key={i} className={styles.timelineStep}>
-                      <div className={`${styles.timelineDot} ${isActive ? styles.active : ''}`} />
-                      {i < 5 ? (
-                        <div className={styles.timelineLine}>
-                          <div className={styles.timelineLineFill} style={{ width: `${fillBetween}%` }} />
-                        </div>
-                      ) : (
-                        <div className={styles.timelineLine}>
-                          <div className={styles.timelineLineFill} style={{ width: `${tailFill}%` }} />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            {/* Left-side onboarding copy that changes with the phone screen */}
-            {/* Mini testimonial pinned to sticky container top-right */}
-            <div className={styles.testimonialMiniAnchor}>
-              <TestimonialMini />
-            </div>
-            <div className={styles.phoneCopyWrapper} aria-hidden>
-              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 0 ? styles.active : ''}`}>
-                <div className={styles.phoneCopyTitle}>Onboarding</div>
-                <div className={styles.phoneCopyDesc}>Tell us your idea — as rough or as detailed as you want.</div>
-              </div>
-              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 1 ? styles.active : ''}`}>
-                <div className={styles.phoneCopyTitle}>Blueprinting</div>
-                <div className={styles.phoneCopyDesc}>We map it into something real.</div>
-              </div>
-              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 2 ? styles.active : ''}`}>
-                <div className={styles.phoneCopyTitle}>Project Setup</div>
-                <div className={styles.phoneCopyDesc}>We create a dedicated codebase and environment for your project.</div>
-              </div>
-              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 3 ? styles.active : ''}`}>
-                <div className={styles.phoneCopyTitle}>Milestones</div>
-                <div className={styles.phoneCopyDesc}>Features are built in milestones — you see every step.</div>
-              </div>
-              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 4 ? styles.active : ''}`}>
-                <div className={styles.phoneCopyTitle}>Transparency</div>
-                <div className={styles.phoneCopyDesc}>Commits, checklists, updates — all visible in real‑time.</div>
-              </div>
-              <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 5 ? styles.active : ''}`}>
-                <div className={styles.phoneCopyTitle}>Delivery</div>
-                <div className={styles.phoneCopyDesc}>Demo‑ready product in your hands in weeks, not months.</div>
-              </div>
-            </div>
-            <div className={styles.iphoneWrapper}>
-              {/* Back glow crossfading between steps based on segment progress */}
-              {(() => {
-                const stepsCount = 6;
-                const rawIndex = Math.min(stepsCount - 1, Math.floor(phoneTrackProgress * stepsCount));
-                const segmentProgress = Math.max(0, Math.min(1, phoneTrackProgress * stepsCount - rawIndex));
-                const nextIndex = Math.min(stepsCount - 1, rawIndex + 1);
-                const currentColor = getGlowColor(rawIndex);
-                const nextColor = getGlowColor(nextIndex);
-                const baseStyle = {} as React.CSSProperties;
-                return (
-                  <>
-                    <div
-                      className={styles.iphoneGlow}
-                      style={{
-                        ...baseStyle,
-                        opacity: timelineOpacity * phoneOpacity * (1 - segmentProgress),
-                        background: `radial-gradient(55% 55% at 50% 50%, ${currentColor} 0%, rgba(0,0,0,0) 75%)`
-                      }}
-                    />
-                    <div
-                      className={styles.iphoneGlow}
-                      style={{
-                        ...baseStyle,
-                        opacity: timelineOpacity * phoneOpacity * segmentProgress,
-                        background: `radial-gradient(55% 55% at 50% 50%, ${nextColor} 0%, rgba(0,0,0,0) 75%)`
-                      }}
-                    />
-                  </>
-                );
-              })()}
-              {/* Replace R3F iPhone with PNG and HTML slides */}
-              <div className={styles.phonePng} style={{ width: PHONE_WIDTH, height: 'auto' }}>
-                {/* Screen renders behind; PNG is on top and transparent */}
-                <div className={styles.phoneScreenOverlay}>
-                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 0 ? styles.active : ''}`}><PhoneSlideOne /></div>
-                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 1 ? styles.active : ''}`}><PhoneSlideTwo /></div>
-                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 2 ? styles.active : ''}`}><PhoneSlideThree /></div>
-                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 3 ? styles.active : ''}`}><PhoneSlideFour /></div>
-                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 4 ? styles.active : ''}`}><PhoneSlideFive /></div>
-                  <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 5 ? styles.active : ''}`}><PhoneSlideSix /></div>
-                </div>
-                <img src="/images/iphone.png" alt="iPhone" className={styles.phoneImg} />
-                <a href="/portfolio" className={styles.portfolioBtn}>See Portfolio</a>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </section>
   );
 } 
 
-// Placeholder app screens sized to the phone screen container
-function PhoneSlideOne() {
-  return (
-    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#111827,#0b1220)', color: '#e5e7eb', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-      <div style={{ fontSize: 22, fontWeight: 700 }}>Welcome</div>
-      <div style={{ opacity: 0.8 }}>This is screen 1</div>
-    </div>
-  );
-}
-
-// Helper to compute which copy card is active without duplicating state
-function screenTitleIndex(progress: number, steps: number) {
-  return Math.min(steps - 1, Math.floor(progress * steps));
-}
-
-function PhoneSlideTwo() {
-  return (
-    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#0f766e,#064e3b)', color: '#ecfeff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-      <div style={{ fontSize: 22, fontWeight: 700 }}>Features</div>
-      <div style={{ opacity: 0.9 }}>This is screen 2</div>
-    </div>
-  );
-}
-
-function PhoneSlideThree() {
-  return (
-    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#1f2937,#111827)', color: '#f9fafb', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-      <div style={{ fontSize: 22, fontWeight: 700 }}>Get Started</div>
-      <div style={{ opacity: 0.85 }}>This is screen 3</div>
-    </div>
-  );
-}
-
-function PhoneSlideFour() {
-  return (
-    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#0a2540,#0a0f1f)', color: '#dbeafe', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-      <div style={{ fontSize: 22, fontWeight: 700 }}>Connect</div>
-      <div style={{ opacity: 0.9 }}>This is screen 4</div>
-    </div>
-  );
-}
-
-function PhoneSlideFive() {
-  return (
-    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#312e81,#1e1b4b)', color: '#ede9fe', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-      <div style={{ fontSize: 22, fontWeight: 700 }}>Configure</div>
-      <div style={{ opacity: 0.9 }}>This is screen 5</div>
-    </div>
-  );
-}
-
-function PhoneSlideSix() {
-  return (
-    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg,#064e3b,#052e2b)', color: '#d1fae5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-      <div style={{ fontSize: 22, fontWeight: 700 }}>Finish</div>
-      <div style={{ opacity: 0.9 }}>This is screen 6</div>
-    </div>
-  );
-}
-// GLB loader with cursor-tracking tilt
-function IPhoneGLBInteractive({ trackProgress }: { trackProgress: number }) {
-  const gltf = useGLTF('/iphone/iphone.glb');
-  const groupRef = useRef<any>(null);
-  const { pointer } = useThree();
-  const [isHovering, setIsHovering] = useState(false);
-  const BASE_TILT_X = 0; // face camera directly
-
-  useFrame(() => {
-    if (!groupRef.current) return;
-    const rot = groupRef.current.rotation;
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
-
-    // Always face camera directly (no tracking)
-    rot.x = lerp(rot.x, BASE_TILT_X, 0.12);
-    rot.y = lerp(rot.y, 0, 0.12);
-    rot.z = lerp(rot.z, 0, 0.12);
-  });
-
-  // Compute which app screen to show based on track progress (6 screens)
-  const steps = 6;
-  const screenIndex = Math.min(steps - 1, Math.floor(trackProgress * steps));
-  const innerProgress = (trackProgress * steps) % 1; // 0..1 within each segment
-
-  // Positions for crossfade slide effect
-  const offsetY = (1 - innerProgress) * 0.02; // subtle slide
-
-  return (
-    <Center position={[0, 0, 0]}>
-      <group
-        ref={groupRef}
-        onPointerOver={(e) => { e.stopPropagation(); setIsHovering(true); }}
-        onPointerOut={() => setIsHovering(false)}
-      >
-        <primitive object={gltf.scene} scale={1.2} />
-        {/* Overlay HTML that matches iPhone screen area (sits above glass) */}
-        <Html transform position={[0, 0, 0.5]} distanceFactor={1.2} zIndexRange={[1000, 0]}>
-          <div
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-            style={{ width: 2700, height: 5750, borderRadius: 375, overflow: 'hidden', background: '#000', position: 'relative', boxShadow: '0 0 0 1px rgba(255,255,255,0.05) inset' }}
-          >
-            {/* Simple track with 6 full-screen slides */}
-            <div style={{ position: 'absolute', inset: 0 }}>
-              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 0 ? 1 : 0, transform: `translateY(${screenIndex === 0 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
-                <PhoneSlideOne />
-              </div>
-              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 1 ? 1 : 0, transform: `translateY(${screenIndex === 1 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
-                <PhoneSlideTwo />
-              </div>
-              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 2 ? 1 : 0, transform: `translateY(${screenIndex === 2 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
-                <PhoneSlideThree />
-              </div>
-              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 3 ? 1 : 0, transform: `translateY(${screenIndex === 3 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
-                <PhoneSlideFour />
-              </div>
-              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 4 ? 1 : 0, transform: `translateY(${screenIndex === 4 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
-                <PhoneSlideFive />
-              </div>
-              <div style={{ position: 'absolute', inset: 0, opacity: screenIndex === 5 ? 1 : 0, transform: `translateY(${screenIndex === 5 ? 0 : -offsetY * 100}%)`, transition: 'opacity 400ms ease, transform 400ms ease' }}>
-                <PhoneSlideSix />
-              </div>
-            </div>
-          </div>
-        </Html>
-      </group>
-    </Center>
-  );
-}
+ 

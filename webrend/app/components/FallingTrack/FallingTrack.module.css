@@ -1,0 +1,17 @@
+.section { width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); height: 300vh; position: relative; }
+.sticky { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; }
+.content { width: min(1100px, 92vw); display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(16px, 4vw, 40px); align-items: center; padding: 0 clamp(16px, 4vw, 40px); }
+.left { display: flex; flex-direction: column; gap: 8px; }
+.label { font-size: 0.9rem; opacity: .7; letter-spacing: .06em; text-transform: uppercase; }
+.title { font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0; }
+.desc { font-size: clamp(0.95rem, 1.4vw, 1.05rem); opacity: .85; line-height: 1.6; }
+.right { position: relative; height: 60vh; display: flex; align-items: flex-start; justify-content: center; overflow: visible; }
+.icon { width: 120px; height: 120px; border-radius: 28px; background: linear-gradient(135deg,#0066ff,#29a7ff); box-shadow: 0 30px 60px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.2); display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 34px; will-change: transform; }
+.iconInner { pointer-events: none; }
+
+@media (max-width: 900px) {
+  .content { grid-template-columns: 1fr; }
+  .right { height: 50vh; }
+}
+
+
