@@ -110,7 +110,7 @@
   background: rgba(255,255,255,0.35);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid rgba(255,255,255,0.35);
+  border: none;
   box-shadow: none;
   border-radius: 18px;
   padding: .75rem 1.25rem;
@@ -141,7 +141,7 @@
   background: rgba(255,255,255,0.25);
   -webkit-backdrop-filter: saturate(180%) blur(16px);
   backdrop-filter: saturate(180%) blur(16px);
-  border: 1px solid rgba(255,255,255,0.3);
+  border: none;
   box-shadow: none;
   border-radius: 16px;
   padding: .75rem 1rem;
@@ -477,9 +477,9 @@
 }
 
 /* Dark theme adjustments for glass */
-:global(.dark-theme) .heading h1 { background: rgba(20,20,20,0.45); border-color: rgba(255,255,255,0.14); box-shadow: none; }
+:global(.dark-theme) .heading h1 { background: rgba(20,20,20,0.45); border: none; box-shadow: none; }
 :global(.dark-theme) .gradText { background-image: linear-gradient(90deg, #f5f5f7, #a1a1a6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-:global(.dark-theme) .subtitle { background: rgba(20,20,20,0.35); border-color: rgba(255,255,255,0.12); box-shadow: none; }
+:global(.dark-theme) .subtitle { background: rgba(20,20,20,0.35); border: none; box-shadow: none; }
 :global(.dark-theme) .primaryBtn { background: #ffffff; color: #000; border-color: #ffffff; }
 :global(.dark-theme) .secondaryBtn { background: rgba(20,20,20,0.4); color: #fff; border-color: rgba(255,255,255,0.14); }
 

@@ -73,11 +73,9 @@ export default async function Portfolio() {
   // Fetch data on the server
   const projects = await getPortfolioProjects();
   
-  // Find the featured project
-  const featuredProject = projects.find((project: PortfolioProject) => project.featured) || null;
-  
-  // Projects excluding the featured one
-  const nonFeaturedProjects = projects.filter(project => !project.featured);
+  // Remove featured concept; show all projects in grid
+  const featuredProject = null;
+  const nonFeaturedProjects = projects;
   
   // Get unique tags for filtering
   const allTags = extractTags(projects);

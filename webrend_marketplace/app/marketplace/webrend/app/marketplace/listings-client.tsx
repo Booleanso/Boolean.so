@@ -15,12 +15,10 @@ function ListingsClientContent({ initialListings }: MarketplaceClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const filterParam = searchParams.get('filter');
-  const searchParam = searchParams.get('search') || '';
   
   const [activeFilter, setActiveFilter] = useState(filterParam || 'all');
   const [listings] = useState<MarketplaceListing[]>(initialListings);
   const [includeSold, setIncludeSold] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(searchParam);
 
   // Common tags extracted from listings for search suggestions
   const allTags = listings
@@ -28,25 +26,10 @@ function ListingsClientContent({ initialListings }: MarketplaceClientProps) {
     .filter((tag, index, self) => self.indexOf(tag) === index)
     .slice(0, 6); // Show top 6 tags
 
-  // Handle search submit
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      router.push(`/marketplace?search=${encodeURIComponent(searchTerm.trim())}`);
-    } else {
-      router.push('/marketplace');
-    }
-  };
+  // Search removed
 
   // Filter listings based on current filters and search
   const filteredListings = listings.filter(repo => {
-    // Filter by search term
-    if (searchParam && !repo.name.toLowerCase().includes(searchParam.toLowerCase()) && 
-        !repo.description.toLowerCase().includes(searchParam.toLowerCase()) &&
-        !(repo.tags || []).some(tag => tag.toLowerCase().includes(searchParam.toLowerCase()))) {
-      return false;
-    }
-    
     // Filter by type (all, onetime, subscription)
     if (activeFilter === 'onetime' && repo.isSubscription) return false;
     if (activeFilter === 'subscription' && !repo.isSubscription) return false;
@@ -57,11 +40,7 @@ function ListingsClientContent({ initialListings }: MarketplaceClientProps) {
     return true;
   });
 
-  // Handle tag click
-  const handleTagClick = (tag: string) => {
-    setSearchTerm(tag);
-    router.push(`/marketplace?search=${encodeURIComponent(tag)}`);
-  };
+  // Tag click removed (no search)
 
   return (
     <div className={styles.marketplaceContainer}>
@@ -72,32 +51,6 @@ function ListingsClientContent({ initialListings }: MarketplaceClientProps) {
           <p className={styles.heroSubtitle}>
             Find premium GitHub repositories built by developers just like you
           </p>
-          
-          <form onSubmit={handleSearch} className={styles.searchForm}>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search repositories, tags, or keywords..."
-              className={styles.searchInput}
-            />
-            <button type="submit" className={styles.searchButton}>Search</button>
-          </form>
-          
-          {allTags.length > 0 && (
-            <div className={styles.popularTags}>
-              <span className={styles.tagsLabel}>Popular tags:</span>
-              {allTags.map(tag => (
-                <button 
-                  key={tag} 
-                  onClick={() => handleTagClick(tag)}
-                  className={styles.tagButton}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
@@ -142,17 +95,7 @@ function ListingsClientContent({ initialListings }: MarketplaceClientProps) {
         </label>
       </div>
 
-      {searchParam && (
-        <div className={styles.searchResults}>
-          <p>Search results for: <span>{searchParam}</span></p>
-          <button 
-            onClick={() => router.push('/marketplace')}
-            className={styles.clearSearch}
-          >
-            Clear Search
-          </button>
-        </div>
-      )}
+      {/* Search UI removed */}
 
       {filteredListings.length === 0 ? (
         <div className={styles.emptyState}>
@@ -216,7 +159,6 @@ function ListingsClientContent({ initialListings }: MarketplaceClientProps) {
                       <span 
                         key={tag} 
                         className={styles.tag}
-                        onClick={() => handleTagClick(tag)}
                       >
                         {tag}
                       </span>

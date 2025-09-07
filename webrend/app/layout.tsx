@@ -45,8 +45,21 @@ export default async function RootLayout({
             <ScrollToTop />
           </SmoothScrollProvider>
         </ThemeProvider>
+        {/* Global black fade overlay for route transitions */}
+        <div id="global-fade" style={{position:'fixed',inset:0,background:'#000',opacity:0,pointerEvents:'none',transition:'opacity 360ms ease',zIndex:1000}} />
+        <script dangerouslySetInnerHTML={{__html:`(function(){
+          var fade=document.getElementById('global-fade');
+          function fadeOut(){ if(!fade) return; fade.style.opacity='1'; fade.style.pointerEvents='auto'; }
+          function fadeIn(){ if(!fade) return; fade.style.opacity='0'; fade.style.pointerEvents='none'; }
+          window.__fadeToBlack = fadeOut; window.__fadeFromBlack = fadeIn;
+          // On page show, ensure we fade in from black if coming from a transition
+          if(document.visibilityState==='visible'){ fadeIn(); }
+          window.addEventListener('pageshow',fadeIn);
+        })();`}} />
         {/* Global viewport blur at bottom */}
-        <div className="telescope-vignette" aria-hidden="true"></div>
+        <div className="telescope-outer" aria-hidden="true">
+          <div className="telescope-vignette" />
+        </div>
       </body>
     </html>
   );

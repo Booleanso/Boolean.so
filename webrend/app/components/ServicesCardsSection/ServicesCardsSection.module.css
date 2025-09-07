@@ -4,7 +4,7 @@
   width: 100%;
   padding: 8rem 2rem;
   background: #ffffff;
-  overflow: hidden;
+  overflow: visible; /* allow sticky to work across browsers */
 }
 
 .container {
@@ -14,9 +14,25 @@
   margin: 0 auto;
 }
 
+/* Sticky track wrapper */
+.stickyTrack {
+  position: relative;
+  height: 200vh; /* track length */
+}
+
+.stickyInner {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  min-height: 100vh; /* fill viewport */
+  display: flex;
+  align-items: center; /* vertical center */
+  padding: 0; /* center exactly */
+}
+
 /* Global Blur Overlay */
 .blurOverlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;

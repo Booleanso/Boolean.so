@@ -14,8 +14,9 @@ import Footer from "./components/Footer/Footer";
 import ScrollCodeSection from "./components/ScrollCodeSection/ScrollCodeSection";
 import CTAStickyTrack from "./components/CTAStickyTrack/CTAStickyTrack";
 import FallingTrack from "./components/FallingTrack/FallingTrack";
-import ComingSoonTrack from "./components/ComingSoonTrack/ComingSoonTrack";
 import IPhoneTrack from "./components/IPhoneTrack/IPhoneTrack";
+import ComingSoonTrack from "./components/ComingSoonTrack/ComingSoonTrack";
+import Testimonials from "./components/Testimonials/Testimonials";
 
 import { db } from './lib/firebase-admin';
 import { DocumentData, Timestamp } from 'firebase-admin/firestore';
@@ -124,6 +125,9 @@ export default async function Home() {
         </section>
         <section id="video">
           <VideoSection />
+        </section>
+        <section id="testimonials">
+          <Testimonials />
         </section>
         <section id="coming-soon">
           <ComingSoonTrack />

@@ -1,12 +1,15 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, Suspense, useRef } from 'react';
+import { Canvas } from '@react-three/fiber';
+import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './portfolio.module.css'; // We'll create this CSS module next
 import { isValidImageUrl } from '../../utils/url-utils'; // Import the validator
 // import SplineViewer from './SplineViewer'; // Commented out - Spline scene removed
 import AdminDeleteButton from './AdminDeleteButton';
+import { Globe } from '../../components/index/HeroSection/HeroSection';
 
 const PLACEHOLDER_IMAGE_URL = 'https://placehold.co/600x400/eee/ccc?text=Image+Not+Available';
 
@@ -36,8 +39,13 @@ export default function PortfolioClientPage({
 }: PortfolioClientPageProps) {
   const [activeFilter, setActiveFilter] = useState('All'); // Default to 'All'
 
-  // State to track image errors for the featured project
-  const [featuredImageError, setFeaturedImageError] = useState(false);
+  // Globe + locations state (reuse Hero behavior)
+  type EnhancedLocation = { lat: number; lng: number; name: string; repoName: string; iconUrl?: string; isPrivate?: boolean };
+  const [locations, setLocations] = useState<EnhancedLocation[]>([]);
+  const [loadingGlobe, setLoadingGlobe] = useState(true);
+  const [errorGlobe, setErrorGlobe] = useState<string | null>(null);
+  const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
+  const globeContainerRef = useRef<HTMLDivElement>(null);
 
   // Memoize filtered projects to avoid recalculation on every render
   const filteredProjects = useMemo(() => {
@@ -56,73 +64,124 @@ export default function PortfolioClientPage({
       e.currentTarget.classList.add(styles.imageError);
     }
   };
-  
-  const handleFeaturedImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.warn(`Featured image failed to load (onError): ${e.currentTarget.src}`);
-    setFeaturedImageError(true);
-    e.currentTarget.parentElement?.classList.add(styles.featuredImageErrorState);
-  };
 
-  // Validate the featured image URL *before* rendering
-  const featuredImageUrl = featuredProject && isValidImageUrl(featuredProject.imageUrl)
-    ? featuredProject.imageUrl
-    : PLACEHOLDER_IMAGE_URL;
-  // If the original URL was invalid, treat it as an error from the start
-  if (featuredProject && !isValidImageUrl(featuredProject.imageUrl) && !featuredImageError) {
-     console.warn(`Initial featured image URL invalid, using placeholder: ${featuredProject.imageUrl}`);
-     setFeaturedImageError(true); // Set error state immediately if invalid
-  }
+  // Load portfolio projects for mapping (independent of initialProjects)
+  useEffect(() => {
+    // Fade in from black on portfolio page mount
+    if (typeof window !== 'undefined' && (window as any).__fadeFromBlack) {
+      (window as any).__fadeFromBlack();
+    }
+    const fetchPortfolioProjects = async () => {
+      try {
+        const response = await fetch('/api/portfolio/projects');
+        if (response.ok) {
+          const data = await response.json();
+          setPortfolioProjects(data.projects || []);
+        }
+      } catch (err) {
+        console.error('Error fetching portfolio projects:', err);
+      }
+    };
+    fetchPortfolioProjects();
+  }, []);
+
+  // Fetch locations (mirrors Hero logic, simplified)
+  useEffect(() => {
+    async function fetchLocations() {
+      try {
+        let allLocations: EnhancedLocation[] = [];
+
+        // Public repos in org
+        try {
+          const reposResponse = await axios.get('https://api.github.com/orgs/WebRendHQ/repos?per_page=100');
+          const repos = reposResponse.data || [];
+          const publicLocationPromises = repos.map(async (repo: { name: string; default_branch?: string }) => {
+            const branchesToTry = [repo.default_branch, 'main', 'master', 'development', 'dev'].filter(Boolean) as string[];
+            for (const branch of branchesToTry) {
+              try {
+                const url = `https://raw.githubusercontent.com/WebRendHQ/${repo.name}/${branch}/location.json`;
+                const locationResponse = await axios.get(url, { timeout: 5000 });
+                if (locationResponse.status === 200 && locationResponse.data) {
+                  const d = locationResponse.data;
+                  if (d.location && typeof d.latitude === 'number' && typeof d.longitude === 'number') {
+                    return { lat: d.latitude, lng: d.longitude, name: d.location, repoName: repo.name, iconUrl: d.iconUrl, isPrivate: false } as EnhancedLocation;
+                  }
+                }
+              } catch {}
+            }
+            return null;
+          });
+          const publicLocationResults = await Promise.allSettled(publicLocationPromises);
+          const validPublic = publicLocationResults.filter((r): r is PromiseFulfilledResult<EnhancedLocation | null> => r.status === 'fulfilled').map(r => r.value).filter(Boolean) as EnhancedLocation[];
+          allLocations = [...allLocations, ...validPublic];
+        } catch (err) {
+          console.log('Error fetching public repos locations:', err);
+        }
+
+        // Local private locations via API
+        try {
+          const response = await fetch('/api/private-locations');
+          if (response.ok) {
+            const data = await response.json();
+            const localPrivate = (data.locations || [])
+              .filter((repo: any) => repo.repoName && repo.location && typeof repo.latitude === 'number' && typeof repo.longitude === 'number')
+              .map((repo: any): EnhancedLocation => ({ lat: repo.latitude, lng: repo.longitude, name: repo.location, repoName: repo.repoName, iconUrl: repo.iconUrl, isPrivate: true }));
+            allLocations = [...allLocations, ...localPrivate];
+          }
+        } catch (err) {
+          console.log('Error fetching local private locations:', err);
+        }
+
+        if (allLocations.length === 0) {
+          setErrorGlobe('No location data found.');
+          setLocations([{ lat: 40.7128, lng: -74.0060, name: 'New York', repoName: 'Example Repo', isPrivate: false }]);
+        } else {
+          setLocations(allLocations);
+        }
+      } catch (error) {
+        console.error('Error fetching location data:', error);
+        setErrorGlobe('Failed to fetch location data.');
+        setLocations([{ lat: 40.7128, lng: -74.0060, name: 'New York', repoName: 'Example Repo', isPrivate: false }]);
+      } finally {
+        setLoadingGlobe(false);
+      }
+    }
+    fetchLocations();
+  }, []);
+
+  // Find best matching project for a repo
+  const findMatchingProject = (repoName: string) => {
+    if (portfolioProjects.length === 0) return null as any;
+    let match = portfolioProjects.find((p: PortfolioProject) => p.title.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '') === repoName.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ''));
+    if (match) return match as any;
+    const repoWords = repoName.toLowerCase().split(/[-_\s]+/).filter(w => w.length > 2);
+    match = portfolioProjects.find((p: PortfolioProject) => {
+      const titleWords = p.title.toLowerCase().split(/\s+/);
+      return repoWords.some(rw => titleWords.some(tw => tw.includes(rw) || rw.includes(tw)));
+    });
+    return (match || portfolioProjects[0] || null) as any;
+  };
 
   return (
     <main className={styles.portfolioPage}>
-      {/* Optional: Featured Project Hero Section */}
-      {featuredProject && (
-        <section className={styles.featuredSection}>
-          {/* Admin Delete Button for featured project */}
-          <AdminDeleteButton projectId={featuredProject.id} />
-          
-          <div className={`${styles.featuredImageWrapper} ${featuredImageError ? styles.featuredImageErrorState : ''}`}>
-            {!featuredImageError && (
-              <Image 
-                src={featuredImageUrl} // Use validated URL
-                alt={`${featuredProject.title} featured project`}
-                fill
-                priority
-                className={styles.featuredImage}
-                sizes="100vw"
-                onError={handleFeaturedImageError} // Keep as fallback
-              />
-            )}
-            {/* Optionally show placeholder text/background if image fails */} 
-            {featuredImageError && (
-              <div className={styles.featuredImagePlaceholder}>Image Unavailable</div>
-            )}
-            <div className={styles.featuredOverlay}></div>
-          </div>
-          <div className={styles.featuredContent}>
-            <span className={styles.featuredLabel}>Featured Project</span>
-            <h1 className={styles.featuredTitle}>{featuredProject.title}</h1>
-            <p className={styles.featuredDescription}>{featuredProject.description}</p>
-            <Link 
-              href={`/portfolio/projects/${featuredProject.slug}`}
-              className={styles.featuredLink}
-            >
-              View Case Study
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 0L6.59 1.41L12.17 7H0V9H12.17L6.59 14.59L8 16L16 8L8 0Z" fill="currentColor"/></svg>
-            </Link>
-            {featuredProject.projectUrl && (
-              <a 
-                href={featuredProject.projectUrl} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className={`${styles.featuredLink} ${styles.liveSiteLink}`}
-              >
-                View Live Site
-              </a>
-            )}
-          </div>
-        </section>
-      )}
+      {/* Globe Section (replaces featured hero) */}
+      <section className={styles.globeSection} ref={globeContainerRef}>
+        <div className={styles.portfolioGlobe}>
+          {loadingGlobe ? (
+            <div className={styles.splineLoading}>Loading globe...</div>
+          ) : (
+            <Canvas shadows camera={{ position: [0, 0, 5.5], fov: 70 }}>
+              <ambientLight intensity={0.6} />
+              <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow />
+              <directionalLight position={[-5, 3, 5]} intensity={0.8} castShadow={false} />
+              <directionalLight position={[0, -10, -5]} intensity={0.3} castShadow={false} />
+              <Suspense fallback={null}>
+                <Globe locations={locations as any} findMatchingProject={findMatchingProject as any} />
+              </Suspense>
+            </Canvas>
+          )}
+        </div>
+      </section>
 
       {/* Main Project Grid Section */}
       <section className={styles.gridSection}>
@@ -199,19 +258,20 @@ export default function PortfolioClientPage({
                         <span key={tag} className={styles.cardTag}>{tag}</span>
                       ))}
                     </div>
-                    {/* Live site button is NOT nested in the main link anymore */}
                     {project.projectUrl && (
-                      <div className={styles.liveSiteButtonContainer}> 
-                        <a 
-                          href={project.projectUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className={styles.liveSiteButton} 
-                          // No stopPropagation needed now
-                        >
-                          View Live Site
-                        </a>
-                      </div>
+                      <a 
+                        href={project.projectUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className={styles.liveSiteIconLink}
+                        aria-label="Open live site"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                          <path d="M15 3h6v6"/>
+                          <path d="M10 14L21 3"/>
+                        </svg>
+                      </a>
                     )}
                   </div>
                 </div>

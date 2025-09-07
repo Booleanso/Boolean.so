@@ -5,16 +5,54 @@
   min-height: 100vh;
 }
 
-/* Featured Project Hero Section */
-.featuredSection {
-  position: relative;
+/* Globe Section (replaces featured) */
+.globeSection {
+  width: 100%;
   height: 70vh;
   min-height: 500px;
-  max-height: 800px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
+  position: relative;
+  margin: 0 auto 3rem;
+}
+
+/* Offset globe placement similar to Hero */
+.portfolioGlobe {
+  width: 130vw;
+  height: 130vh;
+  position: absolute;
+  bottom: -80vh;
+  left: -15vw;
+  right: -15vw;
+  overflow: visible;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.portfolioGlobe::after {
+  content: '';
+  position: absolute;
+  bottom: 50vh;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  background: linear-gradient(to top,
+    var(--gradient-start, rgba(255, 255, 255, 1)) 20%,
+    var(--gradient-mid, rgb(255, 255, 255)) 40%,
+    var(--gradient-mid, rgb(255, 255, 255)) 60%,
+    var(--gradient-end, rgba(255, 255, 255, 0.319)) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 5;
+}
+
+:global(.dark-theme) .portfolioGlobe::after {
+  background: linear-gradient(to top,
+    rgba(0, 0, 0, 1) 20%,
+    rgba(0, 0, 0, 1) 40%,
+    rgba(0, 0, 0, 1) 60%,
+    rgba(0, 0, 0, 0.319) 80%,
+    transparent 100%
+  );
 }
 
 .featuredImageWrapper {
@@ -112,9 +150,12 @@
 
 /* Grid Section */
 .gridSection {
-  padding: 6rem 2rem;
+  padding: 0 clamp(32px, 9vw, 128px) 6rem;
   max-width: 1600px;
   margin: 0 auto;
+  position: relative;
+  z-index: 10;
+  background-color: var(--background, #ffffff);
 }
 
 .gridHeader {
@@ -182,10 +223,7 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.projectCardContainer:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-}
+.projectCardContainer:hover { transform: none; box-shadow: none; }
 
 /* New style for the link covering the image */
 .cardImageLinkWrapper {
@@ -206,9 +244,7 @@
   transition: transform 0.5s ease;
 }
 
-.projectCardContainer:hover .cardImage {
-  transform: scale(1.05);
-}
+.projectCardContainer:hover .cardImage { transform: none; }
 
 .cardOverlay {
   position: absolute;
@@ -219,9 +255,7 @@
   pointer-events: none; /* Allows clicking through to link */
 }
 
-.projectCardContainer:hover .cardOverlay {
-  opacity: 1;
-}
+.projectCardContainer:hover .cardOverlay { opacity: 0.8; }
 
 /* New content area styling */
 .cardContentArea {
@@ -308,9 +342,7 @@
   background-color: #2c2c2e;
 }
 
-:global(.dark-theme) .gridSection {
-  /* No change needed, white background for cards provides contrast */
-}
+:global(.dark-theme) .gridSection { background-color: #000000; }
 
 :global(.dark-theme) .gridTitle {
   color: #f5f5f7;
@@ -443,6 +475,22 @@
   background-color: #dcdce0;
   color: #005bb5;
 }
+
+/* New icon link bottom-right */
+.liveSiteIconLink {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.06);
+  color: #0a0a0a;
+}
+.liveSiteIconLink:hover { background: rgba(0,0,0,0.1); }
 
 /* Game Component Styles */
 .gameWrapper {

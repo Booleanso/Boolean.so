@@ -57,7 +57,7 @@ interface PortfolioProject {
 }
 
 // Component for the Globe
-function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation[], findMatchingProject: (repoName: string) => PortfolioProject | null }) {
+export function Globe({ locations, findMatchingProject, onReady }: { locations: EnhancedLocation[], findMatchingProject: (repoName: string) => PortfolioProject | null, onReady?: () => void }) {
   const globeRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
   const [textureLoaded, setTextureLoaded] = useState(false);
@@ -195,6 +195,13 @@ function Globe({ locations, findMatchingProject }: { locations: EnhancedLocation
       );
     }
   }, [textureLoader]);
+
+  // Notify parent when globe is ready (textures and clouds loaded or textures failed but clouds loaded)
+  useEffect(() => {
+    if (onReady && (textureLoaded || textureFailed) && cloudsTextureLoaded) {
+      onReady();
+    }
+  }, [onReady, textureLoaded, textureFailed, cloudsTextureLoaded]);
 
   // This effect runs once on mount to load the correct texture based on theme
   useEffect(() => {
@@ -837,14 +844,38 @@ export default function HeroSection() {
   const [locationsFound, setLocationsFound] = useState<number>(0);
   const [privateLocationsFound, setPrivateLocationsFound] = useState<number>(0);
   const [globeOpacity, setGlobeOpacity] = useState<number>(0);
-  const [globePosition, setGlobePosition] = useState<number>(100); // Start 100px lower for more dramatic rise
+  const [globePosition, setGlobePosition] = useState<number>(-220); // Start higher by default
   const [scrollY, setScrollY] = useState<number>(0);
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
+  const [contentOpacity, setContentOpacity] = useState<number>(1);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   
-  // Search functionality
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const router = useRouter();
   const globeContainerRef = useRef<HTMLDivElement>(null);
+
+  // Listen for portfolio-transition to animate out content and raise globe, then navigate
+  useEffect(() => {
+    const handler = () => {
+      if (isTransitioning) return;
+      setIsTransitioning(true);
+      // Fade out heading/desc/ctas/trusted logos
+      setContentOpacity(0);
+      // Raise globe higher to match portfolio globe position
+      setGlobePosition(-360); // move further up during transition
+      setGlobeOpacity(1);
+
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && (window as any).__fadeToBlack) {
+          (window as any).__fadeToBlack();
+          setTimeout(() => { window.location.href = '/portfolio'; }, 420);
+        } else {
+          window.location.href = '/portfolio';
+        }
+      }, 750);
+    };
+    document.documentElement.addEventListener('portfolio-transition', handler);
+    return () => document.documentElement.removeEventListener('portfolio-transition', handler);
+  }, [isTransitioning]);
 
   // Immediately check dark mode when HeroSection mounts (during navigation or initial load)
   useEffect(() => {
@@ -872,14 +903,7 @@ export default function HeroSection() {
     };
   }, []);
 
-  // Search handler function → route to marketplace search
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/marketplace?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-    }
-  };
+  // Search removed
 
   useEffect(() => {
     async function fetchLocations() {
@@ -1184,13 +1208,17 @@ export default function HeroSection() {
   const globeStyle = {
     opacity: globeOpacity,
     transform: `translateY(${globePosition + scrollY * 0.5}px)`, // Parallax effect: globe moves down at 50% of scroll speed
-    transition: globePosition > 0 ? 'opacity 1.5s ease-in-out, transform 3.5s cubic-bezier(0.19, 1, 0.22, 1)' : 'opacity 1.5s ease-in-out' // Only apply transform transition during initial load
+    transition: isTransitioning
+      ? 'transform 600ms ease, opacity 360ms ease'
+      : globePosition > 0
+        ? 'opacity 1.5s ease-in-out, transform 3.5s cubic-bezier(0.19, 1, 0.22, 1)'
+        : 'opacity 1.5s ease-in-out'
   };
 
   return (
     <section className={styles.heroSection}>
       <div className={styles.container}>
-        <div className={styles.content}>
+        <div className={styles.content} style={{ opacity: contentOpacity, transition: 'opacity 360ms ease' }}>
           <div className={styles.heading}>
             <h1><span className={styles.gradText}>Turn Code Into Profit.</span></h1>
             <p className={styles.subtitle}>
@@ -1201,22 +1229,6 @@ export default function HeroSection() {
           {error && <div className={styles.errorMessage}>{error}</div>}
 
           <div className={styles.ctas}>
-            <form onSubmit={handleSearch} className={styles.searchForm}>
-              <input 
-                type="text" 
-                placeholder="Find your next project..." 
-                className={styles.searchInput}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button type="submit" className={styles.searchButton}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                Search
-              </button>
-            </form>
             <a href="/discovery" className={styles.primaryBtn}>Speak with us</a>
           </div>
 
@@ -1270,7 +1282,14 @@ export default function HeroSection() {
               />
               
               <Suspense fallback={null}>
-                <Globe locations={locations} findMatchingProject={findMatchingProject} />
+                <Globe
+                  locations={locations}
+                  findMatchingProject={findMatchingProject}
+                  onReady={() => {
+                    // Globe assets ready → fade in page
+                    setGlobeOpacity(1);
+                  }}
+                />
               </Suspense>
             </Canvas>
           )}

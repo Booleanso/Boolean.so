@@ -468,13 +468,12 @@ export default function ProductDetailClient({ initialListing }: BuyPageClientPro
             {listing.tags && listing.tags.length > 0 && (
               <div className={styles.productTags}>
                 {listing.tags.map((tag) => (
-                  <Link 
-                    key={tag} 
-                    href={`/marketplace?search=${encodeURIComponent(tag)}`}
+                  <span 
+                    key={tag}
                     className={styles.tag}
                   >
                     {tag}
-                  </Link>
+                  </span>
                 ))}
               </div>
             )}

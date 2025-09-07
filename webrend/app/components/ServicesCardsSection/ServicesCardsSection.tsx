@@ -163,7 +163,9 @@ export default function ServicesCardsSection() {
 
   return (
     <section ref={sectionRef} className={styles.servicesSection}>
-      <div className={styles.container}>
+      <div className={styles.stickyTrack}>
+        <div className={styles.stickyInner}>
+          <div className={styles.container}>
         <div className={`${styles.blurOverlay} ${hoveredIndex !== null ? styles.active : ''}`} />
         <div className={`${styles.sectionBlurOverlay} ${hoveredIndex !== null ? styles.active : ''}`} />
         <div className={`${styles.headerContent} ${isVisible ? styles.visible : ''} ${hoveredIndex !== null ? styles.headerDim : ''}`}>
@@ -257,6 +259,8 @@ export default function ServicesCardsSection() {
               </Link>
             );
           })}
+        </div>
+          </div>
         </div>
       </div>
     </section>

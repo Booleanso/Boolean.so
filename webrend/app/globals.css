@@ -242,26 +242,20 @@ body {
 }
 
 /* Global telescope edge overlay at bottom of viewport */
-.telescope-vignette {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 60;
-}
+.telescope-outer { position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: 10svh; pointer-events: none; z-index: 60; overflow: hidden; isolation: isolate; }
 
-.telescope-vignette {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 24vh; /* area that applies the blur */
-  pointer-events: none;
-  z-index: 60;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  /* blur fades upward so content blends into it on scroll */
-  mask-image: linear-gradient(to top, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
+/* Inner element performs the blur; clipped by the outer container */
+.telescope-vignette { position: absolute; inset: 0; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); will-change: backdrop-filter; background: rgba(255,255,255,0.02); mask-image: linear-gradient(to top, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%); }
+.dark-theme .telescope-vignette { background: rgba(0,0,0,0.02); }
+
+/* Fallback when backdrop-filter is unsupported: soften with a gradient fade */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .telescope-vignette { 
+    background: linear-gradient(to top, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0) 100%);
+  }
+  .dark-theme .telescope-vignette {
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 45%, rgba(0,0,0,0) 100%);
+  }
 }
 /* Ensure smooth momentum scrolling works well */
 body {

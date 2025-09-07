@@ -7,10 +7,11 @@ export default function IPhoneTrack() {
   const phoneTrackRef = useRef<HTMLDivElement>(null);
   const phonePngRef = useRef<HTMLDivElement>(null);
 
-  const [phoneEaseY, setPhoneEaseY] = useState<number>(60);
-  const [phoneOpacity, setPhoneOpacity] = useState<number>(0);
-  const [timelineOpacity, setTimelineOpacity] = useState<number>(0);
+  // Single state for scroll progress; all visuals derive from this
   const [phoneTrackProgress, setPhoneTrackProgress] = useState<number>(0);
+  const progressRef = useRef(0);
+  const rafRef = useRef<number | null>(null);
+  const activeRef = useRef<boolean>(false);
   const [phoneWidth, setPhoneWidth] = useState<number>(320);
 
   // Glow colors (mirrors ServicesAndClients behavior)
@@ -28,66 +29,72 @@ export default function IPhoneTrack() {
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!phoneTrackRef.current) return;
+    const update = () => {
+      rafRef.current = null;
+      if (!activeRef.current || !phoneTrackRef.current) return;
       const rect = phoneTrackRef.current.getBoundingClientRect();
       const vh = window.innerHeight;
       const total = Math.max(1, rect.height - vh);
-      const progress = Math.max(0, Math.min(1, -rect.top / total));
+      const raw = Math.max(0, Math.min(1, -rect.top / total));
 
       const START_GUARD = 0.1;
       const END_FADE_START = 0.98;
-
-      let translate = 0;
-      if (progress <= START_GUARD) {
-        translate = (1 - progress / START_GUARD) * 60;
-      } else {
-        translate = 0;
-      }
-      setPhoneEaseY(translate);
-
-      let op = 1;
-      if (progress <= START_GUARD) {
-        op = progress / START_GUARD;
-      } else if (progress >= END_FADE_START) {
-        op = 1 - (progress - END_FADE_START) / (1 - END_FADE_START);
-      } else {
-        op = 1;
-      }
-      setPhoneOpacity(Math.max(0, Math.min(1, op)));
-
-      const TIMELINE_FADE_LEN = 0.08;
-      let tl = 0;
-      if (progress > START_GUARD) {
-        tl = Math.min(1, (progress - START_GUARD) / TIMELINE_FADE_LEN);
-      } else {
-        tl = 0;
-      }
-      setTimelineOpacity(tl);
-
-      const adjusted = progress <= START_GUARD
+      const adjusted = raw <= START_GUARD
         ? 0
-        : progress >= END_FADE_START
+        : raw >= END_FADE_START
           ? 1
-          : (progress - START_GUARD) / (END_FADE_START - START_GUARD);
-      setPhoneTrackProgress(adjusted);
+          : (raw - START_GUARD) / (END_FADE_START - START_GUARD);
+
+      // Avoid needless React renders
+      if (Math.abs(adjusted - progressRef.current) > 0.001) {
+        progressRef.current = adjusted;
+        setPhoneTrackProgress(adjusted);
+      }
     };
 
-    const handleResize = () => {
+    const onScroll = () => {
+      if (rafRef.current === null) rafRef.current = requestAnimationFrame(update);
+    };
+
+    const onResize = () => {
       const vw = window.innerWidth || 1200;
       const desired = Math.round(Math.max(180, Math.min(340, vw * 0.16)));
       setPhoneWidth(desired);
-      handleScroll();
+      onScroll();
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleResize, { passive: true });
-    handleResize();
+    // Run updates only while the section is near the viewport
+    const io = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      activeRef.current = !!entry && entry.isIntersecting;
+      if (activeRef.current) onScroll();
+    }, { root: null, rootMargin: '25% 0px 25% 0px', threshold: 0 });
+    if (phoneTrackRef.current) io.observe(phoneTrackRef.current);
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize, { passive: true });
+    onResize();
+
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+      io.disconnect();
     };
   }, []);
+
+  // Derived visual values from progress (no extra state)
+  const START_GUARD = 0.1;
+  const END_FADE_START = 0.98;
+  const TIMELINE_FADE_LEN = 0.08;
+  const rawForDerived = phoneTrackProgress * (END_FADE_START - START_GUARD) + START_GUARD; // inverse mapping
+  const phoneEaseY = 0; // no upward motion; fade only
+  const phoneOpacity = rawForDerived <= START_GUARD
+    ? rawForDerived / START_GUARD
+    : rawForDerived >= END_FADE_START
+      ? 1 - (rawForDerived - END_FADE_START) / (1 - END_FADE_START)
+      : 1;
+  const timelineOpacity = rawForDerived > START_GUARD ? Math.min(1, (rawForDerived - START_GUARD) / TIMELINE_FADE_LEN) : 0;
 
   return (
     <section ref={phoneTrackRef} className={styles.phoneTrack}>
@@ -118,7 +125,7 @@ export default function IPhoneTrack() {
           </div>
         </div>
 
-        <div className={styles.phoneCopyWrapper}>
+        <div className={styles.phoneCopyWrapper} style={{ opacity: timelineOpacity }}>
           <div className={`${styles.phoneCopyCard} ${screenTitleIndex(phoneTrackProgress, 6) === 0 ? styles.active : ''}`}>
             <div className={styles.phoneCopyLabel}>Screen 1 – Two-Week MVPs</div>
             <div className={styles.phoneCopyTitle}>Your MVP, built in 2 weeks.</div>
@@ -192,7 +199,7 @@ export default function IPhoneTrack() {
               <div className={`${styles.phoneSlide} ${screenTitleIndex(phoneTrackProgress, 6) === 5 ? styles.active : ''}`}><PhoneSlideSix /></div>
             </div>
             <img src="/images/iphone.png" alt="iPhone" className={styles.phoneImg} />
-            <a href="/portfolio" className={styles.portfolioBtn}>See Portfolio</a>
+            <a href="/portfolio" className={styles.portfolioBtn} style={{ opacity: timelineOpacity, pointerEvents: timelineOpacity > 0.01 ? 'auto' : 'none' }}>See Portfolio</a>
           </div>
         </div>
       </div>
@@ -204,11 +211,11 @@ function screenTitleIndex(progress: number, steps: number) {
   return Math.min(steps - 1, Math.floor(progress * steps));
 }
 
-function PhoneSlideOne() { return <div style={{ width: '100%', height: '100%' }} />; }
-function PhoneSlideTwo() { return <div style={{ width: '100%', height: '100%' }} />; }
-function PhoneSlideThree() { return <div style={{ width: '100%', height: '100%' }} />; }
-function PhoneSlideFour() { return <div style={{ width: '100%', height: '100%' }} />; }
-function PhoneSlideFive() { return <div style={{ width: '100%', height: '100%' }} />; }
-function PhoneSlideSix() { return <div style={{ width: '100%', height: '100%' }} />; }
+function PhoneSlideOne() { return <img className={styles.slideImage} src="/process/mvp.png" alt="Two-week MVP preview" />; }
+function PhoneSlideTwo() { return <img className={styles.slideImage} src="/process/cheap.png" alt="AI-driven contracts cost preview" />; }
+function PhoneSlideThree() { return <img className={styles.slideImage} src="/process/notion.png" alt="Notion checklists preview" />; }
+function PhoneSlideFour() { return <img className={styles.slideImage} src="/process/githubmail.png" alt="GitHub email updates preview" />; }
+function PhoneSlideFive() { return <img className={styles.slideImage} src="/process/insta.png" alt="Built in public Instagram style preview" />; }
+function PhoneSlideSix() { return <img className={styles.slideImage} src="/process/milestone.png" alt="Milestone meetings preview" />; }
 
 

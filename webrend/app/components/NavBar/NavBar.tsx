@@ -29,9 +29,6 @@ export default function NavBar({ serverUser }: NavBarProps) {
   // Scroll-based navbar visibility
   const [isNavbarVisible, setIsNavbarVisible] = useState<boolean>(true);
   const [lastScrollY, setLastScrollY] = useState<number>(0);
-  const [isPortfolioOpen, setIsPortfolioOpen] = useState<boolean>(false);
-  const [isPortfolioClosing, setIsPortfolioClosing] = useState<boolean>(false);
-  const [portfolioProjects, setPortfolioProjects] = useState<any[]>([]);
 
   useEffect(() => {
     // Set mounted state to true once component is mounted
@@ -99,32 +96,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
   
   const isAdmin = user?.email === 'ceo@webrend.com';
 
-  // Fetch portfolio projects when overlay opens
-  const fetchPortfolioProjects = async () => {
-    try {
-      const response = await fetch('/api/portfolio/projects');
-      if (response.ok) {
-        const projects = await response.json();
-        setPortfolioProjects(projects);
-      }
-    } catch (error) {
-      console.error('Error fetching portfolio projects:', error);
-    }
-  };
-
-  const handlePortfolioOpen = () => {
-    setIsPortfolioOpen(true);
-    setIsPortfolioClosing(false);
-    fetchPortfolioProjects();
-  };
-
-  const handlePortfolioClose = () => {
-    setIsPortfolioClosing(true);
-    setTimeout(() => {
-      setIsPortfolioOpen(false);
-      setIsPortfolioClosing(false);
-    }, 400); // Match the animation duration
-  };
+  // Portfolio overlay removed
 
   const slideVariants = {
     visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 600, damping: 40 } },
@@ -158,12 +130,19 @@ export default function NavBar({ serverUser }: NavBarProps) {
         <motion.div className="navbar-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
           <div className="navbar">
             <div className="navbar-menu">
-              <button
-                onClick={handlePortfolioOpen}
+              <Link
+                href="/portfolio"
+                onClick={(e) => {
+                  if (pathname === '/') {
+                    e.preventDefault();
+                    const evt = new CustomEvent('portfolio-transition');
+                    document.documentElement.dispatchEvent(evt);
+                  }
+                }}
                 className={`nav-button marketplace-button ${pathname.startsWith('/portfolio') ? 'active' : ''}`}
               >
                 Portfolio
-              </button>
+              </Link>
               
               <Link 
                 href="/blog" 
@@ -247,12 +226,19 @@ export default function NavBar({ serverUser }: NavBarProps) {
         <motion.div className="navbar-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
           <div className="navbar">
             <div className="navbar-menu">
-              <button
-                onClick={handlePortfolioOpen}
+              <Link 
+                href="/portfolio"
+                onClick={(e) => {
+                  if (pathname === '/') {
+                    e.preventDefault();
+                    const evt = new CustomEvent('portfolio-transition');
+                    document.documentElement.dispatchEvent(evt);
+                  }
+                }}
                 className={`nav-button marketplace-button ${pathname.startsWith('/portfolio') ? 'active' : ''}`}
               >
                 Portfolio
-              </button>
+              </Link>
               
               <Link 
                 href="/blog" 
@@ -309,39 +295,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
         </motion.div>
       </div>
 
-      {/* Portfolio Overlay */}
-      {isPortfolioOpen && (
-        <div 
-          className={`portfolio-overlay ${isPortfolioClosing ? 'closing' : ''}`} 
-          onClick={handlePortfolioClose}
-        >
-          <div className={`portfolio-grid ${isPortfolioClosing ? 'closing' : ''}`}>
-            {portfolioProjects.map((project, index) => (
-              <Link
-                key={project.id}
-                href={`/portfolio/projects/${project.slug}`}
-                className={`portfolio-project ${isPortfolioClosing ? 'closing' : ''}`}
-                style={{ '--index': index } as any}
-                onClick={handlePortfolioClose}
-              >
-                <div className="project-image">
-                  <Image
-                    src={project.imageUrl}
-                    alt={project.title}
-                    width={400}
-                    height={300}
-                    className="project-img"
-                  />
-                </div>
-                <div className="project-info">
-                  <h3>{project.title}</h3>
-                  <p>{project.description}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Portfolio overlay removed */}
     </>
   );
 } 

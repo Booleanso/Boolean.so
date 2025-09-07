@@ -192,8 +192,8 @@
 .bricksDimmed { filter: blur(6px) saturate(90%); opacity: .6; transition: filter .2s ease, opacity .2s ease; }
 
 /* Blur overlays for stage-level focus state (copied from Services section behavior) */
-.stageGlobalBlur { position: fixed; inset: 0; background: rgba(255,255,255,0.4); backdrop-filter: blur(0px); opacity: 0; transition: all .35s ease; pointer-events: none; z-index: 8; }
-.stageGlobalBlur.active { backdrop-filter: blur(10px); opacity: 1; }
+.stageGlobalBlur { position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: 12vh; background: rgba(255,255,255,0.4); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); opacity: 0; visibility: hidden; transition: all .35s ease; pointer-events: none; z-index: 8; mask-image: linear-gradient(to top, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%); }
+.stageGlobalBlur.active { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 1; visibility: visible; }
 .stageBlurOverlay { position: absolute; inset: 0; background: rgba(255,255,255,0.3); backdrop-filter: blur(0px); opacity: 0; transition: all .35s ease; pointer-events: none; z-index: 8; }
 .stageBlurOverlay.active { backdrop-filter: blur(8px); opacity: 1; }
 
