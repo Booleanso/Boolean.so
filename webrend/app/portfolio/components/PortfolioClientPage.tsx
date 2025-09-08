@@ -189,8 +189,6 @@ export default function PortfolioClientPage({
           </div>
         </div>
 
-        {/* 3D Model Viewer */}
-        {/* <SplineViewer /> */} {/* Commented out - Spline scene removed */}
 
         {/* Project Grid */}
         {filteredProjects.length > 0 ? (
