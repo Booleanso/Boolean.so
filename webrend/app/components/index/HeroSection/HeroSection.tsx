@@ -20,6 +20,8 @@ interface PrivateRepoLocationData {
   latitude: number;
   longitude: number;
   iconUrl?: string;
+  name?: string; // Friendly display name for the project
+  projectSlug?: string; // Slug to link to /portfolio/projects/[projectSlug]
 }
 
 // Partners data for trusted by section
@@ -41,6 +43,8 @@ interface EnhancedLocation {
   repoName: string;
   iconUrl?: string;
   isPrivate?: boolean;  // Flag to identify private repos
+  displayName?: string; // Friendly project name to display instead of repo name
+  projectSlug?: string; // Direct slug to navigate to
 }
 
 // Portfolio project interface for matching
@@ -84,6 +88,11 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
   
   // Direct access to the texture loader
   const textureLoader = useMemo(() => new THREE.TextureLoader(), []);
+  
+  // Visual tuning constants
+  const GLOBE_RADIUS = 2.6; // reduced from 3.0
+  const ICON_DISTANCE = GLOBE_RADIUS + 0.4; // bring icons closer to globe
+  const CLOUDS_RADIUS = GLOBE_RADIUS + 0.05; // clouds just above globe
   const dayTexturePath = '/earth-blue-marble.jpg';
   const nightTexturePath = '/earth-night.jpg';
   const cityLightsPath = '/earth-city-lights.jpg';
@@ -300,13 +309,18 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
     // Debug log to confirm which icon was clicked
     console.log(`Clicked icon ${index}: ${location.repoName} at ${location.name}`);
     
-    // Create a slug directly from the repository name
+    // If projectSlug provided in location data, prefer it
+    const directSlug = location.projectSlug?.trim();
+    // Create a slug directly from the repository name as fallback
     const repoSlug = createSlug(location.repoName);
     
     // Find the matching portfolio project for better user experience
     const matchingProject = findMatchingProject(location.repoName);
     
-    if (matchingProject && matchingProject.slug) {
+    if (directSlug) {
+      router.push(`/portfolio/projects/${directSlug}`);
+      return;
+    } else if (matchingProject && matchingProject.slug) {
       console.log(`Found matching project: ${matchingProject.title} (${matchingProject.slug})`);
       console.log(`Navigating to project page with repo slug: ${repoSlug}`);
       // Navigate to the project page using the repo slug
@@ -360,23 +374,118 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
   };
   
   // Update icon scales based on their position relative to camera
+  // Compute adjusted display coordinates to avoid overlapping icons
+  const displayCoords = useMemo(() => {
+    if (!locations || locations.length === 0) return [] as { lat: number; lng: number; }[];
+    const bucketSizeDeg = 0.6; // proximity bucket
+    const groups: Record<string, number[]> = {};
+    const result = locations.map(loc => ({ lat: loc.lat, lng: loc.lng }));
+
+    const toKey = (lat: number, lng: number) => {
+      const latKey = Math.round(lat / bucketSizeDeg);
+      const lngKey = Math.round(lng / bucketSizeDeg);
+      return `${latKey}_${lngKey}`;
+    };
+
+    locations.forEach((loc, idx) => {
+      const key = toKey(loc.lat, loc.lng);
+      (groups[key] ||= []).push(idx);
+    });
+
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+    Object.values(groups).forEach(indices => {
+      if (indices.length <= 1) return;
+
+      const stepDeg = Math.min(1.2, 0.28 + indices.length * 0.07); // base step radius in degrees
+      indices.forEach((idx, i) => {
+        const base = locations[idx];
+        const angle = i * goldenAngle;
+        const r = stepDeg * Math.sqrt(i + 1); // spiral out
+        const cosLat = Math.max(0.1, Math.cos((base.lat * Math.PI) / 180));
+        const latOffset = r * Math.cos(angle);
+        const lngOffset = (r * Math.sin(angle)) / cosLat;
+        let newLat = base.lat + latOffset;
+        let newLng = base.lng + lngOffset;
+        if (newLat > 89.9) newLat = 89.9;
+        if (newLat < -89.9) newLat = -89.9;
+        if (newLng > 180) newLng -= 360;
+        if (newLng < -180) newLng += 360;
+        result[idx] = { lat: newLat, lng: newLng };
+      });
+    });
+
+    return result;
+  }, [locations]);
+
+  // Compute per-icon lift (extra distance from globe) for a balloon effect in clusters
+  const iconLifts = useMemo(() => {
+    if (!locations || locations.length === 0) return [] as number[];
+    const bucketSizeDeg = 0.6;
+    const groups: Record<string, number[]> = {};
+    const toKey = (lat: number, lng: number) => {
+      const latKey = Math.round(lat / bucketSizeDeg);
+      const lngKey = Math.round(lng / bucketSizeDeg);
+      return `${latKey}_${lngKey}`;
+    };
+    locations.forEach((loc, idx) => {
+      const key = toKey(loc.lat, loc.lng);
+      (groups[key] ||= []).push(idx);
+    });
+
+    const lifts: number[] = new Array(locations.length).fill(0);
+    Object.values(groups).forEach(indices => {
+      if (indices.length <= 1) return;
+      // Step up like balloons; more crowded ⇒ taller stack
+      const step = 0.10; // smaller lift to keep icons nearer to globe
+      indices.forEach((idx, i) => {
+        lifts[idx] = step * i;
+      });
+    });
+    return lifts;
+  }, [locations]);
+
+  // Map each index to its cluster peers and stable order within the cluster
+  const clusterMap = useMemo(() => {
+    const map: Record<number, { peers: number[]; order: number }> = {};
+    if (!locations || locations.length === 0) return map;
+    const bucketSizeDeg = 0.6;
+    const groups: Record<string, number[]> = {};
+    const toKey = (lat: number, lng: number) => {
+      const latKey = Math.round(lat / bucketSizeDeg);
+      const lngKey = Math.round(lng / bucketSizeDeg);
+      return `${latKey}_${lngKey}`;
+    };
+    locations.forEach((loc, idx) => {
+      const key = toKey(loc.lat, loc.lng);
+      (groups[key] ||= []).push(idx);
+    });
+    Object.values(groups).forEach(indices => {
+      indices.forEach((idx, i) => {
+        map[idx] = { peers: indices, order: i };
+      });
+    });
+    return map;
+  }, [locations]);
+
   useEffect(() => {
     const updateIconScales = () => {
       const newCenteredIcons: Record<number, number> = {};
       
-      // For each location, calculate its distance from the center of the globe
+      // For each location (using display coords), calculate its distance from the center of the globe
       locations.forEach((location, index) => {
-        const phi = (90 - location.lat) * (Math.PI / 180);
-        const theta = (location.lng + 180) * (Math.PI / 180);
+        const display = displayCoords[index] || { lat: location.lat, lng: location.lng };
+        const phi = (90 - display.lat) * (Math.PI / 180);
+        const theta = (display.lng + 180) * (Math.PI / 180);
         
         // Calculate position
-        // const x = -(3 * Math.sin(phi) * Math.cos(theta));
-        const z = 3 * Math.sin(phi) * Math.sin(theta);
-        // const y = 3 * Math.cos(phi);
+        // const x = -(GLOBE_RADIUS * Math.sin(phi) * Math.cos(theta));
+        const z = GLOBE_RADIUS * Math.sin(phi) * Math.sin(theta);
+        // const y = GLOBE_RADIUS * Math.cos(phi);
         
         // Determine if the point is visible in the current view
         // Front of the globe is more visible (has a larger z value)
-        const visibilityFactor = z + 3; // Range roughly -3 to 3, higher means more visible
+        const visibilityFactor = z + GLOBE_RADIUS; // Range roughly -R to R, higher means more visible
 
         // Convert to scale (0.7 to 1.2)
         const scale = 0.7 + (visibilityFactor / 6) * 0.5;
@@ -396,11 +505,15 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
     return () => {
       clearInterval(interval);
     };
-  }, [locations]);
+  }, [locations, displayCoords]);
   
   // Load icon textures for locations
   useEffect(() => {
     const textureLoader = new THREE.TextureLoader();
+    // Allow loading cross-origin images when permitted by server
+    // Support both legacy and current three.js APIs
+    // @ts-ignore - some versions expose setCrossOrigin, others use the property
+    textureLoader.setCrossOrigin ? textureLoader.setCrossOrigin('anonymous') : (textureLoader.crossOrigin = 'anonymous' as any);
     const newLoadedIcons: Record<string, THREE.Texture | null> = {};
     
     // Load textures for all locations with icon URLs
@@ -409,15 +522,32 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
         // Check if iconUrl is a URL string (starts with http or /)
         if (typeof location.iconUrl === 'string' && 
             (location.iconUrl.startsWith('http') || location.iconUrl.startsWith('/'))) {
+          // Route remote URLs through our proxy to avoid CORS issues
+          const isRemote = location.iconUrl.startsWith('http');
+          const urlToLoad = isRemote
+            ? `/api/proxy-image?url=${encodeURIComponent(location.iconUrl)}`
+            : location.iconUrl;
           textureLoader.load(
-            location.iconUrl,
+            urlToLoad,
             (texture) => {
-              newLoadedIcons[location.repoName] = texture;
-              setLoadedIcons(prev => ({ ...prev, [location.repoName]: texture }));
+              try {
+                const img = texture.image as HTMLImageElement;
+                const roundedTexture = img ? createRoundedTextureFromImage(img) : texture;
+                newLoadedIcons[location.repoName] = roundedTexture;
+                setLoadedIcons(prev => ({ ...prev, [location.repoName]: roundedTexture }));
+              } catch {
+                newLoadedIcons[location.repoName] = texture;
+                setLoadedIcons(prev => ({ ...prev, [location.repoName]: texture }));
+              }
             },
             undefined,
             (error) => {
-              console.error(`Error loading icon for ${location.repoName}:`, error);
+              try {
+                const errorInfo = (error && (error as any).message) ? (error as any).message : error;
+                console.error(`Error loading icon for ${location.repoName} (${location.iconUrl}):`, errorInfo);
+              } catch {
+                console.error(`Error loading icon for ${location.repoName} (${location.iconUrl})`);
+              }
               newLoadedIcons[location.repoName] = null;
               setLoadedIcons(prev => ({ ...prev, [location.repoName]: null }));
             }
@@ -548,6 +678,55 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
     // Otherwise use the first letter of the repo name
     return location.repoName.charAt(0).toUpperCase();
   };
+
+  // Create a rounded-corner texture using a canvas (adds alpha corners and optional stroke)
+  const createRoundedTextureFromImage = (image: HTMLImageElement, size: number = 512, radiusRatio: number = 0.18, strokeColor: string = 'rgba(255,255,255,0.35)') => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return new THREE.CanvasTexture(image);
+
+      const r = Math.floor(size * radiusRatio);
+      const w = size;
+      const h = size;
+
+      // Rounded rect path
+      ctx.beginPath();
+      ctx.moveTo(r, 0);
+      ctx.lineTo(w - r, 0);
+      ctx.quadraticCurveTo(w, 0, w, r);
+      ctx.lineTo(w, h - r);
+      ctx.quadraticCurveTo(w, h, w - r, h);
+      ctx.lineTo(r, h);
+      ctx.quadraticCurveTo(0, h, 0, h - r);
+      ctx.lineTo(0, r);
+      ctx.quadraticCurveTo(0, 0, r, 0);
+      ctx.closePath();
+      ctx.save();
+      ctx.clip();
+
+      // Draw the image, cover the canvas
+      ctx.drawImage(image, 0, 0, w, h);
+      ctx.restore();
+
+      // Light stroke for separation against dark backgrounds
+      if (strokeColor) {
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = Math.max(1, Math.floor(size * 0.02));
+        ctx.stroke();
+      }
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.needsUpdate = true;
+      return tex;
+    } catch {
+      return new THREE.CanvasTexture(image);
+    }
+  };
   
   // Create a rounded rectangle shape for iOS app icons
   const createRoundedRectShape = (width: number, height: number, radius: number) => {
@@ -587,7 +766,7 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
           castShadow
           onClick={resetHoverStates}
         >
-          <sphereGeometry args={[3, 128, 128]} /> 
+          <sphereGeometry args={[GLOBE_RADIUS, 128, 128]} /> 
           <meshStandardMaterial 
             color={0xffffff}  
             roughness={0.6} 
@@ -599,20 +778,25 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
         {/* Location markers as iOS-style app icons */}
         {locations.map((location, index) => {
           // Calculate the position on the sphere for each marker
-          const phi = (90 - location.lat) * (Math.PI / 180);
-          const theta = (location.lng + 180) * (Math.PI / 180);
+          const display = displayCoords[index] || { lat: location.lat, lng: location.lng };
+          const phi = (90 - display.lat) * (Math.PI / 180);
+          const theta = (display.lng + 180) * (Math.PI / 180);
+          // Base (true) surface position for anchor and alarm marker
+          const basePhi = (90 - location.lat) * (Math.PI / 180);
+          const baseTheta = (location.lng + 180) * (Math.PI / 180);
           
           // Position slightly further from sphere surface to prevent clipping
-          const distanceFactor = 3.2;
+          const lift = iconLifts[index] || 0;
+          const distanceFactor = ICON_DISTANCE + lift; // lift icons further when clustered
           const x = -(distanceFactor * Math.sin(phi) * Math.cos(theta));
           const z = distanceFactor * Math.sin(phi) * Math.sin(theta);
           const y = distanceFactor * Math.cos(phi);
           
           // Calculate the position on the globe surface
-          const globeSurfaceFactor = 3.0;
-          const surfaceX = -(globeSurfaceFactor * Math.sin(phi) * Math.cos(theta));
-          const surfaceZ = globeSurfaceFactor * Math.sin(phi) * Math.sin(theta);
-          const surfaceY = globeSurfaceFactor * Math.cos(phi);
+          const globeSurfaceFactor = GLOBE_RADIUS;
+          const surfaceX = -(globeSurfaceFactor * Math.sin(basePhi) * Math.cos(baseTheta));
+          const surfaceZ = globeSurfaceFactor * Math.sin(basePhi) * Math.sin(baseTheta);
+          const surfaceY = globeSurfaceFactor * Math.cos(basePhi);
           
           // Get color and icon
           const color = getLocationColor(location);
@@ -629,15 +813,19 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
           //   iconScale: isHovered ? baseScaleFactor * 1.3 : baseScaleFactor, // Increased scale factor for more visible hover effect
           //   config: { mass: 2, tension: 170, friction: 26 }
           // });
-          const iconScale = isHovered ? baseScaleFactor * 1.3 : baseScaleFactor;
+          // Add slight extra lift for deeper peers to reduce Z-overlap from camera perspective
+          const peerInfo = clusterMap[index];
+          const depthLift = peerInfo ? Math.min(0.25, 0.04 * peerInfo.order) : 0;
+          const iconScale = (isHovered ? baseScaleFactor * 1.3 : baseScaleFactor) * (1 - depthLift * 0.2);
           
-          // No truncation - display full name
-          const displayName = location.name;
+          // Prefer friendly displayName; fallback to repoName; last resort, location name
+          const displayName = location.displayName || location.repoName || location.name;
           
           // Create shape based on repo type
           // const isPrivate = location.isPrivate;
           // Use rounded rect for all repos (both public and private)
           const iconShape = createRoundedRectShape(0.15, 0.15, 0.03);
+          const iconHalfSize = 0.075; // planeGeometry 0.13 ⇒ ~0.065, add margin
           
           // Check if we have a loaded icon texture for this location
           const hasCustomIcon = loadedIcons[location.repoName] !== undefined && loadedIcons[location.repoName] !== null;
@@ -664,9 +852,10 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
               <line>
                 <bufferGeometry attach="geometry" 
                   onUpdate={(self) => {
+                    // Offset line end to the bottom of the icon to avoid visual overlap
                     const positions = new Float32Array([
                       surfaceX, surfaceY, surfaceZ,
-                      x, y, z
+                      x, y - iconHalfSize + 0.01, z // shorten the visible line
                     ]);
                     self.setAttribute('position', new THREE.BufferAttribute(positions, 3));
                   }}
@@ -679,7 +868,7 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
                 />
               </line>
               
-              <group position={[x, y, z]}>
+              <group position={[x, y + (clusterMap[index]?.order ? 0.02 * clusterMap[index]!.order : 0), z]}>
                 <Billboard
                   follow={true}
                   lockX={false}
@@ -698,63 +887,64 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
                     >
                       <circleGeometry args={[0.12, 32]} /> 
                       <meshBasicMaterial 
-                        color={0xffffff}
+                        color={0x000000}
                         transparent
-                        opacity={0.001} // Almost invisible but still captures events
-                      />
-                    </mesh>
-                    
-                    {/* Icon background shape (rounded square for all repos) */}
-                    <mesh>
-                      <shapeGeometry args={[iconShape]} />
-                      <meshBasicMaterial 
-                        color={color} 
-                        side={THREE.DoubleSide}
+                        opacity={0.0} // fully transparent, does not occlude
+                        depthWrite={false} // don't write to depth buffer so it won't hide objects behind it
                       />
                     </mesh>
                     
                     {/* Icon image or text label */}
                     {hasCustomIcon ? (
-                      <mesh position={[0, 0, 0.001]}>
-                        <planeGeometry args={[0.13, 0.13]} />
-                        <meshBasicMaterial
-                          map={loadedIcons[location.repoName] as THREE.Texture}
-                          transparent={true}
-                          side={THREE.DoubleSide}
-                        />
-                      </mesh>
+                      <>
+                        {/* Subtle rounded plate to reveal corner radius on dark backgrounds */}
+                        <mesh position={[0, 0, 0]}>
+                          <shapeGeometry args={[iconShape]} />
+                          <meshBasicMaterial
+                            color={isDarkMode ? 0xffffff : 0x000000}
+                            transparent
+                            opacity={isDarkMode ? 0.14 : 0.10}
+                            side={THREE.DoubleSide}
+                          />
+                        </mesh>
+                        {/* Rounded image texture */}
+                        <mesh position={[0, 0, 0.001]}>
+                          <planeGeometry args={[0.13, 0.13]} />
+                          <meshBasicMaterial
+                            map={loadedIcons[location.repoName] as THREE.Texture}
+                            transparent={true}
+                            side={THREE.DoubleSide}
+                          />
+                        </mesh>
+                      </>
                     ) : (
-                      <Text
-                        position={[0, 0, 0.002]}
-                        fontSize={0.075}
-                        color="white"
-                        anchorX="center"
-                        anchorY="middle"
-                        renderOrder={2}
-                      >
-                        {icon}
-                      </Text>
+                      <>
+                        {/* For text fallback, keep a rounded colored tile */}
+                        <mesh>
+                          <shapeGeometry args={[iconShape]} />
+                          <meshBasicMaterial 
+                            color={color} 
+                            side={THREE.DoubleSide}
+                          />
+                        </mesh>
+                        <Text
+                          position={[0, 0, 0.002]}
+                          fontSize={0.075}
+                          color={isDarkMode ? 'white' : 'black'}
+                          anchorX="center"
+                          anchorY="middle"
+                          renderOrder={2}
+                        >
+                          {icon}
+                        </Text>
+                      </>
                     )}
                     
-                    {/* Repository label without lock icon */}
+                    {/* Visible project name (from location.json name) */}
                     <Text
-                      position={[0, -0.11, 0.002]}
-                      fontSize={0.03}
-                      color="white"
-                      anchorX="center"
-                      anchorY="middle"
-                      renderOrder={2}
-                      maxWidth={0.8}
-                      textAlign="center"
-                    >
-                      {location.repoName.replace('.com', '')}
-                    </Text>
-                    
-                    {/* Location name below repo name */}
-                    <Text
-                      position={[0, -0.16, 0.002]}
-                      fontSize={0.022} 
-                      color="rgba(255,255,255,0.7)"
+                      position={[0, -0.13, 0.002]}
+                      fontSize={0.032}
+                      color={isDarkMode ? 'white' : 'black'}
                       anchorX="center"
                       anchorY="middle"
                       renderOrder={2}
@@ -786,7 +976,7 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
         position={[0, 0, 0]}
         onClick={resetHoverStates}
       >
-        <sphereGeometry args={[3.05, 48, 48]} />
+        <sphereGeometry args={[CLOUDS_RADIUS, 48, 48]} />
         <meshStandardMaterial
           color={0xffffff}
           transparent={true}
@@ -959,7 +1149,9 @@ export default function HeroSection() {
                     name: locationData.location,
                     repoName: repo.name,
                     iconUrl: locationData.iconUrl || undefined,
-                    isPrivate: false
+                    isPrivate: false,
+                    displayName: locationData.name || undefined,
+                    projectSlug: locationData.projectSlug || undefined
                   };
                   
                   return enhancedLocation;
@@ -1015,7 +1207,9 @@ export default function HeroSection() {
                     name: repo.location,
                     repoName: repo.repoName,
                     iconUrl: repo.iconUrl,
-                    isPrivate: true
+                    isPrivate: true,
+                    displayName: repo.name,
+                    projectSlug: repo.projectSlug
                   }));
                 
                 setPrivateLocationsFound(privateLocations.length);
@@ -1061,7 +1255,9 @@ export default function HeroSection() {
                   name: repo.location,
                   repoName: repo.repoName,
                   iconUrl: repo.iconUrl,
-                  isPrivate: true
+                  isPrivate: true,
+                  displayName: repo.name,
+                  projectSlug: repo.projectSlug
                 }));
               
               console.log(`✅ Added ${localPrivateLocations.length} private repositories from local data`);

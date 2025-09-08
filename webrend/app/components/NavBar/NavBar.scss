@@ -35,7 +35,7 @@ $islandGap: 32px;
 // Center wrapper for all islands
 .nav-islands {
   position: fixed;
-  top: 14px;
+  bottom: 4vh;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -437,52 +437,21 @@ $islandGap: 32px;
 }
 
 // Logo Island
-.logo-island-container {
+// Corner logo (fixed at top-left)
+.corner-logo {
+  position: fixed !important;
+  top: 16px;
+  left: 16px;
+  z-index: 1100;
+  width: 32px;
+  height: 32px;
   display: flex;
-  width: $logoSize;
-  position: relative;
-  border-radius: $radius;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
-  
-  .logo-island {
-    background: linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(255,255,255,.5) 100%);
-    backdrop-filter: saturate(180%) blur(18px);
-    -webkit-backdrop-filter: saturate(180%) blur(18px);
-    width: 100%;
-    height: $logoSize;
-    border-radius: $radius;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 3px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: inset 0 1px rgba(255,255,255,.7), inset 0 -1px rgba(0,0,0,.06);
-    transition: all 0.3s ease;
-    
-    &:hover {
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.24);
-    }
-    
-    .navbar-brand {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 22px;
-      width: 22px;
-      transition: all 0.2s ease;
-      
-      .navbar-logo {
-        object-fit: contain;
-      }
-      
-      // No filter or transform on focus/hover
-      &:hover, &:focus, &.active {
-        transform: none;
-        background-color: transparent;
-      }
-    }
-  }
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; // pure visual image only
+
+  .navbar-logo { width: 28px; height: 28px; object-fit: contain; }
+  :root.dark-theme & .navbar-logo { filter: invert(1) brightness(1); }
 }
 
 // Auth Island

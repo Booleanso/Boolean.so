@@ -219,7 +219,7 @@
   flex-direction: column;
   border-radius: 18px;
   overflow: hidden;
-  background-color: #f5f5f7;
+  background-color: transparent;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -230,6 +230,8 @@
   display: block; /* Takes up space */
   text-decoration: none;
   color: inherit;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .cardImageWrapper {
@@ -259,7 +261,7 @@
 
 /* New content area styling */
 .cardContentArea {
-  padding: 1.2rem 1.5rem;
+  padding: 1.2rem 0rem;
   /* Remove absolute positioning if it was on cardContent */
 }
 

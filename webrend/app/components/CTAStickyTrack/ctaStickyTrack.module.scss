@@ -85,22 +85,21 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 72px;
-  height: 72px;
+  width: 60px;
+  height: 60px;
   /* Start halfway toward final target for mid-explosion feel; offset from floor via --ybase */
   transform: translate(
     calc(-50% + (1 - var(--p, 0)) * var(--hx, 0px) + var(--p, 0) * var(--tx, 0px)),
     calc(-50% + (1 - var(--p, 0)) * var(--hy, 0px) + var(--p, 0) * var(--ty, 0px) + var(--ybase, 0px))
   ) rotate(calc((1 - var(--p, 0)) * var(--hrot, 0deg) + var(--p, 0) * var(--rot, 0deg)));
-  border-radius: 16px;
-  background: linear-gradient(135deg, var(--bg1, #2997ff), var(--bg2, #0a84ff));
-  border: 1px solid rgba(0,0,0,.06);
-  /* Layered shadows to feel like rising from a square hill */
+  border-radius: 14px;
+  /* Remove visible borders; keep rounded app-corner look */
+  background: transparent;
+  border: none;
+  /* Slight lift without inner borders */
   box-shadow:
-    0 18px 40px rgba(0,0,0,.30),
-    0 8px 18px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.35),
-    inset 0 -8px 14px rgba(0,0,0,.15);
+    0 14px 30px rgba(0,0,0,.20),
+    0 6px 14px rgba(0,0,0,.12);
   display: grid;
   place-items: center;
   transition: none; /* driven by scroll */

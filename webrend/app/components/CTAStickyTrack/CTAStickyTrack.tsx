@@ -53,31 +53,70 @@ export default function CTAStickyTrack() {
   React.useEffect(() => {
     let cancelled = false;
     const loadIcons = async () => {
+      // Collect icons from multiple sources like the Hero section, then merge
+      const collected: Array<{ src?: string; label: string }> = [];
       try {
-        // Try private locations first (has iconUrl)
         const res = await fetch('/api/private-locations', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          if (!cancelled && data?.success && Array.isArray(data.locations)) {
-            const arr = data.locations
+          if (data?.success && Array.isArray(data.locations)) {
+            const priv = data.locations
               .filter((l: any) => l?.repoName)
-              .slice(0, 14)
               .map((l: any) => ({ src: l.iconUrl as string | undefined, label: String(l.repoName || 'App') }));
-            if (arr.length > 0) { setIcons(arr); return; }
+            collected.push(...priv);
           }
         }
       } catch {}
-      // Fallback: small set of placeholders
+
+      try {
+        const reposResponse = await fetch('https://api.github.com/orgs/WebRendHQ/repos?per_page=100', { cache: 'no-store' });
+        if (reposResponse.ok) {
+          const repos = await reposResponse.json();
+          const branchesToTry = (repo:any) => [repo.default_branch, 'main', 'master', 'development', 'dev'].filter(Boolean);
+          const fetchLoc = async (repo:any) => {
+            for (const branch of branchesToTry(repo)) {
+              try {
+                const url = `https://raw.githubusercontent.com/WebRendHQ/${repo.name}/${branch}/location.json`;
+                const r = await fetch(url, { cache: 'no-store' });
+                if (r.ok) {
+                  const data = await r.json();
+                  if (data && (typeof data.iconUrl === 'string')) {
+                    return { src: data.iconUrl as string, label: String(data.name || repo.name) };
+                  }
+                }
+              } catch {}
+            }
+            return null;
+          };
+          const results = await Promise.all(repos.map(fetchLoc));
+          const pub = results.filter(Boolean) as Array<{src:string; label:string}>;
+          collected.push(...pub);
+        }
+      } catch {}
+
       if (!cancelled) {
-        setIcons([
-          { src: '/logo/logo.png', label: 'WebRend' },
-          { src: '/images/testimonials/logo1.png', label: 'App' },
-          { src: '/images/testimonials/logo2.png', label: 'Tool' },
-          { src: '/images/testimonials/logo3.png', label: 'Kit' },
-          { src: undefined, label: 'W' },
-          { src: undefined, label: 'R' },
-          { src: undefined, label: 'D' },
-        ]);
+        if (collected.length) {
+          // De-duplicate by src or label and set all
+          const seen = new Set<string>();
+          const unique = collected.filter(i => {
+            const key = i.src || i.label;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+          setIcons(unique);
+        } else {
+          // Fallback: small set of placeholders
+          setIcons([
+            { src: '/logo/logo.png', label: 'WebRend' },
+            { src: '/images/testimonials/logo1.png', label: 'App' },
+            { src: '/images/testimonials/logo2.png', label: 'Tool' },
+            { src: '/images/testimonials/logo3.png', label: 'Kit' },
+            { src: undefined, label: 'W' },
+            { src: undefined, label: 'R' },
+            { src: undefined, label: 'D' },
+          ]);
+        }
       }
     };
     loadIcons();
@@ -139,7 +178,10 @@ export default function CTAStickyTrack() {
   const normalizeIconSrc = (src?: string) => {
     if (!src) return undefined;
     const s = src.trim();
-    if (s.startsWith('http://') || s.startsWith('https://')) return s;
+    if (s.startsWith('http://') || s.startsWith('https://')) {
+      // Route through proxy to avoid CORS/domain issues and enable caching
+      return `/api/proxy-image?url=${encodeURIComponent(s)}`;
+    }
     if (s.startsWith('/')) return s;
     return undefined;
   };
@@ -234,7 +276,7 @@ export default function CTAStickyTrack() {
                 } as any}
               >
                 {validSrc ? (
-                  <Image src={validSrc} alt={icon.label} width={48} height={48} {...(validSrc.startsWith('http') ? { unoptimized: true } as any : {})} />
+                  <Image src={validSrc} alt={icon.label} width={60} height={60} style={{ borderRadius: 14, objectFit: 'cover', width: '100%', height: '100%' }} {...(validSrc.startsWith('http') ? { unoptimized: true } as any : {})} />
                 ) : (
                   <span className={styles.fallbackGlyph}>{icon.label?.charAt(0) || 'A'}</span>
                 )}

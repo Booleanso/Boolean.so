@@ -1,51 +1,58 @@
 [
   {
-    "repoName": "Vital-Element",
+    "repoName": "Vital Element MVP",
     "location": "Scottsdale, AZ",
     "latitude": 33.4942,
     "longitude": -111.9261,
-    "iconUrl": "VE"
+    "iconUrl": "/globelogos/ve.png"
   },
   {
-    "repoName": "Trading Decision Engine",
+    "repoName": "Project Rehoboam",
     "location": "Dubai, UAE",
     "latitude": 25.2048,
     "longitude": 55.2708,
-    "iconUrl": "TDE"
+    "iconUrl": "/globelogos/projectrehoboam.png"
   },
   {
     "repoName": "Serene Solitude Sanctuary",
     "location": "Riyadh, Saudi Arabia",
     "latitude": 24.7136,
     "longitude": 46.6753,
-    "iconUrl": "SSS"
-  },
-  {
-    "repoName": "Marv Studio",
-    "location": "New Port Richey, Florida",
-    "latitude": 28.2442,
-    "longitude": -82.7219,
-    "iconUrl": "MS"
+    "iconUrl": "/globelogos/sss.png"
   },
   {
     "repoName": "MICA",
     "location": "Mumbai, India",
     "latitude": 19.0760,
     "longitude": 72.8777,
-    "iconUrl": "MCA"
+    "iconUrl": "/globelogos/mica.png"
   },
   {
     "repoName": "Tata Technologies",
     "location": "Pune, India",
     "latitude": 18.5204,
     "longitude": 73.8567,
-    "iconUrl": "TT"
+    "iconUrl": "/globelogos/tata.png"
   },
   {
     "repoName": "Mclellan Pinterest App",
     "location": "Salt Lake City, Utah",
     "latitude": 40.7608,
     "longitude": -111.8910,
-    "iconUrl": "MPA"
+    "iconUrl": "/globelogos/mclellan.png"
+  },
+  {
+    "repoName": "OwlEyes",
+    "location": "Union County College",
+    "latitude": 40.7,
+    "longitude": -74.27,
+    "iconUrl": "/globelogos/mclellan.png"
+  },
+  {
+    "repoName": "LipSync",
+    "location": "Union County College",
+    "latitude": 40.7,
+    "longitude": -74.27,
+    "iconUrl": "/globelogos/mclellan.png"
   }
 ] 

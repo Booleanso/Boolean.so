@@ -164,24 +164,6 @@ export default function PortfolioClientPage({
 
   return (
     <main className={styles.portfolioPage}>
-      {/* Globe Section (replaces featured hero) */}
-      <section className={styles.globeSection} ref={globeContainerRef}>
-        <div className={styles.portfolioGlobe}>
-          {loadingGlobe ? (
-            <div className={styles.splineLoading}>Loading globe...</div>
-          ) : (
-            <Canvas shadows camera={{ position: [0, 0, 5.5], fov: 70 }}>
-              <ambientLight intensity={0.6} />
-              <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow />
-              <directionalLight position={[-5, 3, 5]} intensity={0.8} castShadow={false} />
-              <directionalLight position={[0, -10, -5]} intensity={0.3} castShadow={false} />
-              <Suspense fallback={null}>
-                <Globe locations={locations as any} findMatchingProject={findMatchingProject as any} />
-              </Suspense>
-            </Canvas>
-          )}
-        </div>
-      </section>
 
       {/* Main Project Grid Section */}
       <section className={styles.gridSection}>

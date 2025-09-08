@@ -110,26 +110,28 @@ export default function NavBar({ serverUser }: NavBarProps) {
   if (!isMounted) {
     return (
       <>
-        {/* Logo Island */}
-        <motion.div className="logo-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
-          <div className="logo-island">
-            <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
-              <Image 
-                src="/logo/logo_black.png" 
-                alt="WebRend Logo" 
-                width={28} 
-                height={28} 
-                className="navbar-logo"
-                priority
-              />
-            </Link>
-          </div>
-        </motion.div>
+        {/* Corner Logo */}
+        <div className="corner-logo" aria-hidden={!isNavbarVisible}>
+          <Image 
+            src="/logo/logo_black.png" 
+            alt="WebRend Logo" 
+            width={28} 
+            height={28} 
+            className="navbar-logo"
+            priority
+          />
+        </div>
 
         {/* Main Navbar Island */}
         <motion.div className="navbar-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
           <div className="navbar">
             <div className="navbar-menu">
+              <Link 
+                href="/"
+                className={`nav-button marketplace-button ${pathname === '/' ? 'active' : ''}`}
+              >
+                Home
+              </Link>
               <Link
                 href="/portfolio"
                 onClick={(e) => {
@@ -204,28 +206,31 @@ export default function NavBar({ serverUser }: NavBarProps) {
 
   return (
     <>
+      {/* Fixed corner logo at top-left of viewport */}
+      <div className="corner-logo" aria-hidden={!isNavbarVisible}>
+        <Image 
+          src="/logo/logo_black.png" 
+          alt="WebRend Logo" 
+          width={28} 
+          height={28} 
+          className="navbar-logo"
+          priority
+        />
+      </div>
+
       {/* Islands wrapper centered */}
       <div className="nav-islands" aria-hidden={!isNavbarVisible}>
-        {/* Logo Island */}
-        <motion.div className="logo-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
-          <div className="logo-island">
-            <Link href="/" className={`navbar-brand ${pathname === '/' ? 'active' : ''}`}>
-              <Image 
-                src="/logo/logo_black.png" 
-                alt="WebRend Logo" 
-                width={28} 
-                height={28} 
-                className="navbar-logo"
-                priority
-              />
-            </Link>
-          </div>
-        </motion.div>
 
         {/* Main Navbar Island */}
         <motion.div className="navbar-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
           <div className="navbar">
             <div className="navbar-menu">
+              <Link 
+                href="/"
+                className={`nav-button marketplace-button ${pathname === '/' ? 'active' : ''}`}
+              >
+                Home
+              </Link>
               <Link 
                 href="/portfolio"
                 onClick={(e) => {
