@@ -1,6 +1,6 @@
 .section {
   background-color: transparent !important;
-  height: 400vh; /* Very tall section for extended scroll animation */
+  height: 900vh; /* Much longer track for extended read time */
   position: relative;
   /* Ensure this section can contain sticky elements */
 }
@@ -15,7 +15,7 @@
 
 .container {
   position: sticky;
-  top: 50vh; /* 50% offset from top of viewport */
+  top: 50vh; /* start lower in viewport */
   left: 0;
   right: 0;
   width: 100%;
@@ -30,7 +30,7 @@
   max-width: 1200px;
   width: 100%;
   padding: 0 2rem;
-  transform: translateY(-50%);
+  transform: translateY(-50%); /* lower the starting position */
   position: relative;
   min-height: 500px; /* Ensure consistent space */
   display: flex;
@@ -40,7 +40,7 @@
 
 .terminal {
   animation: fadeInTerminal 0.4s ease-out;
-  transition: opacity 0.4s ease-out;
+  transition: opacity 0.4s ease-out, filter 0.4s ease-out;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -56,18 +56,22 @@
 @keyframes fadeInTerminal {
   from {
     opacity: 0;
+    filter: blur(8px);
   }
   to {
     opacity: 1;
+    filter: blur(0px);
   }
 }
 
 @keyframes fadeOutTerminal {
   from {
     opacity: 1;
+    filter: blur(0px);
   }
   to {
     opacity: 0;
+    filter: blur(8px);
   }
 }
 
@@ -80,7 +84,7 @@
   text-align: center;
   max-width: 600px;
   animation: fadeInMessage 0.4s ease-out;
-  transition: opacity 0.4s ease-out;
+  transition: opacity 0.4s ease-out, filter 0.4s ease-out;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -115,18 +119,22 @@
 @keyframes fadeInMessage {
   from {
     opacity: 0;
+    filter: blur(8px);
   }
   to {
     opacity: 1;
+    filter: blur(0px);
   }
 }
 
 @keyframes fadeOutMessage {
   from {
     opacity: 1;
+    filter: blur(0px);
   }
   to {
     opacity: 0;
+    filter: blur(8px);
   }
 }
 
@@ -268,16 +276,17 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .section {
-    height: 300vh; /* Shorter on mobile for better UX */
+    height: 650vh; /* Extended mobile track for readability */
   }
   
   .container {
-    top: 50vh; /* Same 50% offset on mobile */
+    top: 58vh; /* slightly lower on mobile as well */
   }
   
   .terminalWrapper {
     padding: 0 1rem;
     min-height: 400px;
+    transform: translateY(-36%);
   }
   
   .messageCard {
@@ -314,7 +323,7 @@
 
 @media (max-width: 480px) {
   .section {
-    height: 250vh; /* Even shorter on small mobile */
+    height: 500vh; /* Extended on small mobile as well */
   }
   
   .terminalBody {

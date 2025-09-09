@@ -81,9 +81,41 @@ export default function ScrollCodeSection() {
         // Calculate progress through the section (0 to 1)
         const progress = Math.max(0, Math.min(1, (scrollY - sectionStart) / sectionHeight));
         
-        // Handle different phases based on progress with smoother transitions
-        if (progress < 0.35) {
-          // First phase: Show terminal with code
+        // Timing constants (delays terminal start and shifts phases slightly later)
+        const TERMINAL_START = 0.12;   // start terminal a bit later
+        const TERMINAL_END = 0.36;     // end terminal sooner for longer titles
+        const TERMINAL_FADE_END = 0.40; // quicker handoff to first message
+        const FIRST_MSG_END = 0.74;    // first title stays visible longer
+        const FIRST_MSG_FADE_END = 0.78; // short fade band
+        const SECOND_MSG_END = 0.995;   // second title holds until very end
+        const TERMINAL_FADE_UP_START = Math.max(0, TERMINAL_START - 0.05);
+
+        if (progress >= TERMINAL_FADE_UP_START && progress < TERMINAL_START) {
+          // Scrolling upward near the start: gracefully fade out terminal
+          if (showTerminal && !terminalFadingOut) {
+            setTerminalFadingOut(true);
+            setTimeout(() => {
+              setShowTerminal(false);
+              setTerminalFadingOut(false);
+            }, 400);
+          }
+          setShowFirstMessage(false);
+          setFirstMessageFadingOut(false);
+          setShowSecondMessage(false);
+          setSecondMessageFadingOut(false);
+          setIsInstalling(false);
+        } else if (progress < TERMINAL_START) {
+          // Before terminal appears: ensure clean state
+          setShowTerminal(false);
+          setTerminalFadingOut(false);
+          setShowFirstMessage(false);
+          setFirstMessageFadingOut(false);
+          setShowSecondMessage(false);
+          setSecondMessageFadingOut(false);
+          setVisibleLines(0);
+          setIsInstalling(false);
+        } else if (progress >= TERMINAL_START && progress < TERMINAL_END) {
+          // Show terminal with code a bit later and compute lines within this window
           setShowTerminal(true);
           setTerminalFadingOut(false);
           setShowFirstMessage(false);
@@ -91,10 +123,9 @@ export default function ScrollCodeSection() {
           setShowSecondMessage(false);
           setSecondMessageFadingOut(false);
           
-          // Calculate how many lines should be visible based on scroll progress
           const totalLines = packages.length + 5; // +5 for header and footer lines
-          const adjustedProgress = progress / 0.35; // Scale progress to 0.35 range
-          const newVisibleLines = Math.floor(adjustedProgress * totalLines);
+          const adjustedProgress = (progress - TERMINAL_START) / (TERMINAL_END - TERMINAL_START);
+          const newVisibleLines = Math.floor(Math.max(0, Math.min(1, adjustedProgress)) * totalLines);
           
           if (newVisibleLines > visibleLines) {
             setVisibleLines(newVisibleLines);
@@ -105,7 +136,7 @@ export default function ScrollCodeSection() {
               setIsInstalling(false);
             }
           }
-        } else if (progress >= 0.35 && progress < 0.4) {
+        } else if (progress >= TERMINAL_END && progress < TERMINAL_FADE_END) {
           // Transition phase: Fade out terminal
           if (showTerminal && !terminalFadingOut) {
             setTerminalFadingOut(true);
@@ -118,7 +149,7 @@ export default function ScrollCodeSection() {
           setShowSecondMessage(false);
           setSecondMessageFadingOut(false);
           setIsInstalling(false);
-        } else if (progress >= 0.4 && progress < 0.55) {
+        } else if (progress >= TERMINAL_FADE_END && progress < FIRST_MSG_END) {
           // Second phase: Show first message
           if (!showFirstMessage && !showTerminal) {
             setShowFirstMessage(true);
@@ -127,7 +158,7 @@ export default function ScrollCodeSection() {
           setShowSecondMessage(false);
           setSecondMessageFadingOut(false);
           setIsInstalling(false);
-        } else if (progress >= 0.55 && progress < 0.6) {
+        } else if (progress >= FIRST_MSG_END && progress < FIRST_MSG_FADE_END) {
           // Transition phase: Fade out first message
           if (showFirstMessage && !firstMessageFadingOut) {
             setFirstMessageFadingOut(true);
@@ -140,7 +171,7 @@ export default function ScrollCodeSection() {
           setShowTerminal(false);
           setTerminalFadingOut(false);
           setIsInstalling(false);
-        } else if (progress >= 0.6 && progress < 0.9) {
+        } else if (progress >= FIRST_MSG_FADE_END && progress < SECOND_MSG_END) {
           // Third phase: Show second message
           if (!showSecondMessage && !showFirstMessage) {
             setShowSecondMessage(true);
@@ -151,8 +182,8 @@ export default function ScrollCodeSection() {
           setShowFirstMessage(false);
           setFirstMessageFadingOut(false);
           setIsInstalling(false);
-        } else if (progress >= 0.9) {
-          // Final phase: Fade out second message in last 10% of section
+        } else {
+          // Final phase: Fade out second message at end of section
           if (showSecondMessage && !secondMessageFadingOut) {
             setSecondMessageFadingOut(true);
             setTimeout(() => {
