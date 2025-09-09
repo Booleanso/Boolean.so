@@ -18,6 +18,24 @@ export async function POST(req: NextRequest, { params }: Params) {
     delete payload.id;
     if (payload.createdAt) delete payload.createdAt;
 
+    // Normalize hidden projectTypes if provided
+    if (payload && 'projectTypes' in payload) {
+      const allowedProjectTypes = ['Websites', 'Apps', 'Software', 'Firmware'];
+      const lowerAllowed = allowedProjectTypes.map((a: string) => a.toLowerCase());
+      const result: string[] = [];
+      if (Array.isArray(payload.projectTypes)) {
+        for (const item of payload.projectTypes) {
+          const s = String(item || '').trim().toLowerCase();
+          if (!s) continue;
+          const idx = lowerAllowed.indexOf(s);
+          if (idx >= 0 && !result.includes(allowedProjectTypes[idx])) {
+            result.push(allowedProjectTypes[idx]);
+          }
+        }
+      }
+      payload.projectTypes = result;
+    }
+
     // Normalize dateCompleted to a Firestore Timestamp by passing a JS Date
     if (typeof payload.dateCompleted === 'string' && payload.dateCompleted) {
       const d = new Date(payload.dateCompleted);

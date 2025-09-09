@@ -82,6 +82,8 @@ interface AddProjectRequestBody {
   investors?: string[];
   growthPotential?: string;
   whyCritical?: string;
+  // Hidden project types for filtering (not shown publicly)
+  projectTypes?: string[];
 }
 
 export async function POST(request: NextRequest) {
@@ -129,6 +131,20 @@ export async function POST(request: NextRequest) {
     // 3. Prepare Data for Firestore (including new fields + slug)
     const generatedSlug = slugify(body.title);
     
+    const allowedProjectTypes = ['Websites', 'Apps', 'Software', 'Firmware'];
+    const normalizeProjectTypes = (arr?: unknown): string[] => {
+      if (!Array.isArray(arr)) return [];
+      const lowerAllowed = allowedProjectTypes.map(a => a.toLowerCase());
+      const set = new Set<string>();
+      for (const item of arr) {
+        const s = String(item || '').trim().toLowerCase();
+        if (!s) continue;
+        const idx = lowerAllowed.indexOf(s);
+        if (idx >= 0) set.add(allowedProjectTypes[idx]);
+      }
+      return Array.from(set);
+    };
+
     const projectData = {
       title: body.title,
       description: body.description,
@@ -138,6 +154,7 @@ export async function POST(request: NextRequest) {
       dateCompleted: Timestamp.fromDate(new Date(body.dateCompleted)), 
       featured: body.featured || false,
       createdAt: Timestamp.now(),
+      projectTypes: normalizeProjectTypes(body.projectTypes),
       // Add new fields, providing defaults or null for optional ones
       clientName: body.clientName || null,
       clientLinkedIn: body.clientLinkedIn || null,

@@ -131,6 +131,38 @@
   margin-bottom: 0.3rem;
 }
 
+/* Flex wrapper to place mini timeline next to heading text */
+.headingWithTimeline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Inline mini timeline (shorter and thicker) */
+.miniTimelineInline {
+  position: relative;
+  display: inline-block;
+  width: 35px; /* quarter of original 140px */
+  height: 4px; /* a bit thicker */
+  background: rgba(0,0,0,0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.miniTimelineInlineFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: #000;
+  border-radius: 3px;
+}
+
+:global(.dark-theme) .miniTimelineInline { background: rgba(255,255,255,0.25); }
+:global(.dark-theme) .miniTimelineInlineFill { background: #fff; }
+
 .gradientText {
   background: linear-gradient(90deg, #5856d6 0%, #af52de 25%, #ff2d55 50%, #ff9500 75%, #ffcc00 100%);
   background-size: 200% 100%;
@@ -183,7 +215,7 @@
   isolation: isolate; /* prevent child z-index from leaking over siblings */
 }
 
-.serviceCard.visible { }
+/* .serviceCard.visible deliberately omitted to avoid empty ruleset */
 
 /* Unavailable service card */
 
@@ -507,6 +539,30 @@
 :global(.dark-theme) .availabilityPill.unavailablePill::before {
   background: #636366;
 }
+
+/* Mini timeline under header */
+.miniTimeline {
+  position: relative;
+  width: 140px;
+  height: 2px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 2px;
+  margin: 0.75rem 0 2rem 0;
+  overflow: hidden;
+}
+
+.miniTimelineFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: #000;
+  border-radius: 2px;
+}
+
+:global(.dark-theme) .miniTimeline { background: rgba(255,255,255,0.25); }
+:global(.dark-theme) .miniTimelineFill { background: #fff; }
 
 /* Responsive Design */
 @media (max-width: 1200px) {

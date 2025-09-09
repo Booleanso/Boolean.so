@@ -1416,9 +1416,9 @@ export default function HeroSection() {
       <div className={styles.container}>
         <div className={styles.content} style={{ opacity: contentOpacity, transition: 'opacity 360ms ease' }}>
           <div className={styles.heading}>
-            <h1><span className={styles.gradText}>Turn Code Into Profit.</span></h1>
+            <h1 className="title"><span className={styles.gradText}>Build in under a month.</span></h1>
             <p className={styles.subtitle}>
-              We build cutting-edge software from your concepts and provide a marketplace where developers can monetize their GitHub repositories.
+              WebRend uses AI with real engineers to build your app fast—more affordable than traditional teams, with craftsmanship you can trust.
             </p>
           </div>
 

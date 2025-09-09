@@ -12,6 +12,8 @@ interface PortfolioProject {
   imageUrl: string;
   projectUrl?: string;
   tags: string[];
+  projectType?: string | null;
+  projectTypes?: string[];
   dateCompleted: Date;
   featured: boolean;
 }
@@ -46,6 +48,8 @@ async function getPortfolioProjects(): Promise<PortfolioProject[]> {
         imageUrl: data.imageUrl || '/images/placeholder.png',
         tags: data.tags || [],
         projectUrl: data.projectUrl || null,
+        projectType: data.projectType || null,
+        projectTypes: Array.isArray(data.projectTypes) ? data.projectTypes : [],
         dateCompleted: dateCompleted instanceof Date ? dateCompleted : new Date(),
         featured: data.featured || false,
       } as PortfolioProject;

@@ -39,7 +39,7 @@ export default async function RootLayout({
           <SmoothScrollProvider ease={0.1}>
             <NavBar serverUser={simpleUser} />
             <ServiceStatus />
-            <PageTransition type="slide-up" duration={0.4}>
+            <PageTransition type="fade" duration={0.75}>
               {children}
             </PageTransition>
             <ScrollToTop />

@@ -89,32 +89,32 @@
   text-align: center;
   max-width: 900px;
   margin: 0;
-  padding: 0 1.5rem;
+  padding: 0 16px;
   position: relative;
   z-index: 10;
 }
 
 .heading {
   text-align: center;
-  margin-top: -6px;
-  margin-bottom: 1.5rem;
+  margin-top: 8px;
+  margin-bottom: 24px;
   position: relative;
 }
 
 .heading h1 {
   font-size: 4rem;
   font-weight: 700;
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
   line-height: 1.2;
   color: var(--heading-color, #333);
-  background: rgba(255,255,255,0.35);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   border: none;
   box-shadow: none;
-  border-radius: 18px;
-  padding: .75rem 1.25rem;
-  display: inline-block;
+  border-radius: 0;
+  padding: 0;
+  display: inline;
 }
 
 .gradText {
@@ -135,16 +135,15 @@
 .subtitle {
   font-size: 1.25rem;
   color: var(--subtitle-color, #666);
-  max-width: 700px;
-  margin: 0 auto 1.5rem auto;
-  margin-top: -4px;
-  background: rgba(255,255,255,0.25);
-  -webkit-backdrop-filter: saturate(180%) blur(16px);
-  backdrop-filter: saturate(180%) blur(16px);
+  max-width: 60ch;
+  margin: 12px auto 24px auto;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   border: none;
   box-shadow: none;
-  border-radius: 16px;
-  padding: .75rem 1rem;
+  border-radius: 0;
+  padding: 0;
 }
 
 :global(.dark-theme) .subtitle {
@@ -314,20 +313,17 @@
   background: #000000;
   color: #ffffff;
   border: 1px solid #000000;
-  padding: 0 1.5rem;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0 18px;
   min-height: 40px;
-  border-radius: 25px;
-  font-size: 14px;
+  border-radius: 999px;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   box-shadow: none;
 }
 
-.primaryBtn:hover { opacity: .9; }
+.primaryBtn:hover { opacity: .92; }
+
+.primaryBtn:active { transform: translateY(1px); }
 
 .secondaryBtn { background: rgba(255,255,255,0.35); color: #0a0a0a; border: 1px solid rgba(255,255,255,0.5); -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%); box-shadow: none; }
 
@@ -477,10 +473,16 @@
 }
 
 /* Dark theme adjustments for glass */
-:global(.dark-theme) .heading h1 { background: rgba(20,20,20,0.45); border: none; box-shadow: none; }
 :global(.dark-theme) .gradText { background-image: linear-gradient(90deg, #f5f5f7, #a1a1a6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-:global(.dark-theme) .subtitle { background: rgba(20,20,20,0.35); border: none; box-shadow: none; }
-:global(.dark-theme) .primaryBtn { background: #ffffff; color: #000; border-color: #ffffff; }
+:global(.dark-theme) .primaryBtn {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+:global(.dark-theme) .primaryBtn:hover { opacity: .96; }
 :global(.dark-theme) .secondaryBtn { background: rgba(20,20,20,0.4); color: #fff; border-color: rgba(255,255,255,0.14); }
 
 /* Apple Watch app grid styles */
@@ -714,8 +716,8 @@
   }
   
   .subtitle {
-    font-size: 1.15rem;
-    margin-bottom: 1.25rem;
+    font-size: 1.125rem;
+    margin: 12px auto 20px auto;
   }
   
   .watchFace {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { smoothScrollTo } from '../../utils/smooth-scroll';
 import styles from './PageTransition.module.css';
@@ -19,34 +19,32 @@ export default function PageTransition({
   type = 'fade', 
   duration = 0.5 
 }: PageTransitionProps) {
-  const pageRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const [isFirstRender, setIsFirstRender] = useState(true);
-  const previousPathnameRef = useRef<string>('');
-  
-  // Transition configurations
+  const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [displayedChildren, setDisplayedChildren] = useState<React.ReactNode>(children);
+  const isFirstRenderRef = useRef(true);
+
   const getTransitionProps = useCallback((direction: 'in' | 'out') => {
-    // const fadeAmount = 0;
     const slideAmount = 15;
     const baseDuration = direction === 'in' ? duration : duration * 0.6;
-    
     switch (type) {
       case 'slide-up':
         return {
-          initial: { opacity: 0, y: direction === 'in' ? slideAmount : -slideAmount },
+          initial: { opacity: 0, y: slideAmount },
           animate: { opacity: 1, y: 0 },
-          exit: { opacity: 0, y: direction === 'in' ? -slideAmount : slideAmount },
+          exit: { opacity: 0, y: -slideAmount },
           duration: baseDuration,
           ease: direction === 'in' ? 'power2.out' : 'power2.in'
-        };
+        } as const;
       case 'slide-down':
         return {
-          initial: { opacity: 0, y: direction === 'in' ? -slideAmount : slideAmount },
+          initial: { opacity: 0, y: -slideAmount },
           animate: { opacity: 1, y: 0 },
-          exit: { opacity: 0, y: direction === 'in' ? slideAmount : -slideAmount },
+          exit: { opacity: 0, y: slideAmount },
           duration: baseDuration,
           ease: direction === 'in' ? 'power2.out' : 'power2.in'
-        };
+        } as const;
       case 'fade':
       default:
         return {
@@ -55,102 +53,74 @@ export default function PageTransition({
           exit: { opacity: 0 },
           duration: baseDuration,
           ease: direction === 'in' ? 'power2.out' : 'power2.in'
-        };
+        } as const;
     }
   }, [type, duration]);
-  
-  // Handle initial page load animation
+
+  // Keep displayed children in sync and animate in on pathname change
   useEffect(() => {
-    const inTransition = getTransitionProps('in');
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        pageRef.current,
-        inTransition.initial,
-        { 
-          ...inTransition.animate,
-          duration: inTransition.duration, 
-          ease: inTransition.ease
-        }
-      );
+    setDisplayedChildren(children);
+  }, [children]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const inProps = getTransitionProps('in');
+    gsap.fromTo(containerRef.current, inProps.initial, { 
+      ...inProps.animate, 
+      duration: inProps.duration, 
+      ease: inProps.ease,
+      onComplete: () => {
+        document.dispatchEvent(new CustomEvent('page-transition-complete'));
+      }
     });
-    
-    return () => ctx.revert();
-  }, [getTransitionProps]);
-  
-  // Handle route changes
+    isFirstRenderRef.current = false;
+  }, [pathname, getTransitionProps]);
+
+  // Intercept internal link clicks to run fade-out BEFORE navigation
   useEffect(() => {
-    if (isFirstRender) {
-      setIsFirstRender(false);
-      previousPathnameRef.current = pathname;
-      return;
+    const el = containerRef.current;
+    if (!el) return;
+
+    function isModifiedEvent(e: MouseEvent) {
+      return e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || (e as any).button !== 0;
     }
-    
-    // Only animate if the path actually changed
-    if (previousPathnameRef.current === pathname) {
-      return;
-    }
-    
-    const outTransition = getTransitionProps('out');
-    const inTransition = getTransitionProps('in');
-    
-    // Smooth scroll to top for new pages
-    const shouldScrollToTop = !pathname.includes('#');
-    
-    // When the path changes, animate out then in
-    const ctx = gsap.context(() => {
-      // First animate out
-      gsap.to(pageRef.current, {
-        ...outTransition.exit,
-        duration: outTransition.duration,
-        ease: outTransition.ease,
+
+    function onClickCapture(e: MouseEvent) {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const anchor = target.closest('a') as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const href = anchor.getAttribute('href') || '';
+      if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+      if (isModifiedEvent(e)) return;
+      if (href.startsWith('#')) return; // let in-page anchors pass
+      // Prevent default and animate out
+      e.preventDefault();
+      const outProps = getTransitionProps('out');
+      const shouldHardReloadHome = href === '/' && pathname !== '/';
+      gsap.to(containerRef.current, {
+        ...outProps.exit,
+        duration: outProps.duration,
+        ease: outProps.ease,
         onComplete: () => {
-          // Scroll to top if needed before animating in
-          if (shouldScrollToTop) {
-            smoothScrollTo(0, 400);
+          // Scroll to top just before navigation
+          if (!href.includes('#')) smoothScrollTo(0, 0);
+          if (shouldHardReloadHome) {
+            window.location.assign('/');
+          } else {
+            router.push(href);
           }
-          
-          // Then animate back in
-          gsap.fromTo(
-            pageRef.current,
-            inTransition.initial,
-            {
-              ...inTransition.animate,
-              duration: inTransition.duration,
-              ease: inTransition.ease
-            }
-          );
         }
       });
-    });
-    
-    // Update previous pathname
-    previousPathnameRef.current = pathname;
-    
-    return () => ctx.revert();
-  }, [pathname, isFirstRender, type, duration, getTransitionProps]);
-  
-  // Handle page exit on navigation away from site
-  useEffect(() => {
-    const outTransition = getTransitionProps('out');
-    
-    const handleBeforeUnload = () => {
-      gsap.to(pageRef.current, {
-        ...outTransition.exit,
-        duration: outTransition.duration,
-        ease: outTransition.ease
-      });
-    };
-    
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [type, duration, getTransitionProps]);
-  
+    }
+
+    el.addEventListener('click', onClickCapture, true);
+    return () => el.removeEventListener('click', onClickCapture, true);
+  }, [getTransitionProps, router]);
+
   return (
-    <div ref={pageRef} className={styles.pageTransition}>
-      {children}
+    <div key={pathname} ref={containerRef} className={styles.pageTransition}>
+      {displayedChildren}
     </div>
   );
 } 

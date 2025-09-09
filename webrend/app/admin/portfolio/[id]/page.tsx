@@ -12,6 +12,8 @@ interface ProjectForm {
   imageUrl: string;
   projectUrl: string;
   tagsCSV: string;
+  projectType: string;
+  projectTypes: string[];
   dateCompleted: string; // YYYY-MM-DD
   featured: boolean;
 
@@ -122,6 +124,8 @@ export default function EditPortfolioProjectPage() {
           imageUrl: data.imageUrl || '',
           projectUrl: data.projectUrl || '',
           tagsCSV: toCSV(data.tags),
+          projectType: data.projectType || '',
+          projectTypes: Array.isArray(data.projectTypes) ? data.projectTypes : [],
           dateCompleted: toDateInput(data.dateCompleted),
           featured: !!data.featured,
 
@@ -205,6 +209,8 @@ export default function EditPortfolioProjectPage() {
       imageUrl: form.imageUrl,
       projectUrl: form.projectUrl || null,
       tags: fromCSV(form.tagsCSV),
+      projectType: form.projectType || null,
+      projectTypes: Array.isArray(form.projectTypes) ? form.projectTypes : [],
       dateCompleted: form.dateCompleted,
       featured: !!form.featured,
 
@@ -310,6 +316,32 @@ export default function EditPortfolioProjectPage() {
             <Field label="Hero Image URL"><input className={styles.input} value={form.imageUrl} onChange={e => set('imageUrl', e.target.value)} /></Field>
             <Field label="Project URL"><input className={styles.input} value={form.projectUrl} onChange={e => set('projectUrl', e.target.value)} /></Field>
             <Field label="Tags (comma-separated)"><input className={styles.input} value={form.tagsCSV} onChange={e => set('tagsCSV', e.target.value)} /></Field>
+            <Field label="Project Type (hidden)">
+              <select className={styles.input} value={form.projectType} onChange={e => set('projectType', e.target.value)}>
+                <option value="">None</option>
+                <option value="Websites">Websites</option>
+                <option value="Apps">Apps</option>
+                <option value="Software">Software</option>
+                <option value="Firmware">Firmware</option>
+              </select>
+            </Field>
+            <Field label="Project Types (hidden)">
+              <div style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap' }}>
+                {['Websites', 'Apps', 'Software', 'Firmware'].map(opt => (
+                  <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '.35rem' }}>
+                    <input
+                      type="checkbox"
+                      checked={form.projectTypes.includes(opt)}
+                      onChange={e => {
+                        const checked = e.target.checked;
+                        set('projectTypes', checked ? [...form.projectTypes, opt] : form.projectTypes.filter(v => v !== opt));
+                      }}
+                    />
+                    <span>{opt}</span>
+                  </label>
+                ))}
+              </div>
+            </Field>
             <Field label="Date Completed"><input type="date" className={styles.input} value={form.dateCompleted} onChange={e => set('dateCompleted', e.target.value)} /></Field>
             <Field label="Featured"><input type="checkbox" checked={form.featured} onChange={e => set('featured', e.target.checked)} /></Field>
             <Field label="Description"><textarea className={styles.textarea} value={form.description} onChange={e => set('description', e.target.value)} /></Field>

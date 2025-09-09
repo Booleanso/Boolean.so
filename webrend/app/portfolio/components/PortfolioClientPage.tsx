@@ -8,7 +8,6 @@ import Link from 'next/link';
 import styles from './portfolio.module.css'; // We'll create this CSS module next
 import { isValidImageUrl } from '../../utils/url-utils'; // Import the validator
 // import SplineViewer from './SplineViewer'; // Commented out - Spline scene removed
-import AdminDeleteButton from './AdminDeleteButton';
 import { Globe } from '../../components/index/HeroSection/HeroSection';
 
 const PLACEHOLDER_IMAGE_URL = 'https://placehold.co/600x400/eee/ccc?text=Image+Not+Available';
@@ -24,6 +23,8 @@ interface PortfolioProject {
   projectUrl?: string;
   dateCompleted: number | Date;
   featured: boolean;
+  projectType?: string | null;
+  projectTypes?: string[];
 }
 
 interface PortfolioClientPageProps {
@@ -39,6 +40,8 @@ export default function PortfolioClientPage({
 }: PortfolioClientPageProps) {
   const [activeFilter, setActiveFilter] = useState('All'); // Default to 'All'
 
+  const ALLOWED_FILTERS = ['All', 'Websites', 'Apps', 'Software', 'Firmware'];
+
   // Globe + locations state (reuse Hero behavior)
   type EnhancedLocation = { lat: number; lng: number; name: string; repoName: string; iconUrl?: string; isPrivate?: boolean };
   const [locations, setLocations] = useState<EnhancedLocation[]>([]);
@@ -49,12 +52,21 @@ export default function PortfolioClientPage({
 
   // Memoize filtered projects to avoid recalculation on every render
   const filteredProjects = useMemo(() => {
-    if (activeFilter === 'All') {
-      return initialProjects;
-    }
-    return initialProjects.filter(project => 
-      project.tags.includes(activeFilter)
-    );
+    if (activeFilter === 'All') return initialProjects;
+    const target = activeFilter.toLowerCase();
+    return initialProjects.filter(project => {
+      // Prefer projectTypes array
+      if (Array.isArray(project.projectTypes) && project.projectTypes.length > 0) {
+        const lowers = project.projectTypes.map(t => (t || '').toLowerCase());
+        if (lowers.includes(target)) return true;
+      }
+      // Fallback to single projectType
+      const type = (project.projectType || '').toLowerCase();
+      if (type && type === target) return true;
+      // Fallback to visible tags if projectType not set yet
+      const tags = Array.isArray(project.tags) ? project.tags : [];
+      return tags.some(t => (t || '').toLowerCase() === target);
+    });
   }, [initialProjects, activeFilter]);
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -171,19 +183,13 @@ export default function PortfolioClientPage({
           <h2 className={styles.gridTitle}>Our Work</h2>
           {/* Filter Buttons */}
           <div className={styles.filters}>
-            <button
-              onClick={() => setActiveFilter('All')}
-              className={`${styles.filterButton} ${activeFilter === 'All' ? styles.active : ''}`}
-            >
-              All
-            </button>
-            {allTags.sort().map(tag => (
+            {ALLOWED_FILTERS.map(filter => (
               <button
-                key={tag}
-                onClick={() => setActiveFilter(tag)}
-                className={`${styles.filterButton} ${activeFilter === tag ? styles.active : ''}`}
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`${styles.filterButton} ${activeFilter === filter ? styles.active : ''}`}
               >
-                {tag}
+                {filter}
               </button>
             ))}
           </div>
@@ -205,8 +211,6 @@ export default function PortfolioClientPage({
               return (
                 // Use a div as the main clickable element for the card link
                 <div key={project.id} className={styles.projectCardContainer}>
-                  {/* Admin Delete Button */}
-                  <AdminDeleteButton projectId={project.id} />
                   
                   {/* Link covers the image */}
                   <Link 

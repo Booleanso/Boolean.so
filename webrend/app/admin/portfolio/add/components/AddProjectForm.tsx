@@ -2,6 +2,8 @@
 
 import { useState, FormEvent } from 'react';
 import styles from './AddProjectForm.module.css'; // We'll create this CSS module later
+import { storage } from '../../../../lib/firebase-client';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 interface FormData {
   title: string;
@@ -9,6 +11,7 @@ interface FormData {
   imageUrl: string; // Hero image
   projectUrl: string; // Optional on server, but make required in form for simplicity?
   tags: string; // Input as comma-separated string
+  projectTypes: string[]; // Hidden project types used for filtering
   dateCompleted: string; // Input as YYYY-MM-DD string
   featured: boolean;
   // New fields for case study
@@ -78,6 +81,7 @@ export default function AddProjectForm() {
     imageUrl: '',
     projectUrl: '',
     tags: '',
+    projectTypes: [],
     dateCompleted: '',
     featured: false,
     clientName: '',
@@ -139,16 +143,123 @@ export default function AddProjectForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
     // Handle checkbox separately
     if (type === 'checkbox') {
-      const { checked } = e.target as HTMLInputElement;
-      setFormData(prev => ({ ...prev, [name]: checked }));
+      const input = e.target as HTMLInputElement;
+      if (name === 'featured') {
+        setFormData(prev => ({ ...prev, featured: input.checked }));
+      } else if (name.startsWith('projectTypes.')) {
+        const typeValue = name.split('.')[1];
+        setFormData(prev => {
+          const has = prev.projectTypes.includes(typeValue);
+          const next = input.checked ? [...prev.projectTypes, typeValue] : prev.projectTypes.filter(v => v !== typeValue);
+          return { ...prev, projectTypes: next };
+        });
+      } else {
+        setFormData(prev => ({ ...prev, [name]: input.checked }));
+      }
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  function slugifyForPath(text: string) {
+    return String(text || 'project')
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9\-]/g, '')
+      .slice(0, 60);
+  }
+
+  async function uploadAndGetUrl(file: File, pathPrefix: string): Promise<string> {
+    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    const storageRef = ref(storage, `${pathPrefix}/${fileName}`);
+    await new Promise<void>((resolve, reject) => {
+      const task = uploadBytesResumable(storageRef, file);
+      task.on('state_changed', undefined, reject, () => resolve());
+    });
+    return await getDownloadURL(storageRef);
+  }
+
+  const handleHeroFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploading('hero');
+      const slug = slugifyForPath(formData.title || 'project');
+      const url = await uploadAndGetUrl(file, `portfolio/${slug}/hero`);
+      setFormData(prev => ({ ...prev, imageUrl: url }));
+    } catch (err) {
+      console.error('Hero upload failed', err);
+      setError('Hero image upload failed.');
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleGalleryFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    try {
+      setUploading('gallery');
+      const slug = slugifyForPath(formData.title || 'project');
+      const urls: string[] = [];
+      for (const f of files) {
+        const u = await uploadAndGetUrl(f, `portfolio/${slug}/gallery`);
+        urls.push(u);
+      }
+      const existing = formData.galleryImages ? formData.galleryImages.split(',').map(s => s.trim()).filter(Boolean) : [];
+      const next = [...existing, ...urls];
+      setFormData(prev => ({ ...prev, galleryImages: next.join(', ') }));
+    } catch (err) {
+      console.error('Gallery upload failed', err);
+      setError('Gallery upload failed.');
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleClientLogoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploading('clientLogo');
+      const slug = slugifyForPath(formData.title || 'project');
+      const url = await uploadAndGetUrl(file, `portfolio/${slug}/client-logo`);
+      setFormData(prev => ({ ...prev, clientLogoUrl: url }));
+    } catch (err) {
+      console.error('Client logo upload failed', err);
+      setError('Client logo upload failed.');
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleInvestorLogosFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    try {
+      setUploading('investorLogos');
+      const slug = slugifyForPath(formData.title || 'project');
+      const urls: string[] = [];
+      for (const f of files) {
+        const u = await uploadAndGetUrl(f, `portfolio/${slug}/investor-logos`);
+        urls.push(u);
+      }
+      const existing = formData.investorLogos ? formData.investorLogos.split(',').map(s => s.trim()).filter(Boolean) : [];
+      const next = [...existing, ...urls];
+      setFormData(prev => ({ ...prev, investorLogos: next.join(', ') }));
+    } catch (err) {
+      console.error('Investor logos upload failed', err);
+      setError('Investor logos upload failed.');
+    } finally {
+      setUploading(null);
     }
   };
 
@@ -168,6 +279,7 @@ export default function AddProjectForm() {
           ...formData,
           // Convert comma-separated strings to arrays
           tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+          projectTypes: formData.projectTypes,
           keyFeatures: formData.keyFeatures.split(',').map(f => f.trim()).filter(Boolean),
           galleryImages: formData.galleryImages.split(',').map(url => url.trim()).filter(Boolean),
           seoKeywords: formData.seoKeywords.split(',').map(k => k.trim()).filter(Boolean),
@@ -198,6 +310,7 @@ export default function AddProjectForm() {
         imageUrl: '',
         projectUrl: '',
         tags: '',
+        projectTypes: [],
         dateCompleted: '',
         featured: false,
         clientName: '',
@@ -243,6 +356,18 @@ export default function AddProjectForm() {
         techAdvantages: '',
         ctaText: '',
         ctaLink: '',
+        clientLogoUrl: '',
+        heroHeadline: '',
+        role: '',
+        deliverables: '',
+        technologyStack: '',
+        innovations: '',
+        processOutline: '',
+        businessResults: '',
+        technicalResults: '',
+        investors: '',
+        growthPotential: '',
+        whyCritical: '',
       });
 
     } catch (err: unknown) {
@@ -260,6 +385,7 @@ export default function AddProjectForm() {
         <h2 className={styles.sectionTitle}>Core Project Info</h2>
       {error && <div className={styles.errorMessage}>{error}</div>}
       {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+      {uploading && <div className={styles.infoMessage}>Uploading {uploading}…</div>}
 
       <div className={styles.formGroup}>
         <label htmlFor="title">Title *</label>
@@ -298,7 +424,12 @@ export default function AddProjectForm() {
           onChange={handleChange}
           required
           className={styles.input}
+          placeholder="https://..."
         />
+        <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center', marginTop: '.5rem' }}>
+          <input type="file" accept="image/*" onChange={handleHeroFile} />
+          {formData.imageUrl && (<a href={formData.imageUrl} target="_blank" rel="noopener noreferrer">Preview</a>)}
+        </div>
       </div>
 
       <div className={styles.formGroup}>
@@ -325,6 +456,23 @@ export default function AddProjectForm() {
           className={styles.input}
           placeholder="e.g., React, Next.js, Firebase"
         />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>Project Types (hidden, for filtering)</label>
+        <div className={styles.formRow}>
+          {['Websites', 'Apps', 'Software', 'Firmware'].map(opt => (
+            <label key={opt} className={styles.checkboxLabel} style={{ display: 'flex', alignItems: 'center', gap: '.35rem' }}>
+              <input
+                type="checkbox"
+                name={`projectTypes.${opt}`}
+                checked={formData.projectTypes.includes(opt)}
+                onChange={handleChange}
+              />
+              <span>{opt}</span>
+            </label>
+          ))}
+        </div>
       </div>
 
       <div className={styles.formGroup}>
@@ -365,6 +513,23 @@ export default function AddProjectForm() {
           onChange={handleChange}
           className={styles.input}
         />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="clientLogoUrl">Client Logo URL</label>
+        <input
+          type="url"
+          id="clientLogoUrl"
+          name="clientLogoUrl"
+          value={formData.clientLogoUrl}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="https://..."
+        />
+        <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center', marginTop: '.5rem' }}>
+          <input type="file" accept="image/*" onChange={handleClientLogoFile} />
+          {formData.clientLogoUrl && (<a href={formData.clientLogoUrl} target="_blank" rel="noopener noreferrer">Preview</a>)}
+        </div>
       </div>
 
       <div className={styles.formGroup}>
@@ -430,6 +595,22 @@ export default function AddProjectForm() {
       </div>
 
       <div className={styles.formGroup}>
+        <label htmlFor="galleryImages">Gallery Image URLs (comma-separated)</label>
+        <textarea
+          id="galleryImages"
+          name="galleryImages"
+          value={formData.galleryImages}
+          onChange={handleChange}
+          rows={3}
+          className={styles.textarea}
+          placeholder="https://.../image1.jpg, https://.../image2.png"
+        />
+        <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center', marginTop: '.5rem' }}>
+          <input type="file" accept="image/*" multiple onChange={handleGalleryFiles} />
+        </div>
+      </div>
+
+      <div className={styles.formGroup}>
         <label htmlFor="videoUrl">Solution Video URL</label>
         <input
           type="url"
@@ -443,19 +624,6 @@ export default function AddProjectForm() {
         <small className={styles.helpText}>Video to display in the solution section (Vimeo or YouTube embed URL)</small>
       </div>
 
-      <div className={styles.formGroup}>
-        <label htmlFor="keyFeatures">Key Features (comma-separated)</label>
-        <textarea
-          id="keyFeatures"
-          name="keyFeatures"
-          value={formData.keyFeatures}
-          onChange={handleChange}
-          rows={3}
-          className={styles.textarea}
-          placeholder="e.g., Real-time updates, Secure payments, User profiles"
-        />
-      </div>
-      
       <div className={styles.formGroup}>
         <label htmlFor="challenges">Challenges Faced</label>
         <textarea
@@ -522,19 +690,6 @@ export default function AddProjectForm() {
       <hr className={styles.divider} />
       <h2>Media & SEO</h2>
       
-      <div className={styles.formGroup}>
-        <label htmlFor="galleryImages">Gallery Image URLs (comma-separated)</label>
-        <textarea
-          id="galleryImages"
-          name="galleryImages"
-          value={formData.galleryImages}
-          onChange={handleChange}
-          rows={3}
-          className={styles.textarea}
-          placeholder="https://.../image1.jpg, https://.../image2.png"
-        />
-      </div>
-
       <div className={styles.formGroup}>
         <label htmlFor="seoTitle">SEO Title</label>
         <input
@@ -794,6 +949,9 @@ export default function AddProjectForm() {
             onChange={handleChange}
             className={styles.input}
           />
+          <div style={{ display: 'flex', gap: '.5rem', alignItems: 'center', marginTop: '.5rem' }}>
+            <input type="file" accept="image/*" multiple onChange={handleInvestorLogosFiles} />
+          </div>
         </div>
       </div>
 

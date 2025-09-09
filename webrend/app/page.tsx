@@ -17,6 +17,7 @@ import FallingTrack from "./components/FallingTrack/FallingTrack";
 import IPhoneTrack from "./components/IPhoneTrack/IPhoneTrack";
 import ComingSoonTrack from "./components/ComingSoonTrack/ComingSoonTrack";
 import Testimonials from "./components/Testimonials/Testimonials";
+import ForceRemountOnPath from "./components/ForceRemountOnPath";
 
 import { db } from './lib/firebase-admin';
 import { DocumentData, Timestamp } from 'firebase-admin/firestore';
@@ -111,7 +112,9 @@ export default async function Home() {
           <ServicesAndClients />
         </section>
         <section id="iphone-track">
-          <IPhoneTrack />
+          <ForceRemountOnPath>
+            <IPhoneTrack />
+          </ForceRemountOnPath>
         </section>
         {/* iPhone section removed */}
         <section id="falling-track">

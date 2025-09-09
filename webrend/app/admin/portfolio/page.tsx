@@ -69,19 +69,6 @@ export default function AdminPortfolioPage() {
         </div>
       </header>
 
-      {/* Add panel shown before the projects list */}
-      <section className={styles.item} style={{ justifyContent: 'space-between' }}>
-        <div className={styles.meta}>
-          <div className={styles.titleRow}>
-            <strong>Add a new portfolio project</strong>
-          </div>
-          <div className={styles.subtle}>Create a new case study entry with all fields.</div>
-        </div>
-        <div className={styles.itemActions}>
-          <Link href="/admin/portfolio/add" className={styles.primaryBtn}>Add Project</Link>
-        </div>
-      </section>
-
       {error && <div className={styles.error}>{error}</div>}
       {loading ? (
         <div className={styles.loading}>Loading projects…</div>

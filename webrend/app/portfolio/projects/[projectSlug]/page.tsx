@@ -36,6 +36,7 @@ interface FirestoreProjectData {
   testimonialTitle?: string;
   galleryImages?: string[];
   videoUrl?: string;
+  clientLogoUrl?: string;
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string[];
@@ -96,6 +97,7 @@ interface PortfolioProject {
   testimonialTitle?: string | null;
   galleryImages?: string[];
   videoUrl?: string | null; // Add video URL field
+  clientLogoUrl?: string | null;
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string[];
@@ -233,6 +235,7 @@ function convertFirestoreDataToProject(docId: string, data: FirestoreProjectData
     testimonialTitle: data.testimonialTitle || null,
     galleryImages: data.galleryImages || [],
     videoUrl: data.videoUrl || null,
+    clientLogoUrl: data.clientLogoUrl || null,
     seoTitle: data.seoTitle || data.title || 'Project Case Study',
     seoDescription: data.seoDescription || data.description || '',
     seoKeywords: data.seoKeywords || data.tags || [],
@@ -419,11 +422,20 @@ export default async function ProjectPage({ params }: Props) {
               <div className={styles.body}><p>{project.description}</p></div>
             </div>
             <aside className={styles.metaCard}>
+              {/* Optional: Client logo */}
+              {project.clientLogoUrl && isValidImageUrl(project.clientLogoUrl) && (
+                <div style={{ marginBottom: '.75rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                  <img src={project.clientLogoUrl} alt="Client logo" style={{ height: 32, width: 'auto', opacity: 0.9 }} />
+                </div>
+              )}
               <div className={styles.metaRow}><span>Client</span><strong>{project.clientName || '—'}</strong></div>
               <div className={styles.metaRow}><span>Completed</span><strong>{formattedDate}</strong></div>
               {project.projectLength && (<div className={styles.metaRow}><span>Timeline</span><strong>{project.projectLength}</strong></div>)}
               {project.projectUrl && (
                 <div className={styles.metaRow}><span>Live</span><a href={project.projectUrl} target="_blank" rel="noopener noreferrer">Visit site</a></div>
+              )}
+              {project.videoUrl && (
+                <div className={styles.metaRow}><span>Video</span><a href={project.videoUrl} target="_blank" rel="noopener noreferrer">Watch</a></div>
               )}
               {project.industry && (<div className={styles.metaRow}><span>Industry</span><strong>{project.industry}</strong></div>)}
               {project.companyStage && (<div className={styles.metaRow}><span>Company Stage</span><strong>{project.companyStage}</strong></div>)}

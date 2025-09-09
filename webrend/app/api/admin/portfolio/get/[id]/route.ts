@@ -12,6 +12,8 @@ function buildDefaultProject() {
     imageUrl: '',
     projectUrl: null as string | null,
     tags: [] as string[],
+    projectType: '',
+    projectTypes: [] as string[],
     dateCompleted: null,
     featured: false,
     clientName: '',

@@ -55,6 +55,72 @@
   will-change: opacity;
 }
 
+/* Square image that appears on screen 1 to the right of the phone */
+.sideImage {
+  position: absolute;
+  /* Anchor next to the iPhone's right bezel using the same phone width clamp */
+  left: calc(50% + (clamp(180px, 16vw, 340px) / 2) - 24px);
+  top: 58%;
+  transform: translateY(-50%);
+  width: clamp(72px, 10vw, 140px);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 14px 38px rgba(0,0,0,0.18);
+  pointer-events: none;
+  will-change: transform;
+  z-index: 2;
+}
+
+/* Left-side square image, hugging the iPhone's left bezel */
+.sideImageLeft {
+  position: absolute;
+  right: calc(50% + (clamp(180px, 16vw, 340px) / 2) - 30px);
+  top: 30%;
+  transform: translateY(-50%);
+  width: clamp(88px, 12vw, 160px);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 14px 38px rgba(0,0,0,0.18);
+  pointer-events: none;
+  will-change: transform;
+  z-index: 2;
+}
+
+/* Screen 2 squares */
+.sideImage2A {
+  position: absolute;
+  /* upper-right area near phone */
+  left: calc(50% + (clamp(180px, 16vw, 340px) / 2) + 12px);
+  top: 36%;
+  transform: translateY(-50%);
+  width: clamp(80px, 11vw, 150px);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.16);
+  pointer-events: none;
+  will-change: transform;
+  z-index: 2;
+}
+
+.sideImage2B {
+  position: absolute;
+  /* lower-left area near phone */
+  right: calc(50% + (clamp(180px, 16vw, 340px) / 2) + 8px);
+  top: 80%;
+  transform: translateY(-50%);
+  width: clamp(64px, 9vw, 120px);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.16);
+  pointer-events: none;
+  will-change: transform;
+  z-index: 2;
+}
+
 .phoneCopyWrapper {
   position: absolute;
   left: max(3vw, 40px);
@@ -76,9 +142,135 @@
 .timelineWrapper { position: absolute; top: clamp(20px, 6vh, 80px); left: 50%; transform: translateX(-50%); width: min(900px, 80vw); pointer-events: none; }
 .timeline { display: flex; align-items: center; gap: 10px; }
 .timelineStep { display: flex; align-items: center; gap: 10px; flex: 1 1 0; }
-.timelineDot { width: 12px; height: 12px; border-radius: 50%; background: #111111; box-shadow: 0 0 0 2px rgba(0,0,0,0.08); }
+.timelineDot { width: 10px; height: 10px; border-radius: 50%; background: #111111; box-shadow: 0 0 0 2px rgba(0,0,0,0.08); }
 .timelineDot.active { background: #000000; }
-.timelineLine { position: relative; height: 4px; background: rgba(0,0,0,0.12); border-radius: 2px; flex: 1 1 0; overflow: hidden; }
+.timelineLine { position: relative; height: 3px; background: rgba(0,0,0,0.12); border-radius: 2px; flex: 1 1 0; overflow: hidden; }
 .timelineLineFill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: #000000; transition: none; will-change: width; transform: translateZ(0); }
+
+/* Dark theme: make timeline white */
+:global(.dark-theme) .timelineDot { background: #ffffff; box-shadow: 0 0 0 2px rgba(255,255,255,0.15); }
+:global(.dark-theme) .timelineDot.active { background: #ffffff; }
+:global(.dark-theme) .timelineLine { background: rgba(255,255,255,0.25); }
+:global(.dark-theme) .timelineLineFill { background: #ffffff; }
+
+/* Generic square image styling */
+.sideSquare {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 14px 38px rgba(0,0,0,0.18);
+  pointer-events: none;
+}
+
+/* Wrappers positioned relative to phone; animated via framer-motion */
+.sideWrapRight {
+  position: absolute;
+  left: calc(50% + (clamp(180px, 16vw, 340px) / 2) - 24px);
+  top: 58%;
+  width: clamp(72px, 10vw, 140px);
+  z-index: 2;
+  will-change: transform;
+}
+
+.sideWrapLeft {
+  position: absolute;
+  right: calc(50% + (clamp(180px, 16vw, 340px) / 2) - 30px);
+  top: 30%;
+  width: clamp(88px, 12vw, 160px);
+  z-index: 2;
+  will-change: transform;
+}
+
+.sideWrap2A {
+  position: absolute;
+  left: calc(50% + (clamp(180px, 16vw, 340px) / 2) + 12px);
+  top: 36%;
+  width: clamp(80px, 11vw, 150px);
+  z-index: 2;
+  will-change: transform;
+}
+
+.sideWrap2B {
+  position: absolute;
+  right: calc(50% + (clamp(180px, 16vw, 340px) / 2) + 8px);
+  top: 80%;
+  width: clamp(64px, 9vw, 120px);
+  z-index: 2;
+  will-change: transform;
+}
+
+/* Screen 3 wrappers */
+.sideWrap3A {
+  position: absolute;
+  left: calc(50% + (clamp(180px, 16vw, 340px) / 2) + 24px);
+  top: 42%;
+  width: clamp(84px, 11vw, 140px);
+  z-index: 2;
+  will-change: transform;
+}
+.sideWrap3B {
+  position: absolute;
+  right: calc(50% + (clamp(180px, 16vw, 340px) / 2) + 16px);
+  top: 68%;
+  width: clamp(72px, 10vw, 130px);
+  z-index: 2;
+  will-change: transform;
+}
+
+/* Screen 4 wrappers */
+.sideWrap4A {
+  position: absolute;
+  right: calc(50% + (clamp(180px, 16vw, 340px) / 2) - 16px);
+  top: 28%;
+  width: clamp(78px, 10vw, 130px);
+  z-index: 2;
+  will-change: transform;
+}
+.sideWrap4B {
+  position: absolute;
+  left: calc(50% + (clamp(180px, 16vw, 340px) / 2) + 18px);
+  top: 74%;
+  width: clamp(66px, 9vw, 120px);
+  z-index: 2;
+  will-change: transform;
+}
+
+/* Screen 5 wrappers */
+.sideWrap5A {
+  position: absolute;
+  left: calc(50% + (clamp(180px, 16vw, 340px) / 2) + 10px);
+  top: 34%;
+  width: clamp(70px, 10vw, 128px);
+  z-index: 2;
+  will-change: transform;
+}
+.sideWrap5B {
+  position: absolute;
+  right: calc(50% + (clamp(180px, 16vw, 340px) / 2) + 22px);
+  top: 78%;
+  width: clamp(60px, 8.5vw, 110px);
+  z-index: 2;
+  will-change: transform;
+}
+
+/* Screen 6 wrappers */
+.sideWrap6A {
+  position: absolute;
+  right: calc(50% + (clamp(180px, 16vw, 340px) / 2) - 8px);
+  top: 38%;
+  width: clamp(76px, 10.5vw, 136px);
+  z-index: 2;
+  will-change: transform;
+}
+.sideWrap6B {
+  position: absolute;
+  left: calc(50% + (clamp(180px, 16vw, 340px) / 2) + 28px);
+  top: 70%;
+  width: clamp(62px, 9vw, 116px);
+  z-index: 2;
+  will-change: transform;
+}
 
 

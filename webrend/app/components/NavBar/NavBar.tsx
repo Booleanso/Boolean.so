@@ -24,7 +24,8 @@ export default function NavBar({ serverUser }: NavBarProps) {
   const pathname = usePathname();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const toggleTheme = () => setTheme(isDarkMode ? 'light' as const : 'dark' as const);
   
   // Scroll-based navbar visibility
   const [isNavbarVisible, setIsNavbarVisible] = useState<boolean>(true);
@@ -99,8 +100,8 @@ export default function NavBar({ serverUser }: NavBarProps) {
   // Portfolio overlay removed
 
   const slideVariants = {
-    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 600, damping: 40 } },
-    hidden: { y: -80, opacity: 1, transition: { type: 'spring', stiffness: 550, damping: 45 } }
+    visible: { y: 0, opacity: 1, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 600, damping: 40 } },
+    hidden: { y: 80, opacity: 0, filter: 'blur(10px)', transition: { type: 'spring', stiffness: 550, damping: 45 } }
   } as const;
 
 
@@ -122,12 +123,29 @@ export default function NavBar({ serverUser }: NavBarProps) {
           />
         </div>
 
+        {/* Theme Toggle Island */}
+        <motion.div className="theme-toggle-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
+          <button className={`theme-toggle ${isDarkMode ? 'dark' : 'light'}`} onClick={toggleTheme} aria-label="Toggle theme" title={isDarkMode ? 'Switch to light' : 'Switch to dark'}>
+            <span className="toggle-track">
+              <span className="toggle-thumb" />
+              <span className="toggle-icon sun" aria-hidden>☀️</span>
+              <span className="toggle-icon moon" aria-hidden>🌙</span>
+            </span>
+          </button>
+        </motion.div>
+
         {/* Main Navbar Island */}
         <motion.div className="navbar-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
           <div className="navbar">
             <div className="navbar-menu">
               <Link 
                 href="/"
+                onClick={(e) => {
+                  if (pathname !== '/') {
+                    e.preventDefault();
+                    if (typeof window !== 'undefined') window.location.assign('/');
+                  }
+                }}
                 className={`nav-button marketplace-button ${pathname === '/' ? 'active' : ''}`}
               >
                 Home
@@ -219,7 +237,18 @@ export default function NavBar({ serverUser }: NavBarProps) {
       </div>
 
       {/* Islands wrapper centered */}
-      <div className="nav-islands" aria-hidden={!isNavbarVisible}>
+      <div className={`nav-islands ${isNavbarVisible ? '' : 'hidden'}`} aria-hidden={!isNavbarVisible}>
+
+        {/* Theme Toggle Island */}
+        <motion.div className="theme-toggle-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
+          <button className={`theme-toggle ${isDarkMode ? 'dark' : 'light'}`} onClick={toggleTheme} aria-label="Toggle theme" title={isDarkMode ? 'Switch to light' : 'Switch to dark'}>
+            <span className="toggle-track">
+              <span className="toggle-thumb" />
+              <span className="toggle-icon sun" aria-hidden>☀️</span>
+              <span className="toggle-icon moon" aria-hidden>🌙</span>
+            </span>
+          </button>
+        </motion.div>
 
         {/* Main Navbar Island */}
         <motion.div className="navbar-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
@@ -227,6 +256,12 @@ export default function NavBar({ serverUser }: NavBarProps) {
             <div className="navbar-menu">
               <Link 
                 href="/"
+                onClick={(e) => {
+                  if (pathname !== '/') {
+                    e.preventDefault();
+                    if (typeof window !== 'undefined') window.location.assign('/');
+                  }
+                }}
                 className={`nav-button marketplace-button ${pathname === '/' ? 'active' : ''}`}
               >
                 Home

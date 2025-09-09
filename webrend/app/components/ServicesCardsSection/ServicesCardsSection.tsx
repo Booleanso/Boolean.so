@@ -76,11 +76,13 @@ export default function ServicesCardsSection() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
 
   // Random entry offsets per card (computed once)
   const entryOffsetsRef = useRef<Array<{ dx: number; dy: number; rot: number }>>([]);
   const cardRefs = useRef<Array<HTMLAnchorElement | null>>([]);
-  const [fallProgress, setFallProgress] = useState(0); // 0..1 as section reaches middle
+  const [fallProgress, setFallProgress] = useState(0); // 0..1 controls card entry
+  const [stickyProgress, setStickyProgress] = useState(0); // 0..1 controls mini timeline fill
 
   useEffect(() => {
     const computeOffsets = () => {
@@ -129,24 +131,31 @@ export default function ServicesCardsSection() {
     };
   }, []);
 
-  // Track scroll within this section only to drive the fall-in animation
+  // Track scroll for both: cards (fallProgress) and mini timeline (stickyProgress)
   useEffect(() => {
     const handleScroll = () => {
       const el = sectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
+      const track = stickyRef.current;
       const vh = window.innerHeight || 1;
-      const viewportCenter = vh / 2;
-      // Start when section top hits the viewport bottom;
-      // Finish when section top reaches ~60% of viewport height (match screenshot)
-      const start = vh; // section just enters viewport (top == bottom)
-      const end = vh * 0.1; // adjust this fraction to fine‑tune
-      const denom = Math.max(1, start - end);
-      let p = (start - rect.top) / denom;
-      if (rect.top >= start) p = 0; // not started until enters viewport
-      if (rect.top <= end) p = 1;   // finished when section center is at viewport center
-      p = Math.max(0, Math.min(1, p));
-      setFallProgress(p);
+      // Card fall progress (original behavior): from entering viewport to near center
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const start = vh; // when section top hits viewport bottom
+        const end = vh * 0.1; // tune as needed
+        const denom = Math.max(1, start - end);
+        let pCard = (start - rect.top) / denom;
+        if (rect.top >= start) pCard = 0;
+        if (rect.top <= end) pCard = 1;
+        pCard = Math.max(0, Math.min(1, pCard));
+        setFallProgress(pCard);
+      }
+      // Mini timeline sticky progress: from when sticky hits top until it releases at bottom
+      if (track) {
+        const tRect = track.getBoundingClientRect();
+        const duration = Math.max(1, tRect.height - vh);
+        const pSticky = Math.max(0, Math.min(1, (-tRect.top) / duration));
+        setStickyProgress(pSticky);
+      }
     };
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -163,7 +172,7 @@ export default function ServicesCardsSection() {
 
   return (
     <section ref={sectionRef} className={styles.servicesSection}>
-      <div className={styles.stickyTrack}>
+      <div className={styles.stickyTrack} ref={stickyRef}>
         <div className={styles.stickyInner}>
           <div className={styles.container}>
         <div className={`${styles.blurOverlay} ${hoveredIndex !== null ? styles.active : ''}`} />
@@ -175,7 +184,12 @@ export default function ServicesCardsSection() {
           <h2 className={styles.heading}>
             <span className={styles.headingLine}>Extraordinary experiences.</span>
             <span className={styles.headingLine}>
-              <span className={styles.gradientText}>Expertly crafted.</span>
+              <span className={styles.headingWithTimeline}>
+                <span className={styles.gradientText}>Expertly crafted.</span>
+                <span className={styles.miniTimelineInline} aria-hidden>
+                  <span className={styles.miniTimelineInlineFill} style={{ width: `${Math.round(Math.max(0, Math.min(1, stickyProgress)) * 100)}%` }} />
+                </span>
+              </span>
             </span>
           </h2>
           <p className={styles.description}>

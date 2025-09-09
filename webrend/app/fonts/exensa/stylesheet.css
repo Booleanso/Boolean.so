@@ -1,0 +1,60 @@
+@font-face {
+    font-family: 'Exensa Grotesk';
+    src: url('ExensaGrotesk-Black.eot');
+    src: local('Exensa Grotesk Black'), local('ExensaGrotesk-Black'),
+        url('ExensaGrotesk-Black.eot?#iefix') format('embedded-opentype'),
+        url('ExensaGrotesk-Black.woff2') format('woff2'),
+        url('ExensaGrotesk-Black.woff') format('woff'),
+        url('ExensaGrotesk-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Exensa Grotesk';
+    src: url('ExensaGrotesk-Regular.eot');
+    src: local('Exensa Grotesk Regular'), local('ExensaGrotesk-Regular'),
+        url('ExensaGrotesk-Regular.eot?#iefix') format('embedded-opentype'),
+        url('ExensaGrotesk-Regular.woff2') format('woff2'),
+        url('ExensaGrotesk-Regular.woff') format('woff'),
+        url('ExensaGrotesk-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Exensa Grotesk';
+    src: url('ExensaGrotesk-Bold.eot');
+    src: local('Exensa Grotesk Bold'), local('ExensaGrotesk-Bold'),
+        url('ExensaGrotesk-Bold.eot?#iefix') format('embedded-opentype'),
+        url('ExensaGrotesk-Bold.woff2') format('woff2'),
+        url('ExensaGrotesk-Bold.woff') format('woff'),
+        url('ExensaGrotesk-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Exensa Grotesk';
+    src: url('ExensaGrotesk-ExtraBold.eot');
+    src: local('Exensa Grotesk ExtraBold'), local('ExensaGrotesk-ExtraBold'),
+        url('ExensaGrotesk-ExtraBold.eot?#iefix') format('embedded-opentype'),
+        url('ExensaGrotesk-ExtraBold.woff2') format('woff2'),
+        url('ExensaGrotesk-ExtraBold.woff') format('woff'),
+        url('ExensaGrotesk-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Exensa Grotesk';
+    src: url('ExensaGrotesk-Light.eot');
+    src: local('Exensa Grotesk Light'), local('ExensaGrotesk-Light'),
+        url('ExensaGrotesk-Light.eot?#iefix') format('embedded-opentype'),
+        url('ExensaGrotesk-Light.woff2') format('woff2'),
+        url('ExensaGrotesk-Light.woff') format('woff'),
+        url('ExensaGrotesk-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
