@@ -1043,30 +1043,8 @@ export default function HeroSection() {
   const router = useRouter();
   const globeContainerRef = useRef<HTMLDivElement>(null);
 
-  // Listen for portfolio-transition to animate out content and raise globe, then navigate
-  useEffect(() => {
-    const handler = () => {
-      if (isTransitioning) return;
-      setIsTransitioning(true);
-      // Fade out heading/desc/ctas/trusted logos
-      setContentOpacity(0);
-      // Raise globe higher to match portfolio globe position
-      setGlobePosition(-360); // move further up during transition
-      setGlobeOpacity(1);
-
-      setTimeout(() => {
-        if (typeof window !== 'undefined' && (window as any).__fadeToBlack) {
-          (window as any).__fadeToBlack();
-          setTimeout(() => { window.location.href = '/portfolio'; }, 420);
-        } else {
-          window.location.href = '/portfolio';
-        }
-      }, 750);
-    };
-    document.documentElement.addEventListener('portfolio-transition', handler);
-    return () => document.documentElement.removeEventListener('portfolio-transition', handler);
-  }, [isTransitioning]);
-
+  // Removed globe animation on portfolio navigation
+ 
   // Immediately check dark mode when HeroSection mounts (during navigation or initial load)
   useEffect(() => {
     // Force a check of dark mode when HeroSection is mounted
@@ -1404,9 +1382,7 @@ export default function HeroSection() {
   const globeStyle = {
     opacity: globeOpacity,
     transform: `translateY(${globePosition + scrollY * 0.5}px)`, // Parallax effect: globe moves down at 50% of scroll speed
-    transition: isTransitioning
-      ? 'transform 600ms ease, opacity 360ms ease'
-      : globePosition > 0
+    transition: globePosition > 0
         ? 'opacity 1.5s ease-in-out, transform 3.5s cubic-bezier(0.19, 1, 0.22, 1)'
         : 'opacity 1.5s ease-in-out'
   };

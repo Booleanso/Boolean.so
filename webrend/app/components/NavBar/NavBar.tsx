@@ -152,13 +152,6 @@ export default function NavBar({ serverUser }: NavBarProps) {
               </Link>
               <Link
                 href="/portfolio"
-                onClick={(e) => {
-                  if (pathname === '/') {
-                    e.preventDefault();
-                    const evt = new CustomEvent('portfolio-transition');
-                    document.documentElement.dispatchEvent(evt);
-                  }
-                }}
                 className={`nav-button marketplace-button ${pathname.startsWith('/portfolio') ? 'active' : ''}`}
               >
                 Portfolio
@@ -268,13 +261,6 @@ export default function NavBar({ serverUser }: NavBarProps) {
               </Link>
               <Link 
                 href="/portfolio"
-                onClick={(e) => {
-                  if (pathname === '/') {
-                    e.preventDefault();
-                    const evt = new CustomEvent('portfolio-transition');
-                    document.documentElement.dispatchEvent(evt);
-                  }
-                }}
                 className={`nav-button marketplace-button ${pathname.startsWith('/portfolio') ? 'active' : ''}`}
               >
                 Portfolio
