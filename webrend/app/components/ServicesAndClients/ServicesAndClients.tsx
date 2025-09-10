@@ -305,8 +305,8 @@ export default function ServicesAndClients() {
                 }}
               >
               <Image 
-                src="/images/marketplace.png" 
-                alt="WebRend Marketplace Preview" 
+                src="/images/webrend_banner.png" 
+                alt="WebRend Preview" 
                 width={1200}
                 height={700}
                 className={styles.showcaseImage}

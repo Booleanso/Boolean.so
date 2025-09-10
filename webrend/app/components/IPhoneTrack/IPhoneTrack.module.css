@@ -139,7 +139,7 @@
 .phoneCopyDesc { font-size: clamp(0.85rem, 1.1vw, 1rem); line-height: 1.6; opacity: 0.85; }
 .phoneCopyLabel { font-size: clamp(0.8rem, 1vw, 0.95rem); opacity: 0.7; letter-spacing: 0.02em; margin-bottom: 0.25rem; }
 
-.timelineWrapper { position: absolute; top: clamp(20px, 6vh, 80px); left: 50%; transform: translateX(-50%); width: min(900px, 80vw); pointer-events: none; }
+.timelineWrapper { position: absolute; top: clamp(20px, 6vh, 80px); left: 50%; transform: translateX(-50%); width: min(900px, 80vw); pointer-events: none; z-index: 100; }
 .timeline { display: flex; align-items: center; gap: 10px; }
 .timelineStep { display: flex; align-items: center; gap: 10px; flex: 1 1 0; }
 .timelineDot { width: 10px; height: 10px; border-radius: 50%; background: #111111; box-shadow: 0 0 0 2px rgba(0,0,0,0.08); }

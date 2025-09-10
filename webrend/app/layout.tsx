@@ -60,6 +60,10 @@ export default async function RootLayout({
         <div className="telescope-outer" aria-hidden="true">
           <div className="telescope-vignette" />
         </div>
+        {/* Global viewport blur at top */}
+        <div className="telescope-top-outer" aria-hidden="true">
+          <div className="telescope-top-vignette" />
+        </div>
       </body>
     </html>
   );
