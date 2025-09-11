@@ -24,6 +24,7 @@ interface AddProjectRequestBody {
   tags: string[];
   dateCompleted: string; 
   featured: boolean;
+  inProgress?: boolean;
   // New fields
   clientName?: string;
   clientLinkedIn?: string; // Client's LinkedIn URL
@@ -153,6 +154,7 @@ export async function POST(request: NextRequest) {
       tags: body.tags,
       dateCompleted: Timestamp.fromDate(new Date(body.dateCompleted)), 
       featured: body.featured || false,
+      inProgress: !!body.inProgress,
       createdAt: Timestamp.now(),
       projectTypes: normalizeProjectTypes(body.projectTypes),
       // Add new fields, providing defaults or null for optional ones

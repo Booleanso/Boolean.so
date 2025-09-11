@@ -25,6 +25,7 @@ interface PortfolioProject {
   featured: boolean;
   projectType?: string | null;
   projectTypes?: string[];
+  inProgress?: boolean;
 }
 
 interface PortfolioClientPageProps {
@@ -217,16 +218,45 @@ export default function PortfolioClientPage({
                     href={`/portfolio/projects/${project.slug}`}
                     className={styles.cardImageLinkWrapper} // New style for link covering image
                   >
-                    <div className={styles.cardImageWrapper}>
+                    <div className={`${styles.cardImageWrapper} ${project.inProgress ? styles.inProgress : ''}`}>
                         <Image 
                           src={imageSrc} 
                           alt={project.title}
                           fill
                           sizes="(max-width: 768px) 100vw, 50vw"
-                          className={styles.cardImage}
+                          className={`${styles.cardImage} ${project.inProgress ? styles.cardImageBlur : ''}`}
                           onError={handleImageError} 
                         />
                         <div className={styles.cardOverlay}></div>
+                        {project.inProgress && (
+                          <div className={styles.inProgressBadge} aria-label="In Progress">In Progress</div>
+                        )}
+                        {project.projectUrl && (
+                          <span
+                            className={styles.liveSiteIconLink}
+                            role="link"
+                            tabIndex={0}
+                            aria-label="Open live site"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              window.open(project.projectUrl as string, '_blank', 'noopener,noreferrer');
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                window.open(project.projectUrl as string, '_blank', 'noopener,noreferrer');
+                              }
+                            }}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                              <path d="M15 3h6v6"/>
+                              <path d="M10 14L21 3"/>
+                            </svg>
+                          </span>
+                        )}
                       </div>
                   </Link>
                   {/* Content area below image */}
@@ -242,21 +272,7 @@ export default function PortfolioClientPage({
                         <span key={tag} className={styles.cardTag}>{tag}</span>
                       ))}
                     </div>
-                    {project.projectUrl && (
-                      <a 
-                        href={project.projectUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className={styles.liveSiteIconLink}
-                        aria-label="Open live site"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                          <path d="M15 3h6v6"/>
-                          <path d="M10 14L21 3"/>
-                        </svg>
-                      </a>
-                    )}
+                    {/* Live site icon moved into image overlay above */}
                   </div>
                 </div>
               );

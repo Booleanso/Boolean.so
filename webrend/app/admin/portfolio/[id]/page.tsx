@@ -16,6 +16,7 @@ interface ProjectForm {
   projectTypes: string[];
   dateCompleted: string; // YYYY-MM-DD
   featured: boolean;
+  inProgress: boolean;
 
   clientName: string;
   clientLinkedIn: string;
@@ -128,6 +129,7 @@ export default function EditPortfolioProjectPage() {
           projectTypes: Array.isArray(data.projectTypes) ? data.projectTypes : [],
           dateCompleted: toDateInput(data.dateCompleted),
           featured: !!data.featured,
+          inProgress: !!data.inProgress,
 
           clientName: data.clientName || '',
           clientLinkedIn: data.clientLinkedIn || '',
@@ -213,6 +215,7 @@ export default function EditPortfolioProjectPage() {
       projectTypes: Array.isArray(form.projectTypes) ? form.projectTypes : [],
       dateCompleted: form.dateCompleted,
       featured: !!form.featured,
+      inProgress: !!form.inProgress,
 
       clientName: form.clientName || null,
       clientLinkedIn: form.clientLinkedIn || null,
@@ -344,6 +347,7 @@ export default function EditPortfolioProjectPage() {
             </Field>
             <Field label="Date Completed"><input type="date" className={styles.input} value={form.dateCompleted} onChange={e => set('dateCompleted', e.target.value)} /></Field>
             <Field label="Featured"><input type="checkbox" checked={form.featured} onChange={e => set('featured', e.target.checked)} /></Field>
+            <Field label="In Progress"><input type="checkbox" checked={form.inProgress} onChange={e => set('inProgress', e.target.checked)} /></Field>
             <Field label="Description"><textarea className={styles.textarea} value={form.description} onChange={e => set('description', e.target.value)} /></Field>
           </div>
         </div>

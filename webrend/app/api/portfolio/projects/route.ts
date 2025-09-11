@@ -14,6 +14,7 @@ interface PortfolioProject {
   projectTypes?: string[];
   dateCompleted: Date;
   featured: boolean;
+  inProgress?: boolean;
 }
 
 export async function GET() {
@@ -49,6 +50,7 @@ export async function GET() {
         projectTypes: Array.isArray(data.projectTypes) ? data.projectTypes : [],
         dateCompleted: dateCompleted instanceof Date ? dateCompleted : new Date(),
         featured: data.featured || false,
+        inProgress: !!data.inProgress,
       } as PortfolioProject;
     });
 

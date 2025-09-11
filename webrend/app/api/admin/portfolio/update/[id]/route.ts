@@ -43,6 +43,11 @@ export async function POST(req: NextRequest, { params }: Params) {
       else delete payload.dateCompleted; // invalid
     }
 
+    // Ensure inProgress is boolean if provided
+    if (payload && 'inProgress' in payload) {
+      payload.inProgress = !!payload.inProgress;
+    }
+
     // Auto-generate slug from title
     if (payload.title) {
       let newSlug = generateSlug(String(payload.title));

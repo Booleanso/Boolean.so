@@ -16,6 +16,7 @@ function buildDefaultProject() {
     projectTypes: [] as string[],
     dateCompleted: null,
     featured: false,
+    inProgress: false,
     clientName: '',
     clientLinkedIn: '',
     clientInstagram: '',
