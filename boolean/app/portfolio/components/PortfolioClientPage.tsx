@@ -106,13 +106,13 @@ export default function PortfolioClientPage({
 
         // Public repos in org
         try {
-          const reposResponse = await axios.get('https://api.github.com/orgs/WebRendHQ/repos?per_page=100');
+          const reposResponse = await axios.get('https://api.github.com/orgs/Booleanso/repos?per_page=100');
           const repos = reposResponse.data || [];
           const publicLocationPromises = repos.map(async (repo: { name: string; default_branch?: string }) => {
             const branchesToTry = [repo.default_branch, 'main', 'master', 'development', 'dev'].filter(Boolean) as string[];
             for (const branch of branchesToTry) {
               try {
-                const url = `https://raw.githubusercontent.com/WebRendHQ/${repo.name}/${branch}/location.json`;
+                const url = `https://raw.githubusercontent.com/Booleanso/${repo.name}/${branch}/location.json`;
                 const locationResponse = await axios.get(url, { timeout: 5000 });
                 if (locationResponse.status === 200 && locationResponse.data) {
                   const d = locationResponse.data;

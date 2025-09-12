@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import OpenAI from 'openai/index.mjs';
 import fetch from 'node-fetch';
 import admin from 'firebase-admin';
 import * as fs from 'fs';

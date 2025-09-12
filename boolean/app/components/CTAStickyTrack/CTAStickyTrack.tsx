@@ -69,14 +69,14 @@ export default function CTAStickyTrack() {
       } catch {}
 
       try {
-        const reposResponse = await fetch('https://api.github.com/orgs/WebRendHQ/repos?per_page=100', { cache: 'no-store' });
+        const reposResponse = await fetch('https://api.github.com/orgs/Booleanso/repos?per_page=100', { cache: 'no-store' });
         if (reposResponse.ok) {
           const repos = await reposResponse.json();
           const branchesToTry = (repo:any) => [repo.default_branch, 'main', 'master', 'development', 'dev'].filter(Boolean);
           const fetchLoc = async (repo:any) => {
             for (const branch of branchesToTry(repo)) {
               try {
-                const url = `https://raw.githubusercontent.com/WebRendHQ/${repo.name}/${branch}/location.json`;
+                const url = `https://raw.githubusercontent.com/Booleanso/${repo.name}/${branch}/location.json`;
                 const r = await fetch(url, { cache: 'no-store' });
                 if (r.ok) {
                   const data = await r.json();

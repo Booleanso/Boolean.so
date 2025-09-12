@@ -1,5 +1,5 @@
 // Server component (no 'use client' directive)
-import { db } from '../../app/lib/firebase-admin';
+import { db } from '../lib/firebase-admin';
 import PortfolioClientPage from './components/PortfolioClientPage';
 import { DocumentData, Timestamp } from 'firebase-admin/firestore';
 

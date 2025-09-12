@@ -1081,8 +1081,8 @@ export default function HeroSection() {
         let totalReposScanned = 0;
         
         // 1. Fetch public repos from the organization
-        console.log('Fetching repositories from WebRendHQ organization...');
-        const reposResponse = await axios.get('https://api.github.com/orgs/WebRendHQ/repos?per_page=100');
+        console.log('Fetching repositories from Booleanso organization...');
+        const reposResponse = await axios.get('https://api.github.com/orgs/Booleanso/repos?per_page=100');
         const repos = reposResponse.data;
         totalReposScanned += repos.length;
         
@@ -1104,7 +1104,7 @@ export default function HeroSection() {
           // Try each branch name until we find a location.json
           for (const branch of branchesToTry) {
             try {
-              const url = `https://raw.githubusercontent.com/WebRendHQ/${repo.name}/${branch}/location.json`;
+              const url = `https://raw.githubusercontent.com/Booleanso/${repo.name}/${branch}/location.json`;
               console.log(`Trying to fetch: ${url}`);
               
               const locationResponse = await axios.get(url, { timeout: 5000 });
@@ -1162,7 +1162,7 @@ export default function HeroSection() {
           // Try each branch name until we find privatereposlocation.json
           for (const branch of branchesToTry) {
             try {
-              const privateReposUrl = `https://raw.githubusercontent.com/WebRendHQ/WebRend.com/${branch}/privatereposlocation.json`;
+              const privateReposUrl = `https://raw.githubusercontent.com/Booleanso/Boolean.so/${branch}/privatereposlocation.json`;
               console.log(`Trying to fetch private repos from: ${privateReposUrl}`);
               
               const privateReposResponse = await axios.get(privateReposUrl, { timeout: 5000 });
