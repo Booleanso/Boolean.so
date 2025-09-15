@@ -32,4 +32,9 @@
   .fieldsGrid { grid-template-columns: 1fr; }
 }
 
+:global(.light-theme) .item { color: #111; background: #fff; }
+:global(.light-theme) .titleRow strong { color: #111; }
+:global(.light-theme) .subtle { color: #666; }
+:global(.light-theme) .badge { background: #eef5ff; color: #0a58ca; border-color: rgba(0,0,0,.08); }
+
 

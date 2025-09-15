@@ -1470,7 +1470,7 @@ export default function HeroSection() {
             <div className={styles.loading}>Loading globe...</div>
           ) : (
             <Canvas
-              camera={{ position: [0, 0, 5.5], fov: isMobile ? 75 : 70 }}
+              camera={{ position: [0, 0, isMobile ? 5.0 : 5.5], fov: isMobile ? 62 : 70 }}
               dpr={[1, lowPerf ? 1.25 : 1.75]}
               gl={{ antialias: !lowPerf, powerPreference: lowPerf ? 'low-power' : 'high-performance', alpha: true, stencil: false, depth: true, preserveDrawingBuffer: true }}
             >

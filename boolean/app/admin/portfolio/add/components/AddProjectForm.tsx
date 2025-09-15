@@ -14,6 +14,7 @@ interface FormData {
   projectTypes: string[]; // Hidden project types used for filtering
   dateCompleted: string; // Input as YYYY-MM-DD string
   featured: boolean;
+  inProgress: boolean; // added
   // New fields for case study
   clientName: string;
   clientLinkedIn: string; // New field for client's LinkedIn URL
@@ -59,17 +60,16 @@ interface FormData {
   techAdvantages: string;
   ctaText: string;
   ctaLink: string;
-  // Extra fields from case study spec
   clientLogoUrl: string;
-  heroHeadline: string;
+  heroHeadline: string; // added parity
   role: string;
-  deliverables: string; // comma-separated
-  technologyStack: string; // comma-separated
+  deliverables: string;
+  technologyStack: string;
   innovations: string;
   processOutline: string;
   businessResults: string;
   technicalResults: string;
-  investors: string; // comma-separated
+  investors: string;
   growthPotential: string;
   whyCritical: string;
 }
@@ -84,6 +84,7 @@ export default function AddProjectForm() {
     projectTypes: [],
     dateCompleted: '',
     featured: false,
+    inProgress: false,
     clientName: '',
     clientLinkedIn: '',
     clientInstagram: '',
@@ -153,6 +154,8 @@ export default function AddProjectForm() {
       const input = e.target as HTMLInputElement;
       if (name === 'featured') {
         setFormData(prev => ({ ...prev, featured: input.checked }));
+      } else if (name === 'inProgress') {
+        setFormData(prev => ({ ...prev, inProgress: input.checked }));
       } else if (name.startsWith('projectTypes.')) {
         const typeValue = name.split('.')[1];
         setFormData(prev => {
@@ -293,6 +296,16 @@ export default function AddProjectForm() {
             return url ? { title: title || url, url } : null;
           }).filter(Boolean),
           awards: formData.awards.split(',').map(v => v.trim()).filter(Boolean),
+          innovations: formData.innovations,
+          processOutline: formData.processOutline,
+          businessResults: formData.businessResults,
+          technicalResults: formData.technicalResults,
+          investors: formData.investors.split(',').map(v => v.trim()).filter(Boolean),
+          growthPotential: formData.growthPotential,
+          whyCritical: formData.whyCritical,
+          deliverables: formData.deliverables.split(',').map(v => v.trim()).filter(Boolean),
+          technologyStack: formData.technologyStack.split(',').map(v => v.trim()).filter(Boolean),
+          version: (formData as any).version || undefined,
         }),
       });
 
@@ -313,6 +326,7 @@ export default function AddProjectForm() {
         projectTypes: [],
         dateCompleted: '',
         featured: false,
+        inProgress: false,
         clientName: '',
         clientLinkedIn: '',
         clientInstagram: '',
@@ -500,6 +514,18 @@ export default function AddProjectForm() {
         <label htmlFor="featured">Featured Project?</label>
       </div>
 
+      <div className={styles.formGroupCheckbox}>
+        <input
+          type="checkbox"
+          id="inProgress"
+          name="inProgress"
+          checked={formData.inProgress}
+          onChange={handleChange}
+          className={styles.checkbox}
+        />
+        <label htmlFor="inProgress">In Progress?</label>
+      </div>
+
       <hr className={styles.divider} />
       <h2>Case Study Details</h2>
 
@@ -565,6 +591,19 @@ export default function AddProjectForm() {
           value={formData.clientX}
           onChange={handleChange}
           className={styles.input}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="keyFeatures">Key Features (comma-separated)</label>
+        <input
+          type="text"
+          id="keyFeatures"
+          name="keyFeatures"
+          value={formData.keyFeatures}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="Feature A, Feature B, Feature C"
         />
       </div>
 
@@ -1070,6 +1109,161 @@ export default function AddProjectForm() {
             className={styles.input}
           />
         </div>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="heroHeadline">Hero Headline</label>
+        <input
+          type="text"
+          id="heroHeadline"
+          name="heroHeadline"
+          value={formData.heroHeadline}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="Concise headline for hero section"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="version">Version</label>
+        <input
+          type="text"
+          id="version"
+          name="version"
+          value={(formData as any).version || ''}
+          onChange={handleChange}
+          className={styles.input}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="role">Role</label>
+        <input
+          type="text"
+          id="role"
+          name="role"
+          value={formData.role}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="Full-stack development & product delivery"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="deliverables">Deliverables (comma-separated)</label>
+        <input
+          type="text"
+          id="deliverables"
+          name="deliverables"
+          value={formData.deliverables}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="Wireframes, UI/UX, Frontend, Backend, Deployment, Firestore schema & indexes"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="technologyStack">Technology Stack (comma-separated)</label>
+        <input
+          type="text"
+          id="technologyStack"
+          name="technologyStack"
+          value={formData.technologyStack}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="Next.js, React, Firebase, Firestore, Stripe, Tailwind, ShadCN UI"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="innovations">Innovations</label>
+        <textarea
+          id="innovations"
+          name="innovations"
+          value={formData.innovations}
+          onChange={handleChange}
+          rows={3}
+          className={styles.textarea}
+          placeholder="Rapid MVP build, optimized Firestore queries, scalable schema for reviews and profiles"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="processOutline">Process Outline</label>
+        <textarea
+          id="processOutline"
+          name="processOutline"
+          value={formData.processOutline}
+          onChange={handleChange}
+          rows={3}
+          className={styles.textarea}
+          placeholder="Discovery → Schema design → UI/UX → Auth & reviews system → Deployment → Launch prep"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="businessResults">Business Results</label>
+        <textarea
+          id="businessResults"
+          name="businessResults"
+          value={formData.businessResults}
+          onChange={handleChange}
+          rows={3}
+          className={styles.textarea}
+          placeholder="Positioned to disrupt coach discovery by introducing transparency and accountability"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="technicalResults">Technical Results</label>
+        <textarea
+          id="technicalResults"
+          name="technicalResults"
+          value={formData.technicalResults}
+          onChange={handleChange}
+          rows={3}
+          className={styles.textarea}
+          placeholder="Real-time platform with scalable, secure backend and modern UI"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="investors">Investors (comma-separated)</label>
+        <input
+          type="text"
+          id="investors"
+          name="investors"
+          value={formData.investors}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="None yet"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="growthPotential">Growth Potential</label>
+        <textarea
+          id="growthPotential"
+          name="growthPotential"
+          value={formData.growthPotential}
+          onChange={handleChange}
+          rows={3}
+          className={styles.textarea}
+          placeholder="High — expansion to multiple sports, premium coach tools, and partnerships"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="whyCritical">Why Critical</label>
+        <textarea
+          id="whyCritical"
+          name="whyCritical"
+          value={formData.whyCritical}
+          onChange={handleChange}
+          rows={3}
+          className={styles.textarea}
+          placeholder="Fills a long-standing gap in sports coaching by giving families verified insights before committing"
+        />
       </div>
 
       </div>

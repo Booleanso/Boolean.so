@@ -319,15 +319,6 @@ export default function EditPortfolioProjectPage() {
             <Field label="Hero Image URL"><input className={styles.input} value={form.imageUrl} onChange={e => set('imageUrl', e.target.value)} /></Field>
             <Field label="Project URL"><input className={styles.input} value={form.projectUrl} onChange={e => set('projectUrl', e.target.value)} /></Field>
             <Field label="Tags (comma-separated)"><input className={styles.input} value={form.tagsCSV} onChange={e => set('tagsCSV', e.target.value)} /></Field>
-            <Field label="Project Type (hidden)">
-              <select className={styles.input} value={form.projectType} onChange={e => set('projectType', e.target.value)}>
-                <option value="">None</option>
-                <option value="Websites">Websites</option>
-                <option value="Apps">Apps</option>
-                <option value="Software">Software</option>
-                <option value="Firmware">Firmware</option>
-              </select>
-            </Field>
             <Field label="Project Types (hidden)">
               <div style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap' }}>
                 {['Websites', 'Apps', 'Software', 'Firmware'].map(opt => (
@@ -356,9 +347,11 @@ export default function EditPortfolioProjectPage() {
         <Section title="Case Study">
           <div className={styles.fieldsGrid}>
             <Field label="Client Name"><input className={styles.input} value={form.clientName} onChange={e => set('clientName', e.target.value)} /></Field>
+            <Field label="Client Logo URL"><input className={styles.input} value={form.clientLogoUrl} onChange={e => set('clientLogoUrl', e.target.value)} /></Field>
             <Field label="Client LinkedIn"><input className={styles.input} value={form.clientLinkedIn} onChange={e => set('clientLinkedIn', e.target.value)} /></Field>
             <Field label="Client Instagram"><input className={styles.input} value={form.clientInstagram} onChange={e => set('clientInstagram', e.target.value)} /></Field>
             <Field label="Client X (Twitter)"><input className={styles.input} value={form.clientX} onChange={e => set('clientX', e.target.value)} /></Field>
+            <Field label="Hero Headline"><input className={styles.input} value={form.heroHeadline} onChange={e => set('heroHeadline', e.target.value)} /></Field>
             <Field label="Key Features (comma-separated)"><input className={styles.input} value={form.keyFeaturesCSV} onChange={e => set('keyFeaturesCSV', e.target.value)} /></Field>
             <Field label="Project Goal"><textarea className={styles.textarea} value={form.projectGoal} onChange={e => set('projectGoal', e.target.value)} /></Field>
             <Field label="Solution"><textarea className={styles.textarea} value={form.solution} onChange={e => set('solution', e.target.value)} /></Field>
@@ -428,6 +421,40 @@ export default function EditPortfolioProjectPage() {
             <Field label="Tech Advantages"><textarea className={styles.textarea} value={form.techAdvantages} onChange={e => set('techAdvantages', e.target.value)} /></Field>
             <Field label="CTA Text"><input className={styles.input} value={form.ctaText} onChange={e => set('ctaText', e.target.value)} /></Field>
             <Field label="CTA Link"><input className={styles.input} value={form.ctaLink} onChange={e => set('ctaLink', e.target.value)} /></Field>
+            {/* Spec fields */}
+            <Field label="Version">
+              <input className={styles.input} value={(form as any).version || ''} onChange={e => set('version' as any, e.target.value)} />
+            </Field>
+            <Field label="Role">
+              <input className={styles.input} value={form.role} onChange={e => set('role', e.target.value)} />
+            </Field>
+            <Field label="Deliverables (comma-separated)">
+              <input className={styles.input} value={form.deliverablesCSV} onChange={e => set('deliverablesCSV', e.target.value)} />
+            </Field>
+            <Field label="Technology Stack (comma-separated)">
+              <input className={styles.input} value={form.technologyStackCSV} onChange={e => set('technologyStackCSV', e.target.value)} />
+            </Field>
+            <Field label="Innovations">
+              <textarea className={styles.textarea} value={form.innovations} onChange={e => set('innovations', e.target.value)} />
+            </Field>
+            <Field label="Process Outline">
+              <textarea className={styles.textarea} value={form.processOutline} onChange={e => set('processOutline', e.target.value)} />
+            </Field>
+            <Field label="Business Results">
+              <textarea className={styles.textarea} value={form.businessResults} onChange={e => set('businessResults', e.target.value)} />
+            </Field>
+            <Field label="Technical Results">
+              <textarea className={styles.textarea} value={form.technicalResults} onChange={e => set('technicalResults', e.target.value)} />
+            </Field>
+            <Field label="Investors (comma-separated)">
+              <input className={styles.input} value={form.investorsCSV} onChange={e => set('investorsCSV', e.target.value)} />
+            </Field>
+            <Field label="Growth Potential">
+              <textarea className={styles.textarea} value={form.growthPotential} onChange={e => set('growthPotential', e.target.value)} />
+            </Field>
+            <Field label="Why Critical">
+              <textarea className={styles.textarea} value={form.whyCritical} onChange={e => set('whyCritical', e.target.value)} />
+            </Field>
           </div>
         </Section>
       </div>

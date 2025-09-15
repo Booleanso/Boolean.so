@@ -2,6 +2,7 @@
   max-width: 960px;
   margin: 0 auto;
   padding: 5rem 5% 3rem; /* extra top padding for island navbar */
+  color: #111;
 }
 
 .header {
@@ -11,10 +12,11 @@
 .title {
   font-size: 2rem;
   margin: 0 0 0.25rem;
+  color: #111;
 }
 
 .subtitle {
-  color: #666;
+  color: #555;
   margin: 0;
 }
 
@@ -32,7 +34,7 @@
   background: rgba(255,255,255,0.9);
   backdrop-filter: blur(6px);
   text-decoration: none;
-  color: inherit;
+  color: #111;
   transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 
@@ -45,11 +47,23 @@
 .card h2 {
   margin: 0 0 .5rem;
   font-size: 1.2rem;
+  color: #111;
 }
 
 .card p {
   margin: 0;
-  color: #777;
+  color: #666;
 }
+
+:global(.light-theme) .title { color: #111; }
+:global(.light-theme) .subtitle { color: #555; }
+:global(.light-theme) .card { color: #111; background: rgba(255,255,255,0.95); }
+:global(.light-theme) .card p { color: #666; }
+:global(.dark-theme) .card h2 { color: #fff; }
+
+.card, .card * { color: inherit; }
+:global(.light-theme) .card { color: #111; }
+:global(.dark-theme) .card { color: #fff; background: rgba(0,0,0,0.6); border-color: rgba(255,255,255,0.12); }
+:global(.dark-theme) .card p { color: #ccc; }
 
 

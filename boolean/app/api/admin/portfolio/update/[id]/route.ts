@@ -6,13 +6,13 @@ import { verifyUser } from '../../../../../utils/auth-utils';
 
 interface Params { params: { id: string } }
 
-export async function POST(req: NextRequest, { params }: Params) {
+export async function POST(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const user = await verifyUser();
     if (user?.email !== 'ceo@webrend.com') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
-    const { id } = params;
+    const { id } = await context.params;
     const payload = await req.json();
     // Prevent overriding immutable fields
     delete payload.id;

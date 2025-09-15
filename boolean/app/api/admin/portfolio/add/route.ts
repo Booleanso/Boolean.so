@@ -146,6 +146,9 @@ export async function POST(request: NextRequest) {
       return Array.from(set);
     };
 
+    // Optional version string for internal tracking
+    const version = (body as any).version || null;
+
     const projectData = {
       title: body.title,
       description: body.description,
@@ -216,6 +219,8 @@ export async function POST(request: NextRequest) {
       techAdvantages: body.techAdvantages || null,
       ctaText: body.ctaText || null,
       ctaLink: body.ctaLink || null,
+      // Version
+      version,
     };
 
     // --- Optional: Check for slug uniqueness (important for production) ---

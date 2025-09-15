@@ -389,391 +389,394 @@ export default async function ProjectPage({ params }: Props) {
   ];
 
   return (
-    <article className={styles.caseStudyContainer}>
-      {/* --- Hero Section --- */}
-      <header className={styles.heroSection}>
-        <div className={styles.heroImageWrapper}>
-          <Image 
-            src={heroImageUrl} 
-            alt={`${project.title} - Hero Image`}
-            fill
-            priority
-            className={styles.heroImage}
-            sizes="100vw"
-          />
-          <div className={styles.heroOverlay}></div>
-        </div>
-        <div className={styles.heroContent}>
-          {/* Minimal hero: hide title/description/meta visually */}
-          {/* Tags removed from hero for a cleaner header */}
-          
-          {/* Remove CTA buttons entirely */}
-          {/* Intentionally blank to keep spacing minimal */}
-        </div>
-      </header>
+    <>
+      <style>{`body { overflow-x: hidden; }`}</style>
+      <article className={styles.caseStudyContainer}>
+        {/* --- Hero Section --- */}
+        <header className={styles.heroSection}>
+          <div className={styles.heroImageWrapper}>
+            <Image 
+              src={heroImageUrl} 
+              alt={`${project.title} - Hero Image`}
+              fill
+              priority
+              className={styles.heroImage}
+              sizes="100vw"
+            />
+            <div className={styles.heroOverlay}></div>
+          </div>
+          <div className={styles.heroContent}>
+            {/* Minimal hero: hide title/description/meta visually */}
+            {/* Tags removed from hero for a cleaner header */}
+            
+            {/* Remove CTA buttons entirely */}
+            {/* Intentionally blank to keep spacing minimal */}
+          </div>
+        </header>
 
-      {/* --- Case Study Document Layout --- */}
-      <div className={`${styles.mainContent} ${styles.withSideBorders}`}>
-        <section className={`${styles.docSection} ${styles.sectionBlock}`}>
-          <div className={styles.docGrid}>
-            <div>
-              <p className={styles.kicker}>Executive summary</p>
-              <h2 className={styles.docTitle}>{project.title}</h2>
-              <div className={styles.body}><p>{project.description}</p></div>
+        {/* --- Case Study Document Layout --- */}
+        <div className={`${styles.mainContent} ${styles.withSideBorders}`}>
+          <section className={`${styles.docSection} ${styles.sectionBlock}`}>
+            <div className={styles.docGrid}>
+              <div>
+                <p className={styles.kicker}>Executive summary</p>
+                <h2 className={styles.docTitle}>{project.title}</h2>
+                <div className={styles.body}><p>{project.description}</p></div>
+              </div>
+              <aside className={styles.metaCard}>
+                {/* Optional: Client logo */}
+                {project.clientLogoUrl && isValidImageUrl(project.clientLogoUrl) && (
+                  <div style={{ marginBottom: '.75rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                    <img src={project.clientLogoUrl} alt="Client logo" style={{ height: 32, width: 'auto', opacity: 0.9 }} />
+                  </div>
+                )}
+                <div className={styles.metaRow}><span>Client</span><strong>{project.clientName || '—'}</strong></div>
+                <div className={styles.metaRow}><span>Completed</span><strong>{formattedDate}</strong></div>
+                {project.projectLength && (<div className={styles.metaRow}><span>Timeline</span><strong>{project.projectLength}</strong></div>)}
+                {project.projectUrl && (
+                  <div className={styles.metaRow}><span>Live</span><a href={project.projectUrl} target="_blank" rel="noopener noreferrer">Visit site</a></div>
+                )}
+                {project.videoUrl && (
+                  <div className={styles.metaRow}><span>Video</span><a href={project.videoUrl} target="_blank" rel="noopener noreferrer">Watch</a></div>
+                )}
+                {project.industry && (<div className={styles.metaRow}><span>Industry</span><strong>{project.industry}</strong></div>)}
+                {project.companyStage && (<div className={styles.metaRow}><span>Company Stage</span><strong>{project.companyStage}</strong></div>)}
+                {project.fundingRaised && (<div className={styles.metaRow}><span>Funding Raised</span><strong>{project.fundingRaised}</strong></div>)}
+                {project.location && (<div className={styles.metaRow}><span>Location</span><strong>{project.location}</strong></div>)}
+              </aside>
             </div>
-            <aside className={styles.metaCard}>
-              {/* Optional: Client logo */}
-              {project.clientLogoUrl && isValidImageUrl(project.clientLogoUrl) && (
-                <div style={{ marginBottom: '.75rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-                  <img src={project.clientLogoUrl} alt="Client logo" style={{ height: 32, width: 'auto', opacity: 0.9 }} />
-                </div>
-              )}
-              <div className={styles.metaRow}><span>Client</span><strong>{project.clientName || '—'}</strong></div>
-              <div className={styles.metaRow}><span>Completed</span><strong>{formattedDate}</strong></div>
-              {project.projectLength && (<div className={styles.metaRow}><span>Timeline</span><strong>{project.projectLength}</strong></div>)}
-              {project.projectUrl && (
-                <div className={styles.metaRow}><span>Live</span><a href={project.projectUrl} target="_blank" rel="noopener noreferrer">Visit site</a></div>
-              )}
-              {project.videoUrl && (
-                <div className={styles.metaRow}><span>Video</span><a href={project.videoUrl} target="_blank" rel="noopener noreferrer">Watch</a></div>
-              )}
-              {project.industry && (<div className={styles.metaRow}><span>Industry</span><strong>{project.industry}</strong></div>)}
-              {project.companyStage && (<div className={styles.metaRow}><span>Company Stage</span><strong>{project.companyStage}</strong></div>)}
-              {project.fundingRaised && (<div className={styles.metaRow}><span>Funding Raised</span><strong>{project.fundingRaised}</strong></div>)}
-              {project.location && (<div className={styles.metaRow}><span>Location</span><strong>{project.location}</strong></div>)}
-            </aside>
-          </div>
-        </section>
+          </section>
 
-        {/* Specifications grid – clean key/value rows like a PDF spec summary */}
-        <section className={styles.specsSection}>
-          <div className={styles.specsGrid}>
-            <div className={styles.kvRow}><span className={styles.kvLabel}>Project</span><span className={styles.kvValue}>{project.title}</span></div>
-            <div className={styles.kvRow}><span className={styles.kvLabel}>Client</span><span className={styles.kvValue}>{project.clientName || '—'}</span></div>
-            <div className={styles.kvRow}><span className={styles.kvLabel}>Completed</span><span className={styles.kvValue}>{formattedDate}</span></div>
-            {project.projectLength && (
-              <div className={styles.kvRow}><span className={styles.kvLabel}>Timeline</span><span className={styles.kvValue}>{project.projectLength}</span></div>
-            )}
-            {project.industry && (
-              <div className={styles.kvRow}><span className={styles.kvLabel}>Industry</span><span className={styles.kvValue}>{project.industry}</span></div>
-            )}
-            {project.companyStage && (
-              <div className={styles.kvRow}><span className={styles.kvLabel}>Stage</span><span className={styles.kvValue}>{project.companyStage}</span></div>
-            )}
-            {project.fundingRaised && (
-              <div className={styles.kvRow}><span className={styles.kvLabel}>Funding</span><span className={styles.kvValue}>{project.fundingRaised}</span></div>
-            )}
-            {project.location && (
-              <div className={styles.kvRow}><span className={styles.kvLabel}>Location</span><span className={styles.kvValue}>{project.location}</span></div>
-            )}
-            {(project.tags && project.tags.length > 0) && (
-              <div className={styles.kvRow}><span className={styles.kvLabel}>Tags</span><span className={styles.kvValue}>{project.tags.join(', ')}</span></div>
-            )}
-          </div>
-        </section>
+          {/* Specifications grid – clean key/value rows like a PDF spec summary */}
+          <section className={styles.specsSection}>
+            <div className={styles.specsGrid}>
+              <div className={styles.kvRow}><span className={styles.kvLabel}>Project</span><span className={styles.kvValue}>{project.title}</span></div>
+              <div className={styles.kvRow}><span className={styles.kvLabel}>Client</span><span className={styles.kvValue}>{project.clientName || '—'}</span></div>
+              <div className={styles.kvRow}><span className={styles.kvLabel}>Completed</span><span className={styles.kvValue}>{formattedDate}</span></div>
+              {project.projectLength && (
+                <div className={styles.kvRow}><span className={styles.kvLabel}>Timeline</span><span className={styles.kvValue}>{project.projectLength}</span></div>
+              )}
+              {project.industry && (
+                <div className={styles.kvRow}><span className={styles.kvLabel}>Industry</span><span className={styles.kvValue}>{project.industry}</span></div>
+              )}
+              {project.companyStage && (
+                <div className={styles.kvRow}><span className={styles.kvLabel}>Stage</span><span className={styles.kvValue}>{project.companyStage}</span></div>
+              )}
+              {project.fundingRaised && (
+                <div className={styles.kvRow}><span className={styles.kvLabel}>Funding</span><span className={styles.kvValue}>{project.fundingRaised}</span></div>
+              )}
+              {project.location && (
+                <div className={styles.kvRow}><span className={styles.kvLabel}>Location</span><span className={styles.kvValue}>{project.location}</span></div>
+              )}
+              {(project.tags && project.tags.length > 0) && (
+                <div className={styles.kvRow}><span className={styles.kvLabel}>Tags</span><span className={styles.kvValue}>{project.tags.join(', ')}</span></div>
+              )}
+            </div>
+          </section>
 
-        <div className={styles.sectionRule}></div>
-        <section className={`${styles.docSection} ${styles.sectionBlock}`}>
-          <p className={styles.kicker}>Objectives</p>
-          <div className={styles.body}><p>{project.projectGoal}</p></div>
-        </section>
-
-        {(project.targetAudience || project.whyNow || project.marketSize || project.industryTrends || project.competitiveLandscape) && (
-          <>
           <div className={styles.sectionRule}></div>
           <section className={`${styles.docSection} ${styles.sectionBlock}`}>
-            <p className={styles.kicker}>Market & Opportunity</p>
-            {project.marketSize && (<div className={styles.body}><p><strong>Market size</strong>: {project.marketSize}</p></div>)}
-            {project.industryTrends && (<div className={styles.body}><p><strong>Industry trends</strong>: {project.industryTrends}</p></div>)}
-            {project.competitiveLandscape && (<div className={styles.body}><p><strong>Competitive landscape</strong>: {project.competitiveLandscape}</p></div>)}
-            {project.targetAudience && (<div className={styles.body}><p><strong>Target audience</strong>: {project.targetAudience}</p></div>)}
-            {project.whyNow && (<div className={styles.body}><p><strong>Why now</strong>: {project.whyNow}</p></div>)}
+            <p className={styles.kicker}>Objectives</p>
+            <div className={styles.body}><p>{project.projectGoal}</p></div>
           </section>
-          </>
-        )}
 
-        {/* Visual narrative: multiple image placements to emulate a PDF-style layout */}
-        {groupedImages.length > 0 && (
-          <section className={styles.visualSection}>
-            {groupedImages.map((group, gi) => {
-              if (group.type === 'full') {
-                const src = group.images[0];
-                return (
-                  <div key={`full-${gi}`} className={styles.fullBleedBand}>
-                    <div className={styles.bandTopLine}></div>
-                    <div className={styles.framedBandInner}>
-                      <figure className={styles.imageFrame}>
-                        <div className={styles.imageViewport}>
-                          <Image
-                            src={src}
-                            alt={`${project.title} visual ${gi + 1}`}
-                            fill
-                            sizes="100vw"
-                            className={styles.figureImage}
-                            priority={false}
-                          />
-                        </div>
-                        <figcaption className={styles.imageCaption}>{project.title} — Figure {gi + 1}</figcaption>
-                      </figure>
-                    </div>
-                    <div className={styles.bandBottomLine}></div>
-                  </div>
-                );
-              }
-              if (group.type === 'two') {
-                return (
-                  <div key={`two-${gi}`} className={styles.twoUpGrid}>
-                    {group.images.map((src, i) => (
-                      <figure key={i} className={styles.imageFrame}>
-                        <div className={styles.imageViewport}>
-                          <Image 
-                            src={src} 
-                            alt={`${project.title} visual ${gi + 1}-${i + 1}`} 
-                            fill 
-                            sizes="(max-width: 768px) 100vw, 50vw"
-                            className={styles.figureImage} 
-                          />
-                        </div>
-                        <figcaption className={styles.imageCaption}>{project.title} — Figure {gi + 1}.{i + 1}</figcaption>
-                      </figure>
-                    ))}
-                  </div>
-                );
-              }
-              if (group.type === 'three') {
-                return (
-                  <div key={`three-${gi}`} className={styles.threeUpGrid}>
-                    {group.images.map((src, i) => (
-                      <figure key={i} className={styles.imageFrame}>
-                        <div className={styles.imageViewport}>
-                          <Image 
-                            src={src} 
-                            alt={`${project.title} visual ${gi + 1}-${i + 1}`} 
-                            fill 
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                            className={styles.figureImage} 
-                          />
-                        </div>
-                        <figcaption className={styles.imageCaption}>{project.title} — Figure {gi + 1}.{i + 1}</figcaption>
-                      </figure>
-                    ))}
-                  </div>
-                );
-              }
-              // quad
-              return (
-                <div key={`quad-${gi}`} className={styles.quadGrid}>
-                  {group.images.map((src, i) => (
-                    <figure key={i} className={styles.imageFrame}>
-                      <div className={styles.imageViewport}>
-                        <Image 
-                          src={src} 
-                          alt={`${project.title} visual ${gi + 1}-${i + 1}`} 
-                          fill 
-                          sizes="(max-width: 768px) 100vw, 25vw"
-                          className={styles.figureImage} 
-                        />
-                      </div>
-                      <figcaption className={styles.imageCaption}>{project.title} — Figure {gi + 1}.{i + 1}</figcaption>
-                    </figure>
-                  ))}
-                </div>
-              );
-            })}
-          </section>
-        )}
-
-        {/* Solution Section -> Approach */}
-        <div className={styles.sectionRule}></div>
-        <section className={styles.approachSection}>
-          <div className={styles.approachIntro}>
-            <h2 className={styles.approachTitle}>Approach</h2>
-            <p className={styles.approachDesc}>{project.solution}</p>
-          </div>
-
-          <div className={styles.twoUpGridAligned}>
-            {primaryPairImages.map((src, i) => (
-              <figure key={i} className={styles.imageFrame}>
-                <div className={styles.imageViewport}>
-                  <Image
-                    src={src}
-                    alt={`${project.title} approach visual ${i + 1}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 45vw"
-                    className={styles.figureImage}
-                  />
-                </div>
-                <figcaption className={styles.imageCaption}>{project.title} — Approach {i + 1}</figcaption>
-              </figure>
-            ))}
-          </div>
-
-          {project.keyFeatures && project.keyFeatures.length > 0 && (
-            <ul className={`${styles.featureList} ${styles.featureListWide}`}>
-              {project.keyFeatures.map((feature, index) => (
-                <li key={index} className={styles.featureItem}>{feature}</li>
-              ))}
-            </ul>
+          {(project.targetAudience || project.whyNow || project.marketSize || project.industryTrends || project.competitiveLandscape) && (
+            <>
+            <div className={styles.sectionRule}></div>
+            <section className={`${styles.docSection} ${styles.sectionBlock}`}>
+              <p className={styles.kicker}>Market & Opportunity</p>
+              {project.marketSize && (<div className={styles.body}><p><strong>Market size</strong>: {project.marketSize}</p></div>)}
+              {project.industryTrends && (<div className={styles.body}><p><strong>Industry trends</strong>: {project.industryTrends}</p></div>)}
+              {project.competitiveLandscape && (<div className={styles.body}><p><strong>Competitive landscape</strong>: {project.competitiveLandscape}</p></div>)}
+              {project.targetAudience && (<div className={styles.body}><p><strong>Target audience</strong>: {project.targetAudience}</p></div>)}
+              {project.whyNow && (<div className={styles.body}><p><strong>Why now</strong>: {project.whyNow}</p></div>)}
+            </section>
+            </>
           )}
-        </section>
 
-        {(project.challenges || project.results) && (
-          <>
-          <div className={styles.sectionRule}></div>
-          <section className={`${styles.docSection} ${styles.sectionBlock}`}>
-            {project.challenges && (
-              <>
-                <p className={styles.kicker}>Challenges</p>
-                <div className={styles.body}><p>{project.challenges}</p></div>
-              </>
-            )}
-            {project.results && (
-              <>
-                <p className={styles.kicker}>Results</p>
-                <div className={styles.body}><p>{project.results}</p></div>
-              </>
-            )}
-          </section>
-          </>
-        )}
-
-        {(project.fundingAndPartnerImpact || (project.strategicPartnerships && project.strategicPartnerships.length) || (project.accelerators && project.accelerators.length) || project.valuationChange) && (
-          <>
-          <div className={styles.sectionRule}></div>
-          <section className={`${styles.docSection} ${styles.sectionBlock}`}>
-            <p className={styles.kicker}>Funding & Partner Impact</p>
-            {project.fundingAndPartnerImpact && (<div className={styles.body}><p>{project.fundingAndPartnerImpact}</p></div>)}
-            {project.valuationChange && (<div className={styles.body}><p><strong>Valuation</strong>: {project.valuationChange}</p></div>)}
-            {project.strategicPartnerships && project.strategicPartnerships.length > 0 && (
-              <div className={styles.stackRow}>
-                {project.strategicPartnerships.map((p, i) => (<span key={i} className={styles.stackTag}>{p}</span>))}
-              </div>
-            )}
-            {project.accelerators && project.accelerators.length > 0 && (
-              <div className={styles.stackRow}>
-                {project.accelerators.map((a, i) => (<span key={i} className={styles.stackTag}>{a}</span>))}
-              </div>
-            )}
-          </section>
-          </>
-        )}
-
-        {(project.investorLogos && project.investorLogos.length > 0) || (project.mediaCoverage && project.mediaCoverage.length > 0) || (project.awards && project.awards.length > 0) ? (
-          <>
-          <div className={styles.sectionRule}></div>
-          <section className={`${styles.docSection} ${styles.sectionBlock}`}>
-            <p className={styles.kicker}>Credibility</p>
-            {project.investorLogos && project.investorLogos.length > 0 && (
-              <div className={styles.stackRow}>
-                {project.investorLogos.map((logo, i) => (
-                  <img key={i} src={logo} alt={`logo-${i}`} style={{ height: 28, width: 'auto', opacity: 0.8 }} />
-                ))}
-              </div>
-            )}
-            {project.mediaCoverage && project.mediaCoverage.length > 0 && (
-              <div className={styles.body}>
-                <ul>
-                  {project.mediaCoverage.map((m, i) => (
-                    <li key={i}><a href={m.url} target="_blank" rel="noopener noreferrer">{m.title || m.url}</a></li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {project.awards && project.awards.length > 0 && (
-              <div className={styles.stackRow}>
-                {project.awards.map((award, i) => (<span key={i} className={styles.stackTag}>{award}</span>))}
-              </div>
-            )}
-          </section>
-          </>
-        ) : null}
-
-        {project.founderStory && (
-          <>
-          <div className={styles.sectionRule}></div>
-          <section className={`${styles.docSection} ${styles.sectionBlock}`}>
-            <p className={styles.kicker}>Founder story</p>
-            <div className={styles.body}><p>{project.founderStory}</p></div>
-          </section>
-          </>
-        )}
-
-        {/* Testimonial (Optional) */}
-        {project.testimonialText && (
-          <>
-          <div className={styles.sectionRule}></div>
-          <section className={`${styles.contentSection} ${styles.testimonialSection}`}>
-            <div className={styles.testimonialCard}>
-              <div className={styles.testimonialHeader}>
-                <div className={styles.avatar} aria-hidden="true">{authorInitial}</div>
-                <div className={styles.headerMeta}>
-                  <div className={styles.stars} aria-label="5 out of 5">★★★★★</div>
-                  {(project.testimonialAuthor || project.testimonialTitle) && (
-                    <div className={styles.byline}>
-                      {project.testimonialAuthor}
-                      {project.testimonialAuthor && project.testimonialTitle && ' — '}
-                      {project.testimonialTitle}
+          {/* Visual narrative: multiple image placements to emulate a PDF-style layout */}
+          {groupedImages.length > 0 && (
+            <section className={styles.visualSection}>
+              {groupedImages.map((group, gi) => {
+                if (group.type === 'full') {
+                  const src = group.images[0];
+                  return (
+                    <div key={`full-${gi}`} className={styles.fullBleedBand}>
+                      <div className={styles.bandTopLine}></div>
+                      <div className={styles.framedBandInner}>
+                        <figure className={styles.imageFrame}>
+                          <div className={styles.imageViewport}>
+                            <Image
+                              src={src}
+                              alt={`${project.title} visual ${gi + 1}`}
+                              fill
+                              sizes="100vw"
+                              className={styles.figureImage}
+                              priority={false}
+                            />
+                          </div>
+                          <figcaption className={styles.imageCaption}>{project.title} — Figure {gi + 1}</figcaption>
+                        </figure>
+                      </div>
+                      <div className={styles.bandBottomLine}></div>
                     </div>
-                  )}
+                  );
+                }
+                if (group.type === 'two') {
+                  return (
+                    <div key={`two-${gi}`} className={styles.twoUpGrid}>
+                      {group.images.map((src, i) => (
+                        <figure key={i} className={styles.imageFrame}>
+                          <div className={styles.imageViewport}>
+                            <Image 
+                              src={src} 
+                              alt={`${project.title} visual ${gi + 1}-${i + 1}`} 
+                              fill 
+                              sizes="(max-width: 768px) 100vw, 50vw"
+                              className={styles.figureImage} 
+                            />
+                          </div>
+                          <figcaption className={styles.imageCaption}>{project.title} — Figure {gi + 1}.{i + 1}</figcaption>
+                        </figure>
+                      ))}
+                    </div>
+                  );
+                }
+                if (group.type === 'three') {
+                  return (
+                    <div key={`three-${gi}`} className={styles.threeUpGrid}>
+                      {group.images.map((src, i) => (
+                        <figure key={i} className={styles.imageFrame}>
+                          <div className={styles.imageViewport}>
+                            <Image 
+                              src={src} 
+                              alt={`${project.title} visual ${gi + 1}-${i + 1}`} 
+                              fill 
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              className={styles.figureImage} 
+                            />
+                          </div>
+                          <figcaption className={styles.imageCaption}>{project.title} — Figure {gi + 1}.{i + 1}</figcaption>
+                        </figure>
+                      ))}
+                    </div>
+                  );
+                }
+                // quad
+                return (
+                  <div key={`quad-${gi}`} className={styles.quadGrid}>
+                    {group.images.map((src, i) => (
+                      <figure key={i} className={styles.imageFrame}>
+                        <div className={styles.imageViewport}>
+                          <Image 
+                            src={src} 
+                            alt={`${project.title} visual ${gi + 1}-${i + 1}`} 
+                            fill 
+                            sizes="(max-width: 768px) 100vw, 25vw"
+                            className={styles.figureImage} 
+                          />
+                        </div>
+                        <figcaption className={styles.imageCaption}>{project.title} — Figure {gi + 1}.{i + 1}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                );
+              })}
+            </section>
+          )}
+
+          {/* Solution Section -> Approach */}
+          <div className={styles.sectionRule}></div>
+          <section className={styles.approachSection}>
+            <div className={styles.approachIntro}>
+              <h2 className={styles.approachTitle}>Approach</h2>
+              <p className={styles.approachDesc}>{project.solution}</p>
+            </div>
+
+            <div className={styles.twoUpGridAligned}>
+              {primaryPairImages.map((src, i) => (
+                <figure key={i} className={styles.imageFrame}>
+                  <div className={styles.imageViewport}>
+                    <Image
+                      src={src}
+                      alt={`${project.title} approach visual ${i + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 45vw"
+                      className={styles.figureImage}
+                    />
+                  </div>
+                  <figcaption className={styles.imageCaption}>{project.title} — Approach {i + 1}</figcaption>
+                </figure>
+              ))}
+            </div>
+
+            {project.keyFeatures && project.keyFeatures.length > 0 && (
+              <ul className={`${styles.featureList} ${styles.featureListWide}`}>
+                {project.keyFeatures.map((feature, index) => (
+                  <li key={index} className={styles.featureItem}>{feature}</li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {(project.challenges || project.results) && (
+            <>
+            <div className={styles.sectionRule}></div>
+            <section className={`${styles.docSection} ${styles.sectionBlock}`}>
+              {project.challenges && (
+                <>
+                  <p className={styles.kicker}>Challenges</p>
+                  <div className={styles.body}><p>{project.challenges}</p></div>
+                </>
+              )}
+              {project.results && (
+                <>
+                  <p className={styles.kicker}>Results</p>
+                  <div className={styles.body}><p>{project.results}</p></div>
+                </>
+              )}
+            </section>
+            </>
+          )}
+
+          {(project.fundingAndPartnerImpact || (project.strategicPartnerships && project.strategicPartnerships.length) || (project.accelerators && project.accelerators.length) || project.valuationChange) && (
+            <>
+            <div className={styles.sectionRule}></div>
+            <section className={`${styles.docSection} ${styles.sectionBlock}`}>
+              <p className={styles.kicker}>Funding & Partner Impact</p>
+              {project.fundingAndPartnerImpact && (<div className={styles.body}><p>{project.fundingAndPartnerImpact}</p></div>)}
+              {project.valuationChange && (<div className={styles.body}><p><strong>Valuation</strong>: {project.valuationChange}</p></div>)}
+              {project.strategicPartnerships && project.strategicPartnerships.length > 0 && (
+                <div className={styles.stackRow}>
+                  {project.strategicPartnerships.map((p, i) => (<span key={i} className={styles.stackTag}>{p}</span>))}
                 </div>
+              )}
+              {project.accelerators && project.accelerators.length > 0 && (
+                <div className={styles.stackRow}>
+                  {project.accelerators.map((a, i) => (<span key={i} className={styles.stackTag}>{a}</span>))}
+                </div>
+              )}
+            </section>
+            </>
+          )}
+
+          {(project.investorLogos && project.investorLogos.length > 0) || (project.mediaCoverage && project.mediaCoverage.length > 0) || (project.awards && project.awards.length > 0) ? (
+            <>
+            <div className={styles.sectionRule}></div>
+            <section className={`${styles.docSection} ${styles.sectionBlock}`}>
+              <p className={styles.kicker}>Credibility</p>
+              {project.investorLogos && project.investorLogos.length > 0 && (
+                <div className={styles.stackRow}>
+                  {project.investorLogos.map((logo, i) => (
+                    <img key={i} src={logo} alt={`logo-${i}`} style={{ height: 28, width: 'auto', opacity: 0.8 }} />
+                  ))}
+                </div>
+              )}
+              {project.mediaCoverage && project.mediaCoverage.length > 0 && (
+                <div className={styles.body}>
+                  <ul>
+                    {project.mediaCoverage.map((m, i) => (
+                      <li key={i}><a href={m.url} target="_blank" rel="noopener noreferrer">{m.title || m.url}</a></li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {project.awards && project.awards.length > 0 && (
+                <div className={styles.stackRow}>
+                  {project.awards.map((award, i) => (<span key={i} className={styles.stackTag}>{award}</span>))}
+                </div>
+              )}
+            </section>
+            </>
+          ) : null}
+
+          {project.founderStory && (
+            <>
+            <div className={styles.sectionRule}></div>
+            <section className={`${styles.docSection} ${styles.sectionBlock}`}>
+              <p className={styles.kicker}>Founder story</p>
+              <div className={styles.body}><p>{project.founderStory}</p></div>
+            </section>
+            </>
+          )}
+
+          {/* Testimonial (Optional) */}
+          {project.testimonialText && (
+            <>
+            <div className={styles.sectionRule}></div>
+            <section className={`${styles.contentSection} ${styles.testimonialSection}`}>
+              <div className={styles.testimonialCard}>
+                <div className={styles.testimonialHeader}>
+                  <div className={styles.avatar} aria-hidden="true">{authorInitial}</div>
+                  <div className={styles.headerMeta}>
+                    <div className={styles.stars} aria-label="5 out of 5">★★★★★</div>
+                    {(project.testimonialAuthor || project.testimonialTitle) && (
+                      <div className={styles.byline}>
+                        {project.testimonialAuthor}
+                        {project.testimonialAuthor && project.testimonialTitle && ' — '}
+                        {project.testimonialTitle}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <p className={`${styles.testimonialText} ${styles.quotePlain}`}>{project.testimonialText}</p>
               </div>
-              <p className={`${styles.testimonialText} ${styles.quotePlain}`}>{project.testimonialText}</p>
-            </div>
-          </section>
-          </>
-        )}
+            </section>
+            </>
+          )}
 
-        {/* Process (Optional) - Full Width */}
-        {/* Remove old masonry process; using framed visual narrative above */}
+          {/* Process (Optional) - Full Width */}
+          {/* Remove old masonry process; using framed visual narrative above */}
 
-        {(project.scalability || project.defensibility || project.barriersToEntry || project.techAdvantages) && (
-          <>
-          <div className={styles.sectionRule}></div>
-          <section className={`${styles.docSection} ${styles.sectionBlock}`}>
-            <p className={styles.kicker}>Scalability & Defensibility</p>
-            <div className={styles.infoQuadGrid}>
-              {project.scalability && (
-                <div className={styles.infoCard}>
-                  <div className={styles.infoCardTitle}>Scalability</div>
-                  <div className={styles.infoCardText}>{project.scalability}</div>
-                </div>
-              )}
-              {project.defensibility && (
-                <div className={styles.infoCard}>
-                  <div className={styles.infoCardTitle}>Defensibility</div>
-                  <div className={styles.infoCardText}>{project.defensibility}</div>
-                </div>
-              )}
-              {project.barriersToEntry && (
-                <div className={styles.infoCard}>
-                  <div className={styles.infoCardTitle}>Barriers to entry</div>
-                  <div className={styles.infoCardText}>{project.barriersToEntry}</div>
-                </div>
-              )}
-              {project.techAdvantages && (
-                <div className={styles.infoCard}>
-                  <div className={styles.infoCardTitle}>Tech advantages</div>
-                  <div className={styles.infoCardText}>{project.techAdvantages}</div>
-                </div>
-              )}
-            </div>
-          </section>
-          </>
-        )}
+          {(project.scalability || project.defensibility || project.barriersToEntry || project.techAdvantages) && (
+            <>
+            <div className={styles.sectionRule}></div>
+            <section className={`${styles.docSection} ${styles.sectionBlock}`}>
+              <p className={styles.kicker}>Scalability & Defensibility</p>
+              <div className={styles.infoQuadGrid}>
+                {project.scalability && (
+                  <div className={styles.infoCard}>
+                    <div className={styles.infoCardTitle}>Scalability</div>
+                    <div className={styles.infoCardText}>{project.scalability}</div>
+                  </div>
+                )}
+                {project.defensibility && (
+                  <div className={styles.infoCard}>
+                    <div className={styles.infoCardTitle}>Defensibility</div>
+                    <div className={styles.infoCardText}>{project.defensibility}</div>
+                  </div>
+                )}
+                {project.barriersToEntry && (
+                  <div className={styles.infoCard}>
+                    <div className={styles.infoCardTitle}>Barriers to entry</div>
+                    <div className={styles.infoCardText}>{project.barriersToEntry}</div>
+                  </div>
+                )}
+                {project.techAdvantages && (
+                  <div className={styles.infoCard}>
+                    <div className={styles.infoCardTitle}>Tech advantages</div>
+                    <div className={styles.infoCardText}>{project.techAdvantages}</div>
+                  </div>
+                )}
+              </div>
+            </section>
+            </>
+          )}
 
-        {(project.ctaText || project.ctaLink) && (
-          <>
-          <div className={styles.sectionRule}></div>
-          <section className={`${styles.docSection} ${styles.sectionBlock}`}>
-            <div className={styles.body}>
-              <p>{project.ctaText}</p>
-              {project.ctaLink && (<p><a href={project.ctaLink} target="_blank" rel="noopener noreferrer">Learn more →</a></p>)}
-            </div>
-          </section>
-          </>
-        )}
+          {(project.ctaText || project.ctaLink) && (
+            <>
+            <div className={styles.sectionRule}></div>
+            <section className={`${styles.docSection} ${styles.sectionBlock}`}>
+              <div className={styles.body}>
+                <p>{project.ctaText}</p>
+                {project.ctaLink && (<p><a href={project.ctaLink} target="_blank" rel="noopener noreferrer">Learn more →</a></p>)}
+              </div>
+            </section>
+            </>
+          )}
 
-      </div>
-    </article>
+        </div>
+      </article>
+    </>
   );
 } 

@@ -943,3 +943,60 @@
     filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
   }
 } 
+
+/* Mobile-first adjustments for hero container to avoid fixed full-screen on small devices */
+@media (max-width: 768px) {
+  .hero, .heroSection {
+    position: relative;
+    height: 100vh;
+    min-height: 640px;
+    inset: auto;
+  }
+}
+
+/* Tame the globe container defaults so it doesn't drift too far down */
+.globeContainer {
+  width: 110vw;
+  height: 110vh;
+  bottom: -55vh;
+  left: -5vw;
+  right: -5vw;
+}
+
+/* Tablet adjustments */
+@media (max-width: 1024px) {
+  .globeContainer {
+    width: 120vw;
+    height: 120vh;
+    bottom: -60vh;
+    left: -10vw;
+    right: -10vw;
+  }
+}
+
+/* Phone adjustments */
+@media (max-width: 768px) {
+  .container {
+    height: 100vh;
+    min-height: 640px;
+    padding-top: 10vh;
+  }
+  .globeContainer {
+    width: 160vw;
+    height: 80vh;
+    bottom: -36vh;
+    left: -30vw;
+    right: -30vw;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .globeContainer {
+    width: 180vw;
+    height: 75vh;
+    bottom: -34vh;
+    left: -40vw;
+    right: -40vw;
+  }
+} 
