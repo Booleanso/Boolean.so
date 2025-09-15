@@ -205,7 +205,7 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
     return (
       <div className={styles.content}>
         <div className={styles.header}>
-          <h1 className={styles.title}>WebRend Blog</h1>
+          <h1 className={styles.title}>Boolean Blog</h1>
           <p className={styles.subtitle}>
             Insights, tips, and inspiration for web developers and designers
           </p>
@@ -286,7 +286,7 @@ export default function BlogPageClient({ articles, uniqueCategories }: BlogPageC
                     </svg>
                   </button>
                 </form>
-                <h1 className={styles.title}>WebRend Blog</h1>
+                <h1 className={styles.title}>Boolean Blog</h1>
                 <p className={styles.subtitle}>
                   {searchQuery ? (
                     `Search results for "${searchQuery}"`

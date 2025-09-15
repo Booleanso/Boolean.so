@@ -1,23 +1,6 @@
 import styles from "./page.module.css";
 import HeroSection from "./components/index/HeroSection/HeroSection";
-import VideoSection from "./components/VideoSection/VideoSection";
-import ServicesAndClients from "./components/ServicesAndClients/ServicesAndClients";
-// Removed legacy IPhone component
-import BlogPreview from "./components/BlogPreview/BlogPreview";
-import ServicesCardsSection from "./components/ServicesCardsSection/ServicesCardsSection";
-import PortfolioCarousel from "./components/PortfolioCarousel/PortfolioCarousel";
-import PortfolioPreview from "./components/PortfolioPreview/PortfolioPreview";
-// import InstagramFeed from "./components/InstagramFeed/InstagramFeed";
-// import FAQ from "./components/FAQ/FAQ";
-// import ContactUs from "./components/ContactUs/ContactUs"; // Commented out - "Let's work together" section removed
-import Footer from "./components/Footer/Footer";
-import ScrollCodeSection from "./components/ScrollCodeSection/ScrollCodeSection";
-import CTAStickyTrack from "./components/CTAStickyTrack/CTAStickyTrack";
-import FallingTrack from "./components/FallingTrack/FallingTrack";
-import IPhoneTrack from "./components/IPhoneTrack/IPhoneTrack";
-import ComingSoonTrack from "./components/ComingSoonTrack/ComingSoonTrack";
-import Testimonials from "./components/Testimonials/Testimonials";
-import ForceRemountOnPath from "./components/ForceRemountOnPath";
+// Split: everything after hero is moved to /vsl
 
 import { db } from './lib/firebase-admin';
 import { DocumentData, Timestamp } from 'firebase-admin/firestore';
@@ -96,58 +79,16 @@ async function getFeaturedProjects(): Promise<PortfolioProject[]> {
 }
 
 export default async function Home() {
-  // Fetch featured projects on the server
+  // Optionally still fetch featured projects if needed later
   const featuredProjects = await getFeaturedProjects();
 
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <section id="hero">
+    <div className={styles.page} style={{ height: '100vh', overflow: 'hidden' }}>
+      <main className={styles.main} style={{ height: '100vh', overflow: 'hidden' }}>
+        <section id="hero" style={{ height: '100vh', overflow: 'hidden' }}>
           <HeroSection />
         </section>
-        <section id="scroll-code">
-          <ScrollCodeSection />
-        </section>
-        <section id="services-and-clients">
-          <ServicesAndClients />
-        </section>
-        <section id="iphone-track">
-          <ForceRemountOnPath>
-            <IPhoneTrack />
-          </ForceRemountOnPath>
-        </section>
-        {/* iPhone section removed */}
-        <section id="falling-track">
-          <FallingTrack />
-        </section>
-        <section id="services">
-          <ServicesCardsSection />
-        </section>
-        <section id="portfolio-carousel">
-          <PortfolioCarousel />
-        </section>
-        <section id="video">
-          <VideoSection />
-        </section>
-        <section id="testimonials">
-          <Testimonials />
-        </section>
-        <section id="coming-soon">
-          <ComingSoonTrack />
-        </section>
-        {/* <section id="instagram">
-          <InstagramFeed />
-        </section> */}
-        <section id="blog">
-          <BlogPreview />
-        </section>
-        <section id="cta">
-          <CTAStickyTrack />
-          <Footer />
-        </section>
-        {/* <ContactUs /> */} {/* Commented out - "Let's work together" section removed */}
       </main>
-      {/* Footer included in CTA section below */}
     </div>
   );
 }

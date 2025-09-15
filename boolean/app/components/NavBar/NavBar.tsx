@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import TrustedByInline from '../TrustedBy/TrustedByInline';
 import { useRouter, usePathname } from 'next/navigation';
 import { auth } from '../../lib/firebase-client';
 import { signOut } from 'firebase/auth';
@@ -10,7 +10,7 @@ import type { SimpleUser } from '../../utils/auth-utils';
 import { useTheme } from '../ThemeProvider/ThemeProvider';
 // Removed PortfolioDropdown import
 import './NavBar.scss';
-import { motion } from 'framer-motion';
+// motion removed
 
 interface NavBarProps {
   serverUser: SimpleUser;
@@ -26,10 +26,9 @@ export default function NavBar({ serverUser }: NavBarProps) {
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => setTheme(isDarkMode ? 'light' as const : 'dark' as const);
+  const leftMenuRef = React.useRef<HTMLDivElement>(null);
   
-  // Scroll-based navbar visibility
-  const [isNavbarVisible, setIsNavbarVisible] = useState<boolean>(true);
-  const [lastScrollY, setLastScrollY] = useState<number>(0);
+  // No scroll-based behavior
 
   useEffect(() => {
     // Set mounted state to true once component is mounted
@@ -54,32 +53,8 @@ export default function NavBar({ serverUser }: NavBarProps) {
     setUser(serverUser);
   }, [serverUser]);
 
-  // Scroll direction detection for navbar visibility
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Show navbar at top of page or when scrolling up
-      if (currentScrollY === 0) {
-        setIsNavbarVisible(true);
-      } else if (currentScrollY < lastScrollY) {
-        // Scrolling up
-        setIsNavbarVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // Scrolling down and past 100px
-        setIsNavbarVisible(false);
-      }
-      
-      setLastScrollY(currentScrollY);
-    };
-
-    // Add scroll listener
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [lastScrollY]);
+  // No-op mount hook
+  useEffect(() => {}, []);
 
   const handleSignOut = async () => {
     try {
@@ -96,13 +71,16 @@ export default function NavBar({ serverUser }: NavBarProps) {
   };
   
   const isAdmin = user?.email === 'ceo@webrend.com';
+  // No moving indicator anymore
+  const updateIndicatorToActive = () => {};
+
+  useEffect(() => {}, [pathname]);
+
+  // Ensure indicator initializes once the client-only navbar (with refs) is mounted
+  useEffect(() => {}, [isMounted, pathname]);
+
 
   // Portfolio overlay removed
-
-  const slideVariants = {
-    visible: { y: 0, opacity: 1, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 600, damping: 40 } },
-    hidden: { y: 80, opacity: 0, filter: 'blur(10px)', transition: { type: 'spring', stiffness: 550, damping: 45 } }
-  } as const;
 
 
 
@@ -111,217 +89,67 @@ export default function NavBar({ serverUser }: NavBarProps) {
   if (!isMounted) {
     return (
       <>
-        {/* Corner Logo */}
-        <div className="corner-logo" aria-hidden={!isNavbarVisible}>
-          <Image 
-            src="/logo/logo_black.png" 
-            alt="WebRend Logo" 
-            width={28} 
-            height={28} 
-            className="navbar-logo"
-            priority
-          />
-        </div>
-
-        {/* Theme Toggle Island */}
-        <motion.div className="theme-toggle-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
-          <button className={`theme-toggle ${isDarkMode ? 'dark' : 'light'}`} onClick={toggleTheme} aria-label="Toggle theme" title={isDarkMode ? 'Switch to light' : 'Switch to dark'}>
-            <span className="toggle-track">
-              <span className="toggle-thumb" />
-              <span className="toggle-icon sun" aria-hidden>☀️</span>
-              <span className="toggle-icon moon" aria-hidden>🌙</span>
-            </span>
-          </button>
-        </motion.div>
-
-        {/* Main Navbar Island */}
-        <motion.div className="navbar-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
-          <div className="navbar">
-            <div className="navbar-menu">
-              <Link 
-                href="/"
-                onClick={(e) => {
-                  if (pathname !== '/') {
-                    e.preventDefault();
-                    if (typeof window !== 'undefined') window.location.assign('/');
-                  }
-                }}
-                className={`nav-button marketplace-button ${pathname === '/' ? 'active' : ''}`}
-              >
-                Home
-              </Link>
-              <Link
-                href="/portfolio"
-                className={`nav-button marketplace-button ${pathname.startsWith('/portfolio') ? 'active' : ''}`}
-              >
-                Portfolio
-              </Link>
-              
-              <Link 
-                href="/blog" 
-                className={`nav-button marketplace-button ${pathname === '/blog' ? 'active' : ''}`}
-              >
-                AI Blog
-              </Link>
-              
-              {isAdmin && (
-                <Link 
-                  href="/admin"
-                  className={`nav-button marketplace-button ${pathname.startsWith('/admin') ? 'active' : ''}`}
-                >
-                  Admin
-                </Link>
-              )}
+        <div className="top-navbar-container">
+          <div className="top-navbar">
+            <div className="top-navbar-menu" />
+            <div className="top-navbar-menu" style={{ gap: 10 }}>
+              <TrustedByInline />
+              <Link href="/discovery" className="nav-button cta-button">Speak with us</Link>
+              {!loading && (user ? (
+                <button onClick={handleSignOut} className="nav-button signout-button">Sign Out</button>
+              ) : (
+                <>
+                  <Link href="/auth?mode=signin" className="nav-button login-button">Login</Link>
+                  <Link href="/auth?mode=signup" className="nav-button signup-button">Sign Up</Link>
+                </>
+              ))}
             </div>
           </div>
-        </motion.div>
-
-        {/* Auth Island */}
-        <motion.div className="auth-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
-          <div className="auth-island">
-            {!loading && (
-              <>
-                {user ? (
-                  <>
-                    
-                    <button
-                      onClick={handleSignOut}
-                      className="nav-button signout-button"
-                    >
-                      Sign Out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/auth?mode=signin"
-                      className="nav-button login-button"
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      href="/auth?mode=signup"
-                      className="nav-button signup-button"
-                    >
-                      Sign Up
-                    </Link>
-                  </>
-                )}
-              </>
-            )}
-          </div>
-        </motion.div>
+        </div>
+        <div className="theme-toggle-floating">
+          <button className={`theme-toggle ${isDarkMode ? 'dark' : 'light'}`} onClick={toggleTheme} aria-label="Toggle theme" title={isDarkMode ? 'Switch to light' : 'Switch to dark'}>
+            <span className="toggle-track"><span className="toggle-thumb" /></span>
+          </button>
+        </div>
       </>
     );
   }
 
   return (
     <>
-      {/* Fixed corner logo at top-left of viewport */}
-      <div className="corner-logo" aria-hidden={!isNavbarVisible}>
-        <Image 
-          src="/logo/logo_black.png" 
-          alt="WebRend Logo" 
-          width={28} 
-          height={28} 
-          className="navbar-logo"
-          priority
-        />
-      </div>
-
-      {/* Islands wrapper centered */}
-      <div className={`nav-islands ${isNavbarVisible ? '' : 'hidden'}`} aria-hidden={!isNavbarVisible}>
-
-        {/* Theme Toggle Island */}
-        <motion.div className="theme-toggle-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
-          <button className={`theme-toggle ${isDarkMode ? 'dark' : 'light'}`} onClick={toggleTheme} aria-label="Toggle theme" title={isDarkMode ? 'Switch to light' : 'Switch to dark'}>
-            <span className="toggle-track">
-              <span className="toggle-thumb" />
-              <span className="toggle-icon sun" aria-hidden>☀️</span>
-              <span className="toggle-icon moon" aria-hidden>🌙</span>
-            </span>
-          </button>
-        </motion.div>
-
-        {/* Main Navbar Island */}
-        <motion.div className="navbar-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
-          <div className="navbar">
-            <div className="navbar-menu">
-              <Link 
-                href="/"
-                onClick={(e) => {
-                  if (pathname !== '/') {
-                    e.preventDefault();
-                    if (typeof window !== 'undefined') window.location.assign('/');
-                  }
-                }}
-                className={`nav-button marketplace-button ${pathname === '/' ? 'active' : ''}`}
-              >
-                Home
-              </Link>
-              <Link 
-                href="/portfolio"
-                className={`nav-button marketplace-button ${pathname.startsWith('/portfolio') ? 'active' : ''}`}
-              >
-                Portfolio
-              </Link>
-              
-              <Link 
-                href="/blog" 
-                className={`nav-button marketplace-button ${pathname === '/blog' ? 'active' : ''}`}
-              >
-                AI Blog
-              </Link>
-              {isAdmin && (
-                <Link 
-                  href="/admin"
-                  className={`nav-button marketplace-button ${pathname.startsWith('/admin') ? 'active' : ''}`}
-                >
-                  Admin
-                </Link>
-              )}
-            </div>
+      <div className="top-navbar-container">
+        <div className="top-navbar">
+          <div className="top-navbar-menu" ref={leftMenuRef}>
+            <Link 
+              href="/"
+              className={`nav-button ${pathname === '/' ? 'active' : ''}`}
+            >
+              Home
+            </Link>
+            <Link href="/vsl" className={`nav-button ${pathname.startsWith('/vsl') ? 'active' : ''}`}>About</Link>
+            <Link href="/portfolio" className={`nav-button ${pathname.startsWith('/portfolio') ? 'active' : ''}`}>Portfolio</Link>
+            <Link href="/blog" className={`nav-button ${pathname === '/blog' ? 'active' : ''}`}>AI Blog</Link>
+            {isAdmin && (<Link href="/admin" className={`nav-button ${pathname.startsWith('/admin') ? 'active' : ''}`}>Admin</Link>)}
           </div>
-        </motion.div>
-
-        {/* Auth Island */}
-        <motion.div className="auth-island-container" animate={isNavbarVisible ? 'visible' : 'hidden'} variants={slideVariants}>
-          <div className="auth-island">
-            {!loading && (
+          <div className="top-navbar-menu" style={{ gap: 10 }}>
+            <TrustedByInline />
+            <Link href="/discovery" className="nav-button cta-button">Speak with us</Link>
+            {!loading && (user ? (
+              <button onClick={handleSignOut} className="nav-button signout-button">Sign Out</button>
+            ) : (
               <>
-                {user ? (
-                  <>
-                    
-                    <button
-                      onClick={handleSignOut}
-                      className="nav-button signout-button"
-                    >
-                      Sign Out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/auth?mode=signin"
-                      className="nav-button login-button"
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      href="/auth?mode=signup"
-                      className="nav-button signup-button"
-                    >
-                      Sign Up
-                    </Link>
-                  </>
-                )}
+                <Link href="/auth?mode=signin" className="nav-button login-button">Login</Link>
+                <Link href="/auth?mode=signup" className="nav-button signup-button">Sign Up</Link>
               </>
-            )}
+            ))}
           </div>
-        </motion.div>
+        </div>
       </div>
-
-      {/* Portfolio overlay removed */}
+      <div className="theme-toggle-floating">
+        <button className={`theme-toggle ${isDarkMode ? 'dark' : 'light'}`} onClick={toggleTheme} aria-label="Toggle theme" title={isDarkMode ? 'Switch to light' : 'Switch to dark'}>
+          <span className="toggle-track"><span className="toggle-thumb" /></span>
+        </button>
+      </div>
     </>
   );
 } 

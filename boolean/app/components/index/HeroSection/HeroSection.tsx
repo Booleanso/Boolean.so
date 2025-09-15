@@ -2,10 +2,9 @@
 
 import React, { useState, useEffect, useRef, Suspense, useCallback, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Billboard, Text, Html } from '@react-three/drei';
+import { OrbitControls, Billboard, Text, Html, AdaptiveDpr, AdaptiveEvents, PerformanceMonitor } from '@react-three/drei';
 import * as THREE from 'three';
 import axios from 'axios';
-import Image from 'next/image';
 import styles from './HeroSection.module.css';
 
 import { useRouter } from 'next/navigation';
@@ -24,16 +23,7 @@ interface PrivateRepoLocationData {
   projectSlug?: string; // Slug to link to /portfolio/projects/[projectSlug]
 }
 
-// Partners data for trusted by section
-const partners = [
-  { name: 'Tata Technologies', id: 'tata', logoSrc: '/testimonials/tatatechnologies_testimonial_logo.png' },
-  { name: 'Webflow', id: 'webflow', logoSrc: '/testimonials/webflow_testimonial_logo.png' },
-  { name: 'BlenderBin', id: 'blenderbin', logoSrc: '/testimonials/blenderbin__testimonial_logo.png' },
-  { name: 'Beta Accelerator', id: 'beta', logoSrc: '/testimonials/beta_testimonial_logo.png' },
-  { name: 'Antler', id: 'antler', logoSrc: '/testimonials/antler_testimonial_logo.png' },
-  { name: 'RMC', id: 'rmc', logoSrc: '/testimonials/rmc_testimonial_logo.png' },
-  { name: 'La Creme', id: 'lacreme', logoSrc: '/testimonials/lacreme_testimonial_logo.png' }
-];
+// TrustedBy removed from hero
 
 // Enhanced location type with repo information
 interface EnhancedLocation {
@@ -61,7 +51,7 @@ interface PortfolioProject {
 }
 
 // Component for the Globe
-export function Globe({ locations, findMatchingProject, onReady }: { locations: EnhancedLocation[], findMatchingProject: (repoName: string) => PortfolioProject | null, onReady?: () => void }) {
+export function Globe({ locations, findMatchingProject, onReady, isMobile, lowPerf, shouldRotate }: { locations: EnhancedLocation[], findMatchingProject: (repoName: string) => PortfolioProject | null, onReady?: () => void, isMobile: boolean, lowPerf: boolean, shouldRotate: boolean }) {
   const globeRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
   const [textureLoaded, setTextureLoaded] = useState(false);
@@ -91,8 +81,11 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
   
   // Visual tuning constants
   const GLOBE_RADIUS = 2.6; // reduced from 3.0
+  // Reduce geometry detail further on mobile for better FPS and lower memory
+  const sphereSegments = (isMobile || lowPerf) ? 48 : 128;
+  const cloudsSegments = (isMobile || lowPerf) ? 16 : 48;
   const ICON_DISTANCE = GLOBE_RADIUS + 0.4; // bring icons closer to globe
-  const CLOUDS_RADIUS = GLOBE_RADIUS + 0.05; // clouds just above globe
+  const CLOUDS_RADIUS = GLOBE_RADIUS + 0.02; // bring clouds closer to globe
   const dayTexturePath = '/earth-blue-marble.jpg';
   const nightTexturePath = '/earth-night.jpg';
   const cityLightsPath = '/earth-city-lights.jpg';
@@ -125,6 +118,11 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
         if (!globeRef.current) return;
         
         const material = globeRef.current.material as THREE.MeshStandardMaterial;
+        // Mobile-friendly texture sampling
+        texture.anisotropy = 1;
+        texture.generateMipmaps = false;
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
         material.map = texture;
         
         // No tint in light mode, very slight tint in dark mode
@@ -142,6 +140,10 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
             if (!globeRef.current) return;
             
             const material = globeRef.current.material as THREE.MeshStandardMaterial;
+            specTexture.anisotropy = 1;
+            specTexture.generateMipmaps = false;
+            specTexture.minFilter = THREE.LinearFilter;
+            specTexture.magFilter = THREE.LinearFilter;
             material.roughnessMap = specTexture;
             material.roughness = 0.6;
             material.metalnessMap = specTexture;
@@ -160,6 +162,10 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
               if (!globeRef.current) return;
               
               const material = globeRef.current.material as THREE.MeshStandardMaterial;
+              lightsTexture.anisotropy = 1;
+              lightsTexture.generateMipmaps = false;
+              lightsTexture.minFilter = THREE.LinearFilter;
+              lightsTexture.magFilter = THREE.LinearFilter;
               material.emissiveMap = lightsTexture;
               material.emissive.set(0xffcc77);
               material.emissiveIntensity = 0.8;
@@ -192,9 +198,13 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
           if (!cloudsRef.current) return;
           
           const cloudMaterial = cloudsRef.current.material as THREE.MeshStandardMaterial;
+          cloudsTexture.anisotropy = 1;
+          cloudsTexture.generateMipmaps = false;
+          cloudsTexture.minFilter = THREE.LinearFilter;
+          cloudsTexture.magFilter = THREE.LinearFilter;
           cloudMaterial.map = cloudsTexture;
           cloudMaterial.transparent = true;
-          cloudMaterial.opacity = 0.8;
+          cloudMaterial.opacity = isMobile ? 0.65 : 0.8;
           cloudMaterial.alphaTest = 0.1;
           cloudMaterial.blending = THREE.AdditiveBlending;
           cloudMaterial.depthWrite = false;
@@ -279,9 +289,14 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
   
   // Spring animation for globe rotation slowdown
   const { rotationSpeedSpring } = useSpring({
-    rotationSpeedSpring: isGlobeRotating ? 0.0004 : 0,
+    rotationSpeedSpring: isGlobeRotating ? (lowPerf ? 0.00006 : 0.0001) : 0,
     config: { mass: 1, tension: 280, friction: 120 }
   });
+
+  // Sync rotation with parent hint
+  useEffect(() => {
+    setIsGlobeRotating(shouldRotate);
+  }, [shouldRotate]);
   
   // References for cloud animation
   // const cloudRotationRef = useRef<number>(0);
@@ -499,8 +514,8 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
     // Initial update
     updateIconScales();
     
-    // Update scales every 100ms during rotation
-    const interval = setInterval(updateIconScales, 100);
+    // Update scales at a lower frequency on mobile/low-perf
+    const interval = setInterval(updateIconScales, (isMobile || lowPerf) ? 250 : 100);
     
     return () => {
       clearInterval(interval);
@@ -577,8 +592,8 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
       // Get current rotation speed from spring animation
       const currentSpeed = rotationSpeedSpring.get();
       
-      // Rotate the globe at the current animated speed
-      globeGroupRef.current.rotation.y += currentSpeed;
+      // Rotate the globe at the current animated speed (inverted direction)
+      globeGroupRef.current.rotation.y -= currentSpeed;
       
       // Add realistic counter-rotation for clouds
       if (cloudsRef.current) {
@@ -587,9 +602,8 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
         // Approximate a more realistic counter-rotation with a slightly different rate
         
         // Clouds rotate in the opposite direction at a slightly slower relative speed
-        // This creates the impression that clouds are moving against the earth's rotation
-        // but at their own natural pace
-        cloudsRef.current.rotation.y -= currentSpeed * 0.75;
+        // Maintain counter-rotation after inversion
+        cloudsRef.current.rotation.y += currentSpeed * 0.75;
         
         // Keep uniform cloud properties instead of animating them
         const material = cloudsRef.current.material as THREE.MeshStandardMaterial;
@@ -762,11 +776,9 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
         {/* Globe sphere with higher tesselation for better displacement mapping */}
         <mesh 
           ref={globeRef} 
-          receiveShadow 
-          castShadow
           onClick={resetHoverStates}
         >
-          <sphereGeometry args={[GLOBE_RADIUS, 128, 128]} /> 
+          <sphereGeometry args={[GLOBE_RADIUS, sphereSegments, sphereSegments]} /> 
           <meshStandardMaterial 
             color={0xffffff}  
             roughness={0.6} 
@@ -976,7 +988,7 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
         position={[0, 0, 0]}
         onClick={resetHoverStates}
       >
-        <sphereGeometry args={[CLOUDS_RADIUS, 48, 48]} />
+        <sphereGeometry args={[CLOUDS_RADIUS, cloudsSegments, cloudsSegments]} />
         <meshStandardMaterial
           color={0xffffff}
           transparent={true}
@@ -992,6 +1004,7 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
       
       <OrbitControls 
         ref={orbitControlsRef}
+        enabled={!isMobile}
         enableZoom={false}
         enablePan={false}
         rotateSpeed={0.2}
@@ -999,7 +1012,7 @@ export function Globe({ locations, findMatchingProject, onReady }: { locations: 
         minDistance={5}
         maxDistance={8}
         autoRotate={isGlobeRotating}
-        autoRotateSpeed={0.25} // Reduced from 0.5
+        autoRotateSpeed={-0.08} // Even slower and inverted
       />
     </>
   );
@@ -1039,7 +1052,11 @@ export default function HeroSection() {
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
   const [contentOpacity, setContentOpacity] = useState<number>(1);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-  
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [lowPerf, setLowPerf] = useState<boolean>(false);
+  const [isInView, setIsInView] = useState<boolean>(true);
+  const [idleReady, setIdleReady] = useState<boolean>(false);
+  const prevInViewRef = useRef<boolean>(true);
   const router = useRouter();
   const globeContainerRef = useRef<HTMLDivElement>(null);
 
@@ -1056,20 +1073,64 @@ export default function HeroSection() {
     document.documentElement.dispatchEvent(event);
   }, []);
 
-  // Add scroll event listener for parallax effect
+  // Setup capability flags
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
+    // Detect mobile and low performance
+    const mq = window.matchMedia('(max-width: 768px), (pointer: coarse)');
+    const updateIsMobile = () => setIsMobile(mq.matches);
+    updateIsMobile();
+    mq.addEventListener?.('change', updateIsMobile);
 
-    // Add scroll event listener
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Heuristic for low-perf: low device memory or low hardware concurrency
+    try {
+      // @ts-ignore
+      const devMem = (navigator as any).deviceMemory || 4;
+      const cores = navigator.hardwareConcurrency || 4;
+      if (devMem <= 4 || cores <= 4) setLowPerf(true);
+    } catch {}
+
+    // Respect prefers-reduced-motion
+    try {
+      const prm = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if (prm.matches) setLowPerf(true);
+    } catch {}
+
+    // Observe visibility of globe to pause work when offscreen
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      setIsInView(entry.isIntersecting);
+    }, { root: null, threshold: 0.05 });
+    if (globeContainerRef.current) observer.observe(globeContainerRef.current);
+
+    // Defer heavy work until idle or short timeout
+    const ric = (window as any).requestIdleCallback as undefined | ((cb: () => void, opts?: any) => number);
+    let idleId: number | null = null;
+    if (typeof ric === 'function') {
+      idleId = ric(() => setIdleReady(true), { timeout: 1200 }) as unknown as number;
+    } else {
+      setTimeout(() => setIdleReady(true), 900);
+    }
 
     // Cleanup
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      mq.removeEventListener?.('change', updateIsMobile);
+      observer.disconnect();
+      if (idleId && typeof (window as any).cancelIdleCallback === 'function') {
+        (window as any).cancelIdleCallback(idleId);
+      }
     };
   }, []);
+
+  // Fade the globe in gracefully when re-entering the viewport
+  useEffect(() => {
+    const wasInView = prevInViewRef.current;
+    if (!wasInView && isInView) {
+      // Keep canvas content; do not reset opacity to avoid visible loading
+      prevInViewRef.current = isInView;
+      return;
+    }
+    prevInViewRef.current = isInView;
+  }, [isInView]);
 
   // Search removed
 
@@ -1381,54 +1442,41 @@ export default function HeroSection() {
   // Configure the animation for the globe opacity and position with parallax scrolling
   const globeStyle = {
     opacity: globeOpacity,
-    transform: `translateY(${globePosition + scrollY * 0.5}px)`, // Parallax effect: globe moves down at 50% of scroll speed
-    transition: globePosition > 0
-        ? 'opacity 1.5s ease-in-out, transform 3.5s cubic-bezier(0.19, 1, 0.22, 1)'
-        : 'opacity 1.5s ease-in-out'
+    transform: 'translateY(0px)',
+    transition: 'opacity 1.5s ease-in-out'
   };
 
   return (
     <section className={styles.heroSection}>
       <div className={styles.container}>
         <div className={styles.content} style={{ opacity: contentOpacity, transition: 'opacity 360ms ease' }}>
-          <div className={styles.heading}>
-            <h1 className="title"><span className={styles.gradText}>Build in under a month.</span></h1>
-            <p className={styles.subtitle}>
-              WebRend uses AI with real engineers to build your app fast—more affordable than traditional teams, with craftsmanship you can trust.
-            </p>
-          </div>
-
           {error && <div className={styles.errorMessage}>{error}</div>}
-
-          <div className={styles.ctas}>
-            <a href="/discovery" className={styles.primaryBtn}>Speak with us</a>
-          </div>
-
-          {/* Trusted by logos with marquee animation */}
-          <div className={styles.trustedBy}>
-            <div className={styles.scroller}>
-              <div className={styles.scrollerInner}>
-                {[...partners, ...partners].map((partner, index) => (
-                  <div key={`${partner.id}-${index}`} className={styles.partnerLogo}>
-                    <Image 
-                      src={partner.logoSrc}
-                      alt={`${partner.name} logo`} 
-                      width={120}
-                      height={32}
-                      style={{ objectFit: 'contain' }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
-        <div ref={globeContainerRef} className={styles.globeContainer} style={globeStyle}>
+        <div className={styles.backTitle} aria-hidden>
+          <span className={`${styles.backTitleTop} ${styles.revealTop}`}>Build</span>
+          <span className={`${styles.backTitleBottom}`} id="backTitleBottom">Anything</span>
+        </div>
+        <div
+          ref={globeContainerRef}
+          className={styles.globeContainer}
+          style={{
+            ...globeStyle,
+            transform: 'translateY(20px)',
+            transition: 'opacity 1.5s ease-in-out, transform 900ms cubic-bezier(.22,.61,.36,1)'
+          }}
+        >
           {loading ? (
             <div className={styles.loading}>Loading globe...</div>
           ) : (
-            <Canvas shadows camera={{ position: [0, 0, 5.5], fov: 70 }}>
+            <Canvas
+              camera={{ position: [0, 0, 5.5], fov: isMobile ? 75 : 70 }}
+              dpr={[1, lowPerf ? 1.25 : 1.75]}
+              gl={{ antialias: !lowPerf, powerPreference: lowPerf ? 'low-power' : 'high-performance', alpha: true, stencil: false, depth: true, preserveDrawingBuffer: true }}
+            >
+              <AdaptiveDpr />
+              <AdaptiveEvents />
+              <PerformanceMonitor onDecline={() => setLowPerf(true)} />
               {/* Main ambient light */}
               <ambientLight intensity={0.6} /> 
               
@@ -1457,9 +1505,24 @@ export default function HeroSection() {
                 <Globe
                   locations={locations}
                   findMatchingProject={findMatchingProject}
+                  isMobile={isMobile}
+                  lowPerf={lowPerf}
+                  shouldRotate={true}
                   onReady={() => {
-                    // Globe assets ready → fade in page
+                    // Globe assets ready → fade and slide in
                     setGlobeOpacity(1);
+                    if (globeContainerRef.current) {
+                      requestAnimationFrame(() => {
+                        globeContainerRef.current!.style.transform = 'translateY(0)';
+                      });
+                    }
+                    // After globe settles, reveal "Anything" a bit later
+                    const bottom = document.getElementById('backTitleBottom');
+                    if (bottom) {
+                      setTimeout(() => {
+                        bottom.classList.add(styles.revealBottom);
+                      }, 350); // slightly after globe starts moving
+                    }
                   }}
                 />
               </Suspense>

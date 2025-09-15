@@ -11,7 +11,6 @@ interface ServiceStatusProps {
 export default function ServiceStatus({ showDetails = false, className = '' }: ServiceStatusProps) {
   const [serviceStatus, setServiceStatus] = useState({
     firebase: false,
-    stripe: false,
     auth: false,
     loading: true
   });
@@ -26,12 +25,8 @@ export default function ServiceStatus({ showDetails = false, className = '' }: S
           process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
         );
 
-        // Check Stripe configuration
-        const stripeCheck = !!(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
         setServiceStatus({
           firebase: firebaseCheck,
-          stripe: stripeCheck,
           auth: firebaseCheck, // Auth depends on Firebase
           loading: false
         });
@@ -48,7 +43,7 @@ export default function ServiceStatus({ showDetails = false, className = '' }: S
     return null;
   }
 
-  const hasIssues = !serviceStatus.firebase || !serviceStatus.stripe;
+  const hasIssues = false; // hide banner in this project
 
   if (!showDetails && !hasIssues) {
     return null;
@@ -77,10 +72,7 @@ export default function ServiceStatus({ showDetails = false, className = '' }: S
               <span className={styles.serviceName}>Authentication</span>
               <span className={styles.serviceIcon}>{serviceStatus.auth ? '✅' : '❌'}</span>
             </div>
-            <div className={`${styles.serviceItem} ${serviceStatus.stripe ? styles.available : styles.unavailable}`}>
-              <span className={styles.serviceName}>Payments</span>
-              <span className={styles.serviceIcon}>{serviceStatus.stripe ? '✅' : '❌'}</span>
-            </div>
+            {/* Payments intentionally omitted */}
           </div>
           {hasIssues && (
             <div className={styles.helpText}>

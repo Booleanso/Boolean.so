@@ -17,6 +17,7 @@ interface PortfolioProject {
   dateCompleted: Date;
   featured: boolean;
   inProgress?: boolean;
+  clientLogoUrl?: string | null;
 }
 
 // Server-side data fetching
@@ -54,6 +55,7 @@ async function getPortfolioProjects(): Promise<PortfolioProject[]> {
         dateCompleted: dateCompleted instanceof Date ? dateCompleted : new Date(),
         featured: data.featured || false,
         inProgress: !!data.inProgress,
+        clientLogoUrl: data.clientLogoUrl || null,
       } as PortfolioProject;
     });
   } catch (error) {

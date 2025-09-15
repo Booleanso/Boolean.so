@@ -26,6 +26,7 @@ interface PortfolioProject {
   projectType?: string | null;
   projectTypes?: string[];
   inProgress?: boolean;
+  clientLogoUrl?: string | null;
 }
 
 interface PortfolioClientPageProps {
@@ -261,12 +262,22 @@ export default function PortfolioClientPage({
                   </Link>
                   {/* Content area below image */}
                   <div className={styles.cardContentArea}> 
-                    <h3 className={styles.cardTitle}>
-                      {/* Link only the title to the case study */}
-                      <Link href={`/portfolio/projects/${project.slug}`} className={styles.cardTitleLink}> 
-                         {project.title}
-                      </Link>
-                     </h3>
+                    <div className={styles.cardTitleRow}>
+                      {project.clientLogoUrl && isValidImageUrl(project.clientLogoUrl) && (
+                        <img
+                          src={project.clientLogoUrl}
+                          alt="Client logo"
+                          className={styles.clientLogo}
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      )}
+                      <h3 className={styles.cardTitle}>
+                        {/* Link only the title to the case study */}
+                        <Link href={`/portfolio/projects/${project.slug}`} className={styles.cardTitleLink}> 
+                           {project.title}
+                        </Link>
+                      </h3>
+                    </div>
                     <div className={styles.cardTags}>
                       {project.tags.slice(0, 3).map(tag => (
                         <span key={tag} className={styles.cardTag}>{tag}</span>

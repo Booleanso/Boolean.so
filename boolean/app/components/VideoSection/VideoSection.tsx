@@ -10,7 +10,7 @@ export default function VideoSection() {
       <div className={styles.container}>
         <div className={styles.sectionHeader}>
           <p className={styles.overline}>Studio & marketplace for the modern web</p>
-          <h2 className={styles.heading}>Ship standout web experiences fast.<br />Let WebRend do the heavy lifting.</h2>
+          <h2 className={styles.heading}>Ship standout web experiences fast.<br />Let Boolean do the heavy lifting.</h2>
           <ul className={styles.pills}>
             <li className={styles.pill}><span className={styles.pillDot}></span>Custom sites</li>
             <li className={styles.pill}><span className={styles.pillDot}></span>Component library</li>

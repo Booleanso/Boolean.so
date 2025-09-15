@@ -1,0 +1,41 @@
+.inlineTrustedBy {
+  width: 100%;
+  max-width: 720px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  opacity: 0.9;
+}
+
+.scroller {
+  -webkit-mask: linear-gradient(90deg, transparent, white 15%, white 85%, transparent);
+  mask: linear-gradient(90deg, transparent, white 15%, white 85%, transparent);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.scrollerInner {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  animation: navbarScroll 24s linear infinite;
+}
+
+@keyframes navbarScroll {
+  to { transform: translateX(calc(-50% - 10px)); }
+}
+
+.partner { display: flex; align-items: center; justify-content: center; height: 28px; }
+.partnerLogo { object-fit: contain; width: auto; height: 24px; filter: grayscale(100%); opacity: .75; transition: opacity .2s ease, filter .2s ease; }
+.partner:hover .partnerLogo { filter: grayscale(0%); opacity: 1; }
+
+:global(.dark-theme) .partnerLogo { filter: grayscale(100%) invert(100%) brightness(1.8); }
+:global(.dark-theme) .partner:hover .partnerLogo { filter: grayscale(0%) invert(0%) brightness(1); }
+
+@media (max-width: 768px) {
+  .inlineTrustedBy { max-width: 520px; }
+  .scrollerInner { animation-duration: 18s; gap: 16px; }
+  .partnerLogo { height: 20px; }
+}

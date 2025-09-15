@@ -108,7 +108,7 @@ export default function CTAStickyTrack() {
         } else {
           // Fallback: small set of placeholders
           setIcons([
-            { src: '/logo/logo.png', label: 'WebRend' },
+            { src: '/logo/logo.png', label: 'Boolean' },
             { src: '/images/testimonials/logo1.png', label: 'App' },
             { src: '/images/testimonials/logo2.png', label: 'Tool' },
             { src: '/images/testimonials/logo3.png', label: 'Kit' },

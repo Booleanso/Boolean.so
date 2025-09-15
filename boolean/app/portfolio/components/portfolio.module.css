@@ -293,6 +293,22 @@
   /* Remove absolute positioning if it was on cardContent */
 }
 
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.clientLogo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+:global(.dark-theme) .clientLogo { border-color: rgba(255,255,255,0.16); }
+
 .cardTitle {
   font-size: 1.3rem;
   font-weight: 600;

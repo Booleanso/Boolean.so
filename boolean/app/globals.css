@@ -176,8 +176,10 @@ body {
   /* overflow-x: hidden; Temporarily commented out to allow sticky positioning in ScrollCodeSection */
 }
 
-/* Global page padding */
-body { padding: 8px; }
+/* home-fixed class no longer used */
+
+/* Global page padding
+body { padding: 8px; } */
 
 /* Enhanced smooth scrolling for the entire site */
 html {
@@ -259,16 +261,18 @@ body {
 .telescope-outer { position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: 10svh; pointer-events: none; z-index: 60; overflow: hidden; isolation: isolate; }
 
 /* Inner element performs the blur; clipped by the outer container */
-.telescope-vignette { position: absolute; inset: 0; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); will-change: backdrop-filter; background: rgba(255,255,255,0.02); mask-image: linear-gradient(to top, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%); }
+.telescope-vignette { position: absolute; inset: 0; backdrop-filter: blur(16px); backdrop-filter: blur(16px); will-change: backdrop-filter; background: rgba(255,255,255,0.02); mask-image: linear-gradient(to top, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(to top, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%); }
+.telescope-vignette::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.12) 45%, rgba(255,255,255,0) 100%); }
 .dark-theme .telescope-vignette { background: rgba(0,0,0,0.02); }
+.dark-theme .telescope-vignette::after { background: linear-gradient(to top, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.10) 45%, rgba(255,255,255,0) 100%); }
 
 /* New: Global telescope edge overlay at top of viewport */
 .telescope-top-outer { position: fixed; left: 0; right: 0; top: 0; bottom: auto; height: 12svh; pointer-events: none; z-index: 60; overflow: hidden; isolation: isolate; }
-.telescope-top-vignette { position: absolute; inset: 0; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); will-change: backdrop-filter; background: rgba(255,255,255,0.04); mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%); }
+.telescope-top-vignette { position: absolute; inset: 0; backdrop-filter: blur(14px); backdrop-filter: blur(14px); will-change: backdrop-filter; background: rgba(255,255,255,0.04); mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%); }
 .dark-theme .telescope-top-vignette { background: rgba(0,0,0,0.04); }
 
 /* Fallback when backdrop-filter is unsupported: soften with a gradient fade */
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+@supports not ((backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .telescope-vignette { 
     background: linear-gradient(to top, rgba(255,255,255,0.75) 45%, rgba(255,255,255,0) 100%);
   }

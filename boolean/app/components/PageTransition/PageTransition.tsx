@@ -118,8 +118,9 @@ export default function PageTransition({
     return () => el.removeEventListener('click', onClickCapture, true);
   }, [getTransitionProps, router]);
 
+  const wrapperClass = `${styles.pageTransition} ${pathname === '/' ? styles.noHeight : ''}`;
   return (
-    <div key={pathname} ref={containerRef} className={styles.pageTransition}>
+    <div key={pathname} ref={containerRef} className={wrapperClass}>
       {displayedChildren}
     </div>
   );

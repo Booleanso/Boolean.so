@@ -306,7 +306,7 @@ export default function ServicesAndClients() {
               >
               <Image 
                 src="/images/webrend_banner.png" 
-                alt="WebRend Preview" 
+                alt="Boolean Preview" 
                 width={1200}
                 height={700}
                 className={styles.showcaseImage}

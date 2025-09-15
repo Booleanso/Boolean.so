@@ -3,62 +3,74 @@ import { google, calendar_v3 } from 'googleapis';
 
 interface BookingRequest {
   name: string;
-  email: string;
-  selectedDate: string;
-  selectedTime: string;
-  projectDetails: string;
-  projectType: string;
-  budget: string;
-  timeline: string;
-  targetAudience: string;
-  keyFeatures: string;
-  inspiration: string;
-  businessGoals: string;
+  phone: string;
+  selectedDate?: string; // legacy support
+  selectedTime?: string; // legacy support
+  startIso?: string;     // preferred
+  endIso?: string;       // preferred
+  projectDetails?: string;
+  projectType?: string;
+  budget?: string;
+  timeline?: string;
+  targetAudience?: string;
+  keyFeatures?: string;
+  inspiration?: string;
+  businessGoals?: string;
 }
 
 // Google Calendar configuration
 const CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID || 'primary';
-const TIME_ZONE = 'America/New_York'; // Adjust to your timezone
+const TIME_ZONE = process.env.GOOGLE_CALENDAR_TIME_ZONE || 'America/New_York';
 
 // Initialize Google Calendar client
 function getCalendarClient() {
-  const credentials = {
-    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    private_key: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  };
+  const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  const impersonated = process.env.GOOGLE_IMPERSONATED_USER;
+
+  if (!clientEmail || !privateKey) {
+    throw new Error('Missing Google service account credentials');
+  }
+
+  if (impersonated) {
+    const auth = new google.auth.JWT({
+      email: clientEmail,
+      key: privateKey,
+      scopes: ['https://www.googleapis.com/auth/calendar'],
+      subject: impersonated,
+    });
+    return google.calendar({ version: 'v3', auth });
+  }
 
   const auth = new google.auth.GoogleAuth({
-    credentials,
+    credentials: { client_email: clientEmail, private_key: privateKey },
     scopes: ['https://www.googleapis.com/auth/calendar'],
   });
-
   return google.calendar({ version: 'v3', auth });
 }
 
-// Convert time string to 24-hour format
-function convertTo24Hour(timeStr: string): string {
-  const [time, modifier] = timeStr.split(' ');
-  const [hoursStr, minutes] = time.split(':');
-  let hours = hoursStr;
-  
-  if (hours === '12') {
-    hours = '00';
-  }
-  
-  if (modifier.toLowerCase() === 'pm') {
-    hours = (parseInt(hours, 10) + 12).toString();
-  }
-  
-  return `${hours.padStart(2, '0')}:${minutes}`;
+// Convert legacy date/time to ISO window if needed
+function legacyToIso(selectedDate?: string, selectedTime?: string) {
+  if (!selectedDate || !selectedTime) return { startIso: undefined, endIso: undefined };
+  const [time, modifier] = selectedTime.split(' ');
+  const [hStr, mStr] = time.split(':');
+  let h = parseInt(hStr, 10);
+  const m = parseInt(mStr, 10);
+  if (modifier?.toLowerCase() === 'pm' && h !== 12) h += 12;
+  if (modifier?.toLowerCase() === 'am' && h === 12) h = 0;
+  const start = new Date(`${selectedDate}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`);
+  const end = new Date(start.getTime() + 30 * 60 * 1000);
+  return { startIso: start.toISOString(), endIso: end.toISOString() };
 }
 
 // Create calendar event
 async function createCalendarEvent(calendar: calendar_v3.Calendar, bookingData: BookingRequest) {
   const { 
     name, 
-    email, 
     selectedDate, 
     selectedTime, 
+    startIso: startIsoIn, 
+    endIso: endIsoIn, 
     projectDetails,
     projectType,
     budget,
@@ -69,17 +81,17 @@ async function createCalendarEvent(calendar: calendar_v3.Calendar, bookingData: 
     businessGoals
   } = bookingData;
   
-  // Convert date and time to ISO format
-  const timeIn24Hour = convertTo24Hour(selectedTime);
-  const startDateTime = new Date(`${selectedDate}T${timeIn24Hour}:00`);
-  const endDateTime = new Date(startDateTime.getTime() + 30 * 60 * 1000); // 30 minutes later
+  // Prefer ISO inputs; fallback to legacy date/time
+  const legacyIso = legacyToIso(selectedDate, selectedTime);
+  const startDateTime = new Date(startIsoIn || legacyIso.startIso!);
+  const endDateTime = new Date(endIsoIn || legacyIso.endIso!);
   
   // Create comprehensive meeting description with all project details
   const description = `
 Discovery Call with ${name}
 
 Contact Information:
-- Email: ${email}
+- Phone: ${bookingData.phone}
 
 PROJECT OVERVIEW:
 ${projectDetails || 'No specific details provided'}
@@ -129,9 +141,7 @@ Please review all project details above before the call and prepare relevant que
       dateTime: endDateTime.toISOString(),
       timeZone: TIME_ZONE,
     },
-    attendees: [
-      { email: email },
-    ],
+    attendees: [],
     conferenceData: {
       createRequest: {
         requestId: `discovery-${Date.now()}`,
@@ -153,7 +163,7 @@ Please review all project details above before the call and prepare relevant que
   try {
     const response = await calendar.events.insert({
       calendarId: CALENDAR_ID,
-      resource: event,
+      requestBody: event,
       conferenceDataVersion: 1,
       sendUpdates: 'all', // Send email invitations to attendees
     });
@@ -170,18 +180,9 @@ export async function POST(request: NextRequest) {
     const bookingData: BookingRequest = await request.json();
     
     // Validate required fields
-    if (!bookingData.name || !bookingData.email || !bookingData.selectedDate || !bookingData.selectedTime) {
+    if (!bookingData.name || !bookingData.phone || !(bookingData.startIso || (bookingData.selectedDate && bookingData.selectedTime))) {
       return NextResponse.json(
         { error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(bookingData.email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
         { status: 400 }
       );
     }
@@ -208,7 +209,7 @@ export async function POST(request: NextRequest) {
     console.log('Discovery call booked:', {
       bookingId,
       name: bookingData.name,
-      email: bookingData.email,
+      phone: bookingData.phone,
       date: bookingData.selectedDate,
       time: bookingData.selectedTime,
       eventId: calendarEvent.id,

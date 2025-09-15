@@ -11,7 +11,7 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.footerContent}>
         <div className={styles.footerLogo}>
-          <h3>WebRend</h3>
+          <h3>Boolean</h3>
           <p>Building the future, one pixel at a time.</p>
         </div>
         <div className={styles.footerLinks}>
@@ -32,7 +32,7 @@ export default function Footer() {
         </div>
       </div>
       <div className={styles.copyright}>
-        <p>&copy; {new Date().getFullYear()} WebRend. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Boolean. All rights reserved.</p>
       </div>
     </footer>
   );

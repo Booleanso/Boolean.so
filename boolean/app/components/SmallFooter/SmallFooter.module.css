@@ -1,0 +1,34 @@
+.smallFooter {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 16px;
+  background: transparent;
+  z-index: 200; /* above the hero (hero was z-index:100) */
+}
+
+:global(.light-theme) .smallFooter { background: transparent; }
+
+.nav {
+  display: flex;
+  gap: 18px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.link {
+  color: rgba(255,255,255,0.86);
+  text-decoration: none;
+  background: transparent;
+}
+
+:global(.light-theme) .link { color: rgba(10,10,10,0.86); }
+
+.link:hover { text-decoration: underline; }
+
+

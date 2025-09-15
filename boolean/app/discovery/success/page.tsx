@@ -23,27 +23,28 @@ function DiscoverySuccessContent() {
   useEffect(() => {
     const bookingId = searchParams.get('bookingId');
     
-    if (bookingId) {
-      // In a real implementation, you might fetch booking details from your database
-      // For now, we'll simulate the data
-      setBookingDetails({
-        bookingId,
-        name: 'Valued Client', // This would come from your booking system
-        email: '', // This would come from your booking system
-        date: new Date().toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        }),
-        time: '2:00 PM', // This would come from your booking system
-        meetingLink: 'https://meet.google.com/xxx-xxxx-xxx' // This would come from Google Calendar
-      });
-    } else {
-      setError('Booking ID not found');
+    async function load() {
+      if (!bookingId) {
+        setError('Booking ID not found');
+        setIsLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/discovery/lookup?bookingId=${encodeURIComponent(bookingId)}`, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          setBookingDetails(data as BookingDetails);
+        } else {
+          // fallback minimal state
+          setBookingDetails({ bookingId, name: 'Guest', email: '', date: '', time: '', meetingLink: '' });
+        }
+      } catch {
+        setBookingDetails({ bookingId, name: 'Guest', email: '', date: '', time: '', meetingLink: '' });
+      } finally {
+        setIsLoading(false);
+      }
     }
-    
-    setIsLoading(false);
+    load();
   }, [searchParams]);
 
   if (isLoading) {
@@ -177,8 +178,8 @@ function DiscoverySuccessContent() {
 
         <div className={styles.contact}>
           <p>Need to reschedule or have questions?</p>
-          <a href="mailto:hello@webrend.com" className={styles.contactLink}>
-            hello@webrend.com
+          <a href="mailto:hello@boolean.so" className={styles.contactLink}>
+            hello@boolean.so
           </a>
         </div>
       </div>

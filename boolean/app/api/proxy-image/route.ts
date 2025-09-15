@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
       // Do not forward cookies/credentials
       cache: 'force-cache',
       headers: {
-        'User-Agent': 'WebRendImageProxy/1.0 (+webrend.com)'
+        'User-Agent': 'BooleanImageProxy/1.0 (+boolean.so)'
       }
     });
 

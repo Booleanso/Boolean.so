@@ -15,6 +15,7 @@ interface PortfolioProject {
   dateCompleted: Date;
   featured: boolean;
   inProgress?: boolean;
+  clientLogoUrl?: string | null;
 }
 
 export async function GET() {
@@ -51,6 +52,7 @@ export async function GET() {
         dateCompleted: dateCompleted instanceof Date ? dateCompleted : new Date(),
         featured: data.featured || false,
         inProgress: !!data.inProgress,
+        clientLogoUrl: data.clientLogoUrl || null,
       } as PortfolioProject;
     });
 
