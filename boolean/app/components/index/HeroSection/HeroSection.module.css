@@ -184,6 +184,44 @@
   100% { -webkit-mask-image: none; mask-image: none; opacity: 1; -webkit-text-fill-color: var(--heroWordmarkColor); }
 }
 
+/* Blur-in animation for hero wordmarks */
+@keyframes blurIn {
+  0% { filter: blur(40px); opacity: 0; }
+  60% { filter: blur(8px); opacity: 0.65; }
+  100% { filter: blur(0); opacity: 1; }
+}
+
+/* Reset previous shine styles and set initial blurred state */
+.backTitleTop,
+.backTitleBottom {
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: currentColor;
+  -webkit-mask-image: none;
+  mask-image: none;
+  filter: blur(28px);
+  opacity: 0;
+}
+
+/* Trigger blur-in on reveal */
+.revealTop { animation: blurIn 800ms ease-out forwards; }
+.revealBottom { animation: blurIn 1000ms ease-out forwards; }
+
+@media (max-width: 768px) {
+  .revealTop { animation-duration: 700ms; }
+  .revealBottom { animation-duration: 850ms; }
+}
+
+/* Tighter spacing between Build and Anything */
+.backTitleTop { margin-bottom: -0.06em; }
+.backTitleBottom { margin-top: -0.12em; }
+
+@media (max-width: 768px) {
+  .backTitleTop { margin-bottom: -0.08em; }
+  .backTitleBottom { margin-top: -0.14em; }
+}
+
 @media (max-width: 768px) {
   .backTitle { top: 3vh; padding: 0 3vw; }
   .backTitleTop { font-size: clamp(48px, 12vw, 140px); }

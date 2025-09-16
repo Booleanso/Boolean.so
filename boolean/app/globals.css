@@ -1,4 +1,5 @@
 @import './fonts/exensa/stylesheet.css';
+@import './fonts/helvetica-now-display/stylesheet.css';
 
 :root {
   /* Common variables */
@@ -528,4 +529,19 @@ input, select, textarea {
     --gradient-mid: rgb(0, 0, 0);
     --gradient-end: rgba(0, 0, 0, 0.319);
   }
+}
+
+@font-face { font-family: 'Helvetica'; src: url('./fonts/helvetica/Helvetica.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+
+/* Global typography override */
+body { font-family: 'Helvetica', Arial, sans-serif; }
+
+h1, h2, h3, h4, h5, h6, .title {
+  font-family: 'Helvetica Now Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+}
+
+/* Hero-specific large titles inherit the same heading font */
+:where(.hero, .heroSection) h1, :where(.hero, .heroSection) h2, :where(.hero, .heroSection) .backTitleTop, :where(.hero, .heroSection) .backTitleBottom {
+  font-family: 'Helvetica Now Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }

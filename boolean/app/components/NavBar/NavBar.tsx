@@ -119,7 +119,13 @@ export default function NavBar({ serverUser }: NavBarProps) {
     <>
       <div className="top-navbar-container">
         <div className="top-navbar">
-          <div className="top-navbar-menu" ref={leftMenuRef}>
+          <div className="top-navbar-brand">
+            <Link href="/" className="brand-link">
+              <img src="/logo/logo.png" alt="Boolean" className="brand-logo" />
+              <span className="brand-text">Boolean</span>
+            </Link>
+          </div>
+          <div className="top-navbar-menu" ref={leftMenuRef} style={{ marginLeft: 12 }}>
             <Link 
               href="/"
               className={`nav-button ${pathname === '/' ? 'active' : ''}`}
@@ -131,7 +137,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
             <Link href="/blog" className={`nav-button ${pathname === '/blog' ? 'active' : ''}`}>AI Blog</Link>
             {isAdmin && (<Link href="/admin" className={`nav-button ${pathname.startsWith('/admin') ? 'active' : ''}`}>Admin</Link>)}
           </div>
-          <div className="top-navbar-menu" style={{ gap: 10 }}>
+          <div className="top-navbar-menu" style={{ gap: 10, marginLeft: 'auto' }}>
             <TrustedByInline />
             <Link href="/discovery" className="nav-button cta-button">Speak with us</Link>
             {!loading && (user ? (
