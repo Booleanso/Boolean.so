@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Globe } from '../index/HeroSection/HeroSection';
+import { Globe } from '../HeroSection/HeroSection';
 import styles from './ServicesGlobeBackdrop.module.css';
 
 export default function ServicesGlobeBackdrop() {

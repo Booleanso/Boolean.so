@@ -85,7 +85,7 @@ export function Globe({ locations, findMatchingProject, onReady, isMobile, lowPe
   const sphereSegments = (isMobile || lowPerf) ? 48 : 128;
   const cloudsSegments = (isMobile || lowPerf) ? 16 : 48;
   const ICON_DISTANCE = GLOBE_RADIUS + 0.4; // bring icons closer to globe
-  const CLOUDS_RADIUS = GLOBE_RADIUS + 0.02; // bring clouds closer to globe
+  const CLOUDS_RADIUS = GLOBE_RADIUS + 0.01; // bring clouds even closer to globe
   const dayTexturePath = '/earth-blue-marble.jpg';
   const nightTexturePath = '/earth-night.jpg';
   const cityLightsPath = '/earth-city-lights.jpg';

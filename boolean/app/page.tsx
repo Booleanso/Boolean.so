@@ -1,5 +1,5 @@
 import styles from "./page.module.css";
-import HeroSection from "./components/index/HeroSection/HeroSection";
+import HeroSection from "./components/HeroSection/HeroSection";
 // Split: everything after hero is moved to /vsl
 
 import { db } from './lib/firebase-admin';
