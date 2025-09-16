@@ -71,13 +71,28 @@
 :root.dark-theme .nav-button.active { color: #ffffff; background: transparent; mix-blend-mode: difference; }
 :root.dark-theme .nav-button:focus, :root.dark-theme .nav-button:focus-visible { outline: none; box-shadow: none; }
 
-/* Remove moving background indicator entirely */
+.top-navbar .nav-button,
+.top-navbar .cta-button,
+.top-navbar .login-button,
+.top-navbar .signup-button,
+.top-navbar .signout-button {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
 
-/* CTA */
-.cta-button { background: #000; color: #fff; border: none; box-shadow: none; mix-blend-mode: normal !important; }
-.cta-button:hover { background: #111; color: #fff; }
-:root.dark-theme .cta-button { background: #fff; color: #000; border: none; box-shadow: none; mix-blend-mode: normal !important; }
-:root.dark-theme .cta-button:hover { background: #f2f2f2; color: #000; }
+.top-navbar .nav-button:hover,
+.top-navbar .cta-button:hover,
+.top-navbar .login-button:hover,
+.top-navbar .signup-button:hover,
+.top-navbar .signout-button:hover {
+  background: transparent !important;
+}
+
+/* remove previous CTA background styles */
+.cta-button { background: transparent !important; color: inherit; }
+:root.dark-theme .cta-button { background: transparent !important; color: inherit; }
+:root.dark-theme .cta-button:hover { background: transparent !important; }
 
 /* Theme toggle */
 .theme-toggle {

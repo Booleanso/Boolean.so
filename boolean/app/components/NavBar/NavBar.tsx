@@ -121,7 +121,7 @@ export default function NavBar({ serverUser }: NavBarProps) {
         <div className="top-navbar">
           <div className="top-navbar-brand">
             <Link href="/" className="brand-link">
-              <img src="/logo/logo.png" alt="Boolean" className="brand-logo" />
+              <img src={isDarkMode ? "/logo/logo_white.png" : "/logo/logo.png"} alt="Boolean" className="brand-logo" />
               <span className="brand-text">Boolean</span>
             </Link>
           </div>
