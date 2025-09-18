@@ -78,6 +78,15 @@ interface ProjectForm {
   investorsCSV: string;
   growthPotential: string;
   whyCritical: string;
+
+  // Private Globe fields
+  privateGlobeEnabled: boolean;
+  privateName: string;
+  privateProjectSlug: string;
+  privateLocationText: string;
+  privateLatitude: string; // keep as string for input control
+  privateLongitude: string; // keep as string for input control
+  privateIconUrl: string;
 }
 
 function toCSV(value: unknown): string {
@@ -183,6 +192,15 @@ export default function EditPortfolioProjectPage() {
           businessResults: data.businessResults || '',
           technicalResults: data.technicalResults || '',
           whyCritical: data.whyCritical || '',
+
+          // Private globe defaults
+          privateGlobeEnabled: !!data.privateGlobeEnabled,
+          privateName: data.privateName || data.title || '',
+          privateProjectSlug: data.privateProjectSlug || data.slug || '',
+          privateLocationText: data.privateLocationText || data.location || '',
+          privateLatitude: (typeof data.privateLatitude === 'number' ? String(data.privateLatitude) : ''),
+          privateLongitude: (typeof data.privateLongitude === 'number' ? String(data.privateLongitude) : ''),
+          privateIconUrl: data.privateIconUrl || '',
           founderStory: data.founderStory || '',
           scalability: data.scalability || '',
           defensibility: data.defensibility || '',
@@ -276,6 +294,15 @@ export default function EditPortfolioProjectPage() {
       techAdvantages: form.techAdvantages || null,
       ctaText: form.ctaText || null,
       ctaLink: form.ctaLink || null,
+
+      // Private globe payload
+      privateGlobeEnabled: !!form.privateGlobeEnabled,
+      privateName: form.privateName || null,
+      privateProjectSlug: form.privateProjectSlug || null,
+      privateLocationText: form.privateLocationText || null,
+      privateLatitude: form.privateLatitude ? Number(form.privateLatitude) : null,
+      privateLongitude: form.privateLongitude ? Number(form.privateLongitude) : null,
+      privateIconUrl: form.privateIconUrl || null,
     };
   }, [form]);
 
@@ -357,6 +384,21 @@ export default function EditPortfolioProjectPage() {
             <Field label="Solution"><textarea className={styles.textarea} value={form.solution} onChange={e => set('solution', e.target.value)} /></Field>
             <Field label="Challenges"><textarea className={styles.textarea} value={form.challenges} onChange={e => set('challenges', e.target.value)} /></Field>
             <Field label="Results"><textarea className={styles.textarea} value={form.results} onChange={e => set('results', e.target.value)} /></Field>
+          </div>
+        </Section>
+
+        {/* Private Globe */}
+        <Section title="Private Globe Marker">
+          <div className={styles.fieldsGrid}>
+            <Field label="Enable Private Globe Marker">
+              <input type="checkbox" checked={form.privateGlobeEnabled} onChange={e => set('privateGlobeEnabled', e.target.checked)} />
+            </Field>
+            <Field label="Display Name (defaults to Title)"><input className={styles.input} value={form.privateName} onChange={e => set('privateName', e.target.value)} /></Field>
+            <Field label="Project Slug (defaults to slug)"><input className={styles.input} value={form.privateProjectSlug} onChange={e => set('privateProjectSlug', e.target.value)} /></Field>
+            <Field label="Location Text"><input className={styles.input} value={form.privateLocationText} onChange={e => set('privateLocationText', e.target.value)} /></Field>
+            <Field label="Latitude"><input className={styles.input} value={form.privateLatitude} onChange={e => set('privateLatitude', e.target.value)} /></Field>
+            <Field label="Longitude"><input className={styles.input} value={form.privateLongitude} onChange={e => set('privateLongitude', e.target.value)} /></Field>
+            <Field label="Icon URL"><input className={styles.input} value={form.privateIconUrl} onChange={e => set('privateIconUrl', e.target.value)} /></Field>
           </div>
         </Section>
 

@@ -85,6 +85,14 @@ interface AddProjectRequestBody {
   whyCritical?: string;
   // Hidden project types for filtering (not shown publicly)
   projectTypes?: string[];
+  // Private Globe fields
+  privateGlobeEnabled?: boolean;
+  privateName?: string;
+  privateProjectSlug?: string;
+  privateLocationText?: string;
+  privateLatitude?: number;
+  privateLongitude?: number;
+  privateIconUrl?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -221,6 +229,14 @@ export async function POST(request: NextRequest) {
       ctaLink: body.ctaLink || null,
       // Version
       version,
+      // Private globe
+      privateGlobeEnabled: !!body.privateGlobeEnabled,
+      privateName: body.privateName || null,
+      privateProjectSlug: body.privateProjectSlug || slugify(body.title),
+      privateLocationText: body.privateLocationText || body.location || null,
+      privateLatitude: typeof body.privateLatitude === 'number' ? body.privateLatitude : null,
+      privateLongitude: typeof body.privateLongitude === 'number' ? body.privateLongitude : null,
+      privateIconUrl: body.privateIconUrl || null,
     };
 
     // --- Optional: Check for slug uniqueness (important for production) ---

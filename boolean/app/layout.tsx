@@ -42,7 +42,6 @@ export default async function RootLayout({
             {children}
           </PageTransition>
           <ScrollToTop />
-          <SmallFooter />
         </ThemeProvider>
         {/* Global black fade overlay for route transitions */}
         <div id="global-fade" style={{position:'fixed',inset:0,background:'#000',opacity:0,pointerEvents:'none',transition:'opacity 360ms ease',zIndex:1000}} />

@@ -72,6 +72,14 @@ interface FormData {
   investors: string;
   growthPotential: string;
   whyCritical: string;
+  // Private Globe fields
+  privateGlobeEnabled: boolean;
+  privateName: string;
+  privateProjectSlug: string;
+  privateLocationText: string;
+  privateLatitude: string;
+  privateLongitude: string;
+  privateIconUrl: string;
 }
 
 export default function AddProjectForm() {
@@ -140,6 +148,14 @@ export default function AddProjectForm() {
     investors: '',
     growthPotential: '',
     whyCritical: '',
+    // Private globe defaults
+    privateGlobeEnabled: false,
+    privateName: '',
+    privateProjectSlug: '',
+    privateLocationText: '',
+    privateLatitude: '',
+    privateLongitude: '',
+    privateIconUrl: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -306,6 +322,14 @@ export default function AddProjectForm() {
           deliverables: formData.deliverables.split(',').map(v => v.trim()).filter(Boolean),
           technologyStack: formData.technologyStack.split(',').map(v => v.trim()).filter(Boolean),
           version: (formData as any).version || undefined,
+          // Private globe payload mapping
+          privateGlobeEnabled: !!formData.privateGlobeEnabled,
+          privateName: formData.privateName || undefined,
+          privateProjectSlug: formData.privateProjectSlug || undefined,
+          privateLocationText: formData.privateLocationText || undefined,
+          privateLatitude: formData.privateLatitude ? Number(formData.privateLatitude) : undefined,
+          privateLongitude: formData.privateLongitude ? Number(formData.privateLongitude) : undefined,
+          privateIconUrl: formData.privateIconUrl || undefined,
         }),
       });
 
@@ -382,6 +406,13 @@ export default function AddProjectForm() {
         investors: '',
         growthPotential: '',
         whyCritical: '',
+        privateGlobeEnabled: false,
+        privateName: '',
+        privateProjectSlug: '',
+        privateLocationText: '',
+        privateLatitude: '',
+        privateLongitude: '',
+        privateIconUrl: '',
       });
 
     } catch (err: unknown) {
@@ -765,6 +796,95 @@ export default function AddProjectForm() {
           onChange={handleChange}
           className={styles.input}
           placeholder="e.g., web development, case study, react app"
+        />
+      </div>
+
+      <hr className={styles.divider} />
+      <h2>Private Globe Marker</h2>
+      <div className={styles.formGroupCheckbox}>
+        <input
+          type="checkbox"
+          id="privateGlobeEnabled"
+          name="privateGlobeEnabled"
+          checked={formData.privateGlobeEnabled}
+          onChange={handleChange}
+          className={styles.checkbox}
+        />
+        <label htmlFor="privateGlobeEnabled">Enable Private Globe Marker</label>
+      </div>
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="privateName">Display Name</label>
+          <input
+            type="text"
+            id="privateName"
+            name="privateName"
+            value={formData.privateName}
+            onChange={handleChange}
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="privateProjectSlug">Project Slug</label>
+          <input
+            type="text"
+            id="privateProjectSlug"
+            name="privateProjectSlug"
+            value={formData.privateProjectSlug}
+            onChange={handleChange}
+            className={styles.input}
+            placeholder="auto-fill from title if left blank"
+          />
+        </div>
+      </div>
+      <div className={styles.formGroup}>
+        <label htmlFor="privateLocationText">Location Text</label>
+        <input
+          type="text"
+          id="privateLocationText"
+          name="privateLocationText"
+          value={formData.privateLocationText}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="City, Country"
+        />
+      </div>
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label htmlFor="privateLatitude">Latitude</label>
+          <input
+            type="text"
+            id="privateLatitude"
+            name="privateLatitude"
+            value={formData.privateLatitude}
+            onChange={handleChange}
+            className={styles.input}
+            placeholder="e.g., 40.7128"
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="privateLongitude">Longitude</label>
+          <input
+            type="text"
+            id="privateLongitude"
+            name="privateLongitude"
+            value={formData.privateLongitude}
+            onChange={handleChange}
+            className={styles.input}
+            placeholder="e.g., -74.0060"
+          />
+        </div>
+      </div>
+      <div className={styles.formGroup}>
+        <label htmlFor="privateIconUrl">Icon URL</label>
+        <input
+          type="url"
+          id="privateIconUrl"
+          name="privateIconUrl"
+          value={formData.privateIconUrl}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="https://..."
         />
       </div>
 

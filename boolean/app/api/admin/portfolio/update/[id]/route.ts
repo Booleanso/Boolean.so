@@ -48,6 +48,19 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
       payload.inProgress = !!payload.inProgress;
     }
 
+    // Normalize private globe fields if provided
+    if (payload && 'privateGlobeEnabled' in payload) {
+      payload.privateGlobeEnabled = !!payload.privateGlobeEnabled;
+    }
+    if (payload && 'privateLatitude' in payload) {
+      const lat = Number(payload.privateLatitude);
+      if (Number.isFinite(lat)) payload.privateLatitude = lat; else delete payload.privateLatitude;
+    }
+    if (payload && 'privateLongitude' in payload) {
+      const lng = Number(payload.privateLongitude);
+      if (Number.isFinite(lng)) payload.privateLongitude = lng; else delete payload.privateLongitude;
+    }
+
     // Auto-generate slug from title
     if (payload.title) {
       let newSlug = generateSlug(String(payload.title));

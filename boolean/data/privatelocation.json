@@ -1,55 +1,71 @@
 [
   {
-    "repoName": "Vital Element MVP",
+    "location": "New Jersey",
+    "latitude": 40.0583,
+    "longitude": -10.4057,
+    "iconUrl": "https://testgizmo.com/logos/logo_white_blackbckg.png",
+    "name": "Gizmo",
+    "projectSlug": "gizmo"
+  },
+  {
+    "name": "Vital Element MVP",
+    "projectSlug": "vital-element-mvp",
     "location": "Scottsdale, AZ",
     "latitude": 33.4942,
     "longitude": -111.9261,
     "iconUrl": "/globelogos/ve.png"
   },
   {
-    "repoName": "Project Rehoboam",
+    "name": "Project Rehoboam",
+    "projectSlug": "project-rehoboam",
     "location": "Dubai, UAE",
     "latitude": 25.2048,
     "longitude": 55.2708,
     "iconUrl": "/globelogos/projectrehoboam.png"
   },
   {
-    "repoName": "Serene Solitude Sanctuary",
+    "name": "Serene Solitude Sanctuary",
+    "projectSlug": "serene-solitude-sanctuary",
     "location": "Riyadh, Saudi Arabia",
     "latitude": 24.7136,
     "longitude": 46.6753,
     "iconUrl": "/globelogos/sss.png"
   },
   {
-    "repoName": "MICA",
+    "name": "MICA",
+    "projectSlug": "mica",
     "location": "Mumbai, India",
     "latitude": 19.0760,
     "longitude": 72.8777,
     "iconUrl": "/globelogos/mica.png"
   },
   {
-    "repoName": "Tata Technologies",
+    "name": "Tata Technologies",
+    "projectSlug": "tata-technologies",
     "location": "Pune, India",
     "latitude": 18.5204,
     "longitude": 73.8567,
     "iconUrl": "/globelogos/tata.png"
   },
   {
-    "repoName": "Mclellan Pinterest App",
+    "name": "Mclellan Pinterest App",
+    "projectSlug": "mclellan-pinterest-app",
     "location": "Salt Lake City, Utah",
     "latitude": 40.7608,
     "longitude": -111.8910,
     "iconUrl": "/globelogos/mclellan.png"
   },
   {
-    "repoName": "OwlEyes",
+    "name": "OwlEyes",
+    "projectSlug": "owleyes",
     "location": "Union County College",
     "latitude": 40.7,
     "longitude": -74.27,
     "iconUrl": "/globelogos/mclellan.png"
   },
   {
-    "repoName": "LipSync",
+    "name": "LipSync",
+    "projectSlug": "lipsync",
     "location": "Union County College",
     "latitude": 40.7,
     "longitude": -74.27,

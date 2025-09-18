@@ -9,18 +9,22 @@ import styles from './HeroSection.module.css';
 
 import { useRouter } from 'next/navigation';
 import { useSpring } from '@react-spring/three';
+import SmallFooter from '../SmallFooter/SmallFooter';
 
 
 
 // Type for private repository location data
 interface PrivateRepoLocationData {
-  repoName: string;  // Name of the private repo
+  // New preferred fields (Gizmo-like format)
+  name?: string; // Friendly display name for the project (preferred)
+  projectSlug?: string; // Slug to link to /portfolio/projects/[projectSlug]
+  // Legacy field (Vital Element-like format)
+  repoName?: string;  // Legacy repo identifier; fallback if name is missing
+  // Common fields
   location: string;
   latitude: number;
   longitude: number;
   iconUrl?: string;
-  name?: string; // Friendly display name for the project
-  projectSlug?: string; // Slug to link to /portfolio/projects/[projectSlug]
 }
 
 // TrustedBy removed from hero
@@ -1137,249 +1141,52 @@ export default function HeroSection() {
   useEffect(() => {
     async function fetchLocations() {
       try {
-        // Fetch both public and private repo locations
-        let allLocations: EnhancedLocation[] = [];
-        let totalReposScanned = 0;
-        
-        // 1. Fetch public repos from the organization
-        console.log('Fetching repositories from Booleanso organization...');
-        const reposResponse = await axios.get('https://api.github.com/orgs/Booleanso/repos?per_page=100');
-        const repos = reposResponse.data;
-        totalReposScanned += repos.length;
-        
-        console.log(`Found ${repos.length} public repositories to scan`);
-        
-        // Try to find location.json in each public repo, trying different branch names
-        const publicLocationPromises = repos.map(async (repo: { name: string, clone_url?: string, html_url?: string, default_branch?: string }) => {
-          console.log(`Scanning public repository: ${repo.name}, default branch: ${repo.default_branch || 'unknown'}`);
-          
-          // Get the default branch name or fallback to common ones
-          const branchesToTry = [
-            repo.default_branch, // Try the default branch first if available
-            'main',
-            'master',
-            'development',
-            'dev'
-          ].filter(Boolean); // Remove any undefined values
-          
-          // Try each branch name until we find a location.json
-          for (const branch of branchesToTry) {
-            try {
-              const url = `https://raw.githubusercontent.com/Booleanso/${repo.name}/${branch}/location.json`;
-              console.log(`Trying to fetch: ${url}`);
-              
-              const locationResponse = await axios.get(url, { timeout: 5000 });
-              
-              if (locationResponse.status === 200 && locationResponse.data) {
-                const locationData = locationResponse.data;
-                
-                // Verify that we have valid location data with coordinates
-                if (
-                  locationData.location && 
-                  typeof locationData.latitude === 'number' && 
-                  typeof locationData.longitude === 'number'
-                ) {
-                  console.log(`✅ Found valid location.json in ${repo.name} (${branch}):`, locationData);
-                  
-                  // Create enhanced location object
-                  const enhancedLocation: EnhancedLocation = {
-                    lat: locationData.latitude,
-                    lng: locationData.longitude,
-                    name: locationData.location,
-                    repoName: repo.name,
-                    iconUrl: locationData.iconUrl || undefined,
-                    isPrivate: false,
-                    displayName: locationData.name || undefined,
-                    projectSlug: locationData.projectSlug || undefined
-                  };
-                  
-                  return enhancedLocation;
-                } else {
-                  console.log(`❌ Invalid location data in ${repo.name} (${branch}):`, locationData);
-                  console.log(`Required format: { "location": "City Name", "latitude": number, "longitude": number, "iconUrl": "optional-url" }`);
-                }
-              }
-              // If we get here without returning, this branch didn't have a valid location.json
-            } catch {
-              // Only log 404s if in the last branch attempt
-              if (branch === branchesToTry[branchesToTry.length - 1]) {
-                console.log(`❌ No location.json found in ${repo.name} on any branch`);
-              }
-              // Don't return here, we'll try the next branch
-            }
-          }
-          
-          // If we get here, we didn't find a valid location.json in any branch
-          return null;
-        });
-        
-        // 2. Fetch private repos location data from GitHub
-        console.log('Fetching private repositories location data from GitHub...');
-        let privateLocations: EnhancedLocation[] = [];
-        try {
-          // Try to fetch privatereposlocation.json from the same organization, using different branches
-          const branchesToTry = ['main', 'master', 'development', 'dev'];
-          
-          // Try each branch name until we find privatereposlocation.json
-          for (const branch of branchesToTry) {
-            try {
-              const privateReposUrl = `https://raw.githubusercontent.com/Booleanso/Boolean.so/${branch}/privatereposlocation.json`;
-              console.log(`Trying to fetch private repos from: ${privateReposUrl}`);
-              
-              const privateReposResponse = await axios.get(privateReposUrl, { timeout: 5000 });
-              
-              if (privateReposResponse.status === 200 && Array.isArray(privateReposResponse.data)) {
-                const privateReposData = privateReposResponse.data;
-                console.log(`✅ Found ${privateReposData.length} private repositories location data`);
-                
-                // Process each private repo location
-                privateLocations = privateReposData
-                  .filter((repo: PrivateRepoLocationData) => 
-                    repo.repoName && 
-                    repo.location && 
-                    typeof repo.latitude === 'number' && 
-                    typeof repo.longitude === 'number'
-                  )
-                  .map((repo: PrivateRepoLocationData): EnhancedLocation => ({
-                    lat: repo.latitude,
-                    lng: repo.longitude,
-                    name: repo.location,
-                    repoName: repo.repoName,
-                    iconUrl: repo.iconUrl,
-                    isPrivate: true,
-                    displayName: repo.name,
-                    projectSlug: repo.projectSlug
-                  }));
-                
-                setPrivateLocationsFound(privateLocations.length);
-                totalReposScanned += privateLocations.length;
-                
-                // If we found valid data, break out of the branch loop
-                if (privateLocations.length > 0) {
-                  console.log(`✅ Found ${privateLocations.length} private repositories with location data`);
-                  break;
-                }
-              }
-            } catch (error) {
-              console.log(`❌ Could not fetch private repos from branch ${branch}:`, error);
-              // Continue trying other branches
-            }
-          }
-        } catch (error) {
-          console.log('Error fetching private repositories location data:', error);
+        setLocationsFound(0);
+        setReposScanned(0);
+        setPrivateLocationsFound(0);
+
+        // Fetch private locations from Firestore via API
+        const response = await fetch('/api/private-locations');
+        if (!response.ok) {
+          console.log(`❌ Error fetching private locations: ${response.status} ${response.statusText}`);
+          throw new Error('Failed to fetch private locations');
         }
-        
-        // 3. Fetch local private locations from the data directory
-        console.log('Fetching local private repositories location data...');
-        try {
-          const response = await fetch('/api/private-locations');
-          
-          if (response.ok) {
-            const data = await response.json();
-            if (data.success && Array.isArray(data.locations)) {
-              const localPrivateReposData = data.locations;
-              console.log('✅ Found local private repositories data:', localPrivateReposData);
-              
-              // Create enhanced locations from local data
-              const localPrivateLocations = localPrivateReposData
-                .filter((repo: PrivateRepoLocationData) => 
-                  repo.repoName && 
-                  repo.location && 
-                  typeof repo.latitude === 'number' && 
-                  typeof repo.longitude === 'number'
-                )
-                .map((repo: PrivateRepoLocationData): EnhancedLocation => ({
-                  lat: repo.latitude,
-                  lng: repo.longitude,
-                  name: repo.location,
-                  repoName: repo.repoName,
-                  iconUrl: repo.iconUrl,
-                  isPrivate: true,
-                  displayName: repo.name,
-                  projectSlug: repo.projectSlug
-                }));
-              
-              console.log(`✅ Added ${localPrivateLocations.length} private repositories from local data`);
-              
-              // Add to private locations array
-              privateLocations = [...privateLocations, ...localPrivateLocations];
-              setPrivateLocationsFound(privateLocations.length);
-              totalReposScanned += localPrivateLocations.length;
-            } else {
-              console.log('❌ No valid private locations data found in the response', data);
-            }
-          } else {
-            console.log(`❌ Error fetching private locations: ${response.status} ${response.statusText}`);
-          }
-        } catch (error) {
-          console.log('Error fetching local private repositories data:', error);
-        }
-        
-        // Process results from public repos
-        const publicLocationResults = await Promise.allSettled(publicLocationPromises);
-        
-        // Filter out only fulfilled promises with valid locations
-        const validPublicLocations = publicLocationResults
-          .filter(
-            (result): result is PromiseFulfilledResult<EnhancedLocation> => 
-              result.status === 'fulfilled' && result.value !== null
-          )
-          .map(result => result.value);
-        
-        setLocationsFound(validPublicLocations.length);
-        
-        // Combine public and private locations
-        allLocations = [...validPublicLocations, ...privateLocations];
-        setReposScanned(totalReposScanned);
-        
-        console.log(`Found ${validPublicLocations.length} public and ${privateLocations.length} private locations from ${totalReposScanned} total repositories`);
-        
-        if (allLocations.length > 0) {
-          setLocations(allLocations);
+        const data = await response.json();
+        const privateData: PrivateRepoLocationData[] = Array.isArray(data?.locations) ? data.locations : [];
+
+        const privateLocations: EnhancedLocation[] = privateData
+          .filter((repo) => repo && repo.location && typeof repo.latitude === 'number' && typeof repo.longitude === 'number')
+          .map((repo): EnhancedLocation => ({
+            lat: repo.latitude,
+            lng: repo.longitude,
+            name: repo.location,
+            repoName: repo.name || 'Unknown Project',
+            iconUrl: repo.iconUrl,
+            isPrivate: true,
+            displayName: repo.name,
+            projectSlug: repo.projectSlug
+          }));
+
+        setPrivateLocationsFound(privateLocations.length);
+        setReposScanned(privateLocations.length);
+
+        if (privateLocations.length > 0) {
+          setLocations(privateLocations);
         } else {
-          console.log('No valid locations found in repos.');
-          console.log('Sample location.json format:');
-          console.log(locationExample);
-          console.log('Sample privatereposlocation.json format:');
-          console.log(privateRepoExample);
-          
-          setError('No location data found. Add location.json files to public repos or create a privatereposlocation.json file.');
-          
-          // Just set some placeholder locations as a fallback
-          setLocations([
-            { 
-              lat: 40.7128, 
-              lng: -74.0060, 
-              name: 'New York', 
-              repoName: 'Example Repo',
-              isPrivate: false
-            }
-          ]);
+          setError('No private location data found. Configure projects in admin to enable globe markers.');
         }
       } catch (error) {
-        console.error('Error fetching location data:', error);
-        setError('Failed to fetch location data from GitHub repositories.');
-        
-        // Add default location as fallback
-        setLocations([
-          { 
-            lat: 40.7128, 
-            lng: -74.0060, 
-            name: 'New York', 
-            repoName: 'Example Repo',
-            isPrivate: false
-          }
-        ]);
+        console.error('Error fetching private locations:', error);
+        setError('Failed to load private locations.');
       } finally {
         setLoading(false);
-        // Add animation for globe fade-in and rise-up after loading is complete
         setTimeout(() => {
           setGlobeOpacity(1);
-          setGlobePosition(0); // Move to original position
-        }, 300); // Small delay for smoother transition after loading completes
+          setGlobePosition(0);
+        }, 300);
       }
     }
-    
+
     fetchLocations();
   }, []);
 
@@ -1530,6 +1337,8 @@ export default function HeroSection() {
           )}
         </div>
       </div>
+      {/* Mini footer only on hero page */}
+      <SmallFooter />
     </section>
   );
 } 

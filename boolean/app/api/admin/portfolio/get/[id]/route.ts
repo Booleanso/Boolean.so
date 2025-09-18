@@ -61,6 +61,14 @@ function buildDefaultProject() {
     techAdvantages: '',
     ctaText: '',
     ctaLink: '',
+    // Private globe fields
+    privateGlobeEnabled: false,
+    privateName: '',
+    privateProjectSlug: '',
+    privateLocationText: '',
+    privateLatitude: null as any,
+    privateLongitude: null as any,
+    privateIconUrl: '',
   };
 }
 

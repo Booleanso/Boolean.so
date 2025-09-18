@@ -14,6 +14,7 @@
 .item { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem; border-radius: 14px; border: 1px solid rgba(0,0,0,.08); background: #fff; backdrop-filter: blur(6px); color: #111; }
 .meta { display: grid; gap: .25rem; }
 .titleRow { display: flex; align-items: center; gap: .5rem; }
+.titleRow strong { color: #111 !important; }
 .badge { font-size: .75rem; padding: .15rem .45rem; border-radius: 999px; border: 1px solid rgba(0,0,0,.08); background: #eef5ff; color: #0a58ca; }
 .subtle { color: #666; font-size: .9rem; }
 .itemActions { display: flex; gap: .5rem; }

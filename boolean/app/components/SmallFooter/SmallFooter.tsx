@@ -11,6 +11,7 @@ export default function SmallFooter() {
         <Link href="/terms" className={styles.link}>Terms & Conditions</Link>
         <Link href="/privacy" className={styles.link}>Privacy Policy</Link>
         <Link href="/partners" className={styles.link}>Partners</Link>
+        <Link href="/sponsors" className={styles.link}>Sponsors</Link>
         <Link href="/investors" className={styles.link}>Investors</Link>
         <Link href="/friends" className={styles.link}>Friends</Link>
       </nav>
